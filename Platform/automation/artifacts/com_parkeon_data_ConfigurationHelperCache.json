@@ -1,0 +1,19 @@
+{
+  "apk": "C:\\Users\\GeorgeOliver\\dev\\automation-tests\\artifacts\\pkn_sw\\packages\\1_2_ParkeonBspBase-trunk-37659-release.apk",
+  "class": "com.parkeon.data.ConfigurationHelperCache",
+  "methods": {
+    "<init>(Landroid/content/Context; Ljava/util/List;)V": [],
+    "<init>(Landroid/content/Context; Ljava/util/List; Ljava/lang/String;)V": [],
+    "addKey(Ljava/lang/String;)V": [],
+    "addKeys(Ljava/util/List;)V": [],
+    "addObserver(Ljava/lang/String; Lcom/parkeon/data/DataHelperCache$CacheObserver;)Lcom/parkeon/data/ConfigurationHelperCache;": [],
+    "addObserver(Ljava/lang/String; Lcom/parkeon/data/DataHelperCache$CacheObserver;)Lcom/parkeon/data/IHelperCache;": [],
+    "disable()V": [],
+    "enable()V": [],
+    "removeObserver(Ljava/lang/String;)V": [],
+    "request(Ljava/lang/String; Ljava/lang/String;)Landroid/database/Cursor;": [],
+    "getTag()Ljava/lang/String;": [
+      "<external>"
+    ]
+  }
+}

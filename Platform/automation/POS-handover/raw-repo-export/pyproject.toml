@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "automation-tests"
+version = "0.1.0"
+description = "System test automation for Arrive transit/parking devices"
+requires-python = ">=3.11"
+dependencies = [
+  "robotframework>=7.0",
+  "pyyaml>=6.0",
+  "pydantic>=2.6",
+  "requests>=2.31",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+ssh = ["paramiko>=3.4"]
+android = ["adbutils>=2.7", "Appium-Python-Client>=4.0"]
+web = ["playwright>=1.43"]
+dev = [
+  "ruff>=0.4",
+  "mypy>=1.10",
+]
+all = [
+  "paramiko>=3.4",
+  "adbutils>=2.7",
+  "Appium-Python-Client>=4.0",
+  "playwright>=1.43",
+  "ruff>=0.4",
+  "mypy>=1.10",
+]
+
+[tool.setuptools.packages.find]
+include = ["framework*", "tools*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

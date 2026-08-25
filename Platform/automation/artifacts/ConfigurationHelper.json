@@ -1,0 +1,34 @@
+{
+  "apk": "C:\\Users\\GeorgeOliver\\dev\\automation-tests\\artifacts\\pkn_sw\\packages\\1_2_ParkeonBspBase-trunk-37659-release.apk",
+  "class": "com.parkeon.data.ConfigurationHelper",
+  "methods": {
+    "<init>(Landroid/content/Context;)V": [],
+    "getAsString(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;": [
+      "<external>"
+    ],
+    "getAsBool(Ljava/lang/String; Z)Z": [
+      "<external>"
+    ],
+    "getAsBool(Ljava/lang/String;)Z": [
+      "<external>"
+    ],
+    "getAsInt(Ljava/lang/String; I)I": [
+      "<external>"
+    ],
+    "getAsLong(Ljava/lang/String; J)J": [
+      "<external>"
+    ],
+    "getAsString(Ljava/lang/String;)Ljava/lang/String;": [
+      "<external>"
+    ],
+    "getAsList(Ljava/lang/String; Ljava/util/List;)Ljava/util/List;": [
+      "<external>"
+    ],
+    "isAllMatches(Ljava/util/Map;)Z": [
+      "<external>"
+    ],
+    "isOneMatches(Ljava/util/Map;)Z": [
+      "<external>"
+    ]
+  }
+}

@@ -1,0 +1,602 @@
+{
+  "scanned": 11,
+  "authority_index": {
+    "com.flowbird.pos.androidx-startup": [
+      "com.flowbird.pos (androidx.startup.InitializationProvider)"
+    ],
+    "com.flowbird.pos.mono.MonoRuntimeProvider.__mono_init__": [
+      "com.flowbird.pos (mono.MonoRuntimeProvider)"
+    ],
+    "com.flowbird.pos.mono.MonoRuntimeProvider_1.__mono_init__": [
+      "com.flowbird.pos (mono.MonoRuntimeProvider_1)"
+    ],
+    "com.parkeon.app.maintenance.sounds": [
+      "com.parkeon.app.maintenance (com.parkeon.data.provider.FileContentProvider)"
+    ],
+    "com.parkeon.base.files": [
+      "com.parkeon.base (com.parkeon.data.provider.FileContentProvider)"
+    ],
+    "com.parkeon.data.accounting": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.SystemStateContentProvider)"
+    ],
+    "com.parkeon.data.alarms": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.SystemStateContentProvider)"
+    ],
+    "com.parkeon.data.configuration": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.SystemStateContentProvider)"
+    ],
+    "com.parkeon.data.dallas": [
+      "com.parkeon.periphs.dallas (com.parkeon.periphs.dallas.DallasContentProvider)"
+    ],
+    "com.parkeon.data.environment": [
+      "com.parkeon.platform (com.parkeon.data.EnvironmentProvider)"
+    ],
+    "com.parkeon.data.eventLog": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.events.EventLogProvider)"
+    ],
+    "com.parkeon.data.filesystem": [
+      "com.parkeon.base (com.parkeon.data.FileProvider)"
+    ],
+    "com.parkeon.data.register": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.SystemStateContentProvider)"
+    ],
+    "com.parkeon.data.state": [
+      "com.parkeon.systemstate (com.parkeon.systemstate.SystemStateContentProvider)"
+    ],
+    "com.parkeon.data.translations": [
+      "com.parkeon.base (com.parkeon.data.provider.TranslationProvider)"
+    ],
+    "com.parkeon.device.resources": [
+      "com.parkeon.base (com.parkeon.resources.ResourcesProvider)"
+    ],
+    "com.parkeon.device.resources.storage": [
+      "com.parkeon.base (com.parkeon.resources.ResourcesProvider)"
+    ],
+    "com.parkeon.device.resources.waiter": [
+      "com.parkeon.base (com.parkeon.resources.ResourcesProvider)"
+    ],
+    "com.parkeon.periphs.dallas.files": [
+      "com.parkeon.periphs.dallas (com.parkeon.data.provider.FileContentProvider)"
+    ],
+    "com.parkeon.security.keystore": [
+      "com.parkeon.base (com.parkeon.security.KeyStoreProvider)"
+    ],
+    "com.parkeon.services.commands": [
+      "com.parkeon.base (com.parkeon.services.commands.CommandSchedulerProvider)"
+    ],
+    "com.parkeon.system.artifacts": [
+      "com.parkeon.platform (com.parkeon.system.ArtifactsProvider)"
+    ],
+    "com.parkeon.system.devices.permissions": [
+      "com.parkeon.platform (com.parkeon.system.DevicePermissionsProvider)"
+    ],
+    "com.parkeon.system.files": [
+      "com.parkeon.platform (com.parkeon.data.provider.FileContentProvider)"
+    ],
+    "com.parkeon.systemstate.files": [
+      "com.parkeon.systemstate (com.parkeon.data.provider.FileContentProvider)"
+    ],
+    "com.parkeon.systemstate.shared_prefs": [
+      "com.parkeon.systemstate (com.parkeon.data.provider.SharedPrefsProvider)"
+    ]
+  },
+  "apks": [
+    {
+      "file": "1_1_MaintenanceBack-trunk-37659-release.apk",
+      "package": "com.parkeon.app.maintenance",
+      "version_name": "trunk_37659",
+      "providers": [
+        {
+          "class": "com.parkeon.data.provider.FileContentProvider",
+          "authorities": [
+            "com.parkeon.app.maintenance.sounds"
+          ]
+        }
+      ],
+      "services": [
+        "com.parkeon.app.maintenance.gui.AppServicesBinder",
+        "com.parkeon.services.maintenance.InventoryService",
+        "com.parkeon.services.maintenance.ping.NetworkPingService"
+      ],
+      "receivers": [
+        "com.parkeon.app.maintenance.ApplyApplicationResourcesReceiver",
+        "com.parkeon.app.maintenance.ArtifactGraphReceiver",
+        "com.parkeon.app.maintenance.DataRegisterReceiver",
+        "com.parkeon.app.maintenance.EventForwardingReceiver",
+        "com.parkeon.app.maintenance.ShutDownReceiver",
+        "com.parkeon.app.maintenance.StartUpReceiver",
+        "com.parkeon.app.maintenance.TranslationArtifactReceiver",
+        "com.parkeon.app.maintenance.procedures.CommonMaintenanceProcedureReceiver",
+        "com.parkeon.app.maintenance.procedures.DeviceInfoProcedureReceiver",
+        "com.parkeon.app.maintenance.procedures.ExitProcedureReceiver",
+        "com.parkeon.app.maintenance.procedures.ExperimentProcedureReceiver",
+        "com.parkeon.services.maintenance.InventoryService$CollectorStartupReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.DISABLE_KEYGUARD",
+        "android.permission.INTERNET",
+        "android.permission.NFC",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "com.parkeon.data.dallas.READ_CONTENT",
+        "com.parkeon.data.dallas.WRITE_CONTENT",
+        "com.parkeon.permission.SYSTEM"
+      ]
+    },
+    {
+      "file": "1_2_ParkeonBspBase-trunk-37659-release.apk",
+      "package": "com.parkeon.base",
+      "version_name": "trunk_37659",
+      "providers": [
+        {
+          "class": "com.parkeon.data.FileProvider",
+          "authorities": [
+            "com.parkeon.data.filesystem"
+          ]
+        },
+        {
+          "class": "com.parkeon.data.provider.FileContentProvider",
+          "authorities": [
+            "com.parkeon.base.files"
+          ]
+        },
+        {
+          "class": "com.parkeon.data.provider.TranslationProvider",
+          "authorities": [
+            "com.parkeon.data.translations"
+          ]
+        },
+        {
+          "class": "com.parkeon.resources.ResourcesProvider",
+          "authorities": [
+            "com.parkeon.device.resources",
+            "com.parkeon.device.resources.waiter",
+            "com.parkeon.device.resources.storage"
+          ]
+        },
+        {
+          "class": "com.parkeon.security.KeyStoreProvider",
+          "authorities": [
+            "com.parkeon.security.keystore"
+          ]
+        },
+        {
+          "class": "com.parkeon.services.commands.CommandSchedulerProvider",
+          "authorities": [
+            "com.parkeon.services.commands"
+          ]
+        }
+      ],
+      "services": [
+        "com.parkeon.logger.KernelLogService",
+        "com.parkeon.logger.LogExporter",
+        "com.parkeon.periphs.sensors.SensorsService",
+        "com.parkeon.services.commands.CommandScheduler",
+        "com.parkeon.services.exporter.ExporterService",
+        "com.parkeon.services.journal.JournalService",
+        "com.parkeon.services.maintenance.TestableService",
+        "com.parkeon.services.power.screen.MinimalScreenPowerService",
+        "com.parkeon.services.power.screen.ScreenPowerService",
+        "com.parkeon.services.repair.BackupService",
+        "com.parkeon.sound.SoundService",
+        "com.parkeon.sound.TTSService"
+      ],
+      "receivers": [
+        "com.parkeon.launcher.UsbReceiver",
+        "com.parkeon.logger.DataExporterReceiver",
+        "com.parkeon.logger.DataRegisterReceiver",
+        "com.parkeon.logger.KLogReceiver",
+        "com.parkeon.logger.MaintenanceProceduresReceiver",
+        "com.parkeon.logger.MediaMountedReceiver",
+        "com.parkeon.logger.ShutdownReceiver",
+        "com.parkeon.logger.StorageFreeReceiver",
+        "com.parkeon.minimal.services.StartUpReceiver",
+        "com.parkeon.periphs.sensors.SensorsService$CollectorStartupReceiver",
+        "com.parkeon.resources.ClearResourcesReceiver",
+        "com.parkeon.services.MediaMountedReceiver",
+        "com.parkeon.services.StartUpReceiver",
+        "com.parkeon.services.commands.CommandReceiver",
+        "com.parkeon.services.commands.DataRegisterReceiver",
+        "com.parkeon.services.commands.ShutDownReceiver",
+        "com.parkeon.services.exporter.DataRegisterReceiver",
+        "com.parkeon.services.exporter.MaintenanceProceduresReceiver",
+        "com.parkeon.services.journal.DataRegisterReceiver",
+        "com.parkeon.services.power.screen.DataRegisterReceiver",
+        "com.parkeon.services.repair.BackupArtifactReceiver",
+        "com.parkeon.sound.DataRegisterReceiver",
+        "com.parkeon.sound.SoundService$CollectorStartupReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.INJECT_EVENTS",
+        "android.permission.INSTALL_PACKAGES",
+        "android.permission.INTERNET",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_LOGS",
+        "android.permission.READ_MEDIA_STORAGE",
+        "android.permission.REBOOT",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.SHUTDOWN",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WAKE_LOCK",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WRITE_MEDIA_STORAGE",
+        "com.parkeon.permission.DEVICES_PERMISSIONS",
+        "com.parkeon.permission.SYSTEM"
+      ]
+    },
+    {
+      "file": "1_3_ParkeonBspSupport-trunk-37659-release.apk",
+      "package": "com.parkeon.platform",
+      "version_name": "trunk_37659",
+      "providers": [
+        {
+          "class": "com.parkeon.data.EnvironmentProvider",
+          "authorities": [
+            "com.parkeon.data.environment"
+          ]
+        },
+        {
+          "class": "com.parkeon.data.provider.FileContentProvider",
+          "authorities": [
+            "com.parkeon.system.files"
+          ]
+        },
+        {
+          "class": "com.parkeon.system.ArtifactsProvider",
+          "authorities": [
+            "com.parkeon.system.artifacts"
+          ]
+        },
+        {
+          "class": "com.parkeon.system.DevicePermissionsProvider",
+          "authorities": [
+            "com.parkeon.system.devices.permissions"
+          ]
+        }
+      ],
+      "services": [
+        "com.parkeon.periphs.giop.GiopInterfacesService",
+        "com.parkeon.platform.BacklightControlService",
+        "com.parkeon.platform.Dallas",
+        "com.parkeon.platform.PlatformService",
+        "com.parkeon.platform.PowerManagerService",
+        "com.parkeon.platform.touchscreen.TouchScreenConfigService",
+        "com.parkeon.services.location.LocationService",
+        "com.parkeon.services.power.PowerManagerService",
+        "com.parkeon.services.sensors.AndroidSensorsService",
+        "com.parkeon.system.DateService",
+        "com.parkeon.system.MountServiceProxy",
+        "com.parkeon.system.ShutdownService",
+        "com.parkeon.system.SystemService",
+        "com.parkeon.system.permissions.AppOpPermissionsService",
+        "com.parkeon.system.watchdog.WatchdogService"
+      ],
+      "receivers": [
+        "com.parkeon.data.DataExporterReceiver",
+        "com.parkeon.maintenance.InventoryReceiver",
+        "com.parkeon.maintenance.SystemProcedureReceiver",
+        "com.parkeon.platform.BootReceiver",
+        "com.parkeon.platform.DataExporterReceiver",
+        "com.parkeon.platform.DataRegisterReceiver",
+        "com.parkeon.platform.InventoryReceiver",
+        "com.parkeon.platform.MaintenanceProceduresReceiver",
+        "com.parkeon.platform.NfcToggleReceiver",
+        "com.parkeon.platform.PowerConnectionReceiver",
+        "com.parkeon.platform.ShutdownReceiver",
+        "com.parkeon.platform.StartUpReceiver",
+        "com.parkeon.platform.touchscreen.TouchScreenConfigReceiver",
+        "com.parkeon.platform.touchscreen.TouchScreenFirmwareUpdaterReceiver",
+        "com.parkeon.services.location.DataRegisterReceiver",
+        "com.parkeon.services.power.DataRegisterReceiver",
+        "com.parkeon.services.power.PowerManagerService$CollectorStartupReceiver",
+        "com.parkeon.services.power.ServiceBootReceiver",
+        "com.parkeon.services.sensors.DataRegisterReceiver",
+        "com.parkeon.system.ShutdownReceiver",
+        "com.parkeon.system.watchdog.ServiceBootReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.ACCESS_CACHE_FILESYSTEM",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.BROADCAST_STICKY",
+        "android.permission.CONNECTIVITY_INTERNAL",
+        "android.permission.DELETE_CACHE_FILES",
+        "android.permission.DEVICE_POWER",
+        "android.permission.INTERNET",
+        "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.REBOOT",
+        "android.permission.SET_TIME",
+        "android.permission.SET_TIME_ZONE",
+        "android.permission.SHUTDOWN",
+        "android.permission.STATUS_BAR",
+        "android.permission.UPDATE_APP_OPS_STATS",
+        "android.permission.WRITE_APN_SETTINGS",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WRITE_MEDIA_STORAGE",
+        "android.permission.WRITE_SECURE_SETTINGS",
+        "android.permission.WRITE_SETTINGS"
+      ]
+    },
+    {
+      "file": "2_Dallas-trunk-37659-release.apk",
+      "package": "com.parkeon.periphs.dallas",
+      "version_name": "trunk_37659",
+      "providers": [
+        {
+          "class": "com.parkeon.data.provider.FileContentProvider",
+          "authorities": [
+            "com.parkeon.periphs.dallas.files"
+          ]
+        },
+        {
+          "class": "com.parkeon.periphs.dallas.DallasContentProvider",
+          "authorities": [
+            "com.parkeon.data.dallas"
+          ]
+        }
+      ],
+      "services": [],
+      "receivers": [
+        "com.parkeon.periphs.dallas.ConfigurationReceiver",
+        "com.parkeon.periphs.dallas.DallasClearContentReceiver",
+        "com.parkeon.periphs.dallas.DallasFileExporter",
+        "com.parkeon.periphs.dallas.DallasFileImporter",
+        "com.parkeon.periphs.dallas.DallasRegisterReceiver",
+        "com.parkeon.periphs.dallas.DataExporterReceiver",
+        "com.parkeon.periphs.dallas.DataRegisterReceiver",
+        "com.parkeon.periphs.dallas.MinimalParametersProcedureReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.DISABLE_KEYGUARD",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    {
+      "file": "2_LedsHub-trunk-37659-release.apk",
+      "package": "com.parkeon.periphs.leds.ledshub",
+      "version_name": "trunk_37659",
+      "providers": [],
+      "services": [
+        "com.parkeon.periphs.leds.ledshub.LedInterfaceHubService",
+        "com.parkeon.periphs.leds.ledshub.LedsProviderHubService"
+      ],
+      "receivers": [
+        "com.parkeon.periphs.leds.ledshub.LedsProviderHubService$CollectorStartupReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    {
+      "file": "2_NtpService-trunk-37659-release.apk",
+      "package": "com.parkeon.services.ntp",
+      "version_name": "trunk_37659",
+      "providers": [],
+      "services": [
+        "com.parkeon.services.ntp.NtpService"
+      ],
+      "receivers": [
+        "com.parkeon.services.ntp.DataRegisterReceiver",
+        "com.parkeon.services.ntp.StartUpReceiver",
+        "com.parkeon.services.ntp.maintenance.MaintenanceProceduresReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.INTERNET",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "com.parkeon.permission.SYSTEM"
+      ]
+    },
+    {
+      "file": "2_PknBixolonUsbSerialLcd-trunk-37659-release.apk",
+      "package": "com.parkeon.periphs.pknBixolonUsbSerialLcd",
+      "version_name": "trunk_37659",
+      "providers": [],
+      "services": [
+        "com.parkeon.periphs.pknBixolonUsbSerialLcd.PknBixolonUsbSerialLcdService"
+      ],
+      "receivers": [
+        "com.parkeon.periphs.pknBixolonUsbSerialLcd.DataRegisterReceiver",
+        "com.parkeon.periphs.pknBixolonUsbSerialLcd.PknBixolonLcdProceduresReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    {
+      "file": "2_PknUsbPrinter-trunk-37659-release.apk",
+      "package": "com.parkeon.periphs.pknUsbPrinter",
+      "version_name": "trunk_37659",
+      "providers": [],
+      "services": [
+        "com.parkeon.periphs.pknUsbPrinter.PknUsbPrinterService",
+        "com.parkeon.services.exporter.LayoutCollectorService"
+      ],
+      "receivers": [
+        "com.parkeon.periphs.pknUsbPrinter.DataRegisterReceiver",
+        "com.parkeon.periphs.pknUsbPrinter.MaintenanceProceduresReceiver",
+        "com.parkeon.periphs.pknUsbPrinter.PrintTemplatesArtifactsReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "com.parkeon.permission.DEVICES_PERMISSIONS"
+      ]
+    },
+    {
+      "file": "2_SystemState-trunk-37659-release.apk",
+      "package": "com.parkeon.systemstate",
+      "version_name": "trunk_37659",
+      "providers": [
+        {
+          "class": "com.parkeon.data.provider.FileContentProvider",
+          "authorities": [
+            "com.parkeon.systemstate.files"
+          ]
+        },
+        {
+          "class": "com.parkeon.data.provider.SharedPrefsProvider",
+          "authorities": [
+            "com.parkeon.systemstate.shared_prefs"
+          ]
+        },
+        {
+          "class": "com.parkeon.systemstate.SystemStateContentProvider",
+          "authorities": [
+            "com.parkeon.data.accounting",
+            "com.parkeon.data.configuration",
+            "com.parkeon.data.state",
+            "com.parkeon.data.alarms",
+            "com.parkeon.data.register"
+          ]
+        },
+        {
+          "class": "com.parkeon.systemstate.events.EventLogProvider",
+          "authorities": [
+            "com.parkeon.data.eventLog"
+          ]
+        }
+      ],
+      "services": [],
+      "receivers": [
+        "com.parkeon.data.StateFileExporter",
+        "com.parkeon.data.StateFileImporter",
+        "com.parkeon.systemstate.DataExporterReceiver",
+        "com.parkeon.systemstate.DataRegisterReceiver",
+        "com.parkeon.systemstate.DeleteValueReceiver",
+        "com.parkeon.systemstate.StateArtifactReceiver",
+        "com.parkeon.systemstate.UpdateValueReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "com.parkeon.data.dallas.READ_CONTENT",
+        "com.parkeon.data.dallas.WRITE_CONTENT"
+      ]
+    },
+    {
+      "file": "3_com.parkeon.pos.1.3.12.22119.pos.STE11.apk",
+      "package": "com.flowbird.pos",
+      "version_name": "1.3.12.22119",
+      "providers": [
+        {
+          "class": "androidx.startup.InitializationProvider",
+          "authorities": [
+            "com.flowbird.pos.androidx-startup"
+          ]
+        },
+        {
+          "class": "mono.MonoRuntimeProvider",
+          "authorities": [
+            "com.flowbird.pos.mono.MonoRuntimeProvider.__mono_init__"
+          ]
+        },
+        {
+          "class": "mono.MonoRuntimeProvider_1",
+          "authorities": [
+            "com.flowbird.pos.mono.MonoRuntimeProvider_1.__mono_init__"
+          ]
+        }
+      ],
+      "services": [
+        "com.parkeon.datastorage.PermissionsService",
+        "com.parkeon.devices.identity",
+        "com.parkeon.devices.location",
+        "com.parkeon.devices.powermanagement",
+        "com.parkeon.devices.ui",
+        "com.parkeon.generic.audit",
+        "com.parkeon.generic.authentication",
+        "com.parkeon.generic.backofficeagent",
+        "com.parkeon.generic.cardcontrol",
+        "com.parkeon.generic.configuration",
+        "com.parkeon.generic.events",
+        "com.parkeon.generic.fareproducts",
+        "com.parkeon.generic.fares",
+        "com.parkeon.generic.logger",
+        "com.parkeon.generic.operatorinformation",
+        "com.parkeon.generic.pages",
+        "com.parkeon.generic.persistentobject",
+        "com.parkeon.generic.platformprint",
+        "com.parkeon.generic.remotecommand",
+        "com.parkeon.generic.smartcard",
+        "com.parkeon.generic.srs",
+        "com.parkeon.generic.state",
+        "com.parkeon.generic.topology",
+        "com.parkeon.generic.transaction"
+      ],
+      "receivers": [
+        "androidx.profileinstaller.ProfileInstallReceiver",
+        "com.flowbird.pos.DataRegisterReceiver",
+        "com.flowbird.pos.ShutdownReceiver",
+        "com.flowbird.pos.UsbPaymentDeviceReceiver",
+        "com.parkeon.device.AdminEnabledReceiver",
+        "com.parkeon.device.InstallCompleteReceiver",
+        "com.parkeon.device.MaintenanceProceduresReceiver",
+        "com.parkeon.powermanagement.PowerBroadcastReceiver",
+        "flowbird.gfts.services.PersistentObject.PlatformStorageDataRegisterReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.BIND_JOB_SERVICE",
+        "android.permission.INTERNET",
+        "android.permission.MANAGE_USB",
+        "android.permission.PERSISTENT_ACTIVITY",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_PRIVILEGED_PHONE_STATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WRITE_SETTINGS",
+        "com.flowbird.pos.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+        "com.parkeon.data.dallas.READ_CONTENT",
+        "com.parkeon.data.dallas.WRITE_CONTENT",
+        "com.parkeon.permission.DEVICES_PERMISSIONS",
+        "com.parkeon.permission.SYSTEM"
+      ]
+    },
+    {
+      "file": "1_ParkeonSoftwareUpdater-trunk-37659-release.apk",
+      "package": "com.parkeon.updater",
+      "version_name": "trunk_37659",
+      "providers": [],
+      "services": [
+        "com.parkeon.updater.SoftwareUpdater"
+      ],
+      "receivers": [
+        "com.parkeon.updater.ApplySoftwareReceiver",
+        "com.parkeon.updater.BootReceiver",
+        "com.parkeon.updater.OnUpgradeReceivers$MyPackageReplaceReceiver",
+        "com.parkeon.updater.OnUpgradeReceivers$PackageReplaceReceiver"
+      ],
+      "permissions_declared": [
+        "android.permission.ACCESS_CACHE_FILESYSTEM",
+        "android.permission.CHANGE_COMPONENT_ENABLED_STATE",
+        "android.permission.DELETE_CACHE_FILES",
+        "android.permission.DELETE_PACKAGES",
+        "android.permission.INSTALL_PACKAGES",
+        "android.permission.INTERACT_ACCROSS_USERS_FULL",
+        "android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS",
+        "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
+        "android.permission.READ_LOGS",
+        "android.permission.REBOOT",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.RECOVERY",
+        "android.permission.SHUTDOWN",
+        "android.permission.WAKE_LOCK",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.WRITE_MEDIA_STORAGE"
+      ]
+    }
+  ]
+}

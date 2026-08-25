@@ -1,0 +1,16 @@
+{
+    "softwareVersion": "1.0.571.25500",
+    "automaticLogOff": "10000",
+    "screenSaverTimeout": "300",
+    "powerInterrupt": "100",
+    "audioLevelDefault": "4",
+    "brightnessLevelDefault": "5",
+    "maxRevenueWithoutComms": "2000",
+    "conversionValue": "0",
+    "decimalPrecision": "0",
+    "lowPaperLengthMetres": "10",
+    "slipsPaperJam": "5",
+    "numberDaysAutonomyWithoutFullSynchronisation": "7",
+    "merchantReceipt": "true",
+    "enableEmv": "false"
+}

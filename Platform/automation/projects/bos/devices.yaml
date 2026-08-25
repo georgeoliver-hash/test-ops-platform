@@ -1,0 +1,32 @@
+project: bos
+description: >
+  Back-office web portals (BOS/ABT/CloudFare/Merit) sitting behind the
+  export-automation backlog. Infrastructure scaffold only — no live portal
+  URL or credentials exist yet. See NullTransport (framework/transport/null.py)
+  and WebUIDriver (framework/ui/web.py).
+bos_base_url: null
+identity_provider_uri: null
+comms_group_id: null
+common_modules:
+  - bos_config
+devices:
+  # Placeholder back-office portal target — NO physical device, NO shell.
+  # George: fill in the real URL before this can run for real, either:
+  #   1. set web_ui_url below directly, or
+  #   2. leave web_ui_url null and export BOS_PORTAL_URL at run time
+  #      (env_web_ui_url_var mirrors SSHTransport.env_password_var's
+  #      name-of-an-env-var indirection — see translink/devices.yaml).
+  # Credentials follow the same never-commit-a-value rule: only the env var
+  # *names* live here, in metadata, resolved by tests/fixtures at run time.
+  - id: bos-cloudfare-portal-01
+    type: PORTAL
+    os: none
+    ui: web
+    transport:
+      kind: none
+    web_ui_url: null
+    env_web_ui_url_var: BOS_PORTAL_URL
+    metadata:
+      portal_role: operator
+      env_username_var: BOS_PORTAL_USERNAME
+      env_password_var: BOS_PORTAL_PASSWORD

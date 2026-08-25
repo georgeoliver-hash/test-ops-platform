@@ -1,0 +1,48 @@
+project: nta
+description: NTA (National Transport Authority, Ireland) — second project. Android+ADB devices (POS + BV). Build artefacts and live BOS endpoints TBD.
+# NTA BOS / IdP URLs TBD — populate when George shares them. Leaving null so the
+# `bos` fixture skips cleanly rather than firing requests at a Translink URL.
+bos_base_url: null
+identity_provider_uri: null
+comms_group_id: null
+common_modules:
+  - gtfs
+  - bos_config
+  - keycloak
+devices:
+  # NTA POS — Android terminal, likely Flowbird BSP lineage like Translink POS.
+  # ADB blocker probably identical: pkn_command_server on TCP 5555 instead of adbd.
+  # See [[ramdisk-patch-plan]] memory — same fix may apply once we have the SD.
+  - id: nta-pos-01
+    type: POS
+    os: android
+    ui: android_app
+    transport:
+      kind: adb
+      serial: TBD       # will be IP:5556 once ramdisk patch is applied (TCP adbd)
+    build:
+      variant: TBD
+      package: TBD
+      version: TBD
+    appium_app_package: TBD   # likely com.flowbird.pos or similar
+    bos_device_id: TBD
+    bos_device_type: TBD
+    customer_code: TBD
+
+  # NTA BV — Bus Validator (onboard, card-tap). Android + ADB per George.
+  # First BV device in the framework — see DeviceType.BV in framework/registry/models.py.
+  - id: nta-bv-01
+    type: BV
+    os: android
+    ui: android_app
+    transport:
+      kind: adb
+      serial: TBD
+    build:
+      variant: TBD
+      package: TBD
+      version: TBD
+    appium_app_package: TBD
+    bos_device_id: TBD
+    bos_device_type: TBD
+    customer_code: TBD

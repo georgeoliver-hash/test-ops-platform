@@ -1,0 +1,21 @@
+[project]
+name = "test-ops-platform"
+version = "0.1.0"
+description = "model/ schema + testops/ + automation/ — the payload that eventually merges into flowbird-group/sit as sit/Platform/"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["model*"]
+
+[tool.pytest.ini_options]
+# Lets `pytest` resolve `import model.devices` from Platform/ as rootdir, whether run from
+# here (sandbox) or from sit/Platform/ (post-merge) — no PYTHONPATH juggling either way.
+pythonpath = ["."]

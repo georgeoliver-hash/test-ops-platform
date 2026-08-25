@@ -1,0 +1,39 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.egg-info/
+.env
+build/
+dist/
+allure-results/
+htmlcov/
+*.log
+screenshots/
+tools/inventory_report.md
+tools/first_connect_*/
+tools/extracted_pkn_sw/
+
+# Real device SD-card dumps -- read-only reference material, not versioned.
+# Kept on disk locally; never committed (large binaries, not source).
+builds/
+POS-handover.zip
+
+# Extracted build artifacts / firmware images -- large, regenerable from builds/
+# or the real APK via tools/extract_apk_metadata.py. The small analysis JSON/XML/PNG
+# files directly under artifacts/ (pos_apk_metadata.json, bsp_inventory.json, etc.)
+# ARE committed -- framework code reads them at runtime.
+artifacts/pkn_sw/
+artifacts/ramdisk/
+artifacts/ramdisk_patched/
+artifacts/ramdisk_verify/
+artifacts/ramdisk_patched_verify/
+artifacts/ramdisk*.img
+artifacts/bsp_base_extracted/
+artifacts/systemstate_apk_extracted/
+artifacts/appium.log
+artifacts/appium.err
+artifacts/doctor_dryrun/
+
+# Generated per-run test reports.
+artifacts/runs/
