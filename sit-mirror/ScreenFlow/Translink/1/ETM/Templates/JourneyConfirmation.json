@@ -1,0 +1,113 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"JourneyConfirmationLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+    },
+		{
+			"Type": "Label",
+			"Name": "JourneyNumberLabel",
+			"Text": "Journey Number:"
+		},
+		{
+			"Type": "Label",
+			"Name": "RouteLabel",
+			"Text": "Route:"
+		},
+		{
+			"Type": "Label",
+			"Name": "DirectionLabel",
+			"Text": "Direction:"
+		},
+		{
+			"Type": "Label",
+			"Name": "FirstStageLabel",
+			"Text": "First Stage:"
+		},
+		{
+			"Type": "Label",
+			"Name": "RouteValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "JourneyNumberValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "DirectionValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "FirstStageValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PressEnterLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Image",
+			"Name": "PressEnterIcon"
+		},
+		{
+			"Type": "Label",
+			"Name": "DutyNumberLabel",
+			"Text": "Duty Number:"
+		},
+		{
+			"Type": "Label",
+			"Name": "JourneyTimeLabel",
+			"Text": "Journey Time:"
+		},
+		{
+			"Type": "Label",
+			"Name": "JourneyTimeValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "DutyNumberValueLabel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Route Summary"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

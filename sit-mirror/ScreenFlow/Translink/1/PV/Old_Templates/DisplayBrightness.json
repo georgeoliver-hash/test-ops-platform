@@ -1,0 +1,58 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DisplayBrightnessLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OKButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "Slider",
+            "Name": "BrightnessSlider",
+            "Text": null
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DecreaseBrightnessButton",
+            "Text": ""
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "IncreaseBrightnessButton",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "ModeLabel",
+            "Text": "Mode:"
+        },
+        {
+            "Type": "Label",
+            "Name": "ModeNameValueLabel",
+            "Text": "Manual"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Brightness"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

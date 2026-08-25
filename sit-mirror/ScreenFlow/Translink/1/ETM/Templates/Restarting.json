@@ -1,0 +1,64 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "PleaseWait",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "BackPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageLabel",
+            "Text": "Restarting"
+        },
+        {
+            "Type": "ProcessingBar",
+            "Name": "ProcessingBar1"
+        },
+        {
+            "Type": "Label",
+            "Name": "InfoLabel",
+            "Text": "Please wait..."
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:\\d+:\\d+:\\d+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:\\d+/\\d+/\\d+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

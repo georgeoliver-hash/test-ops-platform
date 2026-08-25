@@ -1,0 +1,43 @@
+{
+	"Attributes": {
+		"Name": "FLUSmartcard",
+		"Layouts": [
+			"FLULayout",
+			"WhiteFLUStatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Grid",
+			"Name": "FLUTableListPanel",
+			"Others": {
+				"Columns": "Stop Number,Stop Name,Fare,Arrow"
+            }
+		},
+		{
+			"Type": "Label",
+			"Name": "SelectedProductValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PassengerCountLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TotalLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TotalModeLabel",
+			"Text": "Last"
+		},
+		{
+			"Type": "Label",
+			"Name": "BoardingStopNumberLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "BoardingStopNameLabel"
+		}
+	]
+}

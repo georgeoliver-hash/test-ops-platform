@@ -1,0 +1,73 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "validationfaillayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelResult",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxResult",
+            "Others": {
+                "BackgroundImageFilePath": "Images\\Failure.png"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "labelPrompt",
+            "Text": "Please remove Smartcard to continue"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

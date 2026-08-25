@@ -1,0 +1,508 @@
+{
+    "Attributes": {
+        "Name": "GenericFTS",
+        "Layouts": [],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "PaymentInformationText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PaymentInformationText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "FeaturesUnavaliabilityText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "FeaturesUnavaliabilityText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ToggleLanguageSelectionButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "ToggleLanguageSelectionButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "BackButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "CancelButton",
+            "Text": "Cancel",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "CancelButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketHeaderTitleText",
+            "Text": "Information about your ticket",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketHeaderTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "BookingCodeTitleText",
+            "Text": "Booking Code:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "BookingCodeTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "BookingCodeValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "BookingCodeValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "ServiceTitleText",
+            "Text": "Service:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "ServiceTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "ServiceValueText",
+            "Text": "Rail",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "ServiceValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketTypeTitleText",
+            "Text": "Ticket type:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "HasFocus": false,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketTypeTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketTypeValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketTypeValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketOriginTitleText",
+            "Text": "From:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketOriginTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketOriginValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketOriginValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDestinationTitleText",
+            "Text": "To:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDestinationTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDestinationValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDestinationValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDestinationValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDestinationValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketOutboundDateTitleText",
+            "Text": "Outbound Date:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketOutboundDateTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketOutboundDateValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketOutboundDateValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketReturnDateTitleText",
+            "Text": "Return Date:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketReturnDateTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketReturnDateValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketReturnDateValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDateOfUseTitleText",
+            "Text": "Date of Use:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDateOfUseTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDateOfUseValueText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDateOfUseValueText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "Ticket3DayDateOfUseTitleText",
+            "Text": "Date of Use:",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "Ticket3DayDateOfUseTitleText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDateOfUseValue1Text",
+            "Text": "",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDateOfUseValue1Text"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDateOfUseValue2Text",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDateOfUseValue2Text"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketDateOfUseValue3Text",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TicketDateOfUseValue3Text"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "PrintButton",
+            "Text": "Print Ticket",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "PrintButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DragToMoveButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "DragToMoveButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DisabilityButton",
+            "Text": "",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DisabilityButton"
+            }
+        }
+    ]
+}

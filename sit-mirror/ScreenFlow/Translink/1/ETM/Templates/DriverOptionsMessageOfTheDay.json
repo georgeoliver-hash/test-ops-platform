@@ -1,0 +1,84 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "MessageOfTheDayLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageBackground"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageOfTheDayLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageDateTimeLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageDetailslabel",
+            "Text": "Drivers - Message Details: "
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeparatorPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Message of the Day"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+    ]
+}

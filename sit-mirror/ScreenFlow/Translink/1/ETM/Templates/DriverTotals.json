@@ -1,0 +1,182 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DriverTotalsLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeperatorLine2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "DutyTab"
+        },
+        {
+            "Type": "Image",
+            "Name": "L1Icon"
+        },
+        {
+            "Type": "Button",
+            "Name": "L1",
+            "Text": "Duty"
+        },
+        {
+            "Type": "Panel",
+            "Name": "JourneyTab"
+        },
+        {
+            "Type": "Image",
+            "Name": "R1Icon"
+        },
+        {
+            "Type": "Button",
+            "Name": "R1",
+            "Text": "Journey"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeperatorLine"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsTransactionsLabel",
+            "Text": "Tickets Transactions:"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsTransactions1Value",
+            "Text": "REGEX:\\d+"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsRevenueLabel",
+            "Text": "Tickets Revenue:"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsRevenue1Value",
+            "Text": "REGEX:(£|€)\\d+\\.\\d+"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledTransactionsLabel",
+            "Text": "Annuled Transactions:"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledTransactions1Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledRevenueLabel",
+            "Text": "Annuled Revenue:"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledRevenue1Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsRevenue2Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledRevenue2Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetTransactionsLabel",
+            "Text": "Net Transactions:"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetTransactions1Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetRevenueLabel",
+            "Text": "Net Revenue:"
+        },
+        {
+            "Type": "Label",
+            "Name": "PassesLabel",
+            "Text": "Passes:"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetRevenue1Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetRevenue2Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "PassesPlusCardsAndAbtValue"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsTransactions2Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "AnnuledTransactions2Value"
+        },
+        {
+            "Type": "Label",
+            "Name": "NetTransactions2Value"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Totals"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+    ]
+}

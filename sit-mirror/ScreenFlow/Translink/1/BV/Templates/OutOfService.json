@@ -1,0 +1,58 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragValidationTitleBar",
+            "DateTimeView",
+            "LlDateTime"
+        ],
+        "Name": "DFGL"
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "imageView1",
+            "Type": "Image"
+        },
+        {
+            "Name": "TvLabelResult",
+            "Text": "Not in Service",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvLabelInfo",
+            "Type": "Label"
+        },
+        {
+            "Name": "FragValidationTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleStage",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleLocation",
+            "Type": "Label"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleDate",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        }
+    ]
+}

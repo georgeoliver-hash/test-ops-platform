@@ -1,0 +1,143 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "FluPaymentModeLayout",
+            "WhiteFLUStatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1",
+            "Text": "Adult"
+        },
+        {
+            "Type": "Grid",
+            "Name": "FLUTableListPanel",
+            "Others": {
+                "Columns": "Stop Number,Stop Name,Fare,Arrow"
+            }
+        },
+        {
+            "Type": "Panel",
+            "Name": "LastStopSeparatorPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FooterPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FooterVerticalSeparator2Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalModeLabel",
+            "Text": "Last"
+        },
+        {
+            "Type": "Label",
+            "Name": "FLUTypeValueLabel",
+            "Text": "All"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalLabel"
+        },
+        {
+            "Type": "Image",
+            "Name": "TotalModePictureBox"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FooterVerticalSeparator1Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "SelectedProductValueLabel"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Label",
+            "Name": "PassengerCountLabel",
+            "Text": "REGEX:\\d+"
+        },
+        {
+            "Type": "Image",
+            "Name": "PassengerCountIcon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FooterverticalSeparator3Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PaymentModeLabel",
+            "Text": "Mode"
+        },
+        {
+            "Type": "Label",
+            "Name": "PaymentLabel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FooterSeparatorPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "StatusBarPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "StatusBarBackgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        }
+    ]
+}

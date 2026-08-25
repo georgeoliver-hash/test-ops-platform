@@ -5,3 +5,5 @@ Resource      ../Utility/ETMScreenUtility.robot
 Resource      ../Utility/ETMInteractionUtility.robot
 Resource      ../../Common/Utility/ScreensUtility.robot
 Resource      ETMWorkflowBindings.robot
+Resource      ETMFareboxBindings.robot
+Resource      ETMDiagnosticsBindings.robot

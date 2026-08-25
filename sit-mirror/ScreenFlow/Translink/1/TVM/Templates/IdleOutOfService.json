@@ -1,0 +1,110 @@
+{
+    "Attributes": {
+        "Name": "GenericFTS",
+        "Layouts": [],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "PaymentInformationText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PaymentInformationText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "FeaturesUnavaliabilityText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "FeaturesUnavaliabilityText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ToggleLanguageSelectionButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "ToggleLanguageSelectionButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TapToStartTitleText",
+            "Text": "Out Of Service",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TapToStartTitleText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DragToMoveButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DragToMoveButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DisabilityButton",
+            "Text": "",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DisabilityButton"
+            }
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragValidationTitleBar",
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "FragValidationTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTimePeriod",
+            "Type": "Label"
+        }
+    ]
+}

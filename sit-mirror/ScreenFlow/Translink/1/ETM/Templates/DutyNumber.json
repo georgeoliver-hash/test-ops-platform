@@ -1,0 +1,76 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"SingleLineTextEntryLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "Panel",
+			"Name": "PromptPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "EnterToConfirmLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Image",
+			"Name": "PressEnterIcon"
+		},
+		{
+			"Type": "TextBox",
+			"Name": "TextBox"
+		},
+		{
+			"Type": "Label",
+			"Name": "TextBoxLabel",
+			"Text": "Duty Number"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Enter Duty Number"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

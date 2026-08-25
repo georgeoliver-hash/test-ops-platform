@@ -1,0 +1,90 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TicketHistoryListLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Grid",
+            "Name": "TicketHistoryListPanel",
+            "Others": {
+                "Columns": "Padding,DateTime,ProductName,Price,Info,Padding"
+            }
+        },
+        {
+            "Type": "Image",
+            "Name": "L1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L5Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeparatorPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Ticket History"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+    ]
+}

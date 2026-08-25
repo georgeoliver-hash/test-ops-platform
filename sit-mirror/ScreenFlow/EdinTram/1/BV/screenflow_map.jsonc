@@ -1,0 +1,98 @@
+{
+    "Presets": {
+        "TechnicianId": "[StaffId]123456",
+        "TechnicianPin": "[StaffPin]9999"
+    },
+    "Screens": {
+        "Idle": {
+            "Navigable_screens": {
+                "OutOfService": {"Type": "RemoteCommand_Send", "Command": "outofservice"},
+                "TechnicianSignOn": {"Type": "USB_Present", "StaffID": "${TechnicianId}"}
+            },
+            "Screen": "Idle"
+        },
+        "OutOfService": {
+            "Navigable_screens": {
+                "Idle": {"Type": "RemoteCommand_Send", "Command": "inservice"}
+            },
+            "State": {},  // TODO, AVL and block detection
+            "Screen": "OutOfService"
+        },
+        
+        // Technician screens
+        "TechnicianSignOn": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Click", "Text": "Exit", "Strict": false},
+                "TechnicianMenu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${TechnicianPin}", "Element": "TechSignOnPIN"},
+                    {"Type": "UI_Click", "Text": "OK", "Strict": false}
+                ]}
+            },
+            "Screen": "TechnicianLogin"
+        },
+        "TechnicianMenu": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Click", "Text": "Sign Off", "Strict": false},
+                "TechMenu.ForceComms": {"Type": "UI_Click", "Text": "Force Communications"},
+                "TechMenu.SoftwareVersions": {"Type": "UI_Click", "Text": "Software Versions"},
+                "TechMenu.TrayDetails": {"Type": "UI_Click", "Text": "Tray / Device Details"},
+                "TechMenu.AudioAdjust": {"Type": "UI_Click", "Text": "Audio Volume"},
+                "PlatformTechMenuLoading": {"Type": "UI_Click", "Text": "Maintenance Application"}
+            },
+            "Screen": "TechnicianMenu"
+        },
+        "TechnicianLoginFailure": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Wait", "Seconds": 4}
+            },
+            "Screen": "TechnicianLoginFailure"
+        },
+
+        "TechMenu.ForceComms": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back", "Strict": false}
+            },
+            "Screen": "ForceComms"
+        },
+        "TechMenu.SoftwareVersions": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back", "Strict": false}
+            },
+            "Screen": "SoftwareVersions"
+        },
+        "TechMenu.TrayDetails": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back", "Strict": false}
+            },
+            "Screen": "TrayDetails"
+        },
+        "TechMenu.AudioAdjust": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "OK", "Strict": false}
+            },
+            "Screen": "AudioAdjust"
+        },
+
+
+        // Platform technician screens
+        "PlatformTechMenuLoading": {
+            "Navigable_screens": {
+                "PlatformTechMenu": {"Type": "Wait", "Seconds": 10}
+            },
+            "Screen": "PlatformTechMenuLoading"
+        },
+        "PlatformTechMenuKeyboardOpen": {
+            "Navigable_screens": {
+                "PlatformTechMenu": {"Type": "UI_ClickAt", "X": 5, "Y": 50}
+            },
+            "Screen": "PlatformTechMenuKeyboard"
+        },
+        "PlatformTechMenu": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Exit", "Strict": false}
+            },
+            "Screen": "PlatformTechMenu",
+            "Alternatives": ["PlatformTechMenuKeyboardOpen"]
+        }
+    }
+}

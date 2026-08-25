@@ -1,0 +1,35 @@
+{
+    "Attributes": {
+        "Layouts": [],
+        "Name": "",
+        "Rotation": 0
+    },
+    "Elements": [
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "main",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.view.View",
+                "clickable": "false",
+                "content-desc": "",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.app.maintenance",
+                "password": "false",
+                "resource-id": "main",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "",
+            "Type": "Panel",
+            "Width": 800,
+            "X": 0,
+            "Y": 0
+        }
+    ]
+}

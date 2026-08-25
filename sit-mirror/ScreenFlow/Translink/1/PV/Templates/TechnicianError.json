@@ -1,0 +1,51 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianErrorLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ErrorDescriptionLabel",
+            "Text": "Sign On Failed"
+        },
+        {
+            "Type": "Label",
+            "Name": "ActionPromptLabel",
+            "Text": "Press OK to continue"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OKButton",
+            "Text": "OK"
+        },
+        {
+            "Type": "Image",
+            "Name": "FailedImage"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo"
+        }
+    ]
+}

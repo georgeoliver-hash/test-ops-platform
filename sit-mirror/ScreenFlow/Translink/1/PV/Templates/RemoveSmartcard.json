@@ -1,0 +1,65 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianErrorLayout",
+            "statusbartechnicianlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ErrorDescriptionLabel",
+            "Text": "Card still present"
+        },
+        {
+            "Type": "Label",
+            "Name": "ActionPromptLabel",
+            "Text": "Please remove Smartcard"
+        },
+        {
+            "Type": "Image",
+            "Name": "FailedImage"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator2"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator3"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator4"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator5"
+        }
+    ]
+}

@@ -1,0 +1,47 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "outofservicelayout",
+            "statusbarlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelResult",
+            "Text": "Not in Service"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxResult"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelInfo"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxLogo"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingLocationName"
+        },
+        {
+            "Type": "Label",
+            "Name": "PVId"
+        }
+    ]
+}

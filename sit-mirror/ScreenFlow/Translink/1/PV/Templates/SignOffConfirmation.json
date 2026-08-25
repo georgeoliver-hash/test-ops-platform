@@ -1,0 +1,50 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "technicianSignOffLayout",
+            "statusbartechnicianlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "SignOffLabel",
+            "Text": "Sign Off"
+        },
+        {
+            "Type": "Label",
+            "Name": "ConfirmationTextLabel",
+            "Text": "Are you sure you want to Sign Off?"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ConfirmButton",
+            "Text": "Confirm"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo"
+        }
+    ]
+}

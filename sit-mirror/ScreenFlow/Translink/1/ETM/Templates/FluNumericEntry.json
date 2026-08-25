@@ -1,0 +1,123 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "FLUNumericEntryLayout",
+            "WhiteFLUStatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L3",
+            "Text": "Group Ticket"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R3",
+            "Text": "Set Boarding Stage"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R4",
+            "Text": "Set Alighting Stage"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R5",
+            "Text": "Change Receipt"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L3Icon"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "TextBox"
+        },
+        {
+            "Type": "Panel",
+            "Name": "bottomBorder"
+        },
+        {
+            "Type": "Label",
+            "Name": "TextBoxLabel",
+            "Text": "Enter Number"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Cancel"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "StatusBarPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "StatusBarBackgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        }
+    ]
+}

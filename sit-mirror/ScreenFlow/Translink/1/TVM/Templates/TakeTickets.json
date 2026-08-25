@@ -1,0 +1,240 @@
+{
+    "Attributes": {
+        "Name": "GenericFTS",
+        "Layouts": [],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "PaymentInformationText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PaymentInformationText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "FeaturesUnavaliabilityText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "FeaturesUnavaliabilityText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ToggleLanguageSelectionButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "ToggleLanguageSelectionButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageText",
+            "Text": "Please take your tickets",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "MessageText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "AdditionalMessageText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "AdditionalMessageText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "InfoText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "InfoText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "BackButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "YesButton",
+            "Text": "Yes",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "YesButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "NoButton",
+            "Text": "No",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "NoButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "TryAgainButton",
+            "Text": "Try again",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "TryAgainButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DoneButton",
+            "Text": "Done",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "DoneButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "CancelButton",
+            "Text": "Cancel",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "CancelButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DragToMoveButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "DragToMoveButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DisabilityButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Id": "DisabilityButton"
+            }
+        }
+    ]
+}

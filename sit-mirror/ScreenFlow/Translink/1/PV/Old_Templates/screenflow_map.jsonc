@@ -1,0 +1,176 @@
+{
+    "Presets": {
+        "StaffId": "[StaffId]2222",
+        "StaffPin": "[StaffPin]1234",
+        "LoginCardType": "[CardType]common",
+        "LoginCardTags": "[Tags]technician"
+    },
+    "Screens": {
+         "Idle": {
+            "Navigable_screens": {
+                "SmartcardSignOn": {"Type": "Smartcard_Present","Card": "${LoginCardType}","Tags": "${LoginCardTags}"}
+            },
+          "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "Idle"
+        },
+         "IdlewithCard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+             "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "Idle"
+        },
+        "SmartcardSignOn": {
+            "Navigable_screens": {
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "Exit"},
+                "TechnicianMenu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Click", "Text": "OK"}
+                ]}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardSignOn"
+        },
+        "TechnicianMenu": {
+            "Navigable_screens": {
+                "TechnicianMenuPage2": {"Type": "UI_Click", "Text": "Next"},
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "Sign-off"},
+                "LocationSettings": {"Type": "UI_Click", "Text": "Location Settings"},
+                "SoftwareVersions": {"Type": "UI_Click", "Text": "Software Versions"},
+                "DisplayBrightness": {"Type": "UI_Click", "Text": "Display Brightness"},
+                "NetworkSettings": {"Type": "UI_Click", "Text": "Network Settings"},
+                "ConfigurationVersions": {"Type": "UI_Click", "Text": "Configuration Versions"},
+                "AudioVolume": {"Type": "UI_Click", "Text": "Audio Volume"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Alternatives": ["TechnicianError"],
+            "Screen": "TechnicianMenu"
+        },
+        "TechnicianMenuPage2": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Previous"},
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "Sign-off"},
+                "ForceCommunications": {"Type": "UI_Click", "Text": "Force Communications"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "TechnicianMenuPage2"
+        },
+        "LocationSettings": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"},
+                "LocationSettingsUpdate": {"Type": "UI_Click", "Text": "Change"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "LocationSettings"
+        },
+        "SoftwareVersions": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SoftwareVersions"
+        },
+        "DisplayBrightness": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "DisplayBrightness"
+        },
+        "NetworkSettings": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "NetworkSettings"
+        },
+        "ConfigurationVersions": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "ConfigurationVersions"
+        },
+        "AudioVolume": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "AudioVolume"
+        },
+        "ForceCommunications": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "ForceCommunications"
+        },
+        "LocationSettingsUpdate": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "LocationSettings"
+        },
+        "RemoveSmartcard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "RemoveSmartcard"
+        },
+        "SignOffConfirmation": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Back"},
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "Confirm"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SignOffConfirmation"
+        },
+        "TechnicianError": {
+            "Navigable_screens": {
+                "SmartcardSignOn": {"Type": "UI_Click", "Text": "OK"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "TechnicianError"
+        },
+        "SmartcardPresented": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "Screen": "SmartcardPresented"
+        }
+    }
+}

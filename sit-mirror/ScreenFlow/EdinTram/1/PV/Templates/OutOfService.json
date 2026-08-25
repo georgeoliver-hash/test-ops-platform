@@ -1,0 +1,36 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "imageView1",
+            "Type": "Image"
+        },
+        {
+            "Name": "TvLabelResult",
+            "Text": "Out of Service",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvLabelInfo",
+            "Text": "We apologise for any inconvenience",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        }
+    ]
+}

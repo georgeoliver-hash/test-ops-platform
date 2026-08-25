@@ -1,0 +1,249 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"GenericFragmentHost",
+			"FragValidationTitleBar",
+			"DateTimeView",
+			"LlDateTime",
+			"BottomBarView_LinearLayout"
+		],
+		"Name": "BDFGL",
+		"Rotation": 0
+	},
+	"Elements": [
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "GenericFragmentHost",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.LinearLayout",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/GenericFragmentHost",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "FragValidationTitleBar",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.LinearLayout",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/FragValidationTitleBar",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "DateTimeView",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.LinearLayout",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/DateTimeView",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "LlDateTime",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.LinearLayout",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/LlDateTime",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "TvTitleTime",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.TextView",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/TvTitleTime",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Text": "REGEX:.+",
+			"Type": "Label"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "TvTimePeriod",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.TextView",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/TvTimePeriod",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Text": "REGEX:.+",
+			"Type": "Label"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "TvLabelErrorDescription",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.TextView",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/TvLabelErrorDescription",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Text": "Processing...",
+			"Type": "Label"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "TvLabelActionPrompt",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.TextView",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/TvLabelActionPrompt",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Label"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "BottomBarView_LinearLayout",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.LinearLayout",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/BottomBarView_LinearLayout",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "bottom_greenLine",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.view.View",
+				"clickable": "false",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "false",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/bottom_greenLine",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Panel"
+		},
+		{
+			"BackColour": null,
+			"Colour": null,
+			"Name": "BottomBar_MenuCenterText",
+			"Others": {
+				"checkable": "false",
+				"checked": "false",
+				"class": "android.widget.TextView",
+				"clickable": "true",
+				"displayed": "true",
+				"enabled": "true",
+				"focusable": "true",
+				"long-clickable": "false",
+				"package": "com.parkeon.validator",
+				"password": "false",
+				"resource-id": "com.parkeon.validator:id/BottomBar_MenuCenterText",
+				"scrollable": "false"
+			},
+			"Padding": null,
+			"Type": "Label"
+		}
+	]
+}

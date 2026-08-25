@@ -1,0 +1,80 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"MessageBoxTwoButtonLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "Label",
+			"Name": "MessageLabel",
+			"Text": "Are you sure you want to Sign Off?"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Cancel"
+		},
+		{
+			"Type": "Label",
+			"Name": "Title"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "PromptPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PressEnterLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Image",
+			"Name": "PressEnterIcon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

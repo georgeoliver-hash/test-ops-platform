@@ -1,0 +1,31 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "imageView1",
+            "Type": "Image"
+        },
+        {
+            "Name": "TvLabelPrompt",
+            "Text": "REGEX:.+",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        }
+    ]
+}

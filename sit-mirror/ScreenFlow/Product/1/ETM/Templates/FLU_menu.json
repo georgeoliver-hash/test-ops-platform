@@ -1,0 +1,15 @@
+{
+    "Attributes": {
+        "Name": "FLU_menu",
+        "Layouts": [
+            "FLU_menu"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "SignOut",
+            "Type": "Panel",
+            "Text": "Sign Out"
+        }
+    ]
+}

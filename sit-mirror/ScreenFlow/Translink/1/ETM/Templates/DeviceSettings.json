@@ -1,0 +1,114 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "R1Label"
+        },
+        {
+            "Type": "Label",
+            "Name": "R2Label"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "R2"
+        },
+        {
+            "Type": "Label",
+            "Name": "R3Label",
+            "Text": "Mounting Point"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "R3"
+        },
+        {
+            "Type": "Label",
+            "Name": "R4Label",
+            "Text": "Tray ID"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "R4"
+        },
+        {
+            "Type": "Label",
+            "Name": "R5Label",
+            "Text": "Fleet Number"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "R5"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Image",
+            "Name": "R2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Device Settings"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

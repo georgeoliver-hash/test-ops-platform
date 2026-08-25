@@ -1,0 +1,37 @@
+{
+    "Attributes": {
+        "Name": "Idle",
+        "Layouts": [
+            "Idle"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "time-text",
+            "Text": "REGEX:\\d{1,2}:\\d{2}",
+            "Type": "Panel",
+            "X": 4,
+            "Y": 4,
+            "Width": 70,
+            "Height": 31
+        },
+        {
+            "Name": "date-text",
+            "Text": "REGEX:\\d{2}/\\w{3}/\\d{2}",
+            "Type": "Panel",
+            "X": 108,
+            "Y": 20,
+            "Width": 68,
+            "Height": 17
+        },
+        {
+            "Name": "Exact",
+            "Text": "Exact",
+            "Type": "Panel",
+            "X": 495,
+            "Y": 8,
+            "Width": 55,
+            "Height": 25
+        }
+    ]
+}

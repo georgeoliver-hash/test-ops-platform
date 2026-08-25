@@ -1,0 +1,865 @@
+{
+	"Attributes": {
+		"Name": "GenericFTS",
+		"Layouts": [],
+		"Brightness": 0
+	},
+	"Elements": [
+		{
+			"Type": "Label",
+			"Name": "PaymentInformationText",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "WPFLabel",
+				"Translated": "True",
+				"Id": "PaymentInformationText"
+			}
+		},
+		{
+			"Type": "Label",
+			"Name": "FeaturesUnavaliabilityText",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "WPFLabel",
+				"Translated": "True",
+				"Id": "FeaturesUnavaliabilityText"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "ToggleLanguageSelectionButton",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "ToggleLanguageSelectionButton"
+			}
+		},
+		{
+			"Type": "Label",
+			"Name": "ReferenceIdTitleText",
+			"Text": "Please enter your booking reference number",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "WPFLabel",
+				"Translated": "True",
+				"Id": "ReferenceIdTitleText"
+			}
+		},
+		{
+			"Type": "TextBox",
+			"Name": "ReferenceIdText",
+			"Text": "REGEX:.*",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "TextBox",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "ReferenceIdText"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key1",
+			"Text": "1",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key1"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key2",
+			"Text": "2",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key2"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key3",
+			"Text": "3",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key3"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key4",
+			"Text": "4",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key4"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key5",
+			"Text": "5",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key5"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key6",
+			"Text": "6",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key6"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key7",
+			"Text": "7",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key7"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key8",
+			"Text": "8",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key8"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key9",
+			"Text": "9",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key9"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "Key0",
+			"Text": "0",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "Key0"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyQ",
+			"Text": "Q",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyQ"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyW",
+			"Text": "W",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyW"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyE",
+			"Text": "E",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyE"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyR",
+			"Text": "R",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyR"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyT",
+			"Text": "T",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyT"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyY",
+			"Text": "Y",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyY"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyU",
+			"Text": "U",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyU"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyI",
+			"Text": "I",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyI"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyO",
+			"Text": "O",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyO"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyP",
+			"Text": "P",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyP"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyBack",
+			"Text": "",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyBack"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyA",
+			"Text": "A",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyA"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyS",
+			"Text": "S",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyS"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyD",
+			"Text": "D",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyD"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyF",
+			"Text": "F",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyF"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyG",
+			"Text": "G",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyG"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyH",
+			"Text": "H",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyH"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyJ",
+			"Text": "J",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyJ"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyK",
+			"Text": "K",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyK"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyL",
+			"Text": "L",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyL"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyClear",
+			"Text": "Clear",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyClear"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyZ",
+			"Text": "Z",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyZ"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyX",
+			"Text": "X",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyX"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyC",
+			"Text": "C",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyC"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyV",
+			"Text": "V",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyV"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyB",
+			"Text": "B",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyB"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyN",
+			"Text": "N",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyN"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeyM",
+			"Text": "M",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeyM"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "KeySpace",
+			"Text": "Space",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "KeySpace"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "ConfirmButton",
+			"Text": "Confirm",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "False",
+				"Id": "ConfirmButton"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "CancelButton",
+			"Text": "Cancel",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "CancelButton"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "DragToMoveButton",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "DragToMoveButton"
+			}
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "DisabilityButton",
+			"Colour": null,
+			"BackColour": {
+				"R": 0,
+				"G": 0,
+				"B": 0
+			},
+			"Padding": null,
+			"Others": {
+				"RawType": "Button",
+				"Translated": "True",
+				"Enabled": "True",
+				"Id": "DisabilityButton"
+			}
+		}
+	]
+}

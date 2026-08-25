@@ -1,0 +1,82 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "AudioVolumeLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OKButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "Slider",
+            "Name": "VolumeSlider"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DecreaseVolumeButton",
+            "Text": ""
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "IncreaseVolumeButton",
+            "Text": ""
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "TestButton",
+            "Text": "Test"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator",
+            "Text": ""
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Audio Volume"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo",
+            "Text": null
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator2"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator3"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator4"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator5"
+        }
+    ]
+}

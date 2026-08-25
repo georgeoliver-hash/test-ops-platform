@@ -1,0 +1,167 @@
+{
+        "TapAnywhere": {
+                "Name": "TapToStartTitleText",
+                "Text": "Tap anywhere to start"
+        },
+        "BuyTickets": {
+                "Type": "ImageButton",
+                "Text": "Buy Tickets"
+        },
+        "CollectTickets": {
+                "Name": "CollectTicketsButton",
+		"Text": "Collect Tickets"
+        },
+
+        "TouchKeys_1": {
+                "Name": "Key1",
+		"Text": "1"
+        },
+        "TouchKeys_2": {
+                "Name": "Key2",
+		"Text": "2"
+        },
+        "TouchKeys_3": {
+                "Name": "Key3",
+		"Text": "3"
+        },
+        "TouchKeys_4": {
+                "Name": "Key4",
+		"Text": "4"
+        },
+        "TouchKeys_5": {
+                "Name": "Key5",
+		"Text": "5"
+        },
+        "TouchKeys_6": {
+                "Name": "Key6",
+		"Text": "6"
+        },
+        "TouchKeys_7": {
+                "Name": "Key7",
+		"Text": "7"
+        },
+        "TouchKeys_8": {
+                "Name": "Key8",
+		"Text": "8"
+        },
+        "TouchKeys_9": {
+                "Name": "Key9",
+		"Text": "9"
+        },
+        "TouchKeys_0": {
+                "Name": "Key0",
+		"Text": "0"
+        },
+        "TouchKeys_q": {
+                "Name": "KeyQ",
+		"Text": "Q"
+        },
+        "TouchKeys_w": {
+                "Name": "KeyW",
+		"Text": "W"
+        },
+        "TouchKeys_e": {
+                "Name": "KeyE",
+		"Text": "E"
+        },
+        "TouchKeys_r": {
+                "Name": "KeyR",
+		"Text": "R"
+        },
+        "TouchKeys_t": {
+                "Name": "KeyT",
+		"Text": "T"
+        },
+        "TouchKeys_y": {
+                "Name": "KeyY",
+		"Text": "Y"
+        },
+        "TouchKeys_u": {
+                "Name": "KeyU",
+		"Text": "U"
+        },
+        "TouchKeys_i": {
+                "Name": "KeyI",
+		"Text": "I"
+        },
+        "TouchKeys_o": {
+                "Name": "KeyO",
+		"Text": "O"
+        },
+        "TouchKeys_p": {
+                "Name": "KeyP",
+		"Text": "P"
+        },
+        "TouchKeys_back": {
+                "Name": "KeyBack",
+		"Text": ""
+        },
+        "TouchKeys_a": {
+                "Name": "KeyA",
+		"Text": "A"
+        },
+        "TouchKeys_s": {
+                "Name": "KeyS",
+		"Text": "S"
+        },
+        "TouchKeys_d": {
+                "Name": "KeyD",
+		"Text": "D"
+        },
+        "TouchKeys_f": {
+                "Name": "KeyF",
+		"Text": "F"
+        },
+        "TouchKeys_g": {
+                "Name": "KeyG",
+		"Text": "G"
+        },
+        "TouchKeys_h": {
+                "Name": "KeyH",
+		"Text": "H"
+        },
+        "TouchKeys_j": {
+                "Name": "KeyJ",
+		"Text": "J"
+        },
+        "TouchKeys_k": {
+                "Name": "KeyK",
+		"Text": "K"
+        },
+        "TouchKeys_l": {
+                "Name": "KeyL",
+		"Text": "L"
+        },
+        "TouchKeys_z": {
+                "Name": "KeyZ",
+		"Text": "Z"
+        },
+        "TouchKeys_x": {
+                "Name": "KeyX",
+		"Text": "X"
+        },
+        "TouchKeys_c": {
+                "Name": "KeyC",
+		"Text": "C"
+        },
+        "TouchKeys_v": {
+                "Name": "KeyV",
+		"Text": "V"
+        },
+        "TouchKeys_b": {
+                "Name": "KeyB",
+		"Text": "B"
+        },
+        "TouchKeys_n": {
+                "Name": "KeyN",
+		"Text": "N"
+        },
+        "TouchKeys_m": {
+                "Name": "KeyM",
+		"Text": "M"
+        },
+        "TouchKeys_ ": {
+                "Name": "KeySpace",
+		"Text": "Space"
+        }
+}

@@ -1,0 +1,213 @@
+{
+    "Attributes": {
+        "Name": "GenericFTS",
+        "Layouts": [],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "PaymentInformationText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PaymentInformationText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "FeaturesUnavaliabilityText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "FeaturesUnavaliabilityText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ToggleLanguageSelectionButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "ToggleLanguageSelectionButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "IntegratedHomeTitle",
+            "Text": "Select Transport Type",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "IntegratedHomeTitle"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "TransportTypeSelectionTitle",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "TransportTypeSelectionTitle"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "SelectBusButton",
+            "Text": "Bus",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "SelectBusButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "SelectTrainButton",
+            "Text": "Rail",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "SelectTrainButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "PlaceCardTextRegular",
+            "Text": "Place card in the holder for",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PlaceCardTextRegular"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "PlaceCardTextBold",
+            "Text": "top-up or discount purchase",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PlaceCardTextBold"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "CancelButton",
+            "Text": "Cancel",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "CancelButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DragToMoveButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DragToMoveButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DisabilityButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DisabilityButton"
+            }
+        }
+    ]
+}

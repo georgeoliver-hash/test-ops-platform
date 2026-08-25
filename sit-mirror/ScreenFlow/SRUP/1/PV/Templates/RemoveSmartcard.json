@@ -1,0 +1,51 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragTechnicianTitleBar",
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "FragTechnicianTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitle",
+            "Text": "Error",
+            "Type": "Label"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTimePeriod",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvLabelErrorDescription",
+            "Text": "Card still present",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvLabelActionPrompt",
+            "Text": "Please remove Smartcard",
+            "Type": "Label"
+        }
+    ]
+}

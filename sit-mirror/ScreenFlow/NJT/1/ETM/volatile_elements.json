@@ -1,0 +1,43 @@
+{
+    "Comment": [
+        "De-brittling policy for NJT ETM screen templates, applied by",
+        "Tools/DeviceTools/screenflow_author.py when a capture is written.",
+        "",
+        "These elements identify a single capture rather than the screen, so asserting on",
+        "them makes a template expire. This was previously a manual cleanup step on every",
+        "template PR, and it was missed twice: SignOn.json and TripSetup.json both shipped",
+        "a literal Colour-of-the-Day element ('RED'), which only matches on the one day it",
+        "was captured because the colour rotates daily.",
+        "",
+        "The Way6s status bar appears on every screen, so everything here recurs in every",
+        "capture. The clock and date need no entry -- they are generalised to REGEX",
+        "matchers automatically by the built-in patterns.",
+        "",
+        "NB the Colour-of-the-Day values below are also learned automatically from any",
+        "colour_of_the_day.json placed under the ConfigSet (the frontend .deb ships one).",
+        "They are listed explicitly because that file is not currently committed here."
+    ],
+
+    "DropNames": [
+        "Full",
+        "Exact"
+    ],
+
+    "DropTexts": [
+        "GRN",
+        "GLD",
+        "RED",
+        "BLU",
+        "PNK",
+        "GRY",
+        "PPL"
+    ],
+
+    "AutoRegex": true,
+
+    "Notes": {
+        "Full": "Farebox/till status, not screen structure -- differs when the farebox is not full.",
+        "Exact": "Fare-mode indicator. Device state, and already observed causing false 'missing element' warnings against Idle.json on healthy layout reads.",
+        "colours": "Colour-of-the-Day. Carried in BOTH Name and Text on this device, so a Text-only matcher would not catch it."
+    }
+}

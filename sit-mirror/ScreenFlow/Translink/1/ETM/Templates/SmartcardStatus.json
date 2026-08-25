@@ -1,0 +1,158 @@
+{
+    "Attributes": {
+        "Name": "SmartcardStatus",
+        "Layouts": [
+            "SmartcardStatusLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Label",
+            "Name": "ESNLabel",
+            "Text": "ESN:"
+        },
+        {
+            "Type": "Label",
+            "Name": "ProductNameLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "CardReferenceLabel",
+            "Text": "Card Ref:"
+        },
+        {
+            "Type": "Label",
+            "Name": "StartDateLabel",
+            "Text": "Start Date:"
+        },
+        {
+            "Type": "Label",
+            "Name": "ExpiryDateLabel",
+            "Text": "Expiry Date:"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneysLeftLabel",
+            "Text": "Journeys Left:"
+        },
+        {
+            "Type": "Label",
+            "Name": "DaysLeftLabel",
+            "Text": "Days Left:"
+        },
+        {
+            "Type": "Label",
+            "Name": "ESNValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PSNValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "CardReferenceValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PSNLabel",
+            "Text": "PSN:"
+        },
+        {
+            "Type": "Label",
+            "Name": "StartDateValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ExpiryDateValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneysLeftValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "DaysLeftValueLabel"
+        },
+        {
+            "Type": "Grid",
+            "Name": "UsageDateTimeTableListPanel"
+        },
+        {
+            "Type": "Grid",
+            "Name": "TopUpDateTimeTableListPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "MiniStatementLabel",
+            "Text": "Mini Statement"
+        },
+        {
+            "Type": "Label",
+            "Name": "CardTypeLabel",
+            "Text": "Card Type:"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeparatorLine"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Print"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Smartcard"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:\\d+:\\d+:\\d+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:\\d+/\\d+/\\d+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

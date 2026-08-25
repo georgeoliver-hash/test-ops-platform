@@ -1,0 +1,158 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "MenuLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1",
+            "Text": "Last Ticket Issued"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L2",
+            "Text": "Totals"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L3",
+            "Text": "Soft Reboot"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L4",
+            "Text": "Reboot Smartcard Reader"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L5",
+            "Text": "Report Faulty Reader"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R1",
+            "Text": "Display Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R2",
+            "Text": "Paper Status"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R3",
+            "Text": "Word and Colour"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R4",
+            "Text": "Messages"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R5",
+            "Text": "Other Devices"
+        },
+        {
+            "Type": "Image",
+            "Name": "L1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L5Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": ""
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Driver Options"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

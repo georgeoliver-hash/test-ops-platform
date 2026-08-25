@@ -1,0 +1,136 @@
+// Nexio ETM — Stagecoach screenflow map
+// Navigation uses React Router pathnames (window.location.pathname) as screen identifiers.
+// translate_screen_data() returns pathname as Attributes.Name.
+//
+// Sign-on: MADT QML screen is not accessible via CDP.
+//          Use MADT_SignOn action which calls POST /UI/SignOn.
+//          After sign-on the React web app loads at DutyTripScreen.
+//
+// TravelingScreen: no CDP elements (only a clock). Use JS_Navigate to leave.
+//
+// TopBar hamburger: no text/testID. Use JS_Navigate to reach DriverMenu directly.
+//
+// Presets are populated from DeviceStaff.json via the framework Staff system.
+{
+    "Presets": {
+        "StaffId":  "[StaffId]",
+        "StaffPin": "[StaffPin]"
+    },
+    "Screens": {
+        "Idle": {
+            "Screen": "Idle",
+            "Navigable_screens": {
+                "DutyTripScreen": {
+                    "Type": "MADT_SignOn",
+                    "UserId": "[StaffId]",
+                    "Password": "[StaffPin]"
+                }
+            }
+        },
+        "DutyTripScreen": {
+            "Screen": "DutyTripScreen",
+            "Navigable_screens": {
+                "Idle": {
+                    "Type": "JS_Navigate",
+                    "Route": "Idle"
+                },
+                "TripSelection": {
+                    "Type": "Stages",
+                    "Actions": [
+                        {"Type": "UI_Click", "Text": "${DriverDuty}", "Strict": false},
+                        {"Type": "UI_Click", "Text": "CONFIRM", "Strict": false}
+                    ]
+                }
+            }
+        },
+        "TripSelection": {
+            "Screen": "TripSelection",
+            "Navigable_screens": {
+                "DutyTripScreen": {
+                    "Type": "JS_Navigate",
+                    "Route": "DutyTripScreen"
+                },
+                "Traveling": {
+                    "Type": "Stages",
+                    "Actions": [
+                        {"Type": "UI_Click", "Text": "Continue", "Strict": false}
+                    ]
+                }
+            }
+        },
+        "Traveling": {
+            "Screen": "Traveling",
+            "Navigable_screens": {
+                "FLU": {
+                    "Type": "JS_Navigate",
+                    "Route": "FLU"
+                },
+                "DriverMenu": {
+                    "Type": "JS_Navigate",
+                    "Route": "DriverMenu"
+                }
+            }
+        },
+        "FLU": {
+            "Screen": "FLU",
+            "Navigable_screens": {
+                "DriverMenu": {
+                    "Type": "JS_Navigate",
+                    "Route": "DriverMenu"
+                },
+                "Idle": {
+                    "Type": "Stages",
+                    "Actions": [
+                        {"Type": "JS_Navigate", "Route": "DriverMenu"},
+                        {"Type": "UI_Click", "Text": "Sign Off", "Strict": false},
+                        {"Type": "UI_Click", "Text": "Sign-Off", "Strict": false}
+                    ]
+                }
+            }
+        },
+        "DriverMenu": {
+            "Screen": "DriverMenu",
+            "Navigable_screens": {
+                "FLU": {
+                    "Type": "JS_Navigate",
+                    "Route": "FLU"
+                },
+                "TransactionHistory": {
+                    "Type": "UI_Click",
+                    "Text": "Transaction History",
+                    "Strict": false
+                },
+                "BreakModeScreen": {
+                    "Type": "UI_Click",
+                    "Text": "Driver Break",
+                    "Strict": false
+                },
+                "Idle": {
+                    "Type": "Stages",
+                    "Actions": [
+                        {"Type": "UI_Click", "Text": "Sign Off", "Strict": false},
+                        {"Type": "UI_Click", "Text": "Sign-Off", "Strict": false}
+                    ]
+                }
+            }
+        },
+        "TransactionHistory": {
+            "Screen": "TransactionHistory",
+            "Navigable_screens": {
+                "DriverMenu": {
+                    "Type": "JS_Navigate",
+                    "Route": "DriverMenu"
+                }
+            }
+        },
+        "BreakModeScreen": {
+            "Screen": "BreakModeScreen",
+            "Navigable_screens": {
+                "DriverMenu": {
+                    "Type": "JS_Navigate",
+                    "Route": "DriverMenu"
+                }
+            }
+        }
+    }
+}

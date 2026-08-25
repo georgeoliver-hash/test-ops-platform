@@ -1,0 +1,99 @@
+{
+    "Presets": {
+        
+    },
+    "Screens": {
+        "Idle": {
+            "Navigable_screens": {
+                "MultiModel": {
+                    "Type": "UI_Click",
+                    "Text": "Tap anywhere to start",
+                    "Strict": false
+                }
+            },
+            "State": {},
+            "Screen": "Idle"
+        },
+
+        "IdleOutOfServiceRemoteCommand": {
+            "Navigable_screens": {
+                "OutOfService": {"Type": "UI_Click", "Text": "Out Of Service", "Strict": false},
+                "MultiModel": {"Type": "RemoteCommand_Send", "Command": "inservice"}
+            },
+            "State": {"LastRemoteCommand": "outofservice"},
+            "Alternatives": ["IdleOutOfService"],
+            "Screen": "IdleOutOfService"
+        },
+        "IdleOutOfService": {
+            "Navigable_screens": {
+            },
+            "State": {},
+            "Screen": "IdleOutOfService"
+        },
+        
+        "OutOfServiceRemoteCommand": {
+            "Navigable_screens": {
+                "MultiModel": {"Type": "RemoteCommand_Send", "Command": "inservice"}
+            },
+            "State": {"LastRemoteCommand": "outofservice"},
+            "Screen": "OutOfService"
+        },
+        "OutOfService": {
+            "Navigable_screens": {
+                "IdleOutOfServiceRemoteCommand": {"Type": "Wait", "Seconds": 30}
+            },
+            "State": {},
+            "Screen": "OutOfService"
+        },
+        
+        // Past Idle
+        "MultiModel": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Wait", "Seconds": 30},
+                "ProductSelection": {"Type": "UI_Click", "Text": "Rail"}
+            },
+            "State": {},
+            "Alternatives": ["ProductSelection"],
+            "Screen": "MultiModelScreen"
+        },
+        "ProductSelection": {
+            "Navigable_screens": {
+                "MultiModel": {"Type": "UI_Click", "Text": "Cancel"},
+                "CollectTicketKeyboard": {"Type": "UI_Click", "Text": "Collect Tickets"}
+            },
+            "State": {},
+            "Screen": "RailProductSelect"
+        },
+
+        "PrintingTickets": {
+            "Navigable_screens": {
+                "TakeTickets": {"Type": "Wait", "Seconds": 10}
+            },
+            "State": {},
+            "Screen": "PrintingTickets"
+        },
+        "TakeTickets": {
+            "Navigable_screens": {
+                "MultiModel": {"Type": "UI_Click", "Text": "Done"}
+            },
+            "State": {},
+            "Screen": "TakeTickets"
+        },
+
+        // CR94
+        "CollectTicketKeyboard": {
+            "Navigable_screens": {
+                "MultiModel": {"Type": "UI_Click", "Text": "Cancel"}
+            },
+            "State": {},
+            "Screen": "CollectTicketKeyboard"
+        },
+        "CollectTicketDetails": {
+            "Navigable_screens": {
+                "TakeTickets": {"Type": "UI_Click", "Text": "Print Ticket"}
+            },
+            "State": {},
+            "Screen": "BarcodeDetails"
+        }
+    }
+}

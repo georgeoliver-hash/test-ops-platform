@@ -1,0 +1,15 @@
+{
+    "Attributes": {
+        "Layouts": []
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Text": "Sales"
+        },
+        {
+            "Type": "ImageButton",
+            "Text": "Sign Off"
+        }
+    ]
+}

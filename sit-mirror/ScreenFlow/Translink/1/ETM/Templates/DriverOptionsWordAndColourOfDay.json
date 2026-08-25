@@ -1,0 +1,87 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"WordColoursOfTheDayLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+	    {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "WordOfTheDayValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ColourOfTheDay1ValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ColourOfTheDay2ValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Colour1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Colour2"
+        },
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Go Back"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "SeparatorPanel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Word and Colours of the Day"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

@@ -1,0 +1,92 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianMenuLayout",
+            "statusbartechnicianlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1MenuButton",
+            "Text": "Location Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L2MenuButton",
+            "Text": "Software Versions"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L3MenuButton",
+            "Text": "Display Brightness"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R1MenuButton",
+            "Text": "Network Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R2MenuButton",
+            "Text": "Configuration Versions"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R3MenuButton",
+            "Text": "Audio Volume"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "SignoffButton",
+            "Text": "Sign-off"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L4MenuButton",
+            "Text": "Force Communications"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Technician Menu"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator2"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator3"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator4"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator5"
+        }
+
+    ]
+}

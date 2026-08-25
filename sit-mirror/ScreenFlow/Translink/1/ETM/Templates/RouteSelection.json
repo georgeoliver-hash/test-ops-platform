@@ -1,0 +1,94 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"RouteSelectionLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Grid",
+			"Name": "RouteTableListPanel",
+			"Others": {
+				"Columns": "Padding,RouteCode,Route Variant,Direction,Padding"
+			}
+		},
+		{
+			"Type": "Image",
+			"Name": "R1Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R2Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R3Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R4Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R5Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "SeparatorPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PressUpDownLabel",
+			"Text": "REGEX:Press .+ to view more"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R6"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "REGEX:.+ - Select Route"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

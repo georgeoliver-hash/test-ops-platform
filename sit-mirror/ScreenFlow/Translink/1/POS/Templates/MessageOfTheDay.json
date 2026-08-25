@@ -1,0 +1,18 @@
+{
+    "Attributes": {},
+    "Elements": [
+        {
+            "Name": "tvLayoutTitleDefault",
+            "Type": "Label",
+            "Text": "Message of the Day"
+        },
+        {
+            "Name": "tvMsgOfTheDayMessage",
+            "Type": "Label"
+        },
+        {
+            "Name": "llMsgOfTheDayWrapper",
+            "Type": "Panel"
+        }
+    ]
+}

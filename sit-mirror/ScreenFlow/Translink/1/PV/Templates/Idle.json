@@ -1,0 +1,53 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "homescreenlayout",
+            "statusbarlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelPrompt",
+            "Text": "Present Card"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxArrow"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxZonePin"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelZoneName"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxLogo"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingLocationName"
+        },
+        {
+            "Type": "Label",
+            "Name": "PVId",
+            "Text": "REGEX:.+"
+        }
+    ]
+}

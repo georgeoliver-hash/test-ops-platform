@@ -1,0 +1,191 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragTechnicianTitleBar",
+            "DateTimeView",
+            "LlDateTime",
+            "VolumeSlider"
+        ],
+        "Name": "DFGLV",
+        "Rotation": 0
+    },
+    "Elements": [
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "GenericFragmentHost",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.LinearLayout",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "focused": "false",
+                "index": "0",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/GenericFragmentHost",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "",
+            "Type": "Panel"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "FragTechnicianTitleBar",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.LinearLayout",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/FragTechnicianTitleBar",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "",
+            "Type": "Panel"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "DateTimeView",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.LinearLayout",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/DateTimeView",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Type": "Panel"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "LlDateTime",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.LinearLayout",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/LlDateTime",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Type": "Panel"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "TvTitleTime",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.TextView",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/TvTitleTime",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "REGEX:.+",
+            "Type": "Label"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "TvTimePeriod",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.TextView",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/TvTimePeriod",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "REGEX:.+",
+            "Type": "Label"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "VolumeSlider",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.LinearLayout",
+                "clickable": "false",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "false",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/VolumeSlider",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "",
+            "Type": "Panel"
+        },
+        {
+            "BackColour": null,
+            "Colour": null,
+            "Name": "BtnOk",
+            "Others": {
+                "checkable": "false",
+                "checked": "false",
+                "class": "android.widget.Button",
+                "clickable": "true",
+                "displayed": "true",
+                "enabled": "true",
+                "focusable": "true",
+                "long-clickable": "false",
+                "package": "com.parkeon.validator",
+                "password": "false",
+                "resource-id": "com.parkeon.validator:id/BtnOk",
+                "scrollable": "false"
+            },
+            "Padding": null,
+            "Text": "OK",
+            "Type": "ImageButton"
+        }
+    ]
+}

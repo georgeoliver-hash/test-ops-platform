@@ -1,0 +1,90 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "WordColoursOfTheDayLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "WordOfTheDayValueLabel",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "ColourOfTheDay1ValueLabel",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "ColourOfTheDay2ValueLabel",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "OperatorAcknowledgementLabel",
+            "Text": "Press Enter to confirm"
+        },
+        {
+            "Type": "Label",
+            "Name": "Colour1",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "Colour2",
+            "Text": ""
+        },
+        {
+            "Type": "Image",
+            "Name": "PressEnterIcon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Word and Colours of the Day"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

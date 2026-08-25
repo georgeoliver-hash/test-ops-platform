@@ -1,0 +1,47 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "AudioVolumeLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OKButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "Slider",
+            "Name": "VolumeSlider"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DecreaseVolumeButton",
+            "Text": ""
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "IncreaseVolumeButton",
+            "Text": ""
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Audio Volume"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

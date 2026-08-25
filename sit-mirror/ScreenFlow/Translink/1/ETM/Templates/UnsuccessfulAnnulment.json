@@ -1,0 +1,82 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"validationfaillayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "panel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "Label",
+			"Name": "labelResult",
+			"Text": "Annulment Unsuccessful"
+		},
+		{
+			"Type": "Image",
+			"Name": "pictureBoxResult"
+		},
+		{
+			"Type": "Label",
+			"Name": "labelPrompt",
+			"Text": ""
+		},
+		{
+			"Type": "Label",
+			"Name": "labelInfo",
+			"Text": "There is nothing to annul"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Cancel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Error"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

@@ -1,0 +1,83 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "MessageBoxTwoButtonLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageLabel",
+            "Text": "Were there any defects?"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Yes"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "No"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Bus Check"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

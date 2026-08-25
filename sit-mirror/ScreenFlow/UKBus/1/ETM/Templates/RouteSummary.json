@@ -1,0 +1,117 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "JourneyConfirmationLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneyNumberLabel",
+            "Text": "Journey Number:"
+        },
+        {
+            "Type": "Label",
+            "Name": "RouteLabel",
+            "Text": "Route:"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionLabel",
+            "Text": "Direction:"
+        },
+        {
+            "Type": "Label",
+            "Name": "FirstStageLabel",
+            "Text": "First Stage:"
+        },
+        {
+            "Type": "Label",
+            "Name": "RouteValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneyNumberValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "FirstStageValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PressEnterLabel",
+            "Text": "Press Enter to confirm"
+        },
+        {
+            "Type": "Image",
+            "Name": "PressEnterIcon"
+        },
+        {
+            "Type": "Label",
+            "Name": "DutyNumberLabel",
+            "Text": "Duty Number:"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneyTimeLabel",
+            "Text": "Journey Time:"
+        },
+        {
+            "Type": "Label",
+            "Name": "JourneyTimeValueLabel",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "DutyNumberValueLabel",
+            "Text": "REGEX:\\d+"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Route Summary"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

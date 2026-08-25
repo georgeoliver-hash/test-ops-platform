@@ -1,0 +1,18 @@
+{
+  "Attributes": {
+    "Name": "PleaseWait",
+    "Layouts": ["PleaseWait", "StatusBarLayout"],
+    "Brightness": 5
+  },
+  "Elements": [
+    {
+      "Type": "Label",
+      "Name": "MessageLabel",
+      "Text": "Please Wait..."
+    },
+    {
+      "Type": "ProcessingBar",
+      "Name": "ProcessingBar1"
+    }
+  ]
+}

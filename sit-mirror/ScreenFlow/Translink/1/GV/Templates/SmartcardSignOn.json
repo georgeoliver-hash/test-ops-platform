@@ -1,0 +1,69 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "LayoutTitleBar",
+            "DateTimeView",
+            "LlDateTime",
+            "BottomBarWithButtons"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LayoutTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitle",
+            "Text": "Technician menu",
+            "Type": "Label"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleDate",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "BottomBarWithButtons",
+            "Type": "Panel"
+        },
+        {
+            "Name": "textView1",
+            "Text": "ID",
+            "Type": "Label"
+        },
+        {
+            "Name": "EdTechnicianOperatorId",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "EdTechnicianOperatorPin",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "BtnOk",
+            "Text": "@Confirm",
+            "Type": "ImageButton"
+        },
+        {
+            "Name": "BtnExit",
+            "Text": "Cancel",
+            "Type": "ImageButton"
+        }
+    ]
+}

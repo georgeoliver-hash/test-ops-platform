@@ -1,0 +1,53 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "VersionsLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "ScrollPanel",
+            "Text": null
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollUpButton",
+            "Text": ""
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollDownButton",
+            "Text": ""
+        },
+        {
+            "Type": "Grid",
+            "Name": "VersionsGrid",
+            "Text": null
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Configuration Versions"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

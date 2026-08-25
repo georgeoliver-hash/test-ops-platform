@@ -1,0 +1,44 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"WordColoursOfTheDayLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Label",
+			"Name": "WordOfTheDayValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "ColourOfTheDay1ValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "ColourOfTheDay2ValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "OperatorAcknowledgementLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Label",
+			"Name": "Colour1"
+		},
+		{
+			"Type": "Label",
+			"Name": "Colour2"
+		},
+		{
+			"Type": "Image",
+			"Name": "PressEnterIcon"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Word and Colours of the Day"
+		}
+	]
+}

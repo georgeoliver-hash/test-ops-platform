@@ -1,0 +1,15 @@
+{
+    "Attributes": {
+        "Name": "TripSelection",
+        "Layouts": [
+            "TripSelection"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "Continue",
+            "Type": "Panel",
+            "Text": "Continue"
+        }
+    ]
+}

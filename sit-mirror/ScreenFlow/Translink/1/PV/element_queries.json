@@ -1,0 +1,30 @@
+{
+    "SignOnPinBox": {
+        "Type": "TextBox",
+        "Name": "textBoxPin"
+    },
+    "MountingPointBox": {
+        "Type": "TextBox",
+        "Name": "SubLocationValueBox"
+    },
+    "StaffId": {
+          "Type": "TextBox",
+          "Name": "textBoxOperatorId"
+    },
+   "SoundPlayer": {
+          "Type": "SoundPlayer",
+          "Name": "gsoundplayer1"
+    },
+   "DisplayLable": {
+          "Name": "labelResult",
+          "Type": "Label"
+    },
+   "DateTime": {
+          "Name": "clock",
+          "Type": "Clock"
+    },
+  "ErrorLabel": {
+          "Name": "labelInvalidPwd",
+          "Type": "Label"
+  }
+}

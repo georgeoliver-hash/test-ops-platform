@@ -1,0 +1,149 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "MenuLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1",
+            "Text": "Device Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L2",
+            "Text": "Display Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L3",
+            "Text": "Force Comms"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L4",
+            "Text": "Soft Reboot"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L5"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R1",
+            "Text": "Network Settings"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R2",
+            "Text": "Network Routes"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R3",
+            "Text": "Versions"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R4",
+            "Text": "Device Status"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R5"
+        },
+        {
+            "Type": "Image",
+            "Name": "L1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Sign Off"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Technician Menu"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

@@ -1,0 +1,112 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "ProductConfirmationLayout",
+            "WhiteFLUStatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "TopUpSummaryLayout"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Image",
+            "Name": "gpicturebox2"
+        },
+        {
+            "Type": "Label",
+            "Name": "ProductName"
+        },
+        {
+            "Type": "Label",
+            "Name": "Quantity"
+        },
+        {
+            "Type": "Label",
+            "Name": "Price"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalWithPrice"
+        },
+        {
+            "Type": "Label",
+            "Name": "AlightingName"
+        },
+        {
+            "Type": "Label",
+            "Name": "ProductLabel",
+            "Text": "Group Ticket"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Confirm"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Cancel"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "StatusBarPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "StatusBarBackgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        }
+    ]
+}

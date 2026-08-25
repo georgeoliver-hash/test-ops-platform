@@ -1,0 +1,93 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "RouteSelectionLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Grid",
+            "Name": "RouteTableListPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "R1Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R2Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeparatorPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PressUpDownLabel"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "REGEX:.+Select Route"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

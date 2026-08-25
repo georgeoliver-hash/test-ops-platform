@@ -1,0 +1,13 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"SuspendLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "backgroundPanel"
+		}
+	]
+}

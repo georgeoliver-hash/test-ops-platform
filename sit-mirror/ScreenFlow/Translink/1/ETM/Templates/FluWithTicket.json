@@ -1,0 +1,146 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "FLULayout",
+            "WhiteFLUStatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Smartcard"
+		},
+		{
+			"Type": "Grid",
+			"Name": "FLUTableListPanel",
+			"Others": {
+				"Columns": "Stop Number,Stop Name,Fare,Arrow"
+            }
+		},
+		{
+			"Type": "Panel",
+			"Name": "LastStopSeparatorPanel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "FooterPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "FLUTypeValueLabel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "FooterVerticalSeparator1Panel"
+		},
+		{
+			"Type": "Label",
+			"Name": "SelectedProductValueLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PassengerCountLabel"
+		},
+		{
+			"Type": "Image",
+			"Name": "PassengerCountIcon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "TotalPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TotalLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TotalModeLabel",
+			"Text": "Last"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+        {
+            "Type": "Panel",
+            "Name": "FooterVerticalSeparator2Panel"
+        },
+        {
+            "Type": "ImageButton",
+			"Name": "L5"
+        },
+		{
+			"Type": "Panel",
+			"Name": "FooterSeparatorPanel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "StatusBarPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "StatusBarBackgroundPictureBox"
+		},
+		{
+			"Type": "Label",
+			"Name": "BoardingStopNumberLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "BoardingStopNameLabel"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SuccessPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "AlightingStageLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "FareLabel"
+        }
+    ]
+}

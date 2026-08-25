@@ -1,0 +1,150 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"MenuLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L1",
+			"Text": "Inspector"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L2"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L3"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L4"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L5",
+			"Text": "Print Test Ticket"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R1",
+			"Text": "Driver Options"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R2",
+			"Text": "Driver Break"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R3",
+			"Text": "Start New Journey"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R5",
+			"Text": "Reverse Paper Feed"
+		},
+		{
+			"Type": "Image",
+			"Name": "L1Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L2Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L3Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L5Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R1Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R2Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R3Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R5Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "SeparatorPanel"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Go Back"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R6",
+			"Text": "Sign Off"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Driver Menu"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

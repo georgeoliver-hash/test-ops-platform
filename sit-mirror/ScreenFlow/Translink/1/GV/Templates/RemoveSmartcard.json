@@ -1,0 +1,61 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "LayoutTitleBar",
+            "DateTimeView",
+            "LlDateTime",
+            "BottomBarWithButtons"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LayoutTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitle",
+            "Text": "Error",
+            "Type": "Label"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleDate",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "BottomBarWithButtons",
+            "Text": "",
+            "Type": "Panel"
+        },
+        {
+            "Name": "FailureImage",
+            "Type": "Image"
+        },
+        {
+            "Name": "TvLabelErrorDescription",
+            "Text": "Card still present",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvLabelActionPrompt",
+            "Text": "Please remove Smartcard",
+            "Type": "Label"
+        }
+    ]
+}

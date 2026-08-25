@@ -1,0 +1,943 @@
+{
+    "Presets": {
+        "StaffId": "[StaffId]2222",  // TODO
+        "StaffPin": "[StaffPin]1234",  // TODO
+        "OperatorDutyNumber": "[DutyNumber]234",
+        "RouteSearch": "1A",
+        "OperatorRoute": "1A,,In",  // TODO
+        "JourneyNumber": "[JourneyNumber]0001",
+        "FleetNumber": "1664",
+        "GroupTotalNumber": "[GroupTotalNumber]8",
+        "ValidProduct": "[ValidProduct]Adult",
+        "ValidTicketKey": "[ValidTicketKey]F7",
+        "LoginCardType": "[CardType]WTS",
+        "LoginCardTags": "[CardTags]operator driver 002222"
+    },
+    "Screens": {
+        "Suspend": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "Suspend"
+        },
+        "Idle": {
+            "Navigable_screens": {
+                "ManualSignOn": {"Type": "UI_Key", "Keys": "Return"},
+                "SmartcardSignOn": {"Type": "Smartcard_Present","Card": "${LoginCardType}","Tags": "${LoginCardTags}"}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "Idle"
+        },
+        "ManualSignOn": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "BusCheck": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "Supervisor.Menu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "Technician.Menu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "ManualSignOnError": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ],"Repeat":2},
+                "DeviceLockedScreen": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ],"Repeat":11}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "SignOn"
+        },
+        "SmartcardSignOn": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardSignOn"
+        },
+        "ManualSignOnError": {
+            "Navigable_screens": {
+                "ManualSignOn": {"Type": "Wait", "Seconds": 4}
+            },
+            "Screen": "SignOnError"
+        },
+        "DeviceLockedScreenWithCard": {
+            "Navigable_screens": {
+                "DeviceLockedScreen": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "DeviceLockedScreen"
+        },
+        "DeviceLockedScreen": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "Stages", "Actions": [
+                    {"Type": "Smartcard_Present", "Card": "${LoginCardType}", "Tags": "${LoginCardTags}"},
+                    {"Type": "UI_Validate", "Screen": "SmartcardSignOn", "Timeout": 10},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    // As smartcard state checking is disabled this step is crucial to remove the smartcard
+                    {"Type": "UI_Validate", "Screen": "SupervisorMenu", "Timeout": 20},
+                    {"Type": "Smartcard_Remove"}
+                ]}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "DeviceLockedScreen"
+        },
+
+        // Operator driver sign on screenflow
+        "BusCheckScreenWithCard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "BusCheck": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "BusCheck"
+        },
+        "BusCheck": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "DutyNumber": {"Type": "UI_Button", "Text": "Yes"}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Alternatives": ["BusCheckScreenWithCard"],
+            "Screen": "BusCheck"
+        },
+        "Defects": {
+            "Navigable_screens": {
+                "DutyNumber": {"Type": "UI_Button", "Text": "No"}
+            },
+            "Screen": "Defects"
+        },
+        "DutyNumber": {
+            "Navigable_screens": {
+                "BusCheck": {"Type": "UI_Key", "Keys": "Back"},
+                "SearchRoute": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${OperatorDutyNumber}", "Element": "DutyNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Alternatives": ["Defects"],
+            "Screen": "DutyNumber"
+        },
+        "SearchRoute": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys": "Back"},
+                    {"Type": "UI_Validate", "Screen": "SignOffConfirmation", "Timeout": 10},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "SelectRoute": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${RouteSearch}", "Element": "RouteSearchBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Screen": "ManualRoute"
+        },
+        "SelectRoute": {
+            "Navigable_screens": {
+                "SearchRoute": {"Type": "UI_Key", "Keys": "Back"},
+                "JourneyNumber": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_SearchGrid", "Text": "${OperatorRoute}", "Element": "RouteGridBox", "Press": true},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Screen": "RouteSelection"
+        },
+        "JourneyNumber": {
+            "Navigable_screens": {
+                "SelectRoute": {"Type": "UI_Key", "Keys": "Back"},
+                "JourneyConfirmation": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${JourneyNumber}", "Element": "JourneyNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Screen": "JourneyNumber"
+        },
+        "JourneyConfirmation": {
+            "Navigable_screens": {
+                "JourneyNumber": {"Type": "UI_Key", "Keys": "Back"},
+                "MessageOfDay": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "JourneyConfirmation"
+        },
+        "MessageOfDay": {
+            "Navigable_screens": {
+                "WordAndColour": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Alternatives": ["MessageOfDayError"],
+            "Screen": "MessageOfTheDay"
+        },
+        "WordAndColour": {
+            "Navigable_screens": {
+                "MessageOfDay": {"Type": "UI_Key", "Keys": "Back"},
+                "Flu": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Alternatives": ["WordAndColourError"],
+            "Screen": "WordAndColours"
+        },
+        "MessageOfDayError": {
+            "Navigable_screens": {
+                "WordAndColour": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "SignonMessageOfTheDayError"
+        },
+        "WordAndColourError": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "SignonWordAndColourOfTheDayError"
+        },
+
+        // Product Issue Screens
+        "Flu": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Key", "Keys": "Menu"},
+                "FluWithActiveBasket": {"Type": "UI_Key", "Keys": "F12"},
+                "FluNumericEntry": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys": "RIGHT"},
+                    {"Type": "UI_Button", "Text": "${ValidProduct}"},
+                    {"Type": "UI_Key", "Keys": "${ValidTicketKey}"},
+                    {"Type":"UI_Key", "Keys":"NUMPAD0"}
+                ]},
+                "FluWithTicket": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Button", "Text": "${ValidProduct}"},
+                    {"Type": "UI_Key", "Keys": "${ValidTicketKey}"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "SmartcardPresent": {"Type": "UI_Button", "Text": "Smartcard"},
+                "ProductMenu": {"Type": "UI_Button", "Text": "Promo"},
+                "SmartcardValidation.Successful": {"Type": "UI_Key", "Keys": "R1"}
+            },
+            "Screen": "Flu"
+        },
+
+        "FluWithActiveBasket": {
+            "Navigable_screens": {
+                "Basket": {"Type": "UI_Key", "Keys": "F12"},
+                "ProductMenu": {"Type": "UI_Button", "Text": "Promo"}
+            },
+            "Screen": "FluWithActiveBasket"
+        },
+        "Basket": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Clear"},
+                "BasketConfirmation": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Alternatives": ["BasketFullError"],
+            "Screen": "FluBasket"
+        },
+        "BasketConfirmation": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Key", "Keys": "Back"},
+                "FluWithTicket": {"Type": "UI_Button", "Text": "Cash"},
+                "PresentContactlessCard": {"Type": "UI_Button", "Text": "Bank Card"}
+            },
+            "Screen": "BasketConfirmation"
+        },
+        "BasketFullError": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Wait", "Seconds": 2}
+            },
+            "Screen": "BasketFullError"
+        },
+        "FluWithTicket": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Wait", "Seconds": 5},
+                "Driver.Menu": {"Type": "UI_Key", "Keys": "Menu"}
+            },
+            "Alternatives": ["PrinterError"],
+            "Screen": "FluWithTicket"
+        },
+        "FluNumericEntry": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"},
+                "GroupProductConfirmation": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${GroupTotalNumber}", "Element": "NumericEntry"},
+                    {"Type": "UI_Button", "Text": "Group Ticket"}
+                    ]},
+                "FluWithTicket": {"Type": "UI_Button", "Text": "Confirm"}
+            },
+            "Screen": "FluNumericEntry"
+        },
+        "GroupProductConfirmation": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "Screen": "GroupProductConfirmation"
+        },
+        "ProductMenu": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Go Back"},
+                "ProductMenuWithActiveBasket": {"Type": "UI_Key", "Keys": "F12"}
+            },
+            "State": {
+                "LayoutVariables": {"FluTotalMode": "Last"}
+            },
+            "Screen": "ProductMenu"
+        },
+        "ProductMenuWithActiveBasket": {
+            "Navigable_screens": {
+                "FluWithActiveBasket": {"Type": "UI_Button", "Text": "Go Back"},
+                "Basket": {"Type": "UI_Key", "Keys": "F12"}
+            },
+            "State": {
+                "LayoutVariables": {"FluTotalMode": "Basket"}
+            },
+            "Screen": "ProductMenu"
+        },
+        "FluSmartcard": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Key", "Keys": "Menu"},
+                "SmartcardPresent": {"Type": "UI_Button", "Text": "Smartcard"},
+                "ProductMenu": {"Type": "UI_Button", "Text": "Promo"},
+                "SmartcardValidation.Successful": {"Type": "UI_Key", "Keys": "R1"}
+            },
+            "Screen": "FluSmartcard"
+        },
+
+
+        // SmartCard Functions Screens
+        "SmartcardPresent": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardPresent"
+        },
+        "SmartcardStatus": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"},
+                "SmartcardMenu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardStatus"
+        },
+        "SmartcardMenu": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"},
+                "SmartcardStatus": {"Type": "UI_Button", "Text": "Mini Statement"},
+                "SmartcardTopUp": {"Type": "UI_Button", "Text": "Top up Smartcard"},
+                "PromptRemoveSmartcard": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardMenu"
+        },
+        "SmartcardTopUp": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"},
+                "PromptRemoveSmartcard": {"Type": "UI_Button", "Text": "Go Back"},
+                "TopUpProductSummary": {"Type": "UI_Key", "Keys": "L2"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "TopUpProduct"
+        },
+        "TopUpProductSummary": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "TopUpProductSummary"
+        },
+        // TODO: Add SmartCard TopUp and Mini Statement screens
+
+
+        // Product Issue Error Screens
+        "PrinterError": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "PrinterError"
+        },
+
+
+        // Driver menu screens
+        "Driver.Menu": {
+            "Navigable_screens": {
+                "Driver.SignOffConfirmation": {"Type": "UI_Button", "Text": "Sign Off"},
+                "Driver.NewJourneyConfirmation": {"Type": "UI_Button", "Text": "Start New Journey"},
+                "Driver.Break": {"Type": "UI_Button", "Text": "Driver Break"},
+                "Driver.Options": {"Type": "UI_Button", "Text": "Driver Options"},
+                "Driver.OpenTicketMenu": {"Type": "UI_Button", "Text": "Open Tickets"},
+                "Driver.InspectorReport": {"Type": "UI_Button", "Text": "Inspector"},
+                "Driver.Annul": {"Type": "UI_Button", "Text": "Annul Previous Ticket"},
+                "Driver.AnnulTopup": {"Type": "UI_Button", "Text": "Annul Previous Ticket"},
+                "Flu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM",
+                "LayoutVariables": {"Title": "Driver Menu"}
+            },
+            "Screen": "DriverMenu"
+        },
+        "Driver.Break": {
+            "Navigable_screens": {
+                "Driver.Break.EndSignOn": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "DriverOnBreak"
+        },
+        "Driver.Break.EndSignOn": {
+            "Navigable_screens": {
+                "Driver.Break": {"Type": "UI_Key", "Keys": "Back"},
+                "Flu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "BreakEndSignOn"
+        },
+        "Driver.Annul": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Button", "Text": "Cancel"},
+                "Driver.Annul.Successful": {"Type": "UI_Key", "Keys": "R6"}
+            },
+            "State": {
+                "SmartcardPresent": false,
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Alternatives": ["Driver.AnnulTopup"],
+            "Screen": "TicketAnnulment"
+        },
+        "Driver.AnnulTopup": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "SmartcardPresent": false,
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "TopupAnnulment"
+        },
+        "Driver.Annul.Successful": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Wait", "Seconds": 5}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "SuccessfulAnnulment"
+        },
+        "Driver.SignOffConfirmation": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Button", "Text": "Cancel"},
+                "Idle": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "SignOffConfirmation"
+        },
+        "Driver.NewJourneyConfirmation": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Button", "Text": "Cancel"},
+                "SelectRoute": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "NewJourneyConfirmation"
+        },
+        "Driver.InspectorReport": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "SmartcardPresent": true,
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "InspectorReport"
+        },
+        "Driver.OpenTicketMenu": {
+            "Navigable_screens": {
+                "Driver.Menu": {"Type": "UI_Button", "Text": "Go Back"},
+                "Driver.OpenFareEntry": {"Type": "UI_Button", "Text": "Excess"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM",
+                "LayoutVariables": {"Title": "Open Tickets"}
+            },
+            "Screen": "OpenTicketMenu"
+        },
+        "Driver.OpenFareEntry": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "OpenFareEntry"
+        },
+
+
+        // Driver Options Screens
+        "Driver.Options": {
+            "Navigable_screens": {
+                "Driver.DisplaySettings": {"Type": "UI_Button", "Text":"Display Settings"},
+                "Driver.PaperStatus": {"Type": "UI_Button", "Text":"Paper Status"},
+                "Driver.Options.WordAndColourOfDay": {"Type": "UI_Button", "Text":"Word and Colour"},
+                "Driver.Options.MessageOfTheDay": {"Type": "UI_Button", "Text":"Messages"},
+                "Driver.OtherDevices": {"Type": "UI_Button", "Text":"Other Devices"},
+                "Driver.Totals": {"Type": "UI_Button", "Text":"Totals"},
+                "Driver.Menu": {"Type": "UI_Button", "Text":"Go Back"},
+                "Driver.TicketHistoryList": {"Type": "UI_Button", "Text":"Last Ticket Issued"},
+                "Driver.SoftReboot": {"Type": "UI_Button", "Text":"Soft Reboot"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "DriverOptions"
+        },
+        "Driver.DisplaySettings": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DisplaySettings"
+        },
+        "Driver.PaperStatus": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "PaperStatus"
+        },
+        "Driver.Options.WordAndColourOfDay": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "DriverOptionsWordAndColourOfDay"
+        },
+        "Driver.Options.MessageOfTheDay": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "DriverOptionsMessageOfTheDay"
+        },
+        "Driver.OtherDevices": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "OtherDevices"
+        },
+        "Driver.TicketHistoryList": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "TicketHistoryList"
+        },
+        "Driver.Totals": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Screen": "DriverTotals"
+        },
+        "Driver.SoftReboot": {
+            "Navigable_screens": {
+                "Driver.Options": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Driver_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Cancel"},
+            "Screen": "SoftReboot"
+        },
+
+
+        // Supervisor Menu Screens
+        "Supervisor.Menu": {
+            "Navigable_screens": {
+                "Supervisor.Versions": {"Type": "UI_Button", "Text": "Versions"},
+                "Supervisor.HistoricWaybillsList": {"Type": "UI_Button", "Text": "Historic Waybills"},
+                "Supervisor.GPSInfo": {"Type": "UI_Button", "Text": "GPS Information"},
+                "Supervisor.ForceComms": {"Type": "UI_Button", "Text": "Force Comms"},
+                "Supervisor.SoftReboot": {"Type": "UI_Button", "Text":"Soft Reboot"},
+                "Supervisor.OtherDevices": {"Type": "UI_Button", "Text":"Other Devices"},
+                "Idle": {"Type": "UI_Button", "Text": "Sign Off"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM",
+                "LayoutVariables": {"Title": "Supervisor Menu"}
+            },
+            "Screen": "SupervisorMenu"
+        },
+        "Supervisor.Versions": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Go Back"},
+                "Supervisor.SerialNumbers": {"Type": "UI_Button", "Text": "Serial Numbers"},
+                "Supervisor.SoftwareVersions": {"Type": "UI_Button", "Text": "SoftwareVersions"},
+                "Supervisor.ConfigVersions": {"Type": "UI_Button", "Text": "Configuration Versions"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "Versions"
+        },
+        "Supervisor.SerialNumbers": {
+            "Navigable_screens": {
+                "Supervisor.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM",
+                "LayoutVariables": {"Title": "Serial Numbers"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Supervisor.SoftwareVersions": {
+            "Navigable_screens": {
+                "Supervisor.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM",
+                "LayoutVariables": {"Title": "Software Versions"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Supervisor.ConfigVersions": {
+            "Navigable_screens": {
+                "Supervisor.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM",
+                "LayoutVariables": {"Title": "Configuration Versions"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Supervisor.HistoricWaybillsList": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Screen": "HistoricWaybillsList"
+        },
+        "Supervisor.GPSInfo": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Screen": "GPSInfo"
+        },
+        "Supervisor.ForceComms": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "ForceComms"
+        },
+        "Supervisor.SoftReboot": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Cancel"},
+            "Screen": "SoftReboot"
+        },
+        "Supervisor.OtherDevices": {
+            "Navigable_screens": {
+                "Supervisor.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Supervisor_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "OtherDevices"
+        },
+
+
+        // Technician Menu Screens
+        "Technician.Menu": {
+            "Navigable_screens": {
+                "Technician.DeviceSettings": {"Type": "UI_Button", "Text": "Device Settings"},
+                "Technician.DisplaySettings": {"Type": "UI_Button", "Text": "Display Settings"},
+                "Technician.ForceComms": {"Type": "UI_Button", "Text": "Force Comms"},
+                "Technician.SoftReboot": {"Type": "UI_Button", "Text":"Soft Reboot"},
+                "Technician.NetworkSettings": {"Type": "UI_Button", "Text": "Network Settings"},
+                "Technician.NetworkRoutes": {"Type": "UI_Button", "Text": "Network Routes"},
+                "Technician.Versions": {"Type": "UI_Button", "Text": "Versions"},
+                "Technician.DeviceStatus": {"Type": "UI_Button", "Text": "Device Status"},
+                "Idle": {"Type": "UI_Button", "Text": "Sign Off"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM",
+                "LayoutVariables": {"Title": "Technician Menu"}
+            },
+            "Screen": "TechnicianMenu"
+        },
+        "Technician.DeviceSettings": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"},
+                "Technician.HomeLocationsList": {"Type": "UI_Key", "Keys":"R1"},
+                "UnCommissionedScreen": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys":"R5"},
+                    {"Type": "UI_Textbox", "Text": "", "Element": "FleetNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Button", "Text": "Confirm"},
+                    {"Type": "UI_Button", "Text": "Sign Off"}
+                ]}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Screen": "DeviceSettings"
+        },
+        "Technician.HomeLocationsList": {
+            "Navigable_screens": {
+                "Technician.DeviceSettings": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Screen": "HomeLocationsList"
+        },
+        "Technician.DisplaySettings": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DisplaySettings"
+        },
+        "Technician.ForceComms": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "ForceComms"
+        },
+        "Technician.SoftReboot": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Cancel"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Cancel"},
+            "Screen": "SoftReboot"
+        },
+        "Technician.NetworkSettings": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Screen": "NetworkSettings"
+        },
+        "Technician.NetworkRoutes": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Screen": "NetworkRoutes"
+        },
+        "Technician.Versions": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"},
+                "Technician.SerialNumbers": {"Type": "UI_Button", "Text": "Serial Numbers"},
+                "Technician.SoftwareVersions": {"Type": "UI_Button", "Text": "SoftwareVersions"},
+                "Technician.ConfigVersions": {"Type": "UI_Button", "Text": "Configuration Versions"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "Versions"
+        },
+        "Technician.SerialNumbers": {
+            "Navigable_screens": {
+                "Technician.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM",
+                "LayoutVariables": {"Title": "Serial Numbers"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Technician.SoftwareVersions": {
+            "Navigable_screens": {
+                "Technician.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM",
+                "LayoutVariables": {"Title": "Software Versions"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Technician.ConfigVersions": {
+            "Navigable_screens": {
+                "Technician.Versions": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM",
+                "LayoutVariables": {"Title": "Configuration Versions"}
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "DataView"
+        },
+        "Technician.DeviceStatus": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"},
+                "Technician.PaperStatus": {"Type": "UI_Key", "Keys": "F8"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Screen": "DeviceStatus"
+        },
+        "Technician.PaperStatus": {
+            "Navigable_screens": {
+                "Technician.Menu": {"Type": "UI_Button", "Text": "Go Back"}
+            },
+            "State": {
+                "CurrentOperatorRole": "Technician_ETM"
+            },
+            "Exit_Action": {"Type": "UI_Button", "Text": "Go Back"},
+            "Screen": "PaperStatusTechMenu"
+        },
+
+
+        // Other screens
+        "UnCommissionedScreen": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Button", "Text": "Device Settings"},
+                    {"Type": "UI_Key", "Keys":"R5"},
+                    {"Type": "UI_Textbox", "Text": "${FleetNumber}", "Element": "FleetNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Button", "Text": "Confirm"},
+                    {"Type": "UI_Button", "Text": "Sign Off"}
+                ]}
+            },
+            "Screen": "UnCommissioned"
+        },
+        "SmartcardValidation.Successful": {
+            "Navigable_screens": {
+                 "Flu": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "LayoutVariables": {"Title": "Please Remove Smartcard"}
+            },
+            "Screen": "SmartcardTransactionSuccessful"
+        },
+        "SmartcardTopUp.Successful": {
+            "Navigable_screens": {
+                 "Flu": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "LayoutVariables": {"Title": "Please remove Smartcard to continue"}
+            },
+            "Screen": "SmartcardTransactionSuccessful"
+        },
+        "PromptRemoveSmartcard": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"}
+            },
+            "Screen": "PromptRemoveSmartcard"
+        },
+        "PresentContactlessCard": {
+            "Navigable_screens": {
+                "BasketConfirmation": {"Type":"UI_Key", "Keys": "Back"}
+            },
+            "Screen": "PresentContactlessCard"
+        },
+        "PleaseWait": {
+            // Never navigate to this screen, it is here to handle cases where this screen may appear as part of normal flow
+            "Navigable_screens": {
+                "Flu": {"Type": "Wait", "Seconds": 5}
+                // TODO: Add other screens that could follow a Please Wait screen
+            },
+            "Screen": "PleaseWait"
+        }
+    }
+}

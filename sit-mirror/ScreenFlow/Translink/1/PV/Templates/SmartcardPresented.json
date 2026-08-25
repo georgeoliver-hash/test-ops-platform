@@ -1,0 +1,46 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "statusbarlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelResult"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxResult"
+        },
+        {
+            "Type": "SoundPlayer",
+            "Name": "gsoundplayer1"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxLogo"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingLocationName"
+        },
+        {
+            "Type": "Label",
+            "Name": "PVId"
+        }
+    ]
+}

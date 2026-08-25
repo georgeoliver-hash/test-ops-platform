@@ -1,0 +1,90 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"DataView3ColumnMenuLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "FineLine"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Go Back"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R6",
+			"Text": "Refresh All"
+		},
+		{
+			"Type": "Panel",
+			"Name": "HeaderRowPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "HeaderRowColumn1Label",
+			"Text": "Device"
+		},
+		{
+			"Type": "Label",
+			"Name": "HeaderRowColumn2Label",
+			"Text": "Status"
+		},
+		{
+			"Type": "Panel",
+			"Name": "Row1Panel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Device Status"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

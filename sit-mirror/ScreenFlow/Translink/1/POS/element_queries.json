@@ -1,0 +1,11 @@
+{
+    "_README": "Logical->native element map for the POS (com.flowbird.pos) Android kiosk. Names captured live via ADB on the commissioned lab device 2026-08-10. StaffId=etId, SignOnPinBox=etPin.",
+    "StaffId": {
+        "Name": "etId",
+        "Type": "TextBox"
+    },
+    "SignOnPinBox": {
+        "Name": "etPin",
+        "Type": "TextBox"
+    }
+}

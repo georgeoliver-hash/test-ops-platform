@@ -1,0 +1,78 @@
+{
+    "Attributes": {
+        "Layouts": []
+    },
+    "Elements": [
+        {
+            "Name": "main",
+            "Type": "Panel"
+        },
+        {
+            "Name": "Menu",
+            "Type": "Panel"
+        },
+        {
+            "Name": "logo",
+            "Type": "Panel"
+        },
+        {
+            "Name": "header-title",
+            "Type": "Panel"
+        },
+        {
+            "Name": "communication-button",
+            "Text": "Communication",
+            "Type": "Panel"
+        },
+        {
+            "Name": "configuration-button",
+            "Text": "Configuration",
+            "Type": "Panel"
+        },
+        {
+            "Name": "dashboard-button",
+            "Text": "Dashboards",
+            "Type": "Panel"
+        },
+        {
+            "Name": "data-button",
+            "Text": "Data",
+            "Type": "Panel"
+        },
+        {
+            "Name": "others-button",
+            "Text": "Others",
+            "Type": "Panel"
+        },
+        {
+            "Name": "peripheral-button",
+            "Text": "Peripherals",
+            "Type": "Panel"
+        },
+        {
+            "Name": "security-button",
+            "Text": "Security",
+            "Type": "Panel"
+        },
+        {
+            "Name": "system-button",
+            "Text": "System",
+            "Type": "Panel"
+        },
+        {
+            "Name": "test-button",
+            "Text": "Tests",
+            "Type": "Panel"
+        },
+        {
+            "Name": "com.parkeon.app.maintenance.exit-button",
+            "Text": "Exit",
+            "Type": "Panel"
+        },
+        {
+            "Name": "navbar-exit-button",
+            "Text": "Exit",
+            "Type": "Panel"
+        }
+    ]
+}

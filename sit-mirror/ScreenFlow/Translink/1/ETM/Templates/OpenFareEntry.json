@@ -1,0 +1,37 @@
+{
+    "Attributes": {
+        "Name": "OpenFareEntry",
+        "Layouts": [
+            "FLUNumericEntryLayout",
+            "WhiteFLUStatusBarLayout"
+        ],
+        "Brightness": 5
+    },
+    "Elements": [
+        {
+            "Type": "TextBox",
+            "Name": "TextBox",
+            "Text": "REGEX:\\d*"
+        },
+        {
+            "Type": "Label",
+            "Name": "TextBoxLabel",
+            "Text": "Enter Amount"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Issue"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Cancel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Excess"
+        }
+    ]
+}

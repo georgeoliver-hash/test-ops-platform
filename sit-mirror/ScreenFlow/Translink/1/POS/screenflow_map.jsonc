@@ -1,0 +1,39 @@
+// POS (com.flowbird.pos) operator screenflow - authored from live ADB device
+// captures (2026-08-10). Structure is validated by DeviceNavigation._syntax_check:
+// every screen's "Screen" needs a matching Templates/<Screen>.json and every
+// Navigable_screens key must be a real screen. Templates are trimmed to a few
+// stable, distinctive Elements (no volatile clock/date text) and use empty
+// "Attributes" so matching is a subset match on Elements by Name. Both entry
+// screens (Idle=commissioned, OutOfService=uncommissioned) feed the shared
+// physical SignOn; SignOn branches by which credentials it types (operator ->
+// Message of the Day; technician -> Technician Menu). Confirm is the native
+// Enter key (UI_Key), not a UI_Click. Edit with care and re-run _syntax_check.
+{
+    "Presets": {
+        "StaffId": "[StaffId]004875",
+        "StaffPin": "[StaffPin]9526",
+        "TechStaffId": "[StaffId]4444",
+        "TechStaffPin": "[StaffPin]1234",
+        "LoginCardType": "[CardType]common",
+        "LoginCardTags": "[Tags]abt"
+    },
+    "Screens": {
+        "Idle": {"Navigable_screens": {"SignOn": {"Type": "UI_Key", "Keys": "Enter"}}, "Screen": "Idle"},
+        "OutOfService": {"Navigable_screens": {"SignOn": {"Type": "UI_Key", "Keys": "Enter"}}, "Screen": "OutOfService"},
+        "SignOn": {"Navigable_screens": {
+            "MessageOfTheDay": {"Type": "Stages", "Actions": [
+                {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "StaffId"},
+                {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                {"Type": "UI_Key", "Keys": "Enter"}
+            ]},
+            "TechnicianMenu": {"Type": "Stages", "Actions": [
+                {"Type": "UI_Textbox", "Text": "${TechStaffId}", "Element": "StaffId"},
+                {"Type": "UI_Textbox", "Text": "${TechStaffPin}", "Element": "SignOnPinBox"},
+                {"Type": "UI_Key", "Keys": "Enter"}
+            ]}
+        }, "Screen": "SignOn"},
+        "MessageOfTheDay": {"Navigable_screens": {"SignedOnHome": {"Type": "UI_Key", "Keys": "Enter"}}, "Screen": "MessageOfTheDay"},
+        "SignedOnHome": {"Navigable_screens": {}, "Screen": "SignedOnHome"},
+        "TechnicianMenu": {"Navigable_screens": {}, "Screen": "TechnicianMenu"}
+    }
+}

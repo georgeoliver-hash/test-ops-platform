@@ -1,0 +1,88 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"ForceCommsLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Grid",
+			"Name": "ForceCommsTableListPanel",
+			"Others": {
+				"Columns": "Parameter Name,Parameter Value"
+      }
+		},
+		{
+			"Type": "Panel",
+			"Name": "Line"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "Go Back"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R6",
+			"Text": "Force Comms"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R5",
+			"Text": "Refresh"
+		},
+		{
+			"Type": "Image",
+			"Name": "R5Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Force Communications"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

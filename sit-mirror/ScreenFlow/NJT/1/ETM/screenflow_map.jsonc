@@ -1,0 +1,201 @@
+{
+    // NJT ETM (Way6s driver console) screenflow map.
+    //
+    // Schema: top-level "Presets" + "Screens" (as DeviceNavigation.load_screenflow_map
+    // expects). Each screen has "Navigable_screens" whose entries are NavActions (each a
+    // "Type": UI_Key | UI_Button | UI_Textbox | UI_Click | JS_KeyPress | JS_SetInputValue |
+    // Stages | Smartcard_* | ...). IMPORTANT: DeviceNavigation._syntax_check requires a
+    // matching Templates/<Screen>.json for every screen listed here, AND every navigation
+    // target must itself be a declared Screen -- so a screen can't be added as "real" JSON
+    // until it has a live-captured Template. That's why TripSetup below is still a
+    // comment, not an active entry, even though its actions are proven-working code.
+    //
+    // INPUT MODEL (see CAPTURE_NOTES.md "Screenflow build plan", updated 2026-08-11)
+    // -----------------------------------------------------------------------------
+    // The Way6s driver console is a KEY-DRIVEN state machine (Expo / React-Native-Web + a
+    // global keydown handler), identified by ROUTE (`get device web route` / location.href),
+    // NOT by the layout-based Attributes.Name other Linux devices use.
+    //
+    // Two dispatch paths are PROVEN working (validated end-to-end 2026-07-21, real creds
+    // 9999/1234, via Resources/Devices/ETM/Utility/Platforms/ETMNjtInteractionUtility.robot):
+    //   * JS_KeyPress      -> /UI/Evaluate -> synthetic window KeyboardEvent (keydown+keyup).
+    //                         Reaches the app's real input path; does NOT need /dev/uinput
+    //                         (that was a dead end from an earlier, now-superseded analysis
+    //                         -- see CAPTURE_NOTES.md for the correction).
+    //   * JS_SetInputValue -> /UI/Evaluate -> native <input> value setter + input/change
+    //                         events, targeted by 0-based index into the page's
+    //                         input/textarea list. Synthetic keydowns can't type characters,
+    //                         so text entry needs this instead.
+    //   * UI_Click / UI_ClickAt -> CDP mouse events also work on this QtWebEngine target
+    //                         (used below for the ScreenSaver wake, which has no clear key).
+    // Both JS_* actions were added to NavigationActions.py (mirroring the pre-existing
+    // JS_Navigate) specifically so this map can drive the same proven mechanism directly,
+    // instead of only the hand-written ETMNjtInteractionUtility.robot keyword layer.
+    "Presets": {
+        // Real NJT test back-office credentials (team-njt-etm-dev). Operator persona;
+        // other roles live in DeviceStaff.json and are selected by role, not here.
+        "StaffId":  "9999",
+        "StaffPin": "1234",
+        // Valid trip-setup line IDs on the NJT test estate (any one is usable).
+        "LineId":   "308",
+        "LineIdAlternatives": "308,318,321,346,351"
+    },
+    "Screens": {
+        "ScreenSaver": {
+            "Screen": "ScreenSaver",
+            "Navigable_screens": {
+                // Wake from screensaver via CDP mouse click (confirmed working on this
+                // QtWebEngine target). Coordinates are a placeholder center-tap, not yet
+                // live-verified against a captured Template -- see Templates/ScreenSaver.json.
+                "Idle": { "Type": "UI_ClickAt", "X": 240, "Y": 160 }
+            }
+        },
+        "Idle": {
+            "Screen": "Idle",
+            "Navigable_screens": {
+                // Physical ISSUE key opens sign-on. JS_KeyPress confirmed working
+                // (no /dev/uinput needed -- see CAPTURE_NOTES.md 2026-08-11).
+                // Now active: Templates/SignOn.json exists (captured 2026-08-13).
+                "SignOn": { "Type": "Native_KeyPress", "Key": "Enter" }
+            }
+        },
+        "SignOn": {
+            "Screen": "SignOn",
+            "Navigable_screens": {
+                // Real testIDs: SignOnStaffId="input-id", SignOnStaffPin="input-pin".
+                // Both fields present simultaneously in the DOM (live read 2026-08-12).
+                // Submit via ISSUE key (Native_KeyPress Enter via sit_key_inject on 127.0.0.1:8455)
+                // "button-confirm" testID is a label Panel only; clicking it does nothing. The TSS structured  
+                // layout does NOT expose input-id/input-pin as elements -- only the ID/PIN
+                // labels -- so JS_* actions query the DOM directly.
+                // Lands on TripSetup or TripSignOn (both observed; role-dependent?).
+                // TODO(on-device): confirm landing route is always "TripSetup" before
+                // activating this edge. Once confirmed, move out of comment and add
+                // Templates/TripSetup.json from a live capture.
+                // "TripSetup": { "Type": "Stages", "Actions": [
+                //     { "Type": "JS_SetInputValue", "Value": "${StaffId}",  "Index": 0 },
+                //     { "Type": "Native_KeyPress",  "Key": "Enter" },
+                //     { "Type": "JS_SetInputValue", "Value": "${StaffPin}", "Index": 1 },
+                //     { "Type": "Native_KeyPress",  "Key": "Enter" }
+                // ]}
+            }
+        }
+
+        // =================================================================================
+        // DRAFT SCREENS BELOW -- ready-to-activate once Templates/<Screen>.json exists for
+        // each (one short live pass: drive this exact sequence, capture the layout at each
+        // step, confirm routes). To activate a screen: move its block out of the comment,
+        // add it as a real "Screens" entry, add the matching Templates/<Screen>.json, and
+        // uncomment its incoming edge above.
+        //
+        // DRAFTED, NOT CONFIRMED, from HMI spec section 7 (NJT_FRFRP_HMI01 v4, "Sign On
+        // Process") cross-referenced with real testIDs found in the shipped
+        // njt-driver-console-web-app bundle (dist/_expo/static/js/web/index-*.js). Open
+        // questions to resolve with a short live pass rather than a full blind screenflow
+        // walk:
+        //
+        //   1. Is "TripSetup" ONE screen/route hosting all these fields as a sequential
+        //      wizard (route never changes across Run->Line->Trip->Zones->Class->Transaction),
+        //      or does each HMI-spec section correspond to its own route/screen? The spec's
+        //      per-field "C returns to previous screen if empty" wording implies distinct
+        //      steps, but doesn't prove distinct ROUTES -- a single-page wizard could show
+        //      the same behavior. This determines whether the entries below are one Screen's
+        //      Navigable_screens edges, or several separate Screen blocks (drafted as
+        //      separate blocks below as the more conservative assumption).
+        //   2. JS_SetInputValue's "Index" values below are UNVERIFIED GUESSES (0 for each,
+        //      assuming one field is focused/present at a time like a single-page wizard --
+        //      NOT verified against real DOM order). If multiple fields coexist in the DOM
+        //      simultaneously (like SignOn's id=0/pin=1), these indices are wrong and must
+        //      be corrected live.
+        //   3. Real testIDs used below (element_queries.json): TripSetupRun="run-input",
+        //      TripSetupLine="line-input", TripSetupTrip="trip-input",
+        //      TripSetupBoardingZone="boarding-zone-input",
+        //      TripSetupAlightingZone="alighting-zone-input",
+        //      TripSetupRiderClass="passenger-type-input",
+        //      TripSetupTransactionType="transaction-type-input".
+        //   4. Cycling fields (Line/Zones/Class/Transaction) also support Up/Down arrow-key
+        //      cycling per spec as an alternative to typed entry -- drafted below using
+        //      direct entry (typed numeric ID) since that's simpler for automation and the
+        //      spec explicitly allows it ("0-9 Used to enter data") for Run/Line/Trip/Zones.
+        //
+        // "TripSetup": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.3 Enter Run Screen: "0-9 Used to enter data" -> ISSUE (1-4 digits).
+        //         "TripSetup.Line": { "Type": "Stages", "Actions": [
+        //             { "Type": "JS_SetInputValue", "Value": "${RunNumber}", "Index": 0 },
+        //             { "Type": "JS_KeyPress", "Key": "Enter" }
+        //         ]}
+        //     }
+        // },
+        // "TripSetup.Line": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.4 Enter Line Screen: "${LineId}" must be a valid line (308/318/321/
+        //         // 346/351 on the test estate, see Presets) -> ISSUE.
+        //         "TripSetup.Trip": { "Type": "Stages", "Actions": [
+        //             { "Type": "JS_SetInputValue", "Value": "${LineId}", "Index": 0 },
+        //             { "Type": "JS_KeyPress", "Key": "Enter" }
+        //         ]}
+        //     }
+        // },
+        // "TripSetup.Trip": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.5 Enter Trip Screen: 1-3 digit trip number -> ISSUE.
+        //         "TripSetup.BoardingZone": { "Type": "Stages", "Actions": [
+        //             { "Type": "JS_SetInputValue", "Value": "${TripNumber}", "Index": 0 },
+        //             { "Type": "JS_KeyPress", "Key": "Enter" }
+        //         ]}
+        //     }
+        // },
+        // "TripSetup.BoardingZone": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.6 Enter Boarding Zone Screen: must be a zone on the selected Line.
+        //         "TripSetup.AlightingZone": { "Type": "Stages", "Actions": [
+        //             { "Type": "JS_SetInputValue", "Value": "${BoardingZone}", "Index": 0 },
+        //             { "Type": "JS_KeyPress", "Key": "Enter" }
+        //         ]}
+        //     }
+        // },
+        // "TripSetup.AlightingZone": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.7 Enter Alighting Zone Screen: must be a zone on the selected Line.
+        //         "TripSetup.Class": { "Type": "Stages", "Actions": [
+        //             { "Type": "JS_SetInputValue", "Value": "${AlightingZone}", "Index": 0 },
+        //             { "Type": "JS_KeyPress", "Key": "Enter" }
+        //         ]}
+        //     }
+        // },
+        // "TripSetup.Class": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.8 Enter Class Screen: cycles via arrow keys per spec; direct entry
+        //         // not documented for this field -- likely needs JS_KeyPress ArrowUp/Down.
+        //         // TODO(on-device): confirm interaction mode for this field specifically.
+        //         "TripSetup.Transaction": { "Type": "JS_KeyPress", "Key": "ArrowDown" }
+        //     }
+        // },
+        // "TripSetup.Transaction": {
+        //     "Screen": "TripSetup",
+        //     "Navigable_screens": {
+        //         // 7.9 Enter Transaction Screen: ISSUE prints start-of-trip receipt and
+        //         // shows the Default Display (section 8) -- end of trip-setup wizard.
+        //         "DefaultDisplay": { "Type": "JS_KeyPress", "Key": "Enter" }
+        //     }
+        // },
+        // "DefaultDisplay": {
+        //     "Screen": "DefaultDisplay",
+        //     "Navigable_screens": {}
+        //     // Section 8 onward (Ticket Issue, PayGo, FARE-PAY, Driver Menu, End of Trip,
+        //     // Relief, Driver Break, Supervisor/Administrator modes, ticket formats) is NOT
+        //     // drafted here -- 40+ HMI spec sections with hardware-behavior nuance that
+        //     // would be pure guesswork without code-level corroboration. Extend from here
+        //     // once TripSetup is live-confirmed, using the same triangulation approach:
+        //     // HMI spec section + real testID + working reference flow.
+        // }
+        // =================================================================================
+    }
+}

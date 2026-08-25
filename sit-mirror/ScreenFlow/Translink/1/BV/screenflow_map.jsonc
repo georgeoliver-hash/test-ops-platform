@@ -1,0 +1,75 @@
+{
+    "Presets": {
+        "StaffId": "[StaffId]2222",  // TODO
+        "StaffPin": "[StaffPin]1234",  // TODO
+        "LoginCardType": "[CardType]common",
+        "LoginCardTags": "[Tags]abt"
+    },
+    "Screens": {
+         "Idle": {
+            "Navigable_screens": {
+                "SmartcardSignOn": {"Type": "Smartcard_Present","Card": "${LoginCardType}","Tags": "${LoginCardTags}"}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "Idle"
+        },
+         "Idlewithcard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "Idle"
+        },
+        "SmartcardSignOn": {
+            "Navigable_screens": {
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "Exit"},
+                "TechnicianMenu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Click", "Text": "OK"}
+                ]}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "SmartcardSignOn"
+        },
+        "SmartcardPresented": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "Screen": "SmartcardPresented"
+        },
+        "TechnicianMenu": {
+            "Navigable_screens": {
+                "ExitConfirm": {"Type": "UI_ScrollClick", "Text": "Exit"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "TechnicianMenu"
+        },
+        "ExitConfirm": {
+            "Navigable_screens": {
+                "RemoveSmartcard": {"Type": "UI_Click", "Text": "CONFIRM"},
+                "TechnicianMenu": {"Type": "UI_Click", "Text": "Home"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "ExitConfirm"
+        },
+        "RemoveSmartcard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "RemoveSmartcard"
+        }
+    }
+}

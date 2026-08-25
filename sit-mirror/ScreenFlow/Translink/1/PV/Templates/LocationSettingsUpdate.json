@@ -1,0 +1,246 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DeviceLocationUpdateLayout",
+            "statusbartechnicianlayout",
+            "NumberPadEx"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationLabel",
+            "Text": "Home Location"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "StopLocationLabel",
+            "Text": "Stop Location"
+        },
+        {
+            "Type": "Label",
+            "Name": "StopLocationColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "SubLocationLabel",
+            "Text": "Install Point ID"
+        },
+        {
+            "Type": "Label",
+            "Name": "SubLocationColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionLabel",
+            "Text": "Direction"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionValueLabel",
+            "Text": "Out"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Exit"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OK"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageLabel",
+            "Text": "Stage"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneNameColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageIdColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneValueLabel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Separator"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "StopLocationValueBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "SubLocationValueBox"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "SelectHomeLocationButton",
+            "Text": "Select"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationValueBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDLabel",
+            "Text": "ID"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "IDValueBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDDeviceLabel",
+            "Text": "PV"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Location Settings"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo",
+            "Text": null
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1",
+            "Text": ""
+        },        {
+            "Type": "Label",
+            "Name": "Separator2",
+            "Text": ""
+        },        {
+            "Type": "Label",
+            "Name": "Separator3",
+            "Text": ""
+        },        {
+            "Type": "Label",
+            "Name": "Separator4",
+            "Text": ""
+        },        {
+            "Type": "Label",
+            "Name": "Separator5",
+            "Text": ""
+        },
+        {
+            "Type": "Panel",
+            "Name": "pnl"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Exit"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OK"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "1",
+            "Text": "1"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "2",
+            "Text": "2"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "3",
+            "Text": "3"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "4",
+            "Text": "4"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "5",
+            "Text": "5"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "6",
+            "Text": "6"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "7",
+            "Text": "7"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "8",
+            "Text": "8"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "9",
+            "Text": "9"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Clear",
+            "Text": "Clear"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "0",
+            "Text": "0"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Tab",
+            "Text": "Tab"
+        }
+    ]
+}

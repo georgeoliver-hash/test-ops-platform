@@ -1,0 +1,45 @@
+{
+    "Attributes": {
+        "Name": "FLU",
+        "Layouts": [
+            "FLU"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "Panel1",
+            "Type": "Panel",
+            "Text": "Adult Single"
+        },
+        {
+            "Name": "Panel2",
+            "Type": "Panel",
+            "Text": "Student(16-18) Single"
+        },
+        {
+            "Name": "Panel3",
+            "Type": "Panel",
+            "Text": "Day Passes"
+        },
+        {
+            "Name": "Panel4",
+            "Type": "Panel",
+            "Text": "Adult Single Use"
+        },
+        {
+            "Name": "Panel5",
+            "Type": "Panel",
+            "Text": "Flash Passes"
+        },
+        {
+            "Name": "Panel6",
+            "Type": "Panel",
+            "Text": "Smart Products"
+        },
+        {
+            "Name": "Panel7",
+            "Type": "Panel",
+            "Text": "ISSUE"
+        }
+    ]
+}

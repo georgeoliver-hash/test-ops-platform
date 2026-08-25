@@ -1,0 +1,99 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "PaperStatusLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Slider",
+            "Name": "PaperPercentageRemainingSlider"
+        },
+        {
+            "Type": "Label",
+            "Name": "PaperPercentageRemainingLabel",
+            "Text": "Paper Percentage Remaining"
+        },
+        {
+            "Type": "Button",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeperatorLinePanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "AverageTicketsRemainingLabel",
+            "Text": "Average Tickets Remaining:"
+        },
+        {
+            "Type": "Label",
+            "Name": "PaperLowThresholdLabel",
+            "Text": "Paper Low Threshold:"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketRollLengthLabel",
+            "Text": "Ticket Roll Length:"
+        },
+        {
+            "Type": "Label",
+            "Name": "AverageTicketsRemainingValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PaperLowThresholdValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketRollLengthValueLabel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Paper Status"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

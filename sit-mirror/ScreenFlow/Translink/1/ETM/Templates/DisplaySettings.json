@@ -1,0 +1,110 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "ConsoleSettingsLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Slider",
+            "Name": "BrightnessSlider"
+        },
+        {
+            "Type": "Label",
+            "Name": "BrightnessLabel",
+            "Text": "Brightness"
+        },
+        {
+            "Type": "Label",
+            "Name": "VolumeLabel",
+            "Text": "Volume"
+        },
+        {
+            "Type": "Slider",
+            "Name": "VolumeSlider"
+        },
+        {
+            "Type": "Button",
+            "Name": "L2",
+            "Text": "-"
+        },
+        {
+            "Type": "Button",
+            "Name": "R2",
+            "Text": "+"
+        },
+        {
+            "Type": "Button",
+            "Name": "L4",
+            "Text": "-"
+        },
+        {
+            "Type": "Button",
+            "Name": "R4",
+            "Text": "+"
+        },
+        {
+            "Type": "Button",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Button",
+            "Name": "R6",
+            "Text": "Restore Defaults"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeperatorLinePanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Display Settings"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

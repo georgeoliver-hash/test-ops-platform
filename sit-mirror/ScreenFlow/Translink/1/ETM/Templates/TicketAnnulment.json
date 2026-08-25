@@ -1,0 +1,107 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"AnnulTicketLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "backgroundPictureBox"
+		},
+		{
+			"Type": "Label",
+			"Name": "titleLabel",
+			"Text": "Annul Last Transaction"
+		},
+		{
+			"Type": "Label",
+			"Name": "orgTransactionDateLabel"
+		},
+		{
+			"Type": "Button",
+			"Name": "R6",
+			"Text": "Annul"
+		},
+		{
+			"Type": "Button",
+			"Name": "L6",
+			"Text": "Cancel"
+		},
+		{
+			"Type": "Label",
+			"Name": "orgTransactionTimeLabel"
+		},
+		{
+			"Type": "Label",
+			"Name": "atLabel",
+			"Text": "at"
+		},
+		{
+			"Type": "Label",
+			"Name": "totalLabel",
+			"Text": "Total: "
+		},
+		{
+			"Type": "Grid",
+			"Name": "annulTransactionGrid"
+		},
+		{
+			"Type": "Label",
+			"Name": "totalFareLabel"
+		},
+		{
+			"Type": "Panel",
+			"Name": "linePanel "
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Annulment"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

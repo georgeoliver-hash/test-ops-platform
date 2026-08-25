@@ -17,18 +17,3 @@ the operator completes a test transaction
 
 the ${key_name} key is pressed
     POS: Press Key    ${key_name}
-
-a digit is keyed into the ${field_name} field
-    [Documentation]    GAP: no confirmed keycode/input method for digit entry on this
-    ...    hardware yet -- see Tests/POS/SignOn/test_signon_idle_screen.robot Documentation.
-    Fail    Not Implemented — no confirmed digit-entry mechanism, see keyword Documentation
-
-the ${field_name} field should show the keyed digit
-    [Documentation]    GAP: depends on the Android UI-driving layer (reading field text) as
-    ...    well as the digit-entry gap above.
-    Fail    Not Implemented — depends on the generic Android UI-driving layer, see keyword Documentation
-
-the ${field_name} field should be cleared by one character
-    [Documentation]    GAP: depends on the Android UI-driving layer (reading field text) as
-    ...    well as the digit-entry gap above.
-    Fail    Not Implemented — depends on the generic Android UI-driving layer, see keyword Documentation

@@ -1,0 +1,38 @@
+{
+    "DisplayLable": {
+            "Name": "TvLabelResult",
+            "Type": "Label"
+    },
+    "DisplayInfo": {
+            "Name": "TvLabelInfo",
+            "Type": "Label"
+    },
+    "TitleTime": {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+    },
+   "TimePeriod": {
+            "Name": "TvTimePeriod",
+            "Type": "Label"
+    },
+    "StaffId": {
+            "Name": "EdTechnicianOperatorId",
+            "Type": "TextBox"
+    },
+    "SignOnPinBox": {
+            "Name": "EdTechnicianOperatorPin",
+            "Type": "TextBox"
+    },
+    "InvalidCardLable": {
+             "Name": "imageViewFailure",
+             "Type": "Image"
+    },
+    "ValidCardLable": {
+             "Name": "imageViewSuccess",
+             "Type": "Image"
+    },
+    "DefaultvalidCardLable": {
+             "Name": "imageViewSuccessDefault",
+             "Type": "Image"
+    }
+}

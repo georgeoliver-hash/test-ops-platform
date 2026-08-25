@@ -1,0 +1,228 @@
+{
+    "Attributes": {
+        "Name": "SoftwareVersions",
+        "Layouts": [
+            "DataView2Column",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row1Label1",
+            "Text": "Item"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row1Label2",
+            "Text": "Version"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline1"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row2"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row2Label1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row2Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row3"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row3Label1",
+            "Text": "BSP"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row3Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline3"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row4"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row4Label1",
+            "Text": "EBoot"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row4Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline4"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row5"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row5Label1",
+            "Text": "Configuration Version"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row5Label2",
+            "Text": "Default"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline5"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row6"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row6Label1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row6Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline6"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row7"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row7Label1",
+            "Text": "Application"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row7Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline7"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row8"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row8Label1",
+            "Text": "DeviceStart"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row8Label2"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline8"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row9"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row9Label1",
+            "Text": "Smartcard Transparent Application"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row9Label2",
+            "Text": "XML_Card_Reader_App_Version"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Underline9"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Baseline1"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Print"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Label",
+            "Name": "PressUpDownLabel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Software Versions"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "validationfaillayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelResult"
+        },
+        {
+            "Type": "Image",
+            "Name": "pictureBoxResult"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelPrompt"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelInfo"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "SoundPlayer",
+            "Name": "gsoundplayer1"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Printer Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

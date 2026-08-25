@@ -1,0 +1,59 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragTechnicianTitleBar",
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "FragTechnicianTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitle",
+            "Text": "Technician Sign-On",
+            "Type": "Label"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTimePeriod",
+            "Type": "Label"
+        },
+        {
+            "Name": "EdTechnicianOperatorId",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "EdTechnicianOperatorPin",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "BtnExit",
+            "Text": "Exit",
+            "Type": "ImageButton"
+        },
+        {
+            "Name": "BtnOk",
+            "Text": "OK",
+            "Type": "ImageButton"
+        }
+    ]
+}

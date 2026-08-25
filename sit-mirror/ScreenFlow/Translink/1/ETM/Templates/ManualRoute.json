@@ -1,0 +1,200 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"SingleLineTextEntryLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "Panel",
+			"Name": "PromptPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "EnterToConfirmLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Image",
+			"Name": "PressEnterIcon"
+		},
+		{
+			"Type": "TextBox",
+			"Name": "TextBox",
+			"Others": {
+				"TextPrompt": "Route"
+			}
+		},
+		{
+			"Type": "Label",
+			"Name": "TextBoxLabel",
+			"Text": "Search"
+		},
+		{
+			"Type": "Panel",
+			"Name": "PressForMorePanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "PressUpDownLabel",
+			"Text": "REGEX:Press .+ to select different letters"
+		},
+		{
+			"Type": "Panel",
+			"Name": "Buttons"
+		},
+		{
+			"Type": "Image",
+			"Name": "L1Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L2Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L3Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L4Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L5Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "L6Icon"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L1",
+			"Text": "A"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L2",
+			"Text": "B"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L3",
+			"Text": "C"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L4",
+			"Text": "D"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L5",
+			"Text": "E"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "L6",
+			"Text": "F"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R1",
+			"Text": "G"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R2",
+			"Text": "H"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R3",
+			"Text": "I"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R4",
+			"Text": "J"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R5",
+			"Text": "K"
+		},
+		{
+			"Type": "ImageButton",
+			"Name": "R6",
+			"Text": "L"
+		},
+		{
+			"Type": "Image",
+			"Name": "R1Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R2Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R3Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R4Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R5Icon"
+		},
+		{
+			"Type": "Image",
+			"Name": "R6Icon"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Select Route"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+    }
+	]
+}

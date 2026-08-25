@@ -1,0 +1,103 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "MenuLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L2"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L3"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L4"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L5"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R1"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R2"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R3"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R4"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R5"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Open Tickets"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

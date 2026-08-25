@@ -1,0 +1,37 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianErrorLayout",
+            "statusbartechnicianlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ErrorDescriptionLabel",
+            "Text": "Card still present"
+        },
+        {
+            "Type": "Label",
+            "Name": "ActionPromptLabel",
+            "Text": "Please remove Smartcard"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Error"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

@@ -1,0 +1,148 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DataView2ColumnMenuLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "FineLine"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6"
+        },
+        {
+            "Type": "Panel",
+            "Name": "HeaderRowPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "HeaderRowColumn1Label"
+        },
+        {
+            "Type": "Label",
+            "Name": "HeaderRowColumn2Label"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row1Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row1Column1Label"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row1Column2Label"
+        },
+        {
+            "Type": "Image",
+            "Name": "R2Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row2Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row2Column1Label"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row2Column2Label"
+        },
+        {
+            "Type": "Image",
+            "Name": "R3Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row3Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row3Column1Label"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row3Column2Label"
+        },
+        {
+            "Type": "Image",
+            "Name": "R4Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row4Panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row4Column1Label",
+            "Text": "Other Devices"
+        },
+        {
+            "Type": "Label",
+            "Name": "Row4Column2Label"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Device Status"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+    ]
+}

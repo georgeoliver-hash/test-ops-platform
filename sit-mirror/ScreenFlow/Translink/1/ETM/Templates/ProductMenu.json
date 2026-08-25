@@ -1,0 +1,38 @@
+{
+    "Attributes": {
+        "Name": "ProductMenu",
+        "Layouts": [
+            "ProductMenuWithTotals",
+            "WhiteFLUStatusBarLayout"
+        ],
+        "Brightness": 5
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "L1Prod"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Go Back"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalModeLabel",
+            "Text": "Last"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        }
+    ]
+}

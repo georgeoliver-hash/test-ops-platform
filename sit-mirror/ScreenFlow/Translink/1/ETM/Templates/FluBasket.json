@@ -1,0 +1,126 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "ShoppingBasketLayout",
+            "WhiteFLUStatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "backgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalLabel",
+            "Text": "Total"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalCostLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalCountLabel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L5",
+            "Text": "Clear"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L4",
+            "Text": "Delete Item"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsLabel",
+            "Text": "Tickets"
+        },
+        {
+            "Type": "Grid",
+            "Name": "ShoppingBasketTableListPanel",
+            "Others": {
+                "Columns": "Padding,Product,Qty,Fare,Padding"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R5",
+            "Text": "Add More to Basket"
+        },
+        {
+            "Type": "Image",
+            "Name": "L5Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "L4Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R5Icon"
+        },
+        {
+            "Type": "Image",
+            "Name": "R6Icon"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Confirm"
+        },
+        {
+            "Type": "Panel",
+            "Name": "StatusBarPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "StatusBarBackgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        }
+    ]
+}

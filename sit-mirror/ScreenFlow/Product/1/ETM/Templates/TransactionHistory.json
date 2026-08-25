@@ -1,0 +1,20 @@
+{
+    "Attributes": {
+        "Name": "TransactionHistory",
+        "Layouts": [
+            "TransactionHistory"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "Transaction History",
+            "Type": "Panel",
+            "Text": "Transaction History"
+        },
+        {
+            "Name": "< Back",
+            "Type": "Panel",
+            "Text": "< Back"
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "Attributes": {
+      "Name": "TapSuccess",
+      "Layouts": [
+        "validationsuccesslayout",
+        "StatusBarLayout"
+      ]
+    },
+    "Elements": [
+      {
+        "Type": "Label",
+        "Name": "labelResult",
+        "Text": "Tap Successful"
+      },
+      {
+        "Type": "Image",
+        "Others": {
+          "BackgroundImageFilePath": "Images\\Success.png"
+        }
+      },
+      {
+        "Type": "Label",
+        "Name": "labelPrompt",
+        "Text": "Please remove card"
+      },
+      {
+        "Type": "Label",
+        "Name": "TitleLabel",
+        "Text": "Success"
+      }
+    ]
+}

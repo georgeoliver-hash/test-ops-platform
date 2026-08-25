@@ -1,0 +1,54 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "NetworkInterfacesSummarylayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "ScrollPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollUpButton"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollDownButton"
+        },
+        {
+            "Type": "Grid",
+            "Name": "NetworkInterfacesGrid"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "RefreshButton",
+            "Text": "Refresh"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Network Interfaces"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

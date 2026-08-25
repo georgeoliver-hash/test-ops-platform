@@ -1,0 +1,41 @@
+{
+    "Attributes": {
+        "Layouts": []
+    },
+    "Elements": [
+        {
+            "Name": "main",
+            "Type": "Panel"
+        },
+        {
+            "Name": "maintenance.title.exit",
+            "Type": "Panel"
+        },
+        {
+            "Name": "logo",
+            "Type": "Panel"
+        },
+        {
+            "Name": "header-title",
+            "Type": "Panel"
+        },
+        {
+            "Name": "singleActionScreen-message",
+            "Type": "Panel"
+        },
+        {
+            "Name": "single-action-button",
+            "Text": "CONFIRM",
+            "Type": "Panel"
+        },
+        {
+            "Name": "navbar-back-button",
+            "Text": "Back",
+            "Type": "Panel"
+        },
+        {
+            "Name": "navbar-home-button",
+            "Text": "Home"
+        }
+    ]
+}

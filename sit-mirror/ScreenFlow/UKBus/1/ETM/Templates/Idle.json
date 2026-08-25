@@ -1,0 +1,79 @@
+{
+	"Attributes": {
+		"Name": null,
+		"Layouts": [
+			"IdleScreenLayout",
+			"StatusBarLayout"
+		],
+		"Brightness": 0
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "Image",
+			"Name": "logo"
+		},
+		{
+			"Type": "Label",
+			"Name": "SignonPromptLabel1",
+			"Text": "Present Smartcard"
+		},
+		{
+			"Type": "Label",
+			"Name": "SignonPromptLabel2",
+			"Text": "or"
+		},
+		{
+			"Type": "Label",
+			"Name": "SignonPromptLabel3",
+			"Text": "Press Enter to continue"
+		},
+		{
+			"Type": "Label",
+			"Name": "DeviceDetails",
+			"Text": "REGEX:Device .+"
+		},
+		{
+			"Type": "Image",
+			"Name": "EnterButton"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

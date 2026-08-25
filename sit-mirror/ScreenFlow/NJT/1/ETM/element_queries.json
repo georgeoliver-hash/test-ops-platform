@@ -1,0 +1,50 @@
+{
+    "SignOnStaffId": { "Name": "input-id" },
+    "SignOnStaffPin": { "Name": "input-pin" },
+    "SignOnPinAlt": { "Name": "pin-input" },
+    "SignOnError": { "Name": "sign-on-error" },
+
+    "TripSetupRun": { "Name": "run-input" },
+    "TripSetupLine": { "Name": "line-input" },
+    "TripSetupTrip": { "Name": "trip-input" },
+    "TripSetupBoardingZone": { "Name": "boarding-zone-input" },
+    "TripSetupAlightingZone": { "Name": "alighting-zone-input" },
+    "TripSetupZoneNumber": { "Name": "zone-number-input" },
+    "TripSetupRiderClass": { "Name": "passenger-type-input" },
+    "TripSetupTransactionType": { "Name": "transaction-type-input" },
+    "TripSetupUnlock": { "Name": "unlock-input" },
+
+    "DefaultDisplayColourOfDay": { "Name": "colour-day-box" },
+    "DefaultDisplayFareboxFunds": { "Name": "farebox-funds-value" },
+    "DefaultDisplayFareboxIcon": { "Name": "farebox-icon" },
+    "DefaultDisplayIvnIcon": { "Name": "ivn-icon" },
+    "DefaultDisplayObvIcon": { "Name": "obv-icon" },
+    "DefaultDisplayDate": { "Name": "date-text" },
+    "DefaultDisplayTime": { "Name": "time-text" },
+    "DefaultDisplayShiftIcon": { "Name": "shift-icon" },
+
+    "TicketBasketSum": { "Name": "ticket-basket-sum" },
+    "TicketBasketSumLabel": { "Name": "ticket-basket-sum-label" },
+    "TicketBasketSumRow": { "Name": "ticket-basket-sum-row" },
+    "TicketDetailsBox": { "Name": "ticket-details-box" },
+    "TicketDetailsContent": { "Name": "ticket-details-content" },
+    "TicketDetailsClassRow": { "Name": "ticket-details-ticket-class-row" },
+    "TicketInputBox": { "Name": "ticket-input-box" },
+    "FluPageIndicator": { "Name": "flu-page-indicator" },
+
+    "DriverBreakNotification": { "Name": "br-notification" },
+    "DriverBreakNotificationText": { "Name": "br-notification-text" },
+
+    "ScreenSaverContainer": { "Name": "screensaver-container" },
+    "ServiceRestartingIcon": { "Name": "service-restarting-icon" },
+    "SoftwareVersionsScroll": { "Name": "software-versions-scroll" },
+    "AppConfigCogIcon": { "Name": "app-config-cog-icon" },
+    "GftsConfigCogIcon": { "Name": "gfts-config-cog-icon" },
+    "GftsConfigEditCogIcon": { "Name": "gfts-config-edit-cog-icon" },
+    "MaintenanceCogIcon": { "Name": "maintenance-cog-icon" },
+
+    "ButtonConfirm": { "Name": "button-confirm" },
+    "CenterSection": { "Name": "center-section" },
+    "CenterText": { "Name": "center-text" },
+    "OverlayRightSpacer": { "Name": "overlay-right-spacer" }
+}

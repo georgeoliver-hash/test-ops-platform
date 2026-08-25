@@ -1,0 +1,22 @@
+{
+    "Attributes": {
+        "Name": "SignonWordAndColourOfTheDayError",
+        "Layouts": [
+            "ErrorLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 5
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "ResultLabel",
+            "Text": "Word and Colours of the Day unavailable"
+        },
+        {
+            "Type": "Label",
+            "Name": "PromptLabel",
+            "Text": "Press Enter to continue"
+        }
+    ]
+}

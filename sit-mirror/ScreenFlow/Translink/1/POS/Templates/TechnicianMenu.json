@@ -1,0 +1,14 @@
+{
+    "Attributes": {},
+    "Elements": [
+        {
+            "Name": "tvLayoutTitleDefault",
+            "Type": "Label",
+            "Text": "Technician Menu"
+        },
+        {
+            "Name": "llButtons",
+            "Type": "Panel"
+        }
+    ]
+}

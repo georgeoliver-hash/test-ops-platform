@@ -1,0 +1,149 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "techniciansignonlayout",
+            "statusbartechnicianlayout",
+            "NumberPadEx"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelOperator",
+            "Text": "ID"
+        },
+        {
+            "Type": "Label",
+            "Name": "labelPin",
+            "Text": "PIN"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "textBoxOperatorId"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "textBoxPin"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Technician Sign-On"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator2",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator3",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator4",
+            "Text": ""
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator5",
+            "Text": ""
+        },
+        {
+            "Type": "Panel",
+            "Name": "pnl"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Exit",
+            "Text": "Cancel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "OK",
+            "Text": "Confirm"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "1",
+            "Text": "1"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "2",
+            "Text": "2"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "3",
+            "Text": "3"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "4",
+            "Text": "4"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "5",
+            "Text": "5"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "6",
+            "Text": "6"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "7",
+            "Text": "7"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "8",
+            "Text": "8"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "9",
+            "Text": "9"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Clear",
+            "Text": "Clear"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "0",
+            "Text": "0"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "Tab",
+            "Text": "Tab"
+        }
+    ]
+}

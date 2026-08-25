@@ -1,0 +1,78 @@
+{
+    "Attributes": {
+        "Name": null,
+        "Layouts": [
+            "MessageOfTheDayLayout",
+            "StatusBarLayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "Background"
+        },
+        {
+            "Type": "Label",
+            "Name": "OperatorAcknowledgementLabel",
+            "Text": "Press Enter to confirm"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageBackground"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageDateTimeLabel",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Label",
+            "Name": "MessageDetailslabel"
+        },
+        {
+            "Type": "Image",
+            "Name": "PressEnterIcon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TitleLabel",
+            "Text": "Message of the Day"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentTimeDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDayDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Clock",
+            "Name": "CurrentDateDigitalClock",
+            "Text": "REGEX:.+"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        }
+    ]
+}

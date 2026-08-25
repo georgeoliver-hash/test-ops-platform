@@ -1,0 +1,139 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DeviceLocationLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationLabel",
+            "Text": "Home Location"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "HomeLocationValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "StopLocationLabel",
+            "Text": "Stop Location"
+        },
+        {
+            "Type": "Label",
+            "Name": "StopLocationColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "StopLocationValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "SubLocationLabel",
+            "Text": "Install Point ID"
+        },
+        {
+            "Type": "Label",
+            "Name": "SubLocationColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "SubLocationValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionLabel",
+            "Text": "Direction"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "DirectionValueLabel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ChangeButton",
+            "Text": "Change"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageLabel",
+            "Text": "Stage"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneLabel",
+            "Text": "Zone"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneNameColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageIdColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "StageValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "ZoneValueLabel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Separator"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDLabel",
+            "Text": "ID"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDColonLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "IDDeviceLabel",
+            "Text": "PV"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Location Settings"
+
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

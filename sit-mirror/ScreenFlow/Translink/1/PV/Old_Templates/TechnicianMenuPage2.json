@@ -1,0 +1,46 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "TechnicianMenuLayout",
+            "statusbartechnicianlayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L1MenuButton",
+            "Text": "Force Communications"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "PreviousPageButton",
+            "Text": "Previous"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "SignoffButton",
+            "Text": "Sign-off"
+        },
+        {
+            "Type": "Panel",
+            "Name": "SeparatorPanel"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Technician Menu"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        }
+    ]
+}

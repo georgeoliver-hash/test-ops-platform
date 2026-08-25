@@ -1,0 +1,24 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"validationsuccesslayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Label",
+			"Name": "labelResult"
+		},
+		{
+			"Type": "Label",
+			"Name": "labelPrompt",
+			"Text": "Please Remove Smartcard"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Success"
+		}
+	]
+}

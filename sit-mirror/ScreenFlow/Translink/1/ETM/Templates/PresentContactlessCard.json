@@ -1,0 +1,35 @@
+{
+    "Attributes": {
+        "Name": "PresentContactlessCard",
+        "Layouts": [
+            "PresentContactlessCardLayout",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+      {
+        "Type": "Label",
+        "Name": "titleLabel",
+        "Text": "Present Contactless Card"
+      },
+      {
+        "Type": "Label",
+        "Name": "TransactionAmountLabel"
+      },
+      {
+        "Type": "Label",
+        "Name": "productDescLabel",
+        "Text": "Transaction Value "
+      },
+      {
+        "Type": "Button",
+        "Name": "L6",
+        "Text": "Cancel"
+      },
+      {
+        "Type": "Label",
+        "Name": "TitleLabel",
+        "Text": "Payment"
+      }
+    ]
+}

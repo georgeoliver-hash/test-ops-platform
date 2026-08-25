@@ -1,0 +1,222 @@
+{
+    "Presets": {
+        "StaffId": "1111",
+        "StaffPin": "1111",
+        "OperatorRoute": "5A,,In,",
+        "JourneyNumber": "0000",
+        "DefaultBoardingStop": "Baiter Car Park",
+        "DutyNumber": "201"
+    },
+    "Screens": {
+        "Suspend": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "Suspend"
+        },
+        "Idle": {
+            "Navigable_screens": {
+                "ManualSignOn": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "Idle"
+        },
+        "Idle.WithCard": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "Idle"
+        },
+        "ManualSignOn": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "BusCheck": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]},
+                "TechnicianMenu": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${StaffId}", "Element": "SignOnIdBox"},
+                    {"Type": "UI_Key", "Keys": "Return"},
+                    {"Type": "UI_Textbox", "Text": "${StaffPin}", "Element": "SignOnPinBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "State": {
+                "SmartcardPresent": false
+            },
+            "Screen": "ManualSignOn"
+        },
+        "SmartcardSignOn": {
+            "Navigable_screens": {
+                "Idle": {"Type": "Smartcard_Remove"}
+            },
+            "State": {
+                "SmartcardPresent": true
+            },
+            "Screen": "ManualSignOn"
+        },
+
+        //#region Technician
+
+        "TechnicianMenu": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Button", "Text": "Sign Off"}
+            },
+            "State": {"SmartcardPresent": false},
+            "Alternatives": ["TechnicianMenu.WithCard"],
+            "Screen": "TechnicianMenu"
+        },
+        "TechnicianMenu.WithCard": {
+            "Navigable_screens": {
+                "TechnicianMenu": {"Type": "Smartcard_Remove"}
+            },
+            "State": {"SmartcardPresent": true},
+            "Screen": "TechnicianMenu"
+        },
+
+        //#endregion
+
+
+        //#region Operator
+
+        //#region Sign on
+        "BusCheck": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "DutyNumber": {"Type": "UI_Button", "Text": "Yes"}
+            },
+            "Screen": "BusCheck"
+        },
+        "Defects": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "DutyNumber": {"Type": "UI_Button", "Text": "No"}
+            },
+            "Screen": "Defects"
+        },
+        "DutyNumber": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "RouteSearch": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${DutyNumber}", "Element": "DutyNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Alternatives": ["Defects"],
+            "Screen": "DutyNumber"
+        },
+        "RouteSearch": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "RouteSelection": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "", "Element": "RouteSearchBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Screen": "RouteSearch"
+        },
+        "RouteSelection": {
+            "Navigable_screens": {
+                "Idle": {"Type": "UI_Key", "Keys": "Back"},
+                "JourneyNumber": {"Type": "UI_SearchGrid", "Text": "${OperatorRoute}", "Element": "RouteGridBox", "Press": true}
+            },
+            "Screen": "RouteSelection"
+        },
+        "JourneyNumber": {
+            "Navigable_screens": {
+                "RouteSelection": {"Type": "UI_Key", "Keys": "Back"},
+                "RouteSummary": {"Type": "Stages", "Actions": [
+                    {"Type": "UI_Textbox", "Text": "${JourneyNumber}", "Element": "JourneyNumberBox"},
+                    {"Type": "UI_Key", "Keys": "Return"}
+                ]}
+            },
+            "Screen": "JourneyNumber"
+        },
+        "RouteSummary": {
+            "Navigable_screens": {
+                "JourneyNumber": {"Type": "UI_Key", "Keys": "Back"},
+                "MessageOfDay": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "RouteSummary"
+        },
+        "MessageOfDay": {
+            "Navigable_screens": {
+                "WordAndColour": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "MessageOfDay"
+        },
+        "WordAndColour": {
+            "Navigable_screens": {
+                "MessageOfDay": {"Type": "UI_Key", "Keys": "Back"},
+                "Flu.ModeOpenPayment": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "WordAndColour"
+        },
+
+        //#endregion
+        
+        //#region Flu screens
+
+        "Flu": {  // Mode cash
+            "Navigable_screens": {
+                "Flu.ModeOpenPayment": {"Type": "UI_Key", "Keys": "SUBTRACT"},
+                "DriverMenu": {"Type": "UI_Key", "Keys": "Menu"}
+            },
+            "State": {"LayoutVariables": {
+                    "PaymentMode": "Cash",
+                    "FluBoardingName": "${DefaultBoardingStop}"  // TODO, waiting on fix
+                }},
+            "Alternatives": ["Flu.ModeEMV", "Flu.ModeOpenPayment"],
+            "Screen": "Flu"
+        },
+
+        "Flu.ModeEMV": {
+            "Navigable_screens": {
+                "Flu": {"Type": "UI_Key", "Keys": "SUBTRACT"},
+                "DriverMenu": {"Type": "UI_Key", "Keys": "Menu"}
+            },
+            "State": {"LayoutVariables": {"PaymentMode": "EMV"}},
+            "Screen": "Flu"
+        },
+        "Flu.ModeOpenPayment": {
+            "Navigable_screens": {
+                "Flu.ModeEMV": {"Type": "UI_Key", "Keys": "SUBTRACT"},
+                "DriverMenu": {"Type": "UI_Key", "Keys": "Menu"}
+            },
+            "State": {"LayoutVariables": {"PaymentMode": "ABT/OP"}},
+            "Screen": "Flu"
+        },
+
+        "SmartcardValidationError": {
+            "Navigable_screens": {
+                "Flu": {"Type": "Smartcard_Remove"}
+            },
+            "Screen": "SmartcardValidationError"
+        },
+
+        "DriverMenu": {
+            "Navigable_screens": {
+                "Flu.ModeOpenPayment": {"Type": "UI_Key", "Keys": "Menu"},
+                "DriverMenu.SignOffConfirmation": {"Type": "UI_Button", "Text": "Sign Off"}
+            },
+            "Screen": "DriverMenu"
+        },
+        "DriverMenu.SignOffConfirmation": {
+            "Navigable_screens": {
+                "DriverMenu": {"Type": "UI_Button", "Text": "Cancel"},
+                "Idle": {"Type": "UI_Key", "Keys": "Return"}
+            },
+            "Screen": "SignOffConfirmation"
+        }
+        //#endregion
+
+        //#endregion
+    }
+}

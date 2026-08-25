@@ -1,0 +1,45 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "GenericFragmentHost",
+            "FragValidationTitleBar",
+            "DateTimeView",
+            "LlDateTime"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "GenericFragmentHost",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvLabelPrompt",
+            "Text": "Present Card",
+            "Type": "Label"
+        },
+        {
+            "Name": "imageView1",
+            "Type": "Image"
+        },
+        {
+            "Name": "FragValidationTitleBar",
+            "Type": "Panel"
+        },
+        {
+            "Name": "DateTimeView",
+            "Type": "Panel"
+        },
+        {
+            "Name": "LlDateTime",
+            "Type": "Panel"
+        },
+        {
+            "Name": "TvTitleTime",
+            "Type": "Label"
+        },
+        {
+            "Name": "TvTimePeriod",
+            "Type": "Label"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "DataView4ColumnMenu",
+            "StatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+          "Type": "ImageButton",
+          "Name": "L6",
+          "Text": "Go Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "R6",
+            "Text": "Refresh"
+        },
+        {
+            "Type": "Panel",
+            "Name": "Row1"
+        },
+        {
+          "Type": "Label",
+          "Name": "TitleLabel",
+          "Text": "Network Settings"
+        }
+    ]
+}

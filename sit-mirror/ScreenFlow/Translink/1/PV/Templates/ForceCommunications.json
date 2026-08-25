@@ -1,0 +1,122 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "CommsStatusLayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "RefreshButton",
+            "Text": "Refresh"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "CallNowButton",
+            "Text": "Call Now"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingAuditRecordCountLabel",
+            "Text": "Pending Audit Record Count"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastAuditRecordSentDateTimeLabel",
+            "Text": "Last Audit Record Sent Date/Time"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastConfigCheckDateTimeLabel",
+            "Text": "Last Configuration Check Date/Time"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastManifestDownloadDateTimeLabel",
+            "Text": "Last Manifest Download Date/Time"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingConfigurationItemCountLabel",
+            "Text": "Pending Configuration Item Count"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastConfigCheckDateTimeValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastConfigCheckDateTimeColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastManifestDownloadDateTimeColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingConfigurationItemCountColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastManifestDownloadDateTimeValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingConfigurationItemCountValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastAuditRecordSentDateTimeColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingAuditRecordCountColonLabel",
+            "Text": ":"
+        },
+        {
+            "Type": "Label",
+            "Name": "PendingAuditRecordCountValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "LastAuditRecordSentDateTimeValueLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator"
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Force Communications"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo",
+            "Text": null
+        }
+    ]
+}

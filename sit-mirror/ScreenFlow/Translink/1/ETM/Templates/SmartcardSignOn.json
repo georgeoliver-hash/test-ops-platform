@@ -1,0 +1,84 @@
+{
+	"Attributes": {
+		"Layouts": [
+			"SignOnLayout",
+			"StatusBarLayout"
+		]
+	},
+	"Elements": [
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Image",
+			"Name": "Background"
+		},
+		{
+			"Type": "TextBox",
+			"Name": "OperatorIDTextBox",
+			"Text": "REGEX:.+",
+			"HasFocus": false
+		},
+		{
+			"Type": "Label",
+			"Name": "OperatorIDLabel",
+			"Text": "ID"
+		},
+		{
+			"Type": "TextBox",
+			"Name": "PINTextBox",
+			"HasFocus": true
+		},
+		{
+			"Type": "Label",
+			"Name": "OperatorPromptLabel",
+			"Text": "Press Enter to confirm"
+		},
+		{
+			"Type": "Image",
+			"Name": "gpicturebox1"
+		},
+		{
+			"Type": "Label",
+			"Name": "PINLabel",
+			"Text": "PIN"
+		},
+		{
+			"Type": "Panel",
+			"Name": "LayoutPanel"
+		},
+		{
+			"Type": "Label",
+			"Name": "TitleLabel",
+			"Text": "Sign-On"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CellularStatusPictureBox"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Image",
+			"Name": "CardReaderStatusPictureBox"
+		},
+		{
+			"Type": "Image",
+			"Name": "GpsStatusPictureBox"
+		}
+	]
+}

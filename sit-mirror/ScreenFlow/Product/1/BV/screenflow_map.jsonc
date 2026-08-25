@@ -1,0 +1,131 @@
+// Axio Validator — Stagecoach screenflow map
+// Navigation is entirely notification-driven (React Native Web, pathname always '/').
+// Attributes.Name in translate_screen_data() uses _notification_screen_name tracking.
+// Screen names here match the notification path suffix: e.g. "DeviceStateNotification"
+// for the last notification that drove this screen state.
+//
+// Since the Axio has no user-interactive navigation (no buttons to press),
+// all Navigable_screens use ValidatorNotification action type.
+// Tests assert screen state using Device: Screen: Validate Screen with text matching.
+{
+    "Presets": {},
+    "Screens": {
+        "Idle_InService": {
+            "Screen": "Idle_InService",
+            "Navigable_screens": {
+                "Action_PresentCard": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "RetailPaymentRequestNotification",
+                    "NotificationData": {"Status": "Present"}
+                },
+                "Idle_OutOfService": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "DeviceStateNotification",
+                    "NotificationData": {"CurrentState": "OutOfService", "OldState": "InService"}
+                },
+                "Validation_Success": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "CardValidationComplete",
+                    "NotificationData": {"ValidationStatus": "Success"}
+                },
+                "Validation_Failed": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "CardValidationComplete",
+                    "NotificationData": {"ValidationStatus": "Failed"}
+                }
+            }
+        },
+        "Idle_OutOfService": {
+            "Screen": "Idle_OutOfService",
+            "Navigable_screens": {
+                "Idle_InService": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "DeviceStateNotification",
+                    "NotificationData": {"CurrentState": "InService", "OldState": "OutOfService"}
+                }
+            }
+        },
+        "Action_PresentCard": {
+            "Screen": "Action_PresentCard",
+            "Navigable_screens": {
+                "Action_PleaseWait": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "PaymentRequestNotification",
+                    "NotificationData": {"Status": "PleaseWait"}
+                },
+                "Action_Success": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "PaymentCompleteNotification",
+                    "NotificationData": {"Status": "Success"}
+                },
+                "Action_Failed": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "PaymentCompleteNotification",
+                    "NotificationData": {"Status": "Failed"}
+                },
+                "Idle_InService": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "DeviceStateNotification",
+                    "NotificationData": {"CurrentState": "InService", "OldState": "Offline"}
+                }
+            }
+        },
+        "Action_PleaseWait": {
+            "Screen": "Action_PleaseWait",
+            "Navigable_screens": {
+                "Action_Success": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "PaymentCompleteNotification",
+                    "NotificationData": {"Status": "Success"}
+                },
+                "Action_Failed": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "PaymentCompleteNotification",
+                    "NotificationData": {"Status": "Failed"}
+                },
+                "Idle_InService": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "DeviceStateNotification",
+                    "NotificationData": {"CurrentState": "InService", "OldState": "Offline"}
+                }
+            }
+        },
+        "Action_Success": {
+            "Screen": "Action_Success",
+            "Navigable_screens": {
+                "Idle_InService": {
+                    "Type": "Wait",
+                    "Seconds": 4
+                }
+            }
+        },
+        "Action_Failed": {
+            "Screen": "Action_Failed",
+            "Navigable_screens": {
+                "Idle_InService": {
+                    "Type": "Wait",
+                    "Seconds": 4
+                }
+            }
+        },
+        "Validation_Success": {
+            "Screen": "Validation_Success",
+            "Navigable_screens": {
+                "Idle_InService": {
+                    "Type": "Wait",
+                    "Seconds": 4
+                }
+            }
+        },
+        "Validation_Failed": {
+            "Screen": "Validation_Failed",
+            "Navigable_screens": {
+                "Idle_InService": {
+                    "Type": "ValidatorNotification",
+                    "NotificationName": "DeviceStateNotification",
+                    "NotificationData": {"CurrentState": "InService", "OldState": "Offline"}
+                }
+            }
+        }
+    }
+}

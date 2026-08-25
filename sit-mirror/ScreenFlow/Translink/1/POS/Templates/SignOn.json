@@ -1,0 +1,22 @@
+{
+    "Attributes": {},
+    "Elements": [
+        {
+            "Name": "tvLayoutTitleDefault",
+            "Type": "Label",
+            "Text": "Sign On"
+        },
+        {
+            "Name": "etId",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "etPin",
+            "Type": "TextBox"
+        },
+        {
+            "Name": "ivEnterButton",
+            "Type": "Image"
+        }
+    ]
+}

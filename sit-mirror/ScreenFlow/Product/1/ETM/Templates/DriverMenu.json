@@ -1,0 +1,40 @@
+{
+    "Attributes": {
+        "Name": "DriverMenu",
+        "Layouts": [
+            "DriverMenu"
+        ]
+    },
+    "Elements": [
+        {
+            "Name": "Panel1",
+            "Type": "Panel",
+            "Text": "Driver Menu"
+        },
+        {
+            "Name": "Panel2",
+            "Type": "Panel",
+            "Text": "Shift Details"
+        },
+        {
+            "Name": "Panel3",
+            "Type": "Panel",
+            "Text": "Start New Trip"
+        },
+        {
+            "Name": "Panel4",
+            "Type": "Panel",
+            "Text": "Transaction History"
+        },
+        {
+            "Name": "Panel5",
+            "Type": "Panel",
+            "Text": "Interim Report"
+        },
+        {
+            "Name": "Panel6",
+            "Type": "Panel",
+            "Text": "Sign-Off"
+        }
+    ]
+}

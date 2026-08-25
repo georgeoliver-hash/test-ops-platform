@@ -1,0 +1,99 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "ShoppingBasketLayout",
+            "WhiteFLUStatusBarLayout"
+        ]
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "backgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalLabel",
+            "Text": "Total"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalCostLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TotalCountLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "TicketsLabel",
+            "Text": "Tickets"
+        },
+        {
+            "Type": "Grid",
+            "Name": "ShoppingBasketTableListPanel",
+            "Others": {
+                "Columns": "Padding,Product,Qty,Fare,Padding"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "L6",
+            "Text": "Cancel"
+        },
+        {
+            "Type": "Image",
+            "Name": "L6Icon"
+        },
+        {
+            "Type": "Panel",
+            "Name": "StatusBarPanel"
+        },
+        {
+            "Type": "Image",
+            "Name": "StatusBarBackgroundPictureBox"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNumberLabel"
+        },
+        {
+            "Type": "Label",
+            "Name": "BoardingStopNameLabel"
+        },
+		{
+			"Type": "Clock",
+			"Name": "CurrentTimeDigitalClock",
+			"Text": "REGEX:\\d+:\\d+:\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDateDigitalClock",
+			"Text": "REGEX:\\d+/\\d+/\\d+"
+		},
+		{
+			"Type": "Clock",
+			"Name": "CurrentDayDigitalClock",
+			"Text": "REGEX:.+"
+		},
+        {
+            "Type": "Image",
+            "Name": "CellularStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "CardReaderStatusPictureBox"
+        },
+        {
+            "Type": "Image",
+            "Name": "GpsStatusPictureBox"
+        },
+        {
+            "Type": "TextBox",
+            "Name": "ScheduleDeviationTextBox"
+        }
+    ]
+}

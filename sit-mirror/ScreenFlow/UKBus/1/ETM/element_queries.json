@@ -1,0 +1,113 @@
+{
+    "SignOnIdBox": {
+        "Type": "TextBox",
+        "Name": "OperatorIDTextBox"
+    },
+    "SignOnPinBox": {
+        "Type": "TextBox",
+        "Name": "PINTextBox"
+    },
+    "DutyNumberBox": {
+        "Type": "TextBox",
+        "Name": "TextBox",
+        "X": 100
+    },
+    "RouteSearchBox": {
+        "Type": "TextBox",
+        "Name": "TextBox"
+    },
+    "RouteGridBox": {
+        "Type": "Grid",
+        "Name": "RouteTableListPanel"
+    },
+    "JourneyNumberBox": {
+        "Type": "TextBox",
+        "X": 100
+    },
+    "MessageOfDayLabel": {
+        "Type": "Label",
+        "Name": "MessageOfTheDayLabel"
+    },
+    "MessageOfDayTime": {
+        "Type": "Label",
+        "Name": "MessageDateTimeLabel"
+    },
+    "WordOfDayLabel": {
+        "Type": "Label",
+        "Name": "WordOfTheDayValueLabel"
+    },
+    "ColourOfDayLabel1": {
+        "Type": "Label",
+        "Name": "ColourOfTheDay1ValueLabel"
+    },
+    "ColourOfDayLabel2": {
+        "Type": "Label",
+        "Name": "ColourOfTheDay2ValueLabel"
+    },
+
+    "FluTypeValue": {
+        "Type": "Label",
+        "Name": "FLUTypeValueLabel"
+    },
+    "FluCurrentProduct": {
+        "Type": "Label",
+        "Name": "SelectedProductValueLabel"
+    },
+    "FluPassengerCount": {
+        "Type": "Label",
+        "Name": "PassengerCountLabel"
+    },
+    "FluTotalFare": {
+        "Type": "Label",
+        "Name": "TotalLabel"
+    },
+    "FluTotalMode": {
+        "Type": "Label",
+        "Name": "TotalModeLabel"
+    },
+    "FluBoardingNumber": {
+        "Type": "Label",
+        "Name": "BoardingStopNumberLabel"
+    },
+    "FluBoardingName": {
+        "Type": "Label",
+        "Name": "BoardingStopNameLabel"
+    },
+    "FluScheduleDeviation": {
+        "Type": "Label",
+        "Name": "ScheduleDeviationTextBox"
+    },
+    "FluPurchaseTitle": {
+        "Type": "Label",
+        "Name": "AlightingStageLabel"
+    },
+    "FluPurchasePrice": {
+        "Type": "Label",
+        "Name": "FareLabel"
+    },
+    "FluSmartcardTransactionText": {
+        "Type": "Label",
+        "Name": "labelResult"
+    },
+
+    "AnnulmentLastDate": {
+        "Type": "Label",
+        "Name": "orgTransactionDateLabel"
+    },
+    "AnnulmentLastTime": {
+        "Type": "Label",
+        "Name": "orgTransactionTimeLabel"
+    },
+    "AnnulmentTotal": {
+        "Type": "Label",
+        "Name": "totalFareLabel"
+    },
+    "PaymentModeLabel": {
+        "Type": "Label",
+        "Name": "paymentModeLabel"
+    },
+    "PaymentMode": {
+        "Type": "Label",
+        "Name": "PaymentLabel"
+    }
+}

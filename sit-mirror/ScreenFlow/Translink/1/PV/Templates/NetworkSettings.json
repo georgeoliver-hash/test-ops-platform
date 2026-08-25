@@ -1,0 +1,85 @@
+{
+    "Attributes": {
+        "Layouts": [
+            "NetworkInterfacesSummarylayout",
+            "statusbartechnicianlayout"
+        ],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Panel",
+            "Name": "LayoutPanel"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollUpButton"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ScrollDownButton"
+        },
+        {
+            "Type": "Grid",
+            "Name": "NetworkInterfacesGrid"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "BackButton",
+            "Text": "Back"
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "RefreshButton",
+            "Text": "Refresh"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator",
+            "Text": ""
+        },
+        {
+            "Type": "GRScroll",
+            "Name": "ScrollBar",
+            "Text": null
+        },
+        {
+            "Type": "Panel",
+            "Name": "panel"
+        },
+        {
+            "Type": "Label",
+            "Name": "Title",
+            "Text": "Network Interfaces"
+        },
+        {
+            "Type": "Clock",
+            "Name": "clock"
+        },
+        {
+            "Type": "Image",
+            "Name": "Logo",
+            "Text": null
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator1"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator2"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator3"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator4"
+        },
+        {
+            "Type": "Label",
+            "Name": "Separator5"
+        }
+    ]
+}

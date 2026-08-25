@@ -1,0 +1,123 @@
+{
+    "Attributes": {
+        "Name": "GenericFTS",
+        "Layouts": [],
+        "Brightness": 0
+    },
+    "Elements": [
+        {
+            "Type": "Label",
+            "Name": "PaymentInformationText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Width": 457,
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "PaymentInformationText"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "FeaturesUnavaliabilityText",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "X": 513,
+            "Y": 537,
+            "Width": 457,
+            "Height": 34,
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "FeaturesUnavaliabilityText"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "ToggleLanguageSelectionButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Width": 45,
+            "Height": 50,
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "ToggleLanguageSelectionButton"
+            }
+        },
+        {
+            "Type": "Label",
+            "Name": "OutOfOrderMainMessage",
+            "Text": "  Sorry, but this machine is not currently\navailable for use\n\nTickets can be purchased onboard\nthe bus or at the ticket office\n\nPlease contact Translink on\n028 9035 4040 for assistance",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Width": 668,
+            "Height": 331,
+            "Padding": null,
+            "Others": {
+                "RawType": "WPFLabel",
+                "Translated": "True",
+                "Id": "OutOfOrderMainMessage"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DragToMoveButton",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Width": 1024,
+            "Height": 65,
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DragToMoveButton"
+            }
+        },
+        {
+            "Type": "ImageButton",
+            "Name": "DisabilityButton",
+            "Text": "",
+            "Colour": null,
+            "BackColour": {
+                "R": 0,
+                "G": 0,
+                "B": 0
+            },
+            "Width": 100,
+            "Height": 100,
+            "Padding": null,
+            "Others": {
+                "RawType": "Button",
+                "Translated": "True",
+                "Enabled": "True",
+                "Id": "DisabilityButton"
+            }
+        }
+    ]
+}
