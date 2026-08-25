@@ -1,0 +1,210 @@
+# ETM — Fare Look-Up (FLU) + Navigation (Functional, @mode(all): Metro + Ulsterbus)
+# Grounded in the "FLU" (74 screens / 60 notes) and "FLU 2.0 Navigation" (27 screens / 13 notes)
+# Overflow flows. Scope = FLU navigation + sales/fare-look-up behaviour ONLY. Smartcard top-up &
+# validation, ABT/EMV taps, Promo Menu, Basket Mode and Printer Errors appear in the FLU flow but are
+# authored in their dedicated areas (Smartcards & ABT, Basket Mode/Ticket Issue, Non-Functional) to
+# avoid duplication.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Fare Look-Up / Navigation
+    cases:
+      - title: FLU — product pages and toggle groups
+        objective: This test is to confirm the configurable FLU product pages and toggle-group behaviour, including the toggle pips and the expandable menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu-2-0-navigation/02_1_1_0 _ Toggle Groups - List.png
+        steps: |
+          **Given** a Driver is signed on and the ETM is displaying the FLU Home screen
+          **WHEN** the Driver views a product group with more than one product
+          **THEN** up to four toggle pips are displayed for the first four configured products
+          **AND** a '+' icon is shown when the group holds more than four products
+          **WHEN** the Driver selects a product beyond the first four via the expandable menu
+          **THEN** the '+' icon is highlighted
+          **AND** the selected product is applied
+          **AND** the product order reflects the CloudFare configuration
+        expected: FLU product pages reflect the configured order; toggle groups show up to four pips plus '+' for overflow, and selecting an extended product highlights '+'.
+      - title: FLU — change boarding stage manually
+        objective: This test is to confirm a Driver can manually change the boarding stage, and that this is only permitted outside the GPS footprint and below the speed threshold.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu-2-0-navigation/02_0_2 _ Main Screen - FLU - Change Boarding Stage.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **AND** the bus is outside the GPS footprint of the current boarding stage and travelling below 20kph
+          **WHEN** the Driver selects to change the boarding stage and chooses a new stage
+          **THEN** the boarding stage is updated to the selected stage
+          **WHEN** the bus is inside the GPS footprint or travelling above 20kph
+          **THEN** manual boarding-stage change is unavailable
+          **AND** the control is unresponsive
+        expected: Manual boarding-stage change succeeds only when outside the GPS footprint and below 20kph; otherwise the control is unresponsive. (Stage can also be set by ID — see Numeric entry.)
+      - title: FLU — alighting stage selection and paging
+        objective: This test is to confirm alighting-stage selection and paging, including that the fifth row always shows the route's last stage and that paging has no timeout.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu-2-0-navigation/02_0_3 _ FLU - Alighting Stages 06-09.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen for a known route
+          **WHEN** the Driver views the alighting stages
+          **THEN** up to five alighting stages are displayed
+          **AND** the fifth row always shows the route's last stage unless already listed in the first four
+          **WHEN** the Driver pages through further alighting stages
+          **THEN** each page lists the next stages not previously shown with no paging timeout
+          **WHEN** the Driver selects an alighting stage
+          **THEN** the selected alighting stage is applied to the current sale
+        expected: Alighting stages page five-at-a-time with the last stage always reachable; paging does not time out; a selected stage is applied.
+      - title: FLU — journey type toggle
+        objective: This test is to confirm the Driver can toggle between fare-based, favourite and transfer journeys.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu-2-0-navigation/02_0_4 _ FLU - Fare-Based - Journeys.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver toggles the journey type
+          **THEN** the fare-based journeys are displayed
+          **AND** the favourite journeys can be viewed
+          **AND** the transfer journeys can be viewed
+        expected: The Driver can switch between fare-based, favourite and transfer journey views.
+      - title: FLU — preset and menu-type products
+        objective: This test is to confirm preset/pass products and menu-type product selection from the FLU screen.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu-2-0-navigation/02_3 _ Menu Type.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver opens a menu-type product list and selects a product
+          **THEN** the selected product is applied to the sale
+          **AND** if the product belongs to a toggle group the relevant pip (or '+') is highlighted
+          **WHEN** the Driver selects a preset product
+          **THEN** the preset product is applied
+        expected: Menu-type and preset products can be selected, with toggle-group indication reflected.
+      - title: FLU — selection times out to the default product
+        objective: This test is to confirm that an FLU selection left idle reverts to the default product/page after the configured timeout.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has made an FLU selection such as an alighting stage or alternate product
+          **WHEN** no further action is taken for 60 seconds
+          **THEN** the ETM clears the selection and returns to the default FLU page
+        expected: An idle FLU selection clears after 60 seconds and the ETM returns to the default page.
+
+  - path: Functional / Fare Look-Up / Sales
+    cases:
+      - title: FLU — numeric entry, change and stage by ID
+        objective: This test is to confirm numeric entry to calculate change and to set the boarding/alighting stage by ID, including the error-bar messages and 'C' clearing a character.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/04_0_1 _ Numeric Entry - 9017 - Change _ Alighting.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver enters an amount tendered
+          **THEN** the change due is calculated
+          **AND** the change due is displayed
+          **WHEN** the Driver enters a stage ID to set the boarding or alighting stage
+          **THEN** the matching stage is set
+          **WHEN** the entry cannot be completed
+          **THEN** the relevant error-bar message is shown ("Unable to set Alighting Stage", "Unable to set Boarding Stage", or "Unable to Calculate Change")
+          **AND** the input is cleared
+          **WHEN** the 'C' key is pressed during entry
+          **THEN** one character is cleared from the input field
+        expected: Numeric entry calculates change and sets stages by ID; invalid entries show the matching error-bar message and clear; 'C' clears a character.
+      - title: FLU — group ticket payment
+        objective: This test is to confirm a group ticket can be sold and paid for from the FLU screen.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/04_1 _ FLU - Group Ticket - Payment.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver builds a group ticket and takes payment
+          **THEN** the group ticket is issued at the correct price
+          **AND** a ticket is printed
+        expected: A group ticket is priced, paid and issued with a printed ticket.
+      - title: FLU — ticket type selection and change
+        objective: This test is to confirm the Driver can select a ticket type and change it, with the fare display updating accordingly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects a ticket type
+          **THEN** the fare for that ticket type is displayed
+          **WHEN** the Driver changes the ticket type
+          **THEN** the fare display updates to the new ticket type
+        expected: Selecting or changing the ticket type updates the displayed fare.
+      - title: FLU — default ticket class reverts on timeout
+        objective: This test is to confirm a changed ticket class reverts to the default after the configured inactivity timeout.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has changed the ticket class away from the default
+          **WHEN** no further action is taken for the configured timeout
+          **THEN** the ticket class reverts to the default class
+        expected: A non-default ticket class reverts to default after the inactivity timeout.
+      - title: FLU — last transaction display and success timeout
+        objective: This test is to confirm the last transaction is shown after a sale and that the success confirmation times out after three seconds.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/2_5 _ Main Screen - Last Transaction 200 - Success.png
+        steps: |
+          **Given** a Driver has issued a ticket
+          **WHEN** the sale completes successfully
+          **THEN** a success confirmation is displayed
+          **AND** the last transaction is shown in the bottom-right of the FLU screen
+          **WHEN** three seconds elapse
+          **THEN** the success confirmation times out back to the FLU screen
+        expected: A completed sale shows a success confirmation (3s timeout) and the last transaction in the corner of FLU.
+      - title: FLU — Easibus product menu
+        objective: This test is to confirm the Easibus product menu appears on selection and is configurable.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/02_0_5 _ Easibus.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects the Easibus option
+          **THEN** the Easibus product menu is displayed for the configured products
+          **WHEN** the Driver selects an Easibus product
+          **THEN** the selected Easibus product is applied to the sale
+        expected: The Easibus menu shows the configured products and a selection is applied.
+      - title: FLU — currency switch to Euro and back
+        objective: This test is to confirm the Driver can toggle the sale currency to Euro and back to Pounds via the alighting-stage key.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_4 _ Main Screen - Currency is Euro.png
+        steps: |
+          **Given** a Driver is signed on with an alighting stage selectable
+          **WHEN** the Driver presses the alighting-stage key a second time
+          **THEN** the currency switches to Euro (€)
+          **WHEN** the Driver presses the alighting-stage key a third time
+          **THEN** the currency switches back to Pounds (£)
+        expected: The alighting-stage key toggles the sale currency £ → € → £.
+      - title: FLU — Travel Mode and schedule adherence
+        objective: This test is to confirm the ETM enters Travel Mode while driving, showing time/date and schedule adherence, and restores to FLU on a button press or smartcard tap.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_6 -Main Screen - Travel Mode.png
+        steps: |
+          **Given** a Driver is signed on and the bus is in motion
+          **WHEN** no FLU button is pressed for one minute
+          **THEN** the ETM enters Travel Mode showing the time and date with dimmed brightness
+          **AND** schedule adherence is shown (green on time, orange within the set parameter, red outside it)
+          **WHEN** a button is pressed or a customer presents a smartcard
+          **THEN** the brightness is restored
+          **AND** the ETM returns to the FLU screen
+        expected: Travel Mode triggers after 1 min while driving (dimmed, time/date + schedule adherence colour); any button or smartcard tap restores FLU.
+      - title: FLU — passenger count
+        objective: This test is to confirm the Driver can record a passenger count.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver records a passenger count
+          **THEN** the passenger count is captured against the journey
+        expected: A passenger count is captured against the journey.
+      - title: FLU — favourite stages
+        objective: This test is to confirm the Driver can view and use favourite stages.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver opens the favourite stages
+          **THEN** the configured favourite stages are listed
+          **WHEN** the Driver selects a favourite stage
+          **THEN** the selected stage is applied
+        expected: Favourite stages are listed and a selection is applied.
+      - title: FLU — start a new journey mid-shift
+        objective: This test is to confirm a Driver can start a new journey during a shift, re-selecting route and journey.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and partway through a shift
+          **WHEN** the Driver selects Start New Journey and confirms a new route and journey number
+          **THEN** the ETM updates to the new route and journey
+          **AND** the change is audited
+        expected: Start New Journey re-selects route/journey mid-shift and audits the change.

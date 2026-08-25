@@ -1,0 +1,121 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Multi-Use Barcodes]
+    cases:
+      - title: "Multi-Use Barcode — vehicle type invalid for route shows Invalid Service"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode with a vehicle type invalid for the current
+          route shows the Invalid Service failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode is scanned and its Unique ID passes the PassBack check
+          **WHEN** the HHD checks the barcode's vehicle type against the current route and it is invalid
+          **THEN** the 25.9.2 Barcode Multi-Use - Failure - Invalid Service screen is displayed
+        expected: "A multi-use barcode with a vehicle type invalid for the current route shows Failure - Invalid Service."
+
+      - title: "Multi-Use Barcode — Start Date/Time not yet reached shows Invalid Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode presented before its Start Date/Time shows the
+          Invalid Time failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode is scanned with a vehicle type valid for the current route
+          **WHEN** the HHD checks the barcode's Start Date/Time and the current date/time is before it
+          **THEN** the 25.9.3 Barcode Multi-Use - Failure - Invalid Time screen is displayed
+        expected: "A multi-use barcode presented before its Start Date/Time shows Failure - Invalid Time."
+
+      - title: "Multi-Use Barcode — End Date/Time passed shows Invalid Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode presented after its End Date/Time shows the
+          Invalid Time failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode is scanned and its Start Date/Time check has passed
+          **WHEN** the HHD checks the barcode's End Date/Time and the current date/time is after it
+          **THEN** the 25.9.5 Barcode Multi-Use - Failure - Invalid Time screen is displayed
+        expected: "A multi-use barcode presented after its End Date/Time shows Failure - Invalid Time."
+
+      - title: "Multi-Use Barcode — product not valid on route shows Invalid Service"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode whose product is not valid on the current route
+          shows the Invalid Service failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode is scanned, is not a 3 Day Select product, and its End Date/Time check has passed
+          **WHEN** the HHD checks whether the barcode's product is valid on the current route and it is not
+          **THEN** the 25.9.2 Barcode Multi-Use - Failure - Invalid Service screen is displayed
+        expected: "A multi-use barcode product that is not valid on the current route shows Failure - Invalid Service."
+
+      - title: "Multi-Use Barcode — 3 Day Select date mismatch shows Invalid Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a 3 Day Select multi-use barcode where the current date matches none
+          of its Start, Additional, or End Date shows the Invalid Time failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode is scanned and its product is a 3 Day Select
+          **WHEN** the HHD checks whether the current date equals the barcode's Start, Additional, or End Date and it does not
+          **THEN** the 25.9.3 Barcode Multi-Use - Failure - Invalid Time screen is displayed
+        expected: "A 3 Day Select multi-use barcode whose current date matches none of its Start/Additional/End Date shows Failure - Invalid Time."
+
+      - title: "Multi-Use Barcode — Rail location outside Boarding/Alighting shows Invalid Location"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode with Boarding/Alighting locations encoded,
+          scanned on a Rail route outside those locations, shows the Invalid Location failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode with Boarding/Alighting locations encoded is scanned on a Rail route
+          **WHEN** the HHD checks whether the current location is at or between the Boarding/Alighting locations and it is not
+          **THEN** the 25.9.4 Barcode Multi-Use - Failure - Invalid Location screen is displayed
+        expected: "A Rail-route multi-use barcode whose current location is outside its Boarding/Alighting range shows Failure - Invalid Location."
+
+      - title: "Multi-Use Barcode — CR105 route product under £90 shows Invalid Location"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode on a CR105 route, outside its Boarding/Alighting
+          locations, with a product value under £90 shows the Invalid Location failure screen.
+        steps: |
+          **GIVEN** a multi-use barcode with Boarding/Alighting locations encoded is scanned on a CR105 route, current location outside the Boarding/Alighting range
+          **WHEN** the HHD checks whether the barcode's product value is £90 or more and it is not
+          **THEN** the 25.9.4 Barcode Multi-Use - Failure - Invalid Location screen is displayed
+        expected: "A CR105-route multi-use barcode with a product value under £90 shows Failure - Invalid Location."
+
+      - title: "Multi-Use Barcode — Query mode result shown per product type"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a multi-use barcode processed in Query mode shows the matching Query
+          result screen for its product type.
+        steps: |
+          **GIVEN** a multi-use barcode reaches Query mode
+          **WHEN** the HHD checks the barcode's product type
+          **THEN** the matching Query screen (Adult/Child/Pink/Purple) is displayed for the product type
+          **AND** **GAP** — how the flow enters Query mode's product-type check is not captured in the source; confirm before running
+        expected: "A multi-use barcode in Query mode shows the Query screen matching its product type. GAP: entry point into Query mode's product-type check unconfirmed."
+
+      - title: "Multi-Use Barcode — Scan from a result screen returns to barcode decryption check"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing 'Scan' from a Multi-Use Barcode Validation, Query, or
+          Failure screen returns the HHD to the Barcode Decryption check.
+        steps: |
+          **GIVEN** a Multi-Use Barcode Validation, Query, or Failure screen is displayed
+          **WHEN** the user presses 'Scan'
+          **THEN** the HHD returns to the Barcode Decryption check
+          **AND** the scan decision is re-entered
+        expected: "Pressing 'Scan' from a Validation, Query, or Failure screen returns to the Barcode Decryption check and re-enters the scan decision."
+
+      - title: "Multi-Use Barcode — non-Multi-Use format bridges to Single-Use flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a scanned barcode that does not match the Multi-Use format proceeds
+          to the Single-Use barcode format check.
+        steps: |
+          **GIVEN** a barcode is scanned successfully and decrypted
+          **WHEN** the HHD checks whether the barcode matches the Multi-Use format and it does not
+          **THEN** the HHD proceeds to the Single-Use barcode format check
+        expected: "A decrypted barcode that does not match the Multi-Use format proceeds to the Single-Use barcode format check."

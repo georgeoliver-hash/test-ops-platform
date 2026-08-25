@@ -1,0 +1,139 @@
+{
+  "cases": [
+    {
+      "id": 4103856,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues the period product and takes payment",
+          "expected": "**THEN** a period ticket is printed\n**AND** the printed validity window matches the period product"
+        }
+      ]
+    },
+    {
+      "id": 4103857,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues the Bus Rambler ticket and takes payment",
+          "expected": "**THEN** a Bus Rambler ticket is printed\n**AND** the fare charged equals the fares-export Bus Rambler fare"
+        }
+      ]
+    },
+    {
+      "id": 4103858,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues the 3 Day Select ticket and takes payment",
+          "expected": "**THEN** a 3 Day Select ticket is printed\n**AND** the printed validity reflects the 3 Day Select date rule"
+        }
+      ]
+    },
+    {
+      "id": 4103871,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator selects the ROI alighting stage and takes payment",
+          "expected": "**THEN** a cross-border ticket is printed to the ROI alighting stage\n**AND** the fare charged equals the NIR fares-export cross-border fare"
+        }
+      ]
+    },
+    {
+      "id": 4103872,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator selects the ROI boarding stage and takes payment",
+          "expected": "**THEN** a cross-border ticket is printed from the ROI boarding stage\n**AND** the fare charged equals the NIR fares-export cross-border fare"
+        }
+      ]
+    },
+    {
+      "id": 4103875,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues the Metro product and takes payment",
+          "expected": "**THEN** a ticket is printed for the Metro product\n**AND** the fare charged equals the fares-export price for that product"
+        }
+      ]
+    },
+    {
+      "id": 4103876,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues the Ulsterbus product and takes payment",
+          "expected": "**THEN** a ticket is printed for the Ulsterbus product\n**AND** the fare charged equals the fares-export price for that product"
+        }
+      ]
+    },
+    {
+      "id": 4103879,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator completes the top-up and takes payment",
+          "expected": "**THEN** the top-up value is written to the smartcard\n**AND** a top-up receipt is printed"
+        }
+      ]
+    },
+    {
+      "id": 4103880,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator selects the journey amount and takes payment",
+          "expected": "**THEN** the selected journeys are added to the smartcard\n**AND** the fare charged equals the fares-export price for that journey amount"
+        }
+      ]
+    },
+    {
+      "id": 4103882,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator applies a new top-up",
+          "expected": "**THEN** the expired journeys are removed from the card\n**AND** the new top-up journeys are the only journeys remaining"
+        }
+      ]
+    },
+    {
+      "id": 4103891,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator prints a mini-statement",
+          "expected": "**THEN** a mini-statement receipt is printed for the smartcard\n**AND** the printed balance reflects the top-up"
+        }
+      ]
+    },
+    {
+      "id": 4103893,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues a penalty warning",
+          "expected": "**THEN** a penalty warning ticket is printed\n**AND** the ticket shows the penalty warning details"
+        }
+      ]
+    },
+    {
+      "id": 4103895,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues a penalty fare",
+          "expected": "**THEN** a penalty fare ticket is printed\n**AND** the ticket shows the penalty fare amount"
+        }
+      ]
+    },
+    {
+      "id": 4103896,
+      "steps": [
+        {
+          "content": "**WHEN** the Operator issues a penalty fare against the inspection",
+          "expected": "**THEN** a penalty fare ticket is printed\n**AND** the ticket references the invalid smartcard"
+        }
+      ]
+    },
+    {
+      "id": 4103897,
+      "steps": [
+        {
+          "content": "**WHEN** the penalty ticket is printed",
+          "expected": "**THEN** the ticket shows the correct issuing-role details"
+        }
+      ]
+    }
+  ]
+}

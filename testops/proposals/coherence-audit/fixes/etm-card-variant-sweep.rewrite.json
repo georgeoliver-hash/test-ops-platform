@@ -1,0 +1,18 @@
+[
+  {
+    "id": 4100582,
+    "action": "reword",
+    "preconds": "**GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen\n**AND** seeded contactless cards (Visa Debit, Visa Credit, Mastercard Debit, Mastercard Credit, Maestro Debit) and mobile wallets are available",
+    "expected": "A valid ABT tap is accepted (success tone, \"Success\"); a second tap enters passback; mobile wallets are accepted on phone and watch; recorded in CloudFare and MERIT.\n\nData variations: Visa Debit, Visa Credit, Mastercard Debit, Mastercard Credit, Maestro Debit (contactless EMV card schemes); Apple Pay, Google Pay, Samsung Pay (phone & watch).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "refs": "old suite 4943 C2478848, C2478849, C2478846, C2478847, C2478850",
+    "change_note": "Card/credential-variant sweep (2026-07-23): old suite 4943 had 5 mechanically-identical cases (same GIVEN/WHEN/THEN, only the card sample differed) — Flat Fare Tap - Visa Debit (C2478848), Visa Credit (C2478849), Mastercard Debit (C2478846), Mastercard Credit (C2478847), Maestro Debit (C2478850). This live case had folded them into a bare \"Visa, Mastercard, Apple Pay, Google Pay and Samsung Pay\" mention, silently dropping the Debit/Credit distinction and Maestro entirely — the exact pattern found in the PV suite's card-scheme miss. Added the 5 named schemes to Preconditions (concrete grounding) and an explicit Data variations line (Expected result), per George's directive that every card type/scheme variant tested must stay individually traceable, not folded into a generic mention."
+  },
+  {
+    "id": 4100591,
+    "action": "reword",
+    "preconds": "**GIVEN** an invalid ABT tap (Deny List or BIN List decline) has occurred on the ETM on Metro route 10A",
+    "expected": "Invalid ABT taps appear in the back office under ABT with the decline reason.\n\nData variations: Deny List decline / BIN List decline.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "refs": "old suite 4943 C2433859, C2543145",
+    "change_note": "Card/credential-variant sweep (2026-07-23): old suite 4943 named the two payment-card decline reasons explicitly and separately (C2433859 DenyList, C2543145 BINlist, each with its own passenger/operator-portal detail). This live case generalised to \"the decline reason\" without naming which reasons are covered. Added an explicit Data variations line naming both, so the two decline conditions stay individually traceable (same equivalence-class mechanism, just made explicit per the same card-variant-completeness pattern)."
+  }
+]

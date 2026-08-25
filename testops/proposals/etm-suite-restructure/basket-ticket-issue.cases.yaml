@@ -1,0 +1,188 @@
+# ETM — Ticket Issue + Basket Mode (Functional, @mode(all): Metro + Ulsterbus)
+# CONSOLIDATION: the old suite holds ~130 Ticket Issue cases = each product (Metro Single, Day
+# Return, Month Return, iLink Single, Gateway, Jobseeker, Warrant Return, Bus Rambler, Rugby Day,
+# Metro Day/Evening/Family Day, Family & Friends, Park & Ride, Easibus) × {Adult, Child, Adult+Child}
+# × {Issue, Annul, Basket Issue, Basket Annul}. The MECHANIC is identical across products, so it is
+# tested once here with product + passenger-type variation lines. Per-product price/layout is covered
+# by FLU fare display + the HMI Ticket Layouts area. Grounded in the "FLU - Basket Mode" (9 notes),
+# "FLU 2.0 Ticket Issuance" and "Promo Menu" Overflow screens.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Ticket Issue
+    cases:
+      - title: Ticket Issue — issue a single ticket
+        objective: This test is to confirm a Driver can build a ticket via fare look-up, take payment and issue it with a printed ticket.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/2_5 _ Main Screen - Last Transaction 200 - Success.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects a product and alighting stage and takes payment
+          **THEN** the ticket is issued at the correct fare
+          **AND** a ticket is printed
+          **AND** a success confirmation is shown and the last transaction is updated
+        expected: A ticket is built, paid and issued with a printed ticket and success confirmation. Run for Adult and Child passenger types; representative products — Metro Single, Day Return, Month Return, iLink Single, Gateway Single, Jobseeker Single, Warrant Return, ME Rugby Day.
+      - title: Ticket Issue — annul the last issued ticket
+        objective: This test is to confirm a Driver can annul the last issued ticket and that an annulment receipt is produced.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has just issued a ticket
+          **WHEN** the Driver annuls the last ticket issued
+          **THEN** the transaction is annulled
+          **AND** an annulment is recorded against the shift
+        expected: The last issued ticket is annulled and recorded. Applies to single and basketed issues; run for Adult and Child.
+      - title: Ticket Issue — annulment times out
+        objective: This test is to confirm the annulment prompt times out without annulling if not confirmed in time.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver is at the annul-previous-ticket prompt
+          **WHEN** the prompt is left unconfirmed past its timeout
+          **THEN** the annulment is abandoned
+          **AND** the previously issued ticket remains valid
+        expected: An unconfirmed annulment times out and the original ticket stays valid.
+      - title: Ticket Issue — annulment refused for non-annullable transactions
+        objective: This test is to confirm the ETM refuses annulment where it is not permitted, with the appropriate reason.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a transaction is in a state that cannot be annulled
+          **WHEN** the Driver attempts to annul it
+          **THEN** the annulment is refused with the reason shown
+        expected: Annulment is refused (with reason) for — boarding stage changed since issue, an MJ product already validated, a daily/weekly/monthly pass validated, and a non-annullable concession pass.
+      - title: Ticket Issue — issue with a change receipt
+        objective: This test is to confirm a ticket can be issued with a change receipt when change is given, and that the change receipt can be annulled.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is issuing a ticket and change is due
+          **WHEN** the Driver completes the sale with change calculated
+          **THEN** the ticket is issued with a change receipt printed
+          **WHEN** the Driver annuls the change-receipt transaction
+          **THEN** the transaction is annulled
+        expected: A ticket issued with change prints a change receipt; the change-receipt transaction can be annulled.
+      - title: Ticket Issue — Easibus stage selection
+        objective: This test is to confirm a ticket can be issued using the Easibus stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/02_0_5 _ Easibus.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects an Easibus stage and issues the ticket
+          **THEN** the ticket is issued for the selected Easibus stage
+        expected: A ticket issues against the chosen Easibus stage. Run across the Easibus options — Red, Orange, Yellow, Green, White, Buggy, Wheelchair, Other — including via the basket.
+      - title: Ticket Issue — Open Tickets excess fare
+        objective: This test is to confirm a Driver can issue an Open (excess) ticket and that an invalid amount is rejected.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver issues an Open excess ticket for a valid amount
+          **THEN** the excess ticket is issued at the entered amount
+          **WHEN** the Driver enters an invalid amount
+          **THEN** the amount is rejected
+        expected: Open/excess tickets issue for a valid amount and reject invalid amounts. Run for Adult and Child.
+      - title: Ticket Issue — printer or power interrupt during print recovers
+        objective: This test is to confirm ticket printing resumes or annuls correctly after a power/printer interrupt, with recovery to the signed-in state where possible.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is issuing a ticket when a power or printer interrupt occurs mid-print
+          **WHEN** the interrupt is a momentary power failure
+          **THEN** the Driver can retry the print or annul the transaction
+          **WHEN** the interrupt is a full reset
+          **THEN** the ETM recovers to the signed-in state and resumes where recovery is possible
+          **AND** where recovery is not possible the transaction is handled cleanly without a duplicate ticket
+        expected: Momentary failures allow retry/annul; full resets recover to signed-in where possible and never leave a duplicate or orphaned ticket.
+
+  - path: Functional / Ticket Issue / Promo Menu
+    cases:
+      - title: Promo Menu — issue a promo product
+        objective: This test is to confirm a Driver can issue a product from the Promo Menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/03_0 _ Promo Menu.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver opens the Promo Menu, selects a product and takes payment
+          **THEN** the promo product is issued at the correct fare
+          **AND** a ticket is printed
+        expected: A Promo Menu product is issued and printed. Run for Adult and Child; representative products — Bus Rambler, Metro Day, Metro Evening, Metro Family Day, Family & Friends Day, Park & Ride Day, ME Rugby Day.
+      - title: Promo Menu — add an additional child to a family product
+        objective: This test is to confirm an additional child can be added to a Family & Friends or Metro Family Day product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has selected a Family & Friends Day or Metro Family Day product
+          **WHEN** the Driver adds an additional child to the product and issues it
+          **THEN** the additional child is included on the issued product at the correct fare
+        expected: An additional child is added to a family product and reflected in the issued ticket and fare.
+      - title: Promo Menu — promo product not available
+        objective: This test is to confirm the ETM indicates when a promo product is not currently available.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a promo product is configured as not currently available
+          **WHEN** the Driver attempts to select it from the Promo Menu
+          **THEN** the product is shown as not available and cannot be issued
+        expected: An unavailable promo product (e.g. Bus Rambler out of season) is flagged not available and cannot be issued. Run for Adult and Child.
+      - title: Promo Menu — basket tracker persists in sub-menus
+        objective: This test is to confirm the basket tracker remains visible and functional within the Promo Menu sub-menus.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver has items in the basket and is in the Promo Menu
+          **WHEN** the Driver navigates into a Promo Menu sub-menu
+          **THEN** the basket tracker remains displayed and functions as on the main screen
+        expected: The basket tracker persists and works across Promo Menu sub-menus.
+
+  - path: Functional / Basket Mode
+    cases:
+      - title: Basket Mode — build a multi-item basket and pay
+        objective: This test is to confirm a Driver can enter basket mode, add multiple items, confirm and take a single payment with the mandatory receipt printed.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/basket-mode/02_7 _ Main Screen - FLU - Multiple Items - Basket Mode Selected.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver presses R6 to enter basket mode with a product/alighting stage selected
+          **THEN** the selected product is added to the basket and basket mode is active
+          **WHEN** the Driver adds further items, confirms the basket and takes payment
+          **THEN** all basket items are issued in one transaction
+          **AND** a receipt is printed automatically where mandatory
+        expected: Basket mode issues multiple items in one paid transaction; the selected product is auto-added on entry; a mandatory receipt prints automatically.
+      - title: Basket Mode — nine-item limit and Basket Full error
+        objective: This test is to confirm the basket holds at most nine items and that the Basket Full error is shown when exceeded.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/basket-mode/02_7_8 _ Main Screen - FLU - Multiple Items - Basket is Full.png
+        steps: |
+          **Given** a Driver has nine items in the basket
+          **WHEN** the Driver attempts to add another item from the FLU or basket screen
+          **THEN** the Basket Full error is shown and no further item is added
+          **WHEN** the Driver removes an item from the basket
+          **THEN** a new item can be added
+        expected: The basket caps at nine items with a Basket Full error; removing an item frees a slot.
+      - title: Basket Mode — change line-item quantity
+        objective: This test is to confirm a Driver can increase or decrease a basket line-item quantity, with an error shown when it cannot change.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has a line item selected in the basket
+          **WHEN** the Driver presses the '+' or '-' keys
+          **THEN** the line-item quantity increases or decreases accordingly
+          **WHEN** the quantity cannot be changed
+          **THEN** the relevant error message is shown for two seconds
+        expected: Line-item quantity adjusts with +/-; an invalid change shows the error for 2 seconds.
+      - title: Basket Mode — clear basket and add more
+        objective: This test is to confirm the Clear Basket and Add More to Basket options behave correctly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has items in the basket
+          **WHEN** the Driver selects Add More to Basket
+          **THEN** the ETM returns to FLU with the basket retained for further items
+          **WHEN** the Driver selects Clear Basket
+          **THEN** the ETM returns to FLU
+          **AND** the basket is emptied and the product reverts to default
+        expected: Add More returns to FLU keeping the basket; Clear Basket empties it and reverts to the default product.
+      - title: Basket Mode — annul a basketed transaction
+        objective: This test is to confirm a basketed transaction can be annulled after issue.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has issued a basket of tickets
+          **WHEN** the Driver annuls the basketed transaction
+          **THEN** the transaction is annulled
+          **AND** the annulment is recorded against the shift
+        expected: A basketed transaction can be annulled and recorded.

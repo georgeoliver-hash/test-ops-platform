@@ -1,0 +1,262 @@
+# ABT — remaining functional areas (completes the ABT system in 30279).
+# Consolidated from old suite 14441: Passenger Web Portal, Processing Taps
+# (Card Verification, Late Taps), Debt Recovery, End to End, Ulsterbus TOO config.
+# Payment-card vs mobile-wallet folded as a variation; card-scheme (Visa/MC/Maestro)
+# folded as a variation; NOT-IN-SCOPE admin-limit cases omitted. House style.
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [ABT, Functional, Passenger Web Portal, Sign On & Account]
+    cases:
+      - title: Sign on to an anonymous account
+        objective: This test is to confirm that a customer can sign on to the Passenger Web Portal with a card that has journeys in the previous seven days.
+        steps: |-
+          **GIVEN** a customer is on the Passenger Web Portal sign-on page
+          **AND** their payment card or mobile wallet has journeys in the previous seven days
+          **WHEN** the customer enters valid card details
+          **THEN** the customer is signed on to their anonymous account
+          **AND** the account home screen is displayed
+        expected: The customer signs on and the account home screen is displayed.
+      - title: Sign-on is prevented for invalid, no-journey or blocked cards
+        objective: This test is to confirm that sign-on is prevented for invalid details, a card with no recent journeys, or a blocked card.
+        steps: |-
+          **GIVEN** a customer is on the Passenger Web Portal sign-on page
+          **WHEN** the customer enters invalid details, a card with no journeys in the previous seven days, or a blocked card
+          **THEN** the customer is prevented from signing on
+          **AND** the relevant message is shown for each case
+        expected: Sign-on is blocked for invalid details, no recent journeys, or a blocked card.
+      - title: View account balance and home summary
+        objective: This test is to confirm that a signed-on customer sees their account balance and a summary of card, account ID and journey/transaction history.
+        steps: |-
+          **GIVEN** a customer is signed on and the account home screen is displayed
+          **AND** the card has completed ABT taps that day
+          **WHEN** the customer views the home screen
+          **THEN** the account balance is shown
+          **AND** a summary of card details, account ID and journey/transaction history is shown
+        expected: The home screen shows the account balance and the card/account/history summary.
+      - title: Sign off the Passenger Web Portal
+        objective: This test is to confirm that a customer can sign off the Passenger Web Portal.
+        steps: |-
+          **GIVEN** a customer is signed into the Passenger Web Portal
+          **WHEN** the customer signs off
+          **THEN** the session ends
+          **AND** the sign-on page is shown
+        expected: The customer is signed off and returned to the sign-on page.
+
+  - path: [ABT, Functional, Passenger Web Portal, Account Functions]
+    cases:
+      - title: View and print Journey History
+        objective: This test is to confirm that a customer can view and print the journey history for their payment card or mobile wallet.
+        steps: |-
+          **GIVEN** a customer is signed on and the account home screen is displayed
+          **WHEN** the customer opens Journey History
+          **THEN** the taps and journeys for the card or mobile wallet are listed
+          **AND** the journey history can be printed
+        expected: Journey history for the card or mobile wallet is listed and can be printed.
+      - title: View and print Transaction History
+        objective: This test is to confirm that a customer can view and print the transaction history for their payment card or mobile wallet.
+        steps: |-
+          **GIVEN** a customer is signed on and the account home screen is displayed
+          **WHEN** the customer opens Transaction History
+          **THEN** the transactions for the card or mobile wallet are listed
+          **AND** the transaction history can be printed
+        expected: Transaction history for the card or mobile wallet is listed and can be printed.
+      - title: Request a refund
+        objective: This test is to confirm that a customer can raise a refund request for a transaction on their account.
+        steps: |-
+          **GIVEN** a customer is signed on and viewing their transaction history
+          **WHEN** the customer raises a refund request for a transaction
+          **THEN** the refund request is submitted for operator authorisation
+        expected: The refund request is submitted for operator authorisation.
+      - title: Retry a declined payment
+        objective: This test is to confirm that a customer can retry a declined payment from the Passenger Web Portal.
+        steps: |-
+          **GIVEN** a customer is signed on with a declined payment on their account
+          **WHEN** the customer retries the payment
+          **THEN** the payment is re-attempted
+          **AND** a successful retry clears the outstanding amount
+        expected: The declined payment is re-attempted and a successful retry clears the debt.
+      - title: Request a card replacement
+        objective: This test is to confirm that a customer can request a card replacement from the Passenger Web Portal.
+        steps: |-
+          **GIVEN** a customer is signed on and the account home screen is displayed
+          **WHEN** the customer requests a card replacement
+          **THEN** the card replacement request is submitted
+        expected: The card replacement request is submitted.
+      - title: Raise a general query
+        objective: This test is to confirm that a customer can raise a general query from the Passenger Web Portal.
+        steps: |-
+          **GIVEN** a customer is signed on and the account home screen is displayed
+          **WHEN** the customer raises a general query
+          **THEN** the query is submitted to the operator
+        expected: The general query is submitted to the operator.
+
+  - path: [ABT, Functional, Processing Taps, Card Verification]
+    cases:
+      - title: Declined payments are guaranteed up to the Issuer Liability Threshold
+        objective: This test is to confirm that a declined payment not recovered from the customer is guaranteed by the issuer up to the liability threshold, across card schemes.
+        steps: |-
+          **GIVEN** a customer has made a transaction with a Visa, MasterCard or Maestro card
+          **AND** the card failed authentication for payment
+          **WHEN** the declined payment is not recovered from the customer
+          **THEN** the card issuer guarantees the payment up to the Issuer Liability Threshold
+        expected: Unrecovered declined payments are guaranteed by the issuer up to the liability threshold, for Visa, MasterCard and Maestro.
+      - title: Account Verification Request on first use of a Visa card
+        objective: This test is to confirm that an Account Verification Request is performed on the first use of a Visa card in the network.
+        steps: |-
+          **GIVEN** a customer has not yet transacted in this network with their Visa card
+          **WHEN** the customer uses the Visa card to make a transaction
+          **THEN** an Account Verification Request is performed
+          **AND** the card is confirmed for use
+        expected: An AVR is performed on first Visa use and confirms the card.
+      - title: Pre-Authorisation check on first use each day
+        objective: This test is to confirm that a Pre-Authorisation check is performed on the first daily use of a MasterCard or Maestro card.
+        steps: |-
+          **GIVEN** a customer has not yet transacted today with their MasterCard or Maestro card
+          **WHEN** the customer uses the card to make a transaction
+          **THEN** a Pre-Authorisation check is performed
+        expected: A Pre-Authorisation check is performed on the first daily use of a MasterCard or Maestro card.
+      - title: Pre-Authorisation check on first use after removal from the Deny List
+        objective: This test is to confirm that a Pre-Authorisation check is performed on first use after a MasterCard or Maestro card is removed from the Deny List.
+        steps: |-
+          **GIVEN** a customer's MasterCard or Maestro card has been removed from the Deny List
+          **WHEN** the customer next uses the card to make a transaction
+          **THEN** a Pre-Authorisation check is performed
+        expected: A Pre-Authorisation check is performed on first use after Deny List removal.
+
+  - path: [ABT, Functional, Processing Taps, Late Taps]
+    cases:
+      - title: Late taps within the maximum late data period are processed
+        objective: This test is to confirm that the ABT system processes taps received within the configured maximum late data period.
+        steps: |-
+          **GIVEN** the maximum late data period is configured to 14 days
+          **AND** a customer made a transaction tap on a device
+          **WHEN** the ABT system receives the tap within 14 days of the tap date
+          **THEN** the tap is processed
+        expected: Taps received within the 14-day late data period are processed.
+      - title: Late taps beyond the maximum late data period are rejected
+        objective: This test is to confirm that the ABT system rejects taps received beyond the configured maximum late data period.
+        steps: |-
+          **GIVEN** the maximum late data period is configured to 14 days
+          **AND** a customer made a transaction tap on a device
+          **WHEN** the ABT system receives the tap more than 14 days after the tap date
+          **THEN** the tap is rejected
+        expected: Taps received beyond the 14-day late data period are rejected.
+      - title: Capping rules are applied retrospectively to late taps
+        objective: This test is to confirm that active capping rules are applied retrospectively to late taps received within the late data period.
+        steps: |-
+          **GIVEN** the maximum late data period is configured to 14 days
+          **AND** active capping rules are configured
+          **WHEN** a late tap is received within the period that should trigger a cap
+          **THEN** the capping rules are applied retrospectively to that day
+        expected: Capping rules are applied retrospectively to late taps within the period.
+      - title: Duplicate late taps are disregarded
+        objective: This test is to confirm that the ABT system disregards a duplicate of a tap that has already been processed.
+        steps: |-
+          **GIVEN** a tap has already been processed by the ABT system
+          **WHEN** the ABT system receives a duplicate of that tap
+          **THEN** the duplicate tap is disregarded
+        expected: A duplicate of an already-processed tap is disregarded.
+
+  - path: [ABT, Functional, Debt Recovery]
+    cases:
+      - title: A card is added to the Deny List when it fails payment authorisation
+        objective: This test is to confirm that a card that fails payment authorisation is automatically added to the Deny List.
+        steps: |-
+          **GIVEN** a customer's card is not on the Deny List
+          **WHEN** the card fails authorisation for a payment
+          **THEN** the card is automatically added to the Deny List
+        expected: A card that fails payment authorisation is added to the Deny List.
+      - title: A card on the Deny List is prevented from future travel until resolved
+        objective: This test is to confirm that a card on the Deny List is blocked from further travel until its outstanding issue is resolved.
+        steps: |-
+          **GIVEN** a customer's card is on the Deny List
+          **AND** devices have the latest Deny List
+          **WHEN** the customer attempts to use the blocked card for travel
+          **THEN** the card is prevented from being used for travel
+        expected: A Deny-Listed card is blocked from travel until the issue is resolved.
+      - title: A card is removed from the Deny List when its debt is recovered
+        objective: This test is to confirm that a card is removed from the Deny List and re-enabled for travel when its debt is recovered through any recovery channel.
+        steps: |-
+          **GIVEN** a customer's card is on the Deny List
+          **WHEN** the debt is recovered via back-office automatic retry, customer tap-initiated, customer online, or operator online recovery
+          **THEN** the card is automatically removed from the Deny List
+          **AND** the card is re-enabled for future travel
+        expected: Successful debt recovery via any channel removes the card from the Deny List and re-enables travel.
+
+  - path: [ABT, Functional, End to End]
+    cases:
+      - title: ETM Metro Tap-On-Only — end to end
+        objective: This test is to confirm an end-to-end Metro Tap-On-Only journey from an ETM through to CloudFare, Merit and the ABT portals.
+        steps: |-
+          **GIVEN** an ETM set to Metro is on the FLU screen with a valid EMV card
+          **WHEN** the customer performs a Tap-On-Only journey
+          **AND** the EndOfDay settlement runs
+          **THEN** the journey is charged correctly and capped per the Metro rules
+          **AND** the journey is visible in CloudFare, Merit and the ABT Operator and Passenger portals
+        expected: The Metro TOO journey settles correctly and is visible across CloudFare, Merit and the ABT portals.
+      - title: ETM Metro retail transaction — end to end
+        objective: This test is to confirm an end-to-end Metro retail transaction from an ETM through to CloudFare, Merit and the ABT portals.
+        steps: |-
+          **GIVEN** an ETM set to Metro is on the FLU screen with a valid EMV card
+          **WHEN** the operator processes a retail transaction
+          **AND** the EndOfDay settlement runs
+          **THEN** the retail transaction is charged correctly
+          **AND** it is visible in CloudFare, Merit and the ABT portals
+        expected: The Metro retail transaction settles correctly and is visible across the back-office systems.
+      - title: HHD Glider Tap-On-Only — end to end
+        objective: This test is to confirm an end-to-end Glider Tap-On-Only journey from an HHD through to CloudFare, Merit and the ABT portals.
+        steps: |-
+          **GIVEN** an HHD set to Glider is on the Sales screen with a valid EMV card
+          **WHEN** the customer performs a Tap-On-Only journey
+          **AND** the EndOfDay settlement runs
+          **THEN** the journey is charged correctly and capped per the Glider rules
+          **AND** it is visible in CloudFare, Merit and the ABT portals
+        expected: The Glider TOO journey settles correctly and is visible across the back-office systems.
+      - title: HHD Glider retail transaction — end to end
+        objective: This test is to confirm an end-to-end Glider retail transaction from an HHD through to CloudFare, Merit and the ABT portals.
+        steps: |-
+          **GIVEN** an HHD set to Glider is on the Sales screen with a valid EMV card
+          **WHEN** the operator processes a retail transaction
+          **AND** the EndOfDay settlement runs
+          **THEN** the retail transaction is charged correctly
+          **AND** it is visible in CloudFare, Merit and the ABT portals
+        expected: The Glider retail transaction settles correctly and is visible across the back-office systems.
+      - title: HHD Rail retail transaction — end to end
+        objective: This test is to confirm an end-to-end Rail retail transaction from an HHD through to CloudFare, Merit and the ABT portals.
+        steps: |-
+          **GIVEN** an HHD set to Rail is on the Sales screen with a valid EMV card
+          **WHEN** the operator processes a retail transaction
+          **AND** the EndOfDay settlement runs
+          **THEN** the retail transaction is charged correctly
+          **AND** it is visible in CloudFare, Merit and the ABT portals
+        expected: The Rail retail transaction settles correctly and is visible across the back-office systems.
+
+  - path: [ABT, Functional, Configuration & Setup]
+    cases:
+      - title: Support multiple travel zones for a stop
+        objective: This test is to confirm that a stop can belong to multiple travel zones for capping-rule purposes.
+        steps: |-
+          **GIVEN** an operator is on the ABT Operator Portal with rights to add daily capping rules
+          **WHEN** the operator configures a stop that belongs to multiple travel zones
+          **THEN** the stop is recognised in each of its travel zones
+          **AND** capping rules evaluate the stop against each zone
+        expected: A stop is recognised in multiple travel zones and capping evaluates it against each.
+      - title: Add new decline reasons
+        objective: This test is to confirm that new decline reasons are recorded and shown on the Declined Taps Report.
+        steps: |-
+          **GIVEN** declined card taps have occurred for expired, authenticity-failed, BIN-listed and Deny-listed cards
+          **WHEN** the operator views the Declined Taps Report
+          **THEN** each decline reason is recorded against its tap
+        expected: New decline reasons are recorded and shown on the Declined Taps Report.
+      - title: Capping-rule products load from the fares engine
+        objective: This test is to confirm that capping-rule base products are loaded from the fares engine products rather than the topology business service.
+        steps: |-
+          **GIVEN** an operator is configuring a base product on Price Capping
+          **WHEN** the operator selects the base product
+          **THEN** the product list is loaded from the fares engine products
+        expected: Capping-rule base products are sourced from the fares engine product list.

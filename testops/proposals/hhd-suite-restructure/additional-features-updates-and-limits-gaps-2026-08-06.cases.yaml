@@ -1,0 +1,101 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Additional Features, Device Updates & Docking]
+    cases:
+      - title: "Payment Device Update — fullscreen update shown, HHD actions still available"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a payment device update in progress shows the fullscreen update
+          screen, while other HHD actions remain available and the payment device itself is unusable
+          until the update completes.
+        steps: |
+          **GIVEN** the HHD is powered on
+          **WHEN** a payment device update starts
+          **THEN** the "27 Updating Payment Device" screen is shown fullscreen
+          **AND** the operator can still perform other HHD actions
+          **AND** the payment device cannot be used until the update completes
+        expected: "A payment device update shows the fullscreen update screen; other HHD actions remain available but the payment device is unusable until the update finishes."
+
+      - title: "Device Docked — immediate update scheduled shows update icon"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm docking the HHD with an immediate download & update scheduled
+          shows the Device Docked screen with the update icon, and returns to Idle once complete.
+        steps: |
+          **GIVEN** an immediate download & update is scheduled for the HHD
+          **WHEN** the operator docks the HHD on the docking station
+          **THEN** the "16 Device Docked" screen is shown with the update icon
+          **AND** the screen disappears once the update completes
+          **AND** the Idle (Log in) screen is shown
+        expected: "Docking with an immediate update scheduled shows Device Docked with the update icon, then returns to Idle once the update completes."
+
+      - title: "Device Docked — no update pending shows plain Device Docked message"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm docking the HHD with no update pending shows the plain
+          "Device Docked" message.
+        steps: |
+          **GIVEN** no update is pending for the HHD
+          **WHEN** the operator docks the HHD on the docking station
+          **THEN** the "16 Device Docked" screen shows the plain "Device Docked" message
+        expected: "Docking the HHD with no update pending shows the plain Device Docked message."
+
+      - title: "Software Update — future-scheduled update does not require docking"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a software update scheduled for the future runs without the HHD
+          needing to be docked, and returns to Idle once complete.
+        steps: |
+          **GIVEN** a software update is scheduled for a future time
+          **WHEN** the scheduled update runs without the HHD being docked
+          **THEN** the "16 Device Docked" screen is shown
+          **AND** the screen disappears once the update completes
+          **AND** the Idle (Log in) screen is shown
+        expected: "A future-scheduled software update runs without docking and returns to Idle once complete."
+
+      - title: "Fares Updating — LogOn screen shows transition to future fares"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the HHD shows the Fares Updating screen when transitioning from
+          current to future fares while on the LogOn screen.
+        steps: |
+          **GIVEN** the HHD is on the LogOn screen
+          **AND** a transition from current to future fares is due
+          **WHEN** the fares update runs
+          **THEN** the "23 Fares Updating" screen is shown
+        expected: "A fares transition on the LogOn screen shows the Fares Updating screen."
+
+  - path: [Functional, Additional Features, Revenue Limit]
+    cases:
+      - title: "Revenue Limit — approaching notification shows amount remaining"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the HHD shows a Limit Approaching notification with the amount
+          remaining once revenue reaches the pre-configured approaching threshold.
+        steps: |
+          **GIVEN** the tester knows the currently configured revenue limit-approaching threshold
+          **WHEN** HHD revenue reaches that pre-configured amount
+          **THEN** a "15.1 Limit Approaching" (or "15.1.1 Limit Approaching - Rail") notification is shown at the bottom of the screen
+          **AND** the amount remaining until the revenue limit is presented on the left
+          **AND** **GAP** — what distinguishes when the Rail variant (15.1.1) shows instead of the general variant (15.1) is not stated in the source; confirm before running
+        expected: "Reaching the pre-configured approaching threshold shows a Limit Approaching notification with the remaining amount on the left."
+
+      - title: "Revenue Limit — reached signs off operator and locks the device"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm reaching the configured revenue limit signs the operator off,
+          prints a waybill, and locks the device until docked with an ethernet Back Office
+          connection established.
+        steps: |
+          **GIVEN** the tester knows the currently configured revenue limit
+          **WHEN** HHD revenue reaches that configured limit
+          **THEN** the operator is signed off
+          **AND** a waybill is printed
+          **AND** the device is locked until docked and a Back Office connection over ethernet is established
+        expected: "Reaching the configured revenue limit signs off the operator, prints a waybill, and locks the device until docked with an ethernet Back Office connection."

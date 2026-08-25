@@ -1,0 +1,10 @@
+{
+  "synced_at": "2026-08-25T07:22:31.156543+00:00",
+  "source_path": "C:\\Users\\GeorgeOliver\\Documents\\GitHub\\sit",
+  "commit": "23e29c0fa439c42b41a33b712c6dacb2175ed442",
+  "commit_date": "2026-08-07T10:40:51+01:00",
+  "remote": "https://github.com/flowbird-group/sit.git",
+  "equipment_types_files": 3,
+  "bindings_files": 29,
+  "note": "One-way mirror. Regenerate by re-running this script against a fresh sit checkout \u2014 never hand-edit files under sit-mirror/."
+}

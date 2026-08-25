@@ -1,0 +1,58 @@
+[
+ {
+  "id": 4099933,
+  "preface": "This test is to confirm the POS automatically enters the Operator Break screen after the configured Auto Sign Off period of inactivity, printing no waybill.",
+  "preconds": "**GIVEN** an operator is signed on to the POS\n**AND** the Auto Sign Off inactivity period is configured (use the configured value)\n**AND** the POS is communicating with CloudFare\n**AND** example: Operator → signed on, then left with no interaction",
+  "steps": [
+   {
+    "content": "**WHEN** the configured Auto Sign Off period elapses with no interaction",
+    "expected": "**THEN** the POS goes to the Operator Break screen\n**AND** no waybill is printed"
+   },
+   {
+    "content": "**WHEN** the CloudFare activity log is checked",
+    "expected": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+   }
+  ],
+  "action": "reword",
+  "change_note": "Corrected the outcome to match the resolved Break-mode model (Auto Sign Off inactivity timeout -> Operator Break, not straight to Idle; only continued inactivity on the Break screen -> suspend -> reboot). Previous wording asserted a direct sign-off to the Idle screen, contradicting the same fact already corrected on C4100360/C4100436 (same suite, cross-checked in batch_D).",
+  "gaps": []
+ },
+ {
+  "id": 4099934,
+  "preface": "This test is to confirm power-cycling the POS for longer than the configured Auto Sign Off time forces a sign-off to the Idle screen, with no waybill printed, and records exactly one Forced Sign-off event.",
+  "preconds": "**GIVEN** an operator is signed on to the POS during a shift\n**AND** the Auto Sign Off period is configured (use the configured value)\n**AND** the POS is communicating with CloudFare\n**AND** example: Operator → signed on, then the POS is powered off for longer than the configured Auto Sign Off time and back on",
+  "steps": [
+   {
+    "content": "**WHEN** the POS is power-cycled for longer than the configured Auto Sign Off time",
+    "expected": "**THEN** on restart the POS returns to the Idle screen with no waybill printed\n**AND** exactly one Forced Sign-off event is recorded to CloudFare"
+   }
+  ],
+  "action": "reword",
+  "change_note": "Added the outage-duration qualifier (longer than the configured Auto Sign Off time) and the no-waybill detail. A brief power interruption instead resumes the prior screen, and an outage shorter than Auto Sign Off resumes to Operator Break, not Idle (cross-checked against C4100360, same suite/batch_D) — the previous wording asserted an unconditional power-cycle-to-Idle outcome that only holds for long outages.",
+  "gaps": []
+ },
+ {
+  "id": 4099957,
+  "refs": "TIBU-24740,TIBU-26905,FBD-100183",
+  "action": "reword",
+  "change_note": "Added FBD-100183 (POS Hardware Specification, para 104 — Way6 console includes an Ethernet interface) to ground the Ethernet-setting claim beyond defect-only traceability; wording unchanged."
+ },
+ {
+  "id": 4099967,
+  "refs": "TIBU-24740,FBD-100183",
+  "action": "reword",
+  "change_note": "Added FBD-100183 (POS Hardware Specification, para 104 — Way6 console includes an Ethernet interface) to ground the Network Settings claim beyond defect-only traceability; wording unchanged."
+ },
+ {
+  "id": 4099959,
+  "refs": "FBD-100183",
+  "action": "reword",
+  "change_note": "Added FBD-100183 (POS Hardware Specification: para 103 contactless smartcard reader, para 105 K60 thermal printer/paper roll) to ground the Card Reader and Paper Status panel claims, which previously had no citation at all; wording unchanged."
+ },
+ {
+  "id": 4099960,
+  "refs": "TIBU-24792,FBD-100183",
+  "action": "reword",
+  "change_note": "Added FBD-100183 (POS Hardware Specification, para 103 — Mifare CLRC663 contactless smartcard reader) confirming the hardware the card-reader test screen exercises; wording unchanged."
+ }
+]

@@ -1,0 +1,245 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Smartcard Inspection]
+    cases:
+      - title: "Smartcard Inspection — swiping the mode toggle keeps the Inspection device view"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm swiping the Inspection mode toggle on the standard Sales Screen -
+          Inspection - Device View keeps the HHD in Inspection mode.
+        steps: |
+          **GIVEN** the HHD is showing the Sales Screen - Inspection - Device View
+          **WHEN** the operator swipes the Inspection mode toggle
+          **THEN** the HHD remains in Inspection mode
+        expected: "Swiping the Inspection toggle on the Sales Screen - Inspection - Device View keeps the HHD in Inspection mode."
+
+      - title: "Smartcard Inspection — Rail Inspection/Validation toggle switches both ways"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Rail Sales Screen mode toggle switches the HHD between
+          Inspection and Validation device views in both directions.
+        steps: |
+          **GIVEN** the HHD is showing the Sales Screen - Rail - Inspection - Device View
+          **WHEN** the operator swipes Inspection to engage Validation mode
+          **THEN** the Sales Screen - Rail - Validation - Device View is displayed
+          **WHEN** the operator swipes Validation to engage Inspection mode
+          **THEN** the Sales Screen - Rail - Inspection - Device View is displayed again
+        expected: "The Rail Sales Screen mode toggle switches between the Inspection and Validation device views in both directions."
+
+      - title: "Smartcard Inspection — unreadable card marked Faulty Smartpass routes to Top-Up Receipt Print"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Faulty Smartpass' from the Read/Write Fail error routes
+          into the Top Up Receipt Print flow and returns to the Sales screen.
+        steps: |
+          **GIVEN** the Error - Read/Write Fail screen is displayed after presenting an unreadable smartcard
+          **WHEN** the operator selects 'Faulty Smartpass'
+          **THEN** the HHD proceeds to the Top Up Receipt Print flow
+          **AND** on completion the HHD returns to the Sales screen
+        expected: "Selecting 'Faulty Smartpass' on Read/Write Fail routes through Top Up Receipt Print and back to Sales."
+
+      - title: "Smartcard Inspection — card failing pre-validation shows Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a smartcard that fails the pre-validation checks (no passback
+          block) shows the shared 3.3.1 Error screen.
+        steps: |
+          **GIVEN** a readable smartcard is presented where passback is not configured or the
+          passback check has passed
+          **WHEN** the smartcard fails the pre-validation checks
+          **THEN** the 3.3.1 Error screen is displayed
+        expected: "A smartcard failing pre-validation shows the 3.3.1 Error screen."
+
+      - title: "Smartcard Inspection — card not previously validated shows Invalid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a smartcard that passes pre-validation but has not been previously
+          validated shows the Inspection - Invalid screen.
+        steps: |
+          **GIVEN** a smartcard passes the pre-validation checks and has not been previously validated
+          **WHEN** the smartcard is presented for inspection
+          **THEN** the Inspection - Invalid screen is displayed
+        expected: "A pre-validated-but-not-previously-validated smartcard shows Inspection - Invalid."
+
+      - title: "Smartcard Inspection — direction mismatch within the transfer period shows Invalid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a previously-validated smartcard whose direction of travel does
+          not match the current route, within the transfer period, shows Inspection - Invalid.
+        steps: |
+          **GIVEN** a previously-validated smartcard's last use is within the transfer period (less
+          than 90 minutes)
+          **WHEN** the smartcard is presented for inspection on a route whose direction of travel
+          does not match the card's last use
+          **THEN** the Inspection - Invalid screen is displayed
+        expected: "A direction mismatch within the transfer period shows Inspection - Invalid."
+
+      - title: "Smartcard Inspection — direction mismatch outside the transfer period shows Invalid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a previously-validated smartcard whose direction of travel does
+          not match the current route, outside the transfer period, shows Inspection - Invalid.
+        steps: |
+          **GIVEN** a previously-validated smartcard's last use is outside the transfer period (90
+          minutes or more)
+          **WHEN** the smartcard is presented for inspection on a route whose direction of travel
+          does not match the card's last use
+          **THEN** the Inspection - Invalid screen is displayed
+        expected: "A direction mismatch outside the transfer period shows Inspection - Invalid."
+
+      - title: "Smartcard Inspection — overriding a Valid card to Not Valid shows Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Not Valid' from the Inspection - Valid screen shows the
+          3.3.1 Error screen.
+        steps: |
+          **GIVEN** the Inspection - Valid screen is displayed
+          **WHEN** the operator selects 'Not Valid'
+          **THEN** the 3.3.1 Error screen is displayed
+        expected: "Selecting 'Not Valid' on Inspection - Valid shows the 3.3.1 Error screen."
+
+      - title: "Smartcard Inspection — validating an Invalid card routes by Glider or Rail"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping 'Validate' from an Inspection - Invalid or Invalid -
+          Warning screen routes on to the Present Smart Card screen on Rail, or on to the
+          smartcard-type fare routing on Glider.
+        steps: |
+          **GIVEN** the Inspection - Invalid or Inspection - Invalid - Warning screen is displayed
+          **WHEN** the operator taps 'Validate'
+          **THEN** on a Rail route the HHD returns to the Present Smart Card screen
+          **AND** on a Glider route the HHD proceeds to the smartcard-type fare routing
+        expected: "Tapping 'Validate' on an Invalid/Invalid-Warning card routes to Present Smart Card (Rail) or fare-type routing (Glider)."
+
+      - title: "Smartcard Validation — travel-prohibited card shows Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a valid smartcard for which travel is prohibited shows the 3.3.1
+          Error screen when presented for validation.
+        steps: |
+          **GIVEN** a smartcard is valid but travel is prohibited on it
+          **WHEN** the smartcard is presented for validation
+          **THEN** the 3.3.1 Error screen is displayed
+        expected: "A valid smartcard with travel prohibited shows the 3.3.1 Error screen on validation."
+
+      - title: "Smartcard Top-Up — invalid top-up card shows Critical Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a represented smartcard that is not a valid top-up card shows the
+          Critical Error - Invalid Card screen with Cancel and Retry options.
+        steps: |
+          **GIVEN** a represented smartcard is not a valid top-up card
+          **WHEN** the HHD checks the card
+          **THEN** the Critical Error - Invalid Card screen is displayed
+          **AND** Cancel and Retry options are offered
+        expected: "An invalid top-up card shows Critical Error - Invalid Card with Cancel and Retry options."
+
+      - title: "Smartcard Validation — Half-Fare card routes by Glider or Rail to Discount Sales mode"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Half-Fare discounted smartcard presented for validation routes
+          to the Discount - Sales mode - Rail screen on Rail, or the Discount - Sales mode (yLink)
+          screen on Glider.
+        steps: |
+          **GIVEN** a Half-Fare discounted smartcard is presented for validation
+          **WHEN** the smartcard is validated
+          **THEN** on a Rail route the Discount - Sales mode - Rail screen is displayed
+          **AND** on a Glider route the Discount - Sales mode (yLink) screen is displayed
+        expected: "A Half-Fare card routes to Discount - Sales mode - Rail (Rail) or Discount - Sales mode (yLink) (Glider)."
+
+      - title: "Smartcard Validation — Concession Fare card routes by Glider or Rail to Concessionary Card sales mode"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Concession Fare Validation smartcard presented for validation
+          routes to the Concessionary Card - Sales mode - Rail screen on Rail, or the Concessionary
+          Card - Sales mode screen on Glider.
+        steps: |
+          **GIVEN** a Concession Fare Validation smartcard is presented for validation
+          **WHEN** the smartcard is validated
+          **THEN** on a Rail route the Concessionary Card - Sales mode - Rail screen is displayed
+          **AND** on a Glider route the Concessionary Card - Sales mode screen is displayed
+        expected: "A Concession Fare card routes to Concessionary Card - Sales mode - Rail (Rail) or Concessionary Card - Sales mode (Glider)."
+
+      - title: "Concessionary Card Sales — cross-border ticket type selection returns to Rail sales mode"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a cross-border ticket type from the Concessionary Card -
+          Sales mode - Rail screen returns to that screen and proceeds to Represent Smartcard.
+        steps: |
+          **GIVEN** the Concessionary Card - Sales mode - Rail screen is displayed for a cross-border
+          eligible smartcard
+          **WHEN** the operator selects Cross Border and chooses a Ticket Type from the Select
+          Product - SeniorXB screen
+          **THEN** the HHD returns to the Concessionary Card - Sales mode - Rail screen
+          **AND** the HHD proceeds to the Represent Smartcard screen
+        expected: "Selecting a cross-border ticket type returns to Concessionary Card - Sales mode - Rail then proceeds to Represent Smartcard."
+
+      - title: "Concessionary Card Sales — no other ticket types keeps the current screen displayed"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that when a smartcard is not cross-border eligible and no other
+          ticket types are available, the Concessionary Card - Sales mode - Rail screen remains
+          displayed.
+        steps: |
+          **GIVEN** the Concessionary Card - Sales mode - Rail screen is displayed for a smartcard
+          that is not cross-border eligible
+          **WHEN** no other Ticket Types are available for the smartcard
+          **THEN** the HHD remains on the Concessionary Card - Sales mode - Rail screen
+        expected: "With no other Ticket Types available and no cross-border eligibility, the HHD stays on the current screen."
+
+      - title: "Discount Sales — yLink alighting selection reaches Discount Summary and Payment Area"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting an alighting stop from the Discount - Sales mode (yLink)
+          screen reaches the Discount - Summary (yLink) screen and proceeds to the Payment Area.
+        steps: |
+          **GIVEN** the Discount - Sales mode (yLink) screen is displayed
+          **WHEN** the operator selects the alighting stop
+          **THEN** the Discount - Sales mode - Alighting Selected (yLink) screen is displayed
+          **AND** the HHD proceeds to the Discount - Summary (yLink) screen
+          **WHEN** the operator continues from the Discount - Summary (yLink) screen
+          **THEN** the Payment Area or Payment Area (Glider) screen is displayed
+        expected: "Selecting an alighting stop from Discount - Sales mode (yLink) reaches the Discount Summary then a Payment Area screen."
+
+      - title: "Payment Area — successful card payment proceeds to Represent Smartcard"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful card payment from the Payment Area screen (or its
+          Glider variant) proceeds to the Represent Smartcard screen.
+        steps: |
+          **GIVEN** the Payment Area or Payment Area (Glider) screen is displayed
+          **WHEN** the operator taps 'Card' and the card payment completes successfully
+          **THEN** the HHD proceeds to the Represent Smartcard screen
+        expected: "A successful card payment from the Payment Area proceeds to Represent Smartcard."
+
+      - title: "Payment Area — cash or Warrant payment proceeds to print or Represent Smartcard"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a cash preset, entering the correct amount, or using a
+          Warrant on the Payment Area screen proceeds to the Cash/Payment Card Print flow, while the
+          Payment Area (Glider) variant proceeds directly to Represent Smartcard.
+        steps: |
+          **GIVEN** the Payment Area or Payment Area (Glider) screen is displayed
+          **WHEN** the operator selects a cash preset, enters the correct amount, or uses a Warrant
+          **THEN** on the Payment Area screen the HHD proceeds to the relevant Cash/Payment Card Print flow
+          **AND** on the Payment Area (Glider) screen the HHD proceeds directly to Represent Smartcard
+        expected: "Cash/Warrant payment on Payment Area proceeds to the Print flow; on Payment Area (Glider) it proceeds directly to Represent Smartcard."
+
+      - title: "Critical Error — cancelling after a used payment card voids the transaction"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that cancelling from the Critical Error screen after a payment
+          card was used voids the last card transaction and proceeds to the Card Payment Receipt
+          Print flow.
+        steps: |
+          **GIVEN** the Critical Error screen is displayed and a payment card was used
+          **WHEN** the operator taps 'Cancel'
+          **THEN** the HHD proceeds to Voiding Last Card Transaction
+          **AND** the HHD proceeds to the Card Payment Receipt Print flow
+        expected: "Cancelling a Critical Error after a used payment card voids the transaction and prints the card payment receipt."

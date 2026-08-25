@@ -1,0 +1,73 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Sales - Tickets, Ticket Issue]
+    cases:
+      - title: "Home Screen — selecting Choose Ticket Details opens the Choose Ticket Details flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Choose Ticket Details' from the Home Screen opens the
+          Choose Ticket Details flow.
+        steps: |
+          **GIVEN** the Home Screen, 3 choices is displayed
+          **WHEN** the customer selects 'Choose Ticket Details'
+          **THEN** the Choose Ticket Details flow is opened
+        expected: "Selecting 'Choose Ticket Details' from the Home Screen opens the Choose Ticket Details flow."
+
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      - title: "Home Screen — selecting Smartcards opens the Smartcards flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Smartcards' from the Home Screen opens the Smartcards
+          flow.
+        steps: |
+          **GIVEN** the Home Screen, 3 choices is displayed
+          **WHEN** the customer selects 'Smartcards'
+          **THEN** the Smartcards flow is opened
+        expected: "Selecting 'Smartcards' from the Home Screen opens the Smartcards flow."
+
+      - title: "Home Screen — selecting Buy ABT Card opens the Buy ABT Card flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Buy ABT Card' from the Home Screen opens the Buy ABT
+          Card flow.
+        steps: |
+          **GIVEN** the Home Screen, 3 choices is displayed
+          **WHEN** the customer selects 'Buy ABT Card'
+          **THEN** the Buy ABT Card flow is opened
+        expected: "Selecting 'Buy ABT Card' from the Home Screen opens the Buy ABT Card flow."
+
+  - path: [Non-Functional, Resilience]
+    cases:
+      - title: "Home Screen — a machine fault shows the machine-not-available message then Adverts"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a fault in the machine shows the Machine Not Available message
+          from the Home Screen, and that it advances to Adverts after an idle timeout.
+        steps: |
+          **GIVEN** the Home Screen, 3 choices is displayed
+          **AND** the tester knows how to induce a device fault condition
+          **WHEN** a fault occurs in the machine
+          **THEN** the Message - Machine not available screen is displayed
+          **WHEN** 30 seconds pass with no interaction
+          **THEN** Adverts is displayed
+        expected: "A machine fault shows the Machine Not Available message, which advances to Adverts after 30 seconds of no interaction."
+
+      - title: "Home Screen — Adverts reached from the machine-not-available message returns to Home Screen on tap"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that from the Machine Not Available message, an idle timeout to
+          Adverts followed by a tap returns to the Home Screen.
+        steps: |
+          **GIVEN** the Message - Machine not available screen is displayed
+          **WHEN** 30 seconds pass with no interaction
+          **THEN** Adverts is displayed
+          **WHEN** the customer taps the screen
+          **THEN** the Home Screen, 3 choices is displayed
+        expected: "From the Machine Not Available message, an idle timeout to Adverts followed by a tap returns to the Home Screen."

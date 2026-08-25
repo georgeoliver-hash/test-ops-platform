@@ -1,0 +1,58 @@
+[
+  {
+    "id": 4102928,
+    "title": "Passenger Portal — sign-on prevented for invalid, no-journey or blocked cards",
+    "preface": "This test is to confirm that Passenger Web Portal sign-on is prevented for invalid details, a card with no recent journeys, or a blocked card.",
+    "preconds": "**GIVEN** the Passenger Web Portal sign-on page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the customer enters invalid details",
+        "expected": "**THEN** the customer is prevented from signing on\n**AND** the relevant message is shown"
+      },
+      {
+        "content": "**WHEN** the customer enters a card with no journeys in the previous seven days",
+        "expected": "**THEN** the customer is prevented from signing on\n**AND** the relevant message is shown"
+      },
+      {
+        "content": "**WHEN** the customer enters a blocked card",
+        "expected": "**THEN** the customer is prevented from signing on\n**AND** the relevant message is shown"
+      }
+    ],
+    "action": "reword",
+    "refs": "gap Q26",
+    "citations": [],
+    "change_note": "Second half of C4102927's precondition question (gap Q26): the middle step's 'no journeys in the previous seven days' sign-on-block premise carries the same unconfirmed 7-day-sign-on-gate question as C4102927 (only a 7-day *view-window* limit is confirmed, not a sign-on gate). The 'invalid details' and 'blocked card' steps are standard, uncontradicted, low-risk UX (a blocked/deny-listed card being refused sign-on is consistent with the deny-list mechanism confirmed elsewhere, PSPEC-0015 4.9) and were left uncited per the register's existing 'assumed-competence, not every mechanical fact needs a bespoke citation' convention (cf. Q6/Q34) rather than over-marking. No wording change to the steps; only linked to the existing Q26 gap via Refs so the two related cases (4102927/4102928) are traceable together."
+  },
+  {
+    "id": 4102929,
+    "title": "Passenger Portal — home screen shows balance and summary",
+    "preface": "This test is to confirm that a signed-on customer sees their account balance and a summary of card, account ID and journey/transaction history.",
+    "preconds": "**GIVEN** a customer is signed on and the account home screen is displayed\n**AND** the card has completed ABT taps that day",
+    "steps": [
+      {
+        "content": "**WHEN** the customer views the home screen",
+        "expected": "**THEN** the account balance is shown\n**AND** the card details, account ID and journey/transaction history summary is shown"
+      }
+    ],
+    "action": "reword",
+    "refs": "PSPEC-0015 para 14593 (dashboard: balance, last 5 journeys/transactions)",
+    "citations": ["PSPEC-0015 para 14593"],
+    "change_note": "Grounded: PSPEC-0015 para 14593 'The dashboard provides details of the customer's account, their current balance, the last 5 journeys and transactions and the ability to top up their account' (Anonymous Payment Card/Smartcard Dashboard, Figures 60-61). Citation added; no wording change — case was already accurate."
+  },
+  {
+    "id": 4102930,
+    "title": "Passenger Portal — customer can sign off",
+    "preface": "This test is to confirm that a customer can sign off the Passenger Web Portal.",
+    "preconds": "**GIVEN** a customer is signed into the Passenger Web Portal",
+    "steps": [
+      {
+        "content": "**WHEN** the customer signs off",
+        "expected": "**THEN** the session ends\n**AND** the sign-on page is shown"
+      }
+    ],
+    "action": "reword",
+    "refs": "",
+    "citations": [],
+    "change_note": "No dedicated 'sign off' paragraph found in PSPEC-0015 or the Cloudfare Translink manual (a generic web-session sign-off is standard, uncontradicted UX, not itself in dispute). Left uncited rather than force a citation onto a trivial mechanical fact, per the register's existing 'assumed-competence' convention (cf. Q6/Q34) — no field actually changed on this case, listed here only for completeness of the section sweep."
+  }
+]

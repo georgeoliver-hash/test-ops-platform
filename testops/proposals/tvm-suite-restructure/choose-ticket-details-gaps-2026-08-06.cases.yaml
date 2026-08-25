@@ -1,0 +1,77 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Sales - Tickets, Ticket Issue]
+    cases:
+      - title: "Ticket Issue — quick select reaches ticket-selected screen without a basket step"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm arriving via quick select tickets reaches the ticket-selected
+          screen with no basket step offered.
+        steps: |
+          **GIVEN** the TVM is showing the Select Tickets screen, reached via the quick select
+          tickets entry path
+          **WHEN** the customer selects a ticket via quick select
+          **THEN** the Select Tickets - ticket selected (Quick Select) screen is shown
+          **AND** no basket step is offered
+        expected: "Quick select ticket entry reaches the ticket-selected screen directly, with no basket version offered."
+
+      - title: "Ticket Issue — ticket selection returns to the Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the ticket-selected screen can return to the Home Screen.
+        steps: |
+          **GIVEN** the TVM is showing the Select Tickets - ticket selected screen
+          **WHEN** the customer returns to the Home Screen from the ticket-selected screen
+          (**GAP** — exact trigger/button not stated in the flow-map; confirm on live system)
+          **THEN** the Home Screen is displayed
+        expected: "From the ticket-selected screen, the customer can return to the Home Screen."
+
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      - title: "Smartcards & ABT — yLink ticket selection shows the yLink select-tickets screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a yLink product on the Select Tickets screen shows the
+          yLink variant of the screen.
+        steps: |
+          **GIVEN** the TVM is showing the Select Tickets screen
+          **WHEN** the customer selects a yLink ticket product (**GAP** — the exact connecting
+          action into the yLink screen is not stated in the flow-map; confirm on live system)
+          **THEN** the Select Tickets - yLink screen is shown
+        expected: "Selecting a yLink product shows the yLink variant of the Select Tickets screen."
+
+  - path: [Functional, Sales - Tickets, Rail & Cross-Border (Kiosk)]
+    cases:
+      - title: "Rail & Cross-Border — insufficient paper shows the low-paper error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM shows a low-paper error when there is not enough ticket
+          paper to print the requested Rail ticket quantity.
+        steps: |
+          **GIVEN** the TVM has insufficient ticket paper remaining to print the requested Rail
+          ticket quantity
+          **WHEN** the customer attempts to proceed with that Rail ticket purchase
+          **THEN** the Select Tickets - Rail - low paper error screen is shown
+          **AND** the "Pay Now" and "Alternative Tickets" buttons are replaced by the error message
+        expected: "Insufficient ticket paper for the requested quantity shows the low-paper error screen in place of Pay Now/Alternative Tickets."
+
+      - title: "Rail & Cross-Border — purchase over £500.00 shows the invalid-amount error, taking priority over low paper"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Rail ticket purchase exceeding the TVM's £500.00 machine limit
+          shows the invalid-amount error, and that this error takes priority over the low-paper
+          error.
+        steps: |
+          **GIVEN** the TVM is showing the Select Tickets - Rail - ticket selected screen for a
+          purchase exceeding the £500.00 machine limit
+          **WHEN** the customer attempts to proceed with that purchase
+          **THEN** the Select Tickets - Rail - invalid amount error screen is shown
+          **AND** "Add to Basket" is permanently unavailable on this screen
+          **AND** this error takes priority over the low-paper error
+        expected: "A purchase over the £500.00 limit shows the invalid-amount error and takes priority over the low-paper error, with Add to Basket unavailable."

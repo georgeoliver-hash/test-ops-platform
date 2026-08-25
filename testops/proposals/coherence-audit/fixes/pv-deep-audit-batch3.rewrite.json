@@ -1,0 +1,151 @@
+[
+  {
+    "id": 4101012,
+    "action": "reword",
+    "preconds": "**GIVEN** a technician is signed in to the Technician Menu\n**AND** you can view the current home location and select a new one from the server list",
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Location Settings)",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' annotations: Select Home Location from a back-office-provided list; changing Home Location requires a reboot to apply",
+      "pv-flow-annotations.md screens list includes '11.01.05 Technician Menu - Location Settings - Fail' (confirms a location-lookup failure screen exists on the PV Technician Menu)"
+    ],
+    "change_note": "COHERENCE FIX (pv.findings.md, Med): precondition asserted 'back-office comms available' while step 3 deliberately exercises the comms-UNAVAILABLE path ('Failed to retrieve locations from server') — a direct contradiction. Dropped the comms-availability claim from the precondition entirely; comms state is now scoped only where it matters (step 3's own WHEN clause already says 'with comms unavailable'), so the case no longer asserts two contradictory starting states. Behaviour (view/change home location from a server-provided list; reboot required to apply) is grounded on the Overflow Technician Menu annotations. The exact fail-screen message text ('Failed to retrieve locations from server') is not itemised verbatim in the annotations — only that a distinct 'Location Settings - Fail' screen exists — so left as-is (pre-existing suite wording, not newly invented here) rather than asserted as newly grounded."
+  },
+  {
+    "id": 4101014,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** you open the Software Versions page",
+        "expected": "**THEN** the software versions are listed (OS, BSP, EBoot, Configuration Version, application software and operating files)\n**GAP** — exact field list not confirmed in requirements; confirm on the live system before running"
+      },
+      {
+        "content": "**WHEN** you open the Configuration Versions page",
+        "expected": "**THEN** the configuration versions are listed (Configuration Version, Furthest Alighting file, TD.Product, TD.Topology, Staff List)\n**GAP** — exact field list not confirmed in requirements; confirm on the live system before running"
+      }
+    ],
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Software Version / Configuration Version)",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md confirms both screens exist ('Software Versions', 'Configuration Versions') on the PV Technician Menu, but the annotation notes do not itemise the specific fields shown on either screen",
+      "No FBD-100320/100353 (TID management) or FBD-100304 (system diagram) paragraph found naming 'Furthest Alighting file', 'TD.Product', 'TD.Topology' or 'Staff List' as Configuration-Version-page fields"
+    ],
+    "change_note": "GROUNDING: the two screens themselves are confirmed real (Overflow design annotations), but the itemised field lists in each Then clause are not confirmed anywhere in the reviewed FBD library or the design annotations. Added GAP markers on the itemisation rather than deleting or inventing an alternative list — the case's core claim (both pages exist and list version info) stands; only the precise field enumeration is unconfirmed. Drafted as a new gap-register question (see final report) rather than silently trusting or discarding the existing itemisation."
+  },
+  {
+    "id": 4101017,
+    "action": "reword",
+    "preconds": "**GIVEN** a technician is signed in to the Technician Menu\n**GAP** — a PV 'Operating Times' schedule feature (governing scheduled out-of-service/in-service transitions) is not found in the reviewed Technician Menu design annotations (PV Technician Menu enumerates only Login/Location/Software Version/Brightness/Force Comms/Network/Configuration Version/Audio/Sign Off) or in FBD-100304; confirm on the live system before running",
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Platform Validator screen list — no Operating Times screen enumerated)",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' section lists 24 screens across Login/Location/Software Version/Brightness/Force Communications/Network Interfaces/Configuration Version/Audio/Sign Off — no Operating Times / scheduled service-window screen among them",
+      "FBD-100304 (TFTS System Diagram Roadmap) — no scheduled operating-hours / operating-times device configuration found in the sections reviewed"
+    ],
+    "change_note": "GROUNDING: this case's entire premise — a technician-configurable PV operating-times schedule that drives automatic out-of-service/in-service transitions — is not confirmed in either the Overflow Technician Menu design (a fairly complete 24-screen enumeration for the PV Technician Menu that does not include this) or FBD-100304. Not found = not necessarily untrue (the Overflow extraction may not be exhaustive), so marked GAP rather than condemning the case outright. Drafted as a new gap-register question."
+  },
+  {
+    "id": 4101091,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** you enable data mirroring (backup)",
+        "expected": "**THEN** data mirroring is enabled\n**GAP** — a data-mirroring/backup toggle is not found among the PV Technician Menu screens in the reviewed design annotations; confirm on the live system before running"
+      },
+      {
+        "content": "**WHEN** you amend the main-screen background colour",
+        "expected": "**THEN** the main-screen background is updated\n**GAP** — a main-screen background-colour setting is not found among the PV Technician Menu screens in the reviewed design annotations; confirm on the live system before running"
+      },
+      {
+        "content": "**WHEN** a card is presented to the PV",
+        "expected": "**THEN** the configured audible feedback is played\n**GAP** — a distinct 'card presented' tone (separate from the validation-outcome tones — success/passback/error — documented for the PV) is not confirmed in the reviewed design annotations; confirm on the live system before running"
+      }
+    ],
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Platform Validator screen list; Platform Validator-Barcode audio-message annotations)",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' enumerates Login/Location/Software Version/Brightness/Force Comms/Network/Configuration Version/Audio/Sign Off screens only — no backup/mirroring or background-colour screen",
+      "Audible-feedback annotations found (Gate Validator section) describe tones tied to validation OUTCOMES (Please_Proceed.wav on success/passback, error/seek-assistance tones on failure) — not a generic 'card presented' tone independent of a validation result"
+    ],
+    "change_note": "GROUNDING: three distinct claims bundled in one case; none of the three (backup/mirroring enable, background-colour change, a tone on mere card presentation) are confirmed in the reviewed Technician Menu design annotations or audio-message specs, which instead describe outcome-tied validation tones. Marked each with a GAP rather than deleting — the case may still be correct (Overflow extraction may not be exhaustive) but nothing here currently traces to a source. Drafted as a new gap-register question; also flagged as a candidate case-structure review (3 unrelated Technician Menu features bundled in one case) for a future consolidation pass, not addressed here."
+  },
+  {
+    "id": 4102181,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** you leave a page with no input until it times out",
+        "expected": "**THEN** the PV returns to the Technician Menu home screen"
+      },
+      {
+        "content": "**WHEN** the inactivity period then elapses on the home screen",
+        "expected": "**THEN** the PV auto signs the technician off\n**GAP** — the accompanying tone and the exact two-stage timeout sequence (page-idle→home screen, then a separate home-screen inactivity period→auto sign-off) are not confirmed in the reviewed Technician Menu design annotations, which document only a 3-second/Enter-key timeout on the PIN-entry field; confirm on the live system before running\n**AND** the sign-off is recorded in the CloudFare activity log"
+      }
+    ],
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu general annotations — PIN-field timeout only)",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu' annotations describe only a PIN-entry-field redirect timeout ('after 3 seconds or by pressing Enter') and an 'error message disappears after a short timeout' on Incorrect Details — no page-level home-screen timeout or a separate home-screen-inactivity auto-sign-off-with-tone sequence"
+    ],
+    "change_note": "GROUNDING: the general concept (Technician Menu security timeout signs the technician off on inactivity) is plausible and common practice, but the specific two-stage mechanism and audible tone asserted in step 2 aren't confirmed anywhere reviewed — only a narrower PIN-field-specific timeout is documented. Kept step 1 as-is (page→home timeout is a lower-risk, more generic claim) and added a GAP marker only on the more specific/riskier claim in step 2 (the tone + the exact sequencing) rather than blocking the whole case. Drafted as a new gap-register question."
+  },
+  {
+    "id": 4101095,
+    "refs": "TIBU-24260, TIBU-26053, TIBU-25548, TIBU-26054, TIBU-26531, FBD-100263, gap-register Q23",
+    "action": "reword",
+    "citations": [
+      "FBD-100263 (CloudFare Asset Tracking Reports) V4.00 paras 187/327/403: 'SIM ID' is a real, named field in the Asset Tracking / Asset Manager reporting spec — not invented",
+      "gap-register.md Q23 (ANSWERED): PV confirmed to have real cellular/SIM hardware (REQ-2746.0 old-suite failover cases; TIBU-24428's QA-passed Ethernet⇌cellular matrix; TIBU-29191/C4091908 show the Technician Menu Network Settings screen displaying both an Ethernet and a Cellular interface) — a SIM ID being reported to CloudFare is therefore consistent with the hardware, reversing pv.findings.md's earlier 'PV may be Ethernet-only' doubt"
+    ],
+    "change_note": "RESOLVES pv.findings.md Med finding (needs-confirmation): step 2 asserts the PV reports a 'SIM ID' to CloudFare Asset Manager. At the time of that finding the PV's comms model was still disputed (gap-register Q9, since reversed by Q23) as possibly Ethernet-only, which would make a 'SIM ID' incongruous. Q23 now confirms the PV has real cellular/SIM hardware, and FBD-100263 confirms 'SIM ID' is the actual asset-tracking field name (not a stand-in for some other identifier) — so no wording change was needed, only the Refs backfill grounding both facts. No content change to preface/preconds/steps."
+  },
+  {
+    "id": 4101011,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Login/Enter PIN/Incorrect Details)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' screens: '10.00.01 Login Screen', '10.00.02 Enter PIN', '10.00.03 Incorrect Details'; annotation: 'Presenting a Technician card will redirect user to Sign on page with the ID automatically entered and PIN field active'"
+    ],
+    "change_note": "REFS-ONLY: card-then-PIN login flow and the incorrect-details rejection path match the Overflow Technician Menu design annotations exactly; no content change needed, added the citation for traceability."
+  },
+  {
+    "id": 4101013,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Brightness)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' Brightness annotation: 'allows the technician to make adjustments to the PV screen brightness. The Mode displayed indicates whether the PV has been configured manually or is configured to automatically adapt to environmental light conditions as detected via the built-in light sensor'"
+    ],
+    "change_note": "REFS-ONLY: manual brightness adjustment + ambient auto-adjust from the light sensor matches the Overflow annotation almost verbatim; no content change needed, added the citation for traceability."
+  },
+  {
+    "id": 4101015,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Force Communications)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' Force Communications annotation lists the exact five summary fields (pending audit records; last successful audit send; last manifest download attempt; last successful manifest download; pending software/config file count) and the Call Now / Refresh behaviours verbatim"
+    ],
+    "change_note": "REFS-ONLY: this case matches the Overflow Force Communications annotation almost word-for-word (all five summary fields, Call Now = manifest check + pending audit send, Refresh = update displayed values); no content change needed, added the citation for traceability."
+  },
+  {
+    "id": 4102166,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Sign Off)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' screens include '10.02.01 Sign Off' / '10.02.02 Please Wait'; annotation: 'Pressing Sign Off will show user another screen that will require confirmation, before actually signing off'"
+    ],
+    "change_note": "REFS-ONLY: sign-off-with-confirmation flow matches the Overflow annotation; the CloudFare activity-log recording assertion follows the same established pattern used across the suite for Technician Menu actions. No content change needed, added the citation for traceability."
+  },
+  {
+    "id": 4102167,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Rebooting screen)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu - Platform Validator' screens include '10.02.03 Rebooting' — confirms a dedicated reboot screen exists"
+    ],
+    "change_note": "REFS-ONLY: reboot screen existence confirmed via the Overflow annotations; CloudFare activity-log recording follows the same established pattern used elsewhere in this section. No content change needed, added the citation for traceability."
+  },
+  {
+    "id": 4102168,
+    "refs": "knowledge/flows/pv-flow-annotations.md (Technician Menu - Audio)",
+    "action": "reword",
+    "citations": [
+      "knowledge/flows/pv-flow-annotations.md 'Technician Menu' annotation: 'User will be able to incrementally set and volume and perform test of the volume loudness' (Audio page)"
+    ],
+    "change_note": "REFS-ONLY: volume adjustment + test-tone playback matches the Overflow Audio-page annotation; no content change needed, added the citation for traceability."
+  }
+]

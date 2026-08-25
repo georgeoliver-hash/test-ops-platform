@@ -1,0 +1,24 @@
+suite: NJT - SystemTestOps
+suite_id: 30295
+
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [1]
+
+sections:
+  - path: ["Fare Register", "Fare Structure", "Transactions", "Transaction Type"]
+    cases:
+      - title: "Transaction Type - Non Payment"
+        objective: "This test is to confirm the user can register a Non Payment transaction and that it is recorded with no receipt printed and no Spotter Display entry."
+        steps: |
+          **GIVEN** the Fare Register is at the Ticket Selection Display
+          **WHEN** the user selects a Non Payment transaction
+          **THEN** the Ticket Details screen displays the Selection Display as "Non Payment"
+            **AND** the Ticket Details Display displays "NoPay"
+          **WHEN** the user transacts the Non Payment entry
+          **THEN** the FR does not print a receipt
+            **AND** the transaction is recorded
+          **WHEN** the user views the Spotter Display immediately after the transaction
+          **THEN** the Spotter Display shows no entry for the transaction
+        expected: "Non Payment (ID 24) records a transaction used to log a fare refusal, with no receipt printed and no Spotter Display code, per the transaction-type table. (Source: NJT_FRFRP_FS002 §4.1.2, p.16-21, ID 24)"

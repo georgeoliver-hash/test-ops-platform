@@ -1,0 +1,98 @@
+[
+  {
+    "id": 4102937,
+    "title": "Card Verification — declined payments are guaranteed up to the Issuer Liability Threshold",
+    "refs": "PSPEC-0015 §4.7.3 (Issuer Liability/Chargeback Protection, para ~10920-10931, 13295-13412),REQ-3354,OldSuite-C2665815,OldSuite-C2665816,OldSuite-C2665817",
+    "preface": "This test is to confirm that a declined payment not recovered from the customer is guaranteed by the card issuer up to the Issuer Liability Threshold (UK threshold £10.00).",
+    "preconds": "**GIVEN** a seeded ABT test cEMV card is available for a supported scheme (Visa, Mastercard or Maestro)\n**AND** a transaction was made that failed authorisation for payment\n**AND** you can verify the outcome in CloudFare env5",
+    "steps": [
+      {
+        "content": "**WHEN** the declined payment is not recovered from the customer",
+        "expected": "**THEN** in CloudFare the card issuer guarantees the payment up to the Issuer Liability Threshold (£10.00 in the UK)\n**AND** amounts within the threshold are cleared under issuer liability / chargeback protection"
+      }
+    ],
+    "expected": "Unrecovered declined payments are guaranteed by the issuer up to the liability threshold, for Visa, MasterCard and Maestro.\n\nData variations: Visa / Mastercard / Maestro (each its own signed-off requirement — REQ-3354).\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: preconditions named only 'Visa or Mastercard', silently dropping Maestro even though the case's own Expected line already promises 'Visa, MasterCard and Maestro' and the old suite tested all three as separate cases (C2665815/16/17, REQ-3354). Added Maestro to the precondition and an explicit Data-variations line so the three schemes are named consistently across the case, not just in the summary."
+  },
+  {
+    "id": 4102939,
+    "title": "Card Verification — first daily use of a Mastercard or Maestro card triggers a pre-authorisation",
+    "refs": "PSPEC-0015 §4.6 (para ~10548-10550),REQ-3360,REQ-3361,OldSuite-C2665819,OldSuite-C2665821",
+    "preface": "This test is to confirm that a pre-authorisation / nominal authorisation is performed on the first daily use of a Mastercard or Maestro card.",
+    "preconds": "**GIVEN** a seeded ABT test cEMV Mastercard or Maestro card that has not yet transacted today\n**AND** an in-service ETM signed on to a route\n**AND** you can verify the outcome in CloudFare env5",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card to make the first transaction of the day on the ETM",
+        "expected": "**THEN** in CloudFare a pre-authorisation / nominal authorisation is performed"
+      }
+    ],
+    "expected": "A Pre-Authorisation check is performed on the first daily use of a MasterCard or Maestro card.\n\nData variations: Mastercard (REQ-3360) / Maestro (REQ-3361) — two separate signed-off requirements, same behaviour.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: title/preconditions/steps named only Mastercard, while the Expected line already said 'MasterCard or Maestro' — an inconsistency. Old suite tested Mastercard (REQ-3360, C2665819) and Maestro (REQ-3361, C2665821) as two distinct signed-off requirements. Retitled and broadened preconditions to name both, plus a Data-variations line, so Maestro isn't only mentioned in the summary line."
+  },
+  {
+    "id": 4102940,
+    "title": "Card Verification — first use after Deny List removal triggers a pre-authorisation",
+    "refs": "PSPEC-0015 §4.6 (para ~10548-10550),REQ-3360,REQ-3361,OldSuite-C2665820,OldSuite-C2665822",
+    "preface": "This test is to confirm that a pre-authorisation is performed on the first tap of a Mastercard or Maestro card immediately after the card has been removed from the Deny List.",
+    "preconds": "**GIVEN** a seeded ABT test cEMV Mastercard or Maestro card that has just been removed from the Deny List\n**AND** an in-service ETM signed on to a route\n**AND** you can verify the outcome in CloudFare env5",
+    "steps": [
+      {
+        "content": "**WHEN** you next tap the card to make a transaction on the ETM",
+        "expected": "**THEN** in CloudFare a pre-authorisation is performed"
+      }
+    ],
+    "expected": "A Pre-Authorisation check is performed on first use after Deny List removal, for Mastercard and Maestro.\n\nData variations: Mastercard (REQ-3360) / Maestro (REQ-3361).\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: this case named only Mastercard everywhere (title, preface, preconditions, steps, expected) — Maestro was dropped entirely, not even in a summary line (worse than the sibling C4102939). Old suite tested Mastercard (REQ-3360, C2665820) and Maestro (REQ-3361, C2665822) as two distinct requirements for this exact scenario. Broadened preconditions/preface/expected to name both, plus a Data-variations line."
+  },
+  {
+    "id": 4102894,
+    "title": "EMV Summary Report",
+    "refs": "FBD-100387 para 218,REQ-2662.1,REQ-3457,REQ-3491,OldSuite-C2665801,OldSuite-C2817603,OldSuite-C2879324",
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the EMV Summary Report for a date range",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed with Open Payment totals split by card scheme (Visa / MasterCard / Maestro)\n**AND** it can be exported (PDF / XLS / CSV)"
+      }
+    ],
+    "expected": "The EMV Summary Report generates, displays and can be exported, with Open Payment details split between Visa, MasterCard and Maestro.\n\nData variations: card scheme — Visa / MasterCard / Maestro; export format — PDF / XLS / CSV; KPI headings — Total EMV Payments, Total EMV Revenue, Total EMV Declines, Total EMV Decline Value, Total Decline Percentage; row detail — Decline Reason, BIN range, Issuer, Quantity, Value, Decline Percentage.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: the consolidated case had lost all real content from its three old-suite sources — all three (C2665801/C2817603/C2879324, REQ-2662.1 Deployed) explicitly state the report 'displays Open Payment details (split between Visa, MasterCard and Maestro)', plus named export formats and KPI/row-detail columns. The stub only said 'the report is generated/displayed/exported' with no scheme split named anywhere. Restored the scheme-split and supporting content as a Data-variations line, grounded directly on the three old-suite case bodies (already partly cited in Refs). Existence UNCONFIRMED marker left untouched — that is a separate, already-flagged question, not resolved by this fix."
+  },
+  {
+    "id": 4102908,
+    "title": "Retail Debt Report",
+    "refs": "FBD-100387 para 218,OldSuite-C2880099,CA-13549,TODEV-15538,TODEV-11567",
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Retail Debt Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed with the Retail Debt Summary broken out by card scheme (Visa value/percentage; Mastercard value/percentage; Maestro value/percentage)\n**AND** it can be exported (PDF / XLS / CSV)"
+      }
+    ],
+    "expected": "The Retail Debt Report generates, displays and can be exported, with debt broken out by Visa / Mastercard / Maestro.\n\nData variations: card scheme — Visa / Mastercard / Maestro (each shown as its own value+percentage in the Retail Debt Summary); row detail — Date/Time, Automatic Debt Retries, Remaining, Amount, Brand, Masked PAN, Transaction Reference.\n\n[Automatable: Yes · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: old suite C2880099 (already cited in Refs) explicitly specifies the Retail Debt Summary shows 'Value and percentage of debt from Visa Cards' and 'Value and percentage of debt from Maestro and MasterCard's — a genuine per-scheme breakdown that the consolidated stub dropped entirely (generic 'the report is generated/displayed/exported', no scheme mentioned). This is also the exact report with three real scheme-handling regression bugs never pinned by Refs: CA-13549 (NaN in Visa/Mastercard debt cells), TODEV-15538 (Maestro debt not counted in the summary), TODEV-11567 (unrecovered Maestro debt not shown after 3 failed attempts). Restored the scheme breakdown as a Data-variations line and pinned all three regressions via Refs."
+  },
+  {
+    "id": 4102852,
+    "title": "Debt Recovery — automated (scheme) recovery clears a recoverable issuer-liability debt",
+    "refs": "PSPEC-0015 (Automatic Debt Recovery cadence, para ~11493-11504),TODEV-24990",
+    "preface": "This test is to confirm that scheduled automated (card-scheme-driven) recovery clears a recoverable issuer-liability debt and removes the token from the deny list.",
+    "preconds": "**GIVEN** the seeded test account has an EndOfDay authorisation failure and a recoverable debt within the issuer-liability threshold\n**AND** the account is currently blocked and its token is on the ABT Deny List\n**AND** you are signed in to the ABT Operator Portal on the Customers page",
+    "steps": [
+      {
+        "content": "**WHEN** the scheduled automated re-authorisation cycles run (per card-scheme rules) and re-collect the debt\n**AND** you refresh the account in the Operator Portal",
+        "expected": "**THEN** the account is no longer blocked in the Operator Portal\n**AND** the account's token no longer appears on the Deny List"
+      }
+    ],
+    "expected": "Scheduled scheme-driven recovery re-collects the issuer-liability debt; the account is unblocked and removed from the Deny List.\n\nData variations: retry cadence differs by scheme — Visa (six attempts within 14 days, UK/IntraEU/International) vs Mastercard (one attempt per day for a month — retried at 4/14/28 days, UK/International/Maestro).\n\n[Automatable: Yes · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "change_note": "Card-variant sweep fix: the Expected line said 'Scheduled Visa MIT recovery' while the rest of the case (preface/preconditions/steps) was scheme-neutral — an inconsistency, and neither named the actual scheme-specific cadence. PSPEC-0015 explicitly documents that Visa and Mastercard (Maestro follows the Mastercard cadence) have different automated-recovery attempt schedules. Fixed the Expected line to be scheme-neutral (matching the rest of the case) and added the cadence difference as a Data-variations line, grounded directly on the spec paragraph."
+  }
+]

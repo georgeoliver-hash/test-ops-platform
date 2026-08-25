@@ -1,0 +1,98 @@
+suite: NJT - SystemTestOps
+suite_id: 30295
+
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [1]   # 1 = ETM in this project's field config
+
+sections:
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Stored Value Process", "Transaction Type Selection"]
+    cases:
+      - title: "Fare Pay card — Ticket Type Pass of 000000 routes to the Stored Value flow"
+        objective: "This test is to confirm the FR routes an NJT Card Transaction to the Stored Value process when the Ticket Type Pass field is 000000."
+        steps: |
+          **GIVEN** the FR is ready to receive an NJT Card Transaction ($F4)
+          **WHEN** the OBV sends an $F4 message with Ticket Type Pass set to 000000
+          **THEN** the FR processes the transaction as a Stored Value transaction
+          **AND** the FR displays "SV Transaction" as the Product Type
+        expected: "Ticket Type Pass 000000 selects the Stored Value flow, not the Ticket Product flow. (Source: NJT_FRFRP_FS002 p.60)"
+
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Ticket Product Processing", "Transaction Type Selection"]
+    cases:
+      - title: "Fare Pay card — non-zero Ticket Type Pass routes to the Ticket Product flow"
+        objective: "This test is to confirm the FR routes an NJT Card Transaction to the Ticket Product process when the Ticket Type Pass field is non-zero."
+        steps: |
+          **GIVEN** the FR is ready to receive an NJT Card Transaction ($F4)
+          **WHEN** the OBV sends an $F4 message with a non-zero Ticket Type Pass value
+          **THEN** the FR processes the transaction as a Ticket Product transaction
+          **AND** the FR looks up the Product Type and Rider Classification from the Ticket Type Pass field
+        expected: "A non-zero Ticket Type Pass selects the Ticket Product flow, not the Stored Value flow. (Source: NJT_FRFRP_FS002 p.60, pp.68-69)"
+
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Stored Value Process", "Automatic"]
+    cases:
+      - title: "Automatic — insufficient funds does not block acceptance"
+        objective: "This test is to confirm the FR accepts a Stored Value transaction in Automatic approval mode even when the card balance is insufficient to cover the fare, because no sufficient-funds check is performed in this mode."
+        steps: |
+          **GIVEN** the FR is in Automatic approval mode for a Stored Value transaction
+          **AND** the OBV has accepted the card as valid with a balance insufficient to cover the fare
+          **WHEN** the FR processes the transaction
+          **THEN** the FR accepts the transaction without performing a sufficient-funds check
+          **AND** the FR sends the $E7 approval (acknowledge type 00) to the OBV
+          **AND** the FR prints a receipt
+        expected: "Automatic mode is instructed to auto-accept regardless of balance; the sufficient-funds check that applies in Waiting for Driver / Waiting for NJT Card Validation Information is skipped here. (Source: NJT_FRFRP_FS002 p.63)"
+
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Stored Value Process", "Waiting for Driver"]
+    cases:
+      - title: "Waiting for Driver — a negative threshold still permits acceptance"
+        objective: "This test is to confirm the sufficient-funds check uses a signed threshold value, so a transaction can still be accepted when the balance minus fare is negative but not below a negative configured threshold."
+        steps: |
+          **GIVEN** the tester knows the currently configured NJT Card threshold for the transaction is a negative value
+          **AND** the SV balance minus the fare is negative but not less than the configured threshold
+          **WHEN** the driver presses the Issue button
+          **THEN** the FR treats this as sufficient funds and accepts the transaction
+          **AND** the FR sends the $E7 approval (acknowledge type 00) to the OBV
+        expected: "The sufficient-funds formula is 'SV balance minus fare is greater than or equal to Threshold', and the threshold can be positive or negative; a negative threshold must still be honoured. (Source: NJT_FRFRP_FS002 p.61)"
+
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Stored Value Process", "Waiting for NJT Card Validation Information"]
+    cases:
+      - title: "Waiting for NJT Card Validation Information — insufficient funds, driver retries with a changed selection"
+        objective: "This test is to confirm that, unlike the driver-confirm modes, a driver in Waiting for NJT Card Validation Information mode can change the zone or rider classification and retry after an insufficient-funds rejection, rather than only being able to cancel."
+        steps: |
+          **GIVEN** the FR displays the interactive SV screen for approval mode 03
+          **AND** the driver's initial zone/rider-class selection results in insufficient funds when Issue is pressed
+          **WHEN** the driver changes the zone or rider classification and presses Issue again
+          **THEN** the FR re-checks sufficient funds against the new selection
+          **AND** the FR accepts the transaction, sends the $E7 approval (acknowledge type 00), and prints a receipt
+        expected: "Approval mode 03 is the only SV mode where the driver may either cancel or change zone/rider-class/type and retry after an insufficient-funds rejection; Waiting for Driver and Automatic do not offer this retry. (Source: NJT_FRFRP_FS002 p.65)"
+
+      - title: "Waiting for NJT Card Validation Information — CT not selectable when Enable ISSCTT is off"
+        objective: "This test is to confirm the driver cannot toggle to the CT transaction type via the R4 soft key when the 'Enable ISSCTT' service option is disabled."
+        steps: |
+          **GIVEN** the 'Enable ISSCTT' service option is disabled
+          **AND** the FR displays the interactive SV screen for approval mode 03
+          **WHEN** the driver presses the R4 key to toggle transaction type
+          **THEN** the toggle cycles only through the transaction types available without CT
+          **AND** CT is not offered as a selectable transaction type
+        expected: "CT is selectable only if 'Enable ISSCTT' is set in service options and CT is a valid rider-class/transaction combination; disabling the option must remove CT from the toggle. (Source: NJT_FRFRP_FS002 p.65)"
+
+      - title: "Waiting for NJT Card Validation Information — Transfer not selectable when zone/discount eligibility fails"
+        objective: "This test is to confirm the driver cannot toggle to the Transfer transaction type via the R4 soft key unless the $F4 discount type is 14 and the boarding/alighting zones on screen are the same zone."
+        steps: |
+          **GIVEN** the $F4 discount type is not 14, or the SV screen's boarding and alighting zones differ
+          **AND** the FR displays the interactive SV screen for approval mode 03
+          **WHEN** the driver presses the R4 key to toggle transaction type
+          **THEN** the toggle cycles only through the transaction types available without Transfer
+          **AND** Transfer is not offered as a selectable transaction type
+        expected: "Transfer is selectable only if $F4 discount type is 14 and the SV screen's current boarding and alighting zones are the same zone; failing either condition must remove Transfer from the toggle. (Source: NJT_FRFRP_FS002 p.65)"
+
+  - path: ["Fare Register", "OBV Functionality", "Fare Pay card", "Stored Value Process", "Rider Classification"]
+    cases:
+      - title: "Rider Classification — Employee is never sent to the OBV"
+        objective: "This test is to confirm the FR does not offer Employee as a selectable rider classification in the driver-confirm mode, and never sends Employee in the outgoing $E7 Rider Classification field."
+        steps: |
+          **GIVEN** the FR displays the interactive SV screen for approval mode 03 with 'class' soft keys limited to Adult/Child/Senior/Student
+          **WHEN** the driver views the available rider-class soft keys
+          **THEN** Employee is not offered as a selectable classification
+          **AND** the FR never sends Employee (5) in the outgoing $E7 Rider Classification field
+        expected: "The outgoing FR-to-OBV mapping table has no code for Employee — it is explicitly 'N/A, not selectable' by design. (Source: NJT_FRFRP_FS002 pp.67-68)"

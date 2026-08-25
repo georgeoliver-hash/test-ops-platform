@@ -1,0 +1,399 @@
+# POS Sign On — clarity pass (suite 30253)
+# UPDATES 26 existing cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: POS wording (no ETM), fuller objective,
+# grounded preconditions with a concrete role/example, one predicate per THEN/AND, CloudFare
+# audit step kept where present. Push with --update; do NOT create new cases.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Sign On & Session, Idle & Screen]
+    cases:
+      - title: Sign On — screen, field entry and the 'C' key
+        objective: This test is to confirm the POS Sign On screen presents the ID and PIN fields and correctly handles field entry and the 'C' key.
+        steps: |-
+          **GIVEN** the POS is signed off and idle at the Sign On screen
+          **AND** the seeded Operator ID and PIN are available for the field-entry checks
+          **AND** example: Operator → the Operator menu
+          **WHEN** the Sign On screen is displayed
+          **THEN** the ID field is shown
+          **AND** the PIN field is shown
+          **WHEN** the operator keys digits into a field
+          **THEN** the field updates to show the entered digits
+          **WHEN** the operator presses the 'C' key
+          **THEN** one character is cleared per key press
+          **WHEN** no entry is made
+          **THEN** the POS remains on or returns to the idle Sign On screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: The Sign On screen presents the ID and PIN fields; keyed digits update the field and each 'C' press clears one character; with no entry the POS stays at the idle Sign On screen.
+  - path: [Functional, Sign On & Session, Sign On]
+    cases:
+      - title: Sign On — by role (manual and smartcard)
+        objective: This test is to confirm an operator can sign on either by manual ID+PIN entry or by smartcard, reaching the menu for their role.
+        steps: |-
+          **GIVEN** the POS is signed off at the idle Sign On screen
+          **AND** the POS is communicating with CloudFare
+          **AND** the seeded ID and PIN, and a valid staff smartcard, are available for the role under test
+          **AND** example: Operator → the Operator menu
+          **WHEN** the operator enters a valid ID and PIN and confirms
+          **THEN** the operator is authenticated
+          **AND** the menu for their role is displayed
+          **WHEN** the operator instead presents a valid staff smartcard
+          **THEN** the ID is pre-populated from the card
+          **AND** after a valid PIN the menu for their role is displayed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Sign on succeeds by manual entry and by smartcard, reaching the correct role menu. Run for each role — Operator, Supervisor, Technician, Administrator.
+  - path: [Functional, Sign On & Session, Failures & Lockout]
+    cases:
+      - title: Sign On — incorrect credentials
+        refs: [TIBU-22671, TIBU-24379]
+        objective: This test is to confirm the POS rejects incorrect sign-on credentials with the 'Sign On Failed' screen and an attempt counter, and requires the ID to be entered before the PIN.
+        steps: |-
+          **GIVEN** the POS is signed off and showing the Sign On screen
+          **AND** the POS is communicating with CloudFare
+          **AND** an unrecognised ID or PIN is to be entered (the seeded Operator credentials are the valid reference)
+          **AND** example: Operator → the Operator menu
+          **WHEN** the operator enters an unrecognised ID or PIN and presses Enter
+          **THEN** the "Sign On Failed" screen is shown with "The ID or PIN is incorrect"
+          **AND** the attempt counter is shown (e.g. "1 of 3")
+          **AND** the operator is returned to the Sign On screen to retry
+          **AND** the ID must be entered before the PIN
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Incorrect credentials are rejected with the 'Sign On Failed' message and an attempt counter, the operator can retry, and the ID must be entered before the PIN.
+      - title: Sign On — device locks after the configured failed attempts
+        refs: [TIBU-22672, TIBU-22003]
+        objective: This test is to confirm the POS locks after the configured number of consecutive failed sign-on attempts (the threshold is set via TMS and is not necessarily 3 — use the configured value).
+        steps: |-
+          **GIVEN** the POS is signed off and showing the Sign On screen
+          **AND** the failed-attempt lockout threshold is configured via TMS (use the configured value, e.g. 3)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → repeated failed attempts at the Operator sign-on
+          **WHEN** the operator enters incorrect credentials up to the configured number of times
+          **THEN** the POS locks on the configured attempt
+          **AND** a Device Locked screen is shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: After the TMS-configured number of failed sign-on attempts the POS locks and shows the Device Locked screen.
+      - title: Sign On — unlock with Supervisor card
+        refs: [TIBU-21384]
+        objective: This test is to confirm a locked POS can be unlocked by presenting a valid Supervisor card.
+        steps: |-
+          **GIVEN** the POS is displaying the Device Locked screen
+          **AND** the POS is communicating with CloudFare
+          **AND** a valid Supervisor card is available
+          **AND** example: Supervisor → the Supervisor card unlocks to the Sign On screen
+          **WHEN** a supervisor presents a valid Supervisor card
+          **THEN** the POS is unlocked
+          **AND** the POS returns to the Sign On screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Presenting a valid Supervisor card unlocks the POS and returns it to the Sign On screen.
+  - path: [Functional, Sign On & Session, Communication Locked]
+    cases:
+      - title: Sign On — Communication Locked
+        refs: [TIBU-28530, TIBU-21278]
+        objective: This test is to confirm a POS that has lost CloudFare communication beyond the configured period enters Communication Locked and blocks sign-on.
+        steps: |-
+          **GIVEN** the POS has lost communication with CloudFare for longer than the configured period
+          **AND** the seeded Operator ID and PIN are available to attempt sign-on
+          **AND** example: Operator → sign-on is blocked at the Communication Locked screen
+          **WHEN** the operator attempts to sign on
+          **THEN** the "Communication Locked" screen is shown
+          **AND** it states the device was automatically locked due to lost communication
+          **AND** it instructs the operator to "Notify a Supervisor or Technician"
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Once comms are lost beyond the configured period the POS enters Communication Locked and sign-on is blocked.
+  - path: [Functional, Sign On & Session, Sign-on Messages]
+    cases:
+      - title: Sign On — Message and Word & Colour of the Day
+        objective: This test is to confirm the Message of the Day and the Word & Colour of the Day are presented during sign-on, each with an Unavailable fallback when they cannot be retrieved.
+        steps: |-
+          **GIVEN** the POS is signed off at the Sign On screen
+          **AND** the seeded Operator ID and PIN are available to sign on
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → the Operator menu
+          **WHEN** the Message of the Day is available during sign-on
+          **THEN** it is presented for the operator to confirm
+          **WHEN** the Message of the Day cannot be retrieved
+          **THEN** the Message of the Day Unavailable state is shown
+          **AND** sign-on continues
+          **WHEN** the Word & Colour of the Day is available
+          **THEN** it is presented for the operator to confirm
+          **WHEN** the Word & Colour of the Day cannot be retrieved
+          **THEN** the Word & Colour Unavailable state is shown
+          **AND** sign-on continues
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Message of the Day and Word & Colour of the Day are each shown during sign-on, with an Unavailable fallback that still lets sign-on continue when they cannot be retrieved.
+  - path: [Functional, Sign On & Session, Sign Off]
+    cases:
+      - title: Sign Off — by role
+        objective: This test is to confirm an operator of any role can sign off, returning the POS to idle with the sign-off audited.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → the Operator menu, then Sign Off
+          **WHEN** the operator signs off
+          **THEN** the POS returns to the idle screen
+          **AND** the sign-off is audited
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Sign off returns the POS to idle and audits the event. Run for each role — Operator, Supervisor, Technician, Administrator.
+      - title: Sign Off — automatic (inactivity)
+        objective: This test is to confirm the POS automatically signs the operator off after the configured period of inactivity.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** the inactivity auto-sign-off period is configured (use the configured value)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → signed on, then left with no interaction
+          **WHEN** the configured inactivity period elapses with no interaction
+          **THEN** the operator is automatically signed off
+          **AND** the POS returns to the Idle screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: After the configured inactivity period the operator is automatically signed off and the POS returns to Idle.
+      - title: Sign Off — forced by power cycle
+        refs: [TIBU-24790]
+        objective: This test is to confirm power-cycling the POS during a shift forces a sign-off and records exactly one Forced Sign-off event.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS during a shift
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → signed on, then the POS is powered off and back on
+          **WHEN** the POS is power-cycled during the shift
+          **THEN** on restart the POS returns to the Idle screen
+          **AND** exactly one Forced Sign-off event is recorded to CloudFare
+        expected: After a power cycle the POS restarts to Idle and records a single Forced Sign-off event.
+  - path: [Functional, Sign On & Session, Audit]
+    cases:
+      - title: Sign On — audit events
+        objective: This test is to confirm operator sign-on, sign-off and forced sign-off each produce the corresponding audit event in CloudFare.
+        steps: |-
+          **GIVEN** a valid operator with the seeded ID and PIN
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Operator → sign on, sign off, then a forced sign-off
+          **WHEN** the operator signs on
+          **THEN** a Sign On event is recorded to CloudFare
+          **WHEN** the operator signs off
+          **THEN** a Sign Off event is recorded to CloudFare
+          **WHEN** a forced sign-off occurs
+          **THEN** a Forced Sign Off event is recorded to CloudFare
+        expected: Each of sign-on, sign-off and forced sign-off produces its corresponding CloudFare audit event for the operator.
+  - path: [Non-Functional, Screen Validation, Sign On]
+    cases:
+      - title: Screen Validation — Idle Screen
+        objective: |-
+          This test is to confirm the 'Idle Screen' renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_0 Idle Screen.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Idle Screen'
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Idle Screen'
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Idle Screen' matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - Empty Fields
+        objective: |-
+          This test is to confirm the 'Sign On - Empty Fields' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_1_1 Sign On - Empty Fields.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - Empty Fields' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - Empty Fields' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - Empty Fields' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - ID Entered
+        objective: |-
+          This test is to confirm the 'Sign On - ID Entered' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_1_2 Sign On - ID Entered.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - ID Entered' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - ID Entered' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - ID Entered' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - PIN Entry
+        objective: |-
+          This test is to confirm the 'Sign On - PIN Entry' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_1_3 Sign On - PIN Entry.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - PIN Entry' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - PIN Entry' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - PIN Entry' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - PIN Entry - 4
+        objective: |-
+          This test is to confirm the 'Sign On - PIN Entry - 4' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_1_4 Sign On - PIN Entry - 4_.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - PIN Entry - 4' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - PIN Entry - 4' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - PIN Entry - 4' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Communications Locked
+        objective: |-
+          This test is to confirm the 'Communications Locked' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_2_1 Communications Locked.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Communications Locked' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Communications Locked' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Communications Locked' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Please Wait
+        objective: |-
+          This test is to confirm the 'Please Wait' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_2_2 Please Wait___.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Please Wait' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Please Wait' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Please Wait' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - Incorrect Details
+        objective: |-
+          This test is to confirm the 'Sign On - Incorrect Details' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_3_1 Sign On - Incorrect Details.png
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - Incorrect Details' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - Incorrect Details' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - Incorrect Details' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Message of the Day
+        objective: |-
+          This test is to confirm the 'Message of the Day' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_3_2 Message of the Day.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Message of the Day' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Message of the Day' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Message of the Day' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Sign On - Device Locked
+        objective: |-
+          This test is to confirm the 'Sign On - Device Locked' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_4_1 Sign On - Device Locked.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Sign On - Device Locked' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Sign On - Device Locked' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Sign On - Device Locked' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Word and Colour of the Day - Simpler UI
+        objective: |-
+          This test is to confirm the 'Word and Colour of the Day - Simpler UI' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_4_2 Word and Colour of the Day - Simpler UI.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Word and Colour of the Day - Simpler UI' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Word and Colour of the Day - Simpler UI' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Word and Colour of the Day - Simpler UI' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Message of the Day - Unavailable
+        objective: |-
+          This test is to confirm the 'Message of the Day - Unavailable' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_5_1 Message of the Day - Unavailable.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Message of the Day - Unavailable' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Message of the Day - Unavailable' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Message of the Day - Unavailable' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Word and Colour of the Day - Unavailable
+        objective: |-
+          This test is to confirm the 'Word and Colour of the Day - Unavailable' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/1_6_1 Word and Colour of the Day - Unavailable.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Word and Colour of the Day - Unavailable' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Word and Colour of the Day - Unavailable' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Word and Colour of the Day - Unavailable' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Main Screen-Rail selected
+        objective: |-
+          This test is to confirm the 'Main Screen-Rail selected' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/2_2 Main Screen-Rail selected.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Main Screen-Rail selected' screen
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Main Screen-Rail selected' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Main Screen-Rail selected' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.
+      - title: Screen Validation — Metro Smartcard_Please Present Smartcard
+        objective: |-
+          This test is to confirm the 'Metro Smartcard_Please Present Smartcard' screen renders correctly per the approved POS design (layout, wording, labels and controls).
+
+          Design reference (Overflow): https://overflow.io/s/RCZ9UPQF
+          Screen image (repo): knowledge/flows/translink-pos-signon/v4.0.3 Translink POS - 1.0 Sign On/7_1_2 Metro Smartcard_Please Present Smartcard.webp
+        steps: |-
+          **GIVEN** the POS has reached the 'Metro Smartcard_Please Present Smartcard' screen (Metro mode)
+          **AND** the approved design is the Overflow reference and screen image named in the objective
+          **AND** example: Operator → viewing the 'Metro Smartcard_Please Present Smartcard' screen
+          **WHEN** the operator views the screen
+          **THEN** the screen matches the approved design (layout, wording, labels and controls)
+          **AND** there are no visual or text defects
+        expected: The 'Metro Smartcard_Please Present Smartcard' screen matches the approved design — correct layout, wording, labels and controls, with no visual or text defects.

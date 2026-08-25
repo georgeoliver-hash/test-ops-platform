@@ -1,0 +1,90 @@
+[
+  {
+    "id": 4100550,
+    "action": "reword",
+    "expected": "A ticket builds, pays and issues with a printed ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.",
+    "steps": [
+      {
+        "content": "**WHEN** you build the ticket via fare look-up, tender more than the fare and take payment",
+        "expected": "**THEN** the ticket prints for the selected product and fare\n**AND** a change receipt prints for the change due\nData variations: Adult and Child; products Metro Single, Day Return, Month Return, iLink Single, Gateway, Jobseeker, Warrant Return, ME Rugby Day."
+      },
+      {
+        "content": "**WHEN** you check the printouts and open the CloudFare activity log",
+        "expected": "**THEN** the sale appears in the CloudFare activity log\n**AND** the sale flows to MERIT and SmartTrack"
+      }
+    ],
+    "change_note": "Deep-audit (etm-1 finding, C4100550): dropped '**AND** the change receipt can be annulled' from Step1 and the case-level Expected — annulment is a distinct mechanic already owned by C4100551 (Ticket Issue — annulment). Not exercised by any step in this case, so asserting it here was a conflation, not a fact this case proves."
+  },
+  {
+    "id": 4100545,
+    "action": "reword",
+    "preface": "This test is to confirm the FLU screen can switch the sale currency between Pounds and Euro.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/\nScreen image (repo): knowledge/flows/etm/flu/07_0_4 _ Main Screen - Currency is Euro.png",
+    "preconds": "**GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with the fare shown in Pounds",
+    "expected": "The FLU screen can switch the sale currency £ to € to £. **GAP** — the exact control that performs the switch is not confirmed; not in requirements — confirm on the live system before running.",
+    "steps": [
+      {
+        "content": "**WHEN** you switch the sale currency to Euro, then switch it back to Pounds (**GAP** — exact key/control not confirmed)",
+        "expected": "**THEN** the FLU screen shows the sale amount in Euro after the first switch\n**AND** the FLU screen returns the sale amount to Pounds after the second switch"
+      }
+    ],
+    "refs": "gap-register.md Q26",
+    "change_note": "Deep-audit (etm-1 finding, C4100545): the preface claimed the 'alighting-stage key' is the currency toggle. No FBD/spec in the requirements library documents a currency control or an alighting-stage-key overload (searched 'currency', 'Euro' — no hits). The outcome (FLU can show £/€) is real (screen 07_0_4 exists) but the *how* is unconfirmed — applied the 'Unknown how' pattern: named the outcome, deferred the exact control to the tester with a GAP marker, logged gap-register Q26 rather than asserting the specific key."
+  },
+  {
+    "id": 4100950,
+    "action": "reword",
+    "preconds": "**Given** the ETM printer is loaded and ready\n**AND** the tester knows the configured print-speed target for a 110mm ticket (defect 301258)",
+    "expected": "A 110mm ticket prints within the configured print-speed target.",
+    "steps": [
+      {
+        "content": "**WHEN** a 110mm ticket is printed",
+        "expected": "**THEN** the ticket prints within the configured print-speed target"
+      }
+    ],
+    "change_note": "Deep-audit (etm-2 finding, C4100950): dropped Step2 ('CloudFare activity log... corresponding event') — checked the full FBD-100358 Activity Log event-type list (Transaction, Transaction Annulment, Start/End of Shift, Start/End of Journey, Event, Stop Arrival/Departure, Operator Event, Device Status, Device Registration, Inspection, Defect, Driver Break, Peripheral Device, Software Version); none corresponds to a print-speed/hardware-performance metric, so the assertion didn't correspond to a real event. Also replaced the unstated 'target print-speed time' with the 'Unknown configured value' pattern (assumed-knowledge precondition) instead of a guessed number."
+  },
+  {
+    "id": 4100949,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** the Driver toggles product groups, signs in, and performs repeated transactions",
+        "expected": "**THEN** the response times remain within acceptable limits with no progressive slow-down"
+      }
+    ],
+    "change_note": "Deep-audit (etm-2 finding, C4100949): dropped Step2 ('CloudFare activity log... corresponding event') — same reasoning as C4100950: no event type in FBD-100358's full list corresponds to a response-time/performance assertion. Step1 (the actual behaviour under test) is unchanged."
+  },
+  {
+    "id": 4100945,
+    "action": "reword",
+    "preface": "This test is to confirm the Deny/BIN list downloads and updates correctly during FEIG communications (defects 301106, 302090). **GAP** — 'FEIG' reader and 'Open Payments' device configuration are not named in the reviewed requirements library (the Deny List design doc confirms a deny/negative list concept only); confirm on the live system before running.",
+    "steps": [
+      {
+        "content": "**WHEN** the daily Deny/BIN list download is due",
+        "expected": "**THEN** the Deny/BIN list is downloaded to the device"
+      },
+      {
+        "content": "**WHEN** a Deny/BIN list update arrives while the FEIG is performing communications",
+        "expected": "**THEN** the update is applied without disrupting the in-progress communication"
+      }
+    ],
+    "refs": "301106, 302090, gap-register.md Q25",
+    "change_note": "Deep-audit (etm-2 finding, C4100945): dropped the CloudFare Step3 — no event type in FBD-100358's full list corresponds to a deny/BIN-list update. Marked 'FEIG'/'Open Payments' as GAP in the preface — searched the requirements library for both terms; only a design-options doc ('Deny List Tile Options.docx') confirms the deny/negative-list concept generally, not the FEIG/Open Payments specifics this case names. Logged gap-register Q25. Steps 1-2 (the defect-driven download/update behaviour) left as-is — plausible and defect-linked, not itself disproven."
+  },
+  {
+    "id": 4100944,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** the ETM loses power and restarts",
+        "expected": "**THEN** the sequence ID resumes in sync with no gap or duplication"
+      },
+      {
+        "content": "**WHEN** the CloudFare activity log is checked",
+        "expected": "**THEN** a Device Status event is recorded in the Back Office System (CloudFare) activity log"
+      }
+    ],
+    "refs": "301074,FBD-100358",
+    "change_note": "Deep-audit (etm-2 finding, C4100944): named the previously-generic 'the corresponding event' as the 'Device Status' event type (FBD-100358 §3.2.12 — the only event type in the full list that covers a device power/restart condition). Step1 unchanged."
+  }
+]

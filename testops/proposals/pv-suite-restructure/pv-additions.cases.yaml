@@ -1,0 +1,81 @@
+# PV — additions for recently-added coverage the live regression hadn't run yet (George's catch):
+# Pilot List management, Deny/BIN list updates (+ v5.0.0 TIBU defects), FEIG software/card management,
+# MERIT heartbeat, scheduled reboot. Grounded in old suite 10047 (Pilot List, Deny/BIN, FEIG, BOS
+# Comms, Power Interrupt sections — many created late May / June 2026).
+suite_id: 30255
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [10]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / ABT (Glider)
+    cases:
+      - title: ABT — Pilot List management and validation
+        objective: This test is to confirm the cEMV Pilot List can be configured and applied, and that EMV cards are handled per their pilot-list membership.
+        steps: |
+          **Given** a Glider PV with cEMV is configured for the Pilot List via TMS
+          **WHEN** a pilot list (pilotlist.zip) is applied to the PV via TMS, including registration mode
+          **THEN** the PV applies the pilot list configuration
+          **WHEN** an EMV card that is included on the Pilot List is presented
+          **THEN** the card is accepted per the pilot rules
+          **WHEN** an EMV card that is NOT on the Pilot List is presented
+          **THEN** the card is handled per the not-included rule
+          **WHEN** the pilot list is exported
+          **THEN** it can be converted from CSV to DAT and downloaded as CSV from Device Log Manager
+        expected: Pilot List TMS config + registration mode apply; included EMV accepted, not-included handled; CSV↔DAT conversion and Device Log Manager CSV download supported.
+      - title: ABT — Deny and BIN list updates
+        objective: This test is to confirm the PV downloads and applies delta and full Deny/BIN list updates, retries on failure, and validates against them.
+        refs: "TIBU-26320, TIBU-25745"
+        steps: |
+          **Given** a Glider PV with cEMV and back-office comms
+          **WHEN** delta and full Deny/BIN list updates are published
+          **THEN** the PV downloads and applies them, taking the full lists at end of day and deltas on schedule
+          **WHEN** a list download fails
+          **THEN** the PV retries the download and application
+          **WHEN** a card on the Deny or BIN list is presented
+          **THEN** the tap is rejected
+          **WHEN** a card is removed from the list and re-presented
+          **THEN** the tap is accepted
+        expected: Delta + full Deny/BIN updates download/apply (full end-of-day, delta scheduled) with retries; listed cards rejected, removed cards accepted. Pins TIBU-26320 (Deny download fail) and TIBU-25745 (BIN download fail).
+      - title: FEIG — reader software management
+        objective: This test is to confirm the FEIG reader software and OS can be deployed and viewed via CloudFare TMS.
+        steps: |
+          **Given** a Glider PV with a FEIG reader and CloudFare TMS
+          **WHEN** FEIG software is deployed over the air via TMS
+          **THEN** only the newest Transparent, PCA and FEIG OS versions are deployed to the reader
+          **WHEN** the technician views the FEIG software versions
+          **THEN** the current FEIG software versions are displayed
+        expected: FEIG software/OS deploys OTA via TMS (newest Transparent/PCA/OS only); FEIG versions are viewable.
+      - title: FEIG — card reading
+        objective: This test is to confirm the FEIG reader reads ITSO smartcards and valid/invalid EMV taps.
+        steps: |
+          **Given** a Glider PV with a FEIG reader
+          **WHEN** an ITSO smartcard is tapped
+          **THEN** the FEIG reads and validates the smartcard
+          **WHEN** a valid EMV card is tapped
+          **THEN** the tap is accepted
+          **WHEN** an invalid EMV card is tapped
+          **THEN** the tap is rejected with the reason
+        expected: The FEIG reads ITSO smartcards and accepts valid / rejects invalid EMV taps.
+
+  - path: Non-Functional / PV
+    cases:
+      - title: PV to BOS — MERIT heartbeat
+        objective: This test is to confirm the PV sends a MERIT heartbeat transaction periodically and after a technician signs out.
+        steps: |
+          **Given** a PV is in service
+          **WHEN** the configured 24-hour period elapses
+          **THEN** a MERIT heartbeat transaction is sent to the back office
+          **WHEN** a technician signs out of the Technician Menu
+          **THEN** a heartbeat occurs
+        expected: A MERIT 24-hour heartbeat transaction is sent, and a heartbeat occurs after technician sign-out.
+      - title: PV — scheduled reboot
+        objective: This test is to confirm the PV reboots automatically at its configured scheduled time and returns to service.
+        steps: |
+          **Given** a PV has a scheduled reboot time configured
+          **WHEN** the configured reboot time is reached
+          **THEN** the device reboots
+          **AND** the PV returns to service after the reboot
+        expected: The PV reboots at the configured scheduled time and returns to service.

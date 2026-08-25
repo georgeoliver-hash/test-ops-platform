@@ -1,0 +1,82 @@
+[
+  {
+    "id": 4102857,
+    "title": "Access — portal tasks match the operator's assigned claims",
+    "refs": "FBD-100342",
+    "preface": "This test is to confirm that the functions available in the ABT Operator Portal are limited to the claims assigned to the signed-in user's KeyCloak user group.",
+    "preconds": "GIVEN two operators exist in the Translink realm, each assigned to a different KeyCloak user group whose composite claims differ (e.g. one with AdminFullAccess, one with AdminReadAccess / report-only)\nAND the ABT Operator Portal (operator-react-client) sign-on page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** each operator signs on with their Active Directory credentials",
+        "expected": "**THEN** each operator sees only the portal functions granted by their group's composite claims\n**AND** functions not granted by their claims are not available to them"
+      }
+    ],
+    "expected": "Each user's available tasks match their configured access rights.\n\nData variations: composite claims to exercise — Account Management (ReadOnly / CreateReadUpdate / Full, DebtRecovery, EPurseBalanceAdjustmentApproval, RefundApproval, RefundAuthorisation, UpdateMediaStatus, TransactionsReadAccess, JourneyHistoryColumns); Admin (AdminReadAccess / AdminFullAccess, EPurseReadAccess, ReceiptConfiguration, AdminRouteGroups); Capping (BusinessRulesReadAccess / CreateEdit / FullAccess); Reports (AccountStatus, ActionList, Audit, DeclinedCardTap, EPurseBalance, LateTap, RevenueByMid, RevenueInspection — each *ReadAccess).\n\n[Automatable: Yes · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "change_note": "Consolidation-completeness fix (George's Sign-On/Access priority): the old suite's own role-matrix cases (C2665794, C2925102, C2665804) never named concrete roles either — they used template placeholders ('role x'/'role y'/'role z') — so nothing was lost from the old suite specifically. But the case was consolidated to one generic example (AdminFullAccess/AdminReadAccess) with no enumerated Data-variations list, so the full composite-claim catalogue this suite is meant to exercise wasn't named anywhere. Added the full catalogue from FBD-100342 as a Data-variations line so every claim family shows up somewhere, per the gherkin-standard convention (one behaviour + a Data-variations list, not one case per claim)."
+  },
+  {
+    "id": 4102963,
+    "title": "Configure report access for a role",
+    "refs": "FBD-100342",
+    "preface": "This test is to confirm that an administrator can manage which reports a role can access, including specific reports.",
+    "preconds": "**GIVEN** an administrator is signed into CloudFare",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator sets the report access for a role, including specific report access",
+        "expected": "**THEN** the role can access only the permitted reports"
+      }
+    ],
+    "expected": "A role's report access matches the administrator's configuration.\n\nData variations: report sub-claims — TVM/Cash, Staff, Alert, Asset, Topology sub-reports (each a separate claim per FBD-100342).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Consolidation-completeness fix: added the CloudFare Reports sub-claim catalogue (FBD-100342) as a Data-variations line so the distinct report-claim families are named, not just 'specific report access' generically."
+  },
+  {
+    "id": 4102964,
+    "title": "Configure module and group access for a role",
+    "refs": "FBD-100342",
+    "preface": "This test is to confirm that an administrator can set a role's group access and Passenger Journey, Revenue Reporting and System Mining Tool access.",
+    "preconds": "**GIVEN** an administrator is signed into CloudFare",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator sets the group access and module access (Passenger Journey, Revenue Reporting, System Mining Tool) for a role",
+        "expected": "**THEN** the role can access only the permitted groups and modules"
+      }
+    ],
+    "expected": "A role's group and module access matches the administrator's configuration.\n\nData variations: operator-scope claims — CF Full Operator (AccessControlFullAccess, all operators in hierarchy) vs CF-Operator-<Name> (AccessControl<name>, that operator only, no sub-operators); module/sub-module claims — Dashboard; Events & Alerts (+Alert Configuration, Event Group Configuration); Topology & Fares (+Route Management, Service Delete, Legacy Stages, Product Editor, Fare Rules, Ticket Editor, Delete Label); Schedule Manager (+Import, Topology Sync); Estate Management (+Comms Monitor, Activity Log, Asset Manager, Cash View, Staff Manager, Device Dataset Deployment, Quarantine, Device Logging); Reports; System Configuration (+Notifications); gate/station claims — StationAdmin, TransitGuard, SystemSupervisor, StationSupervisor, Admin.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Consolidation-completeness fix: added the full CloudFare claims catalogue (FBD-100342) as a Data-variations line — the operator-scope asymmetry (CF Full Operator vs CF-Operator-<Name>, no sub-operators) is the one FBD-100342 explicitly calls a real trap worth testing, and was previously unnamed anywhere in the suite."
+  },
+  {
+    "id": 4102954,
+    "title": "Declined taps — each decline reason is recorded on the Declined Taps Report",
+    "refs": "FBD-100658,OldSuite-C3211528",
+    "preface": "This test is to confirm each decline reason is recorded against its tap and shown on the Declined Taps Report.",
+    "preconds": "**GIVEN** declined card taps have occurred for each reason — an expired card, an ODA/authenticity failure, a BIN-listed card, a Deny-listed card, a cancelled tap and a passback (Negative List)\n**AND** the user is signed into the ABT Operator Portal with the report claim for declined card taps",
+    "steps": [
+      {
+        "content": "**WHEN** the user opens the Declined Taps Report for the test period",
+        "expected": "**THEN** each declined tap is listed with its decline reason (Card Expired, On Deny List, Declined, Cancelled, On BIN List, Passback/Negative List — per the FBD-100658 DeclinedReason enum)\n**AND** the reason recorded matches the failure that caused each decline\n**AND** **UNCONFIRMED** — exact on-screen label strings not pinned to a spec; confirm against live"
+      }
+    ],
+    "expected": "Every declined tap is listed on the Declined Taps Report with the reason matching its failure, across all six DeclinedReason codes (Card Expired, On Deny List, Declined, Cancelled, On BIN List, Passback).\n\nData variations: DeclinedReason 1 (Card Expired), 2 (On Deny List), 3 (Declined/ODA), 4 (Cancelled), 15 (On BIN List), 20 (Passback/Negative List).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "change_note": "Consolidation-completeness fix: the Data-variations list named only 4 of the 6 DeclinedReason codes in FBD-100658 (missing Cancelled=4 and Passback=20). Old suite C3211528 (CA-14070 bug regression) directly evidences 'Negative List' (passback) rows appearing on the live Declined Taps Report alongside 'Deny List' rows, confirming Passback is a real, distinct, reportable reason, not a theoretical enum value. Cancelled is separately covered in depth elsewhere (Journey History / Annulment & Re-tap sections) but wasn't named in this report-specific case's own enumeration — added for completeness of the DeclinedReason enum at this one case."
+  },
+  {
+    "id": 4102978,
+    "title": "Fares export — configured fares are exported",
+    "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143",
+    "preface": "This test is to confirm the user can export configured fares from CloudFare.",
+    "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the fares export (Fares Export function, or exports fares for routes sharing a Service Group)",
+        "expected": "**THEN** the fares file is produced\n**UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+      }
+    ],
+    "expected": "The fares for the selected operator are exported.\n\nData variations: file format — XLSX / CSV; export scope — standard fares list, ABT Fares export, Route Attributes, Area/Zone overlays; single-file export.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Consolidation-completeness fix: the old suite fragmented this into 12 per-format/per-content-variant cases (Fares List Export - XLSX / CSV / Dropdown Selection / Single File Export / Route Attributes / Area-Zone Overlays / ABT Fares, C2828485-2828499, C2925143, C2970779-2970782) — correctly consolidated into one flow case, but the format/content dimensions weren't named anywhere in the consolidated case, only the generic 'fares file is produced.' Added a Data-variations line so XLSX/CSV and the distinct export-content variants (ABT Fares, Route Attributes, Area/Zone overlays) are still named, per the equivalence-partitioning/Data-variations rule (fold, don't drop)."
+  }
+]

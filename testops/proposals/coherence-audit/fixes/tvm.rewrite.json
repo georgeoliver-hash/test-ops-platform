@@ -1,0 +1,436 @@
+[
+  {
+    "id": 4103628,
+    "title": "Single-Use only — a multi-use ticket's Collect Ticket Code is rejected",
+    "preface": "This test is to confirm the TVM rejects a Collect Ticket Code for a multiple-use ticket, which it does not validate. Collection on the TVM is Collect-Ticket-Code entry only — there is no barcode scanner (FBD-100317; confirmed by George (live-system confirmation), 2026-07-21).",
+    "preconds": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a Collect Ticket Code for a multiple-use (mLink/Flowbird) ticket that the TVM does not support per FBD-100167",
+    "steps": [
+      {
+        "content": "**WHEN** the customer enters the multiple-use ticket's Collect Ticket Code",
+        "expected": "**THEN** the message \"This Barcode Type is not accepted on this device\" is displayed\n**AND** no redemption is performed"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100317 (TVM = Collect Ticket Code entry only, no scanner)",
+      "FBD-100167 (multiple-use barcode types not accepted on this device)",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q5"
+    ],
+    "change_note": "Removed the 2026-07-17 UNCONFIRMED scanner marker — now confirmed by George (live-system confirmation), 2026-07-21: the TVM has no barcode scanner, Collect-Ticket-Code entry only. Reworded the trigger from 'the multiple-use barcode is presented' to 'the customer enters the ... Collect Ticket Code', matching the entry mechanism already used in C4103620/C4103629. The rejection message itself was already correct and is unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4103729,
+    "title": "Ticket Collection — collect a pre-paid ticket using a booking reference (Collect Ticket Code)",
+    "preface": "This test is to confirm a customer can collect a pre-paid ticket by entering a valid booking reference via Collect Ticket Code entry. The TVM has no barcode scanner and does not accept a BRID scan — booking-reference/Collect Ticket Code entry only (FBD-100317; confirmed by George (live-system confirmation), 2026-07-21).",
+    "preconds": "**GIVEN** a TVM on the ticket collection screen\n**AND** an example valid booking reference (Collect Ticket Code) for a pre-paid ticket",
+    "steps": [
+      {
+        "content": "**WHEN** the customer enters the valid booking reference (Collect Ticket Code)",
+        "expected": "**THEN** the pre-paid ticket is printed"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100317 (TVM = Collect Ticket Code entry only, no scanner, no BRID)",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q5"
+    ],
+    "change_note": "Renamed away from 'BRID' — BRID (12-digit) is the POS/HHD fallback mechanism per FBD-100317, not a TVM capability, and using it here mis-attributed a POS/HHD mechanism to the TVM (also contradicted C4103629's 'no ... BRID scan input is offered'). Reworded title/preface/step to booking reference / Collect Ticket Code entry, matching C4103620's wording pattern. This case duplicates the entry-validation cases already in Barcode Redemption (C4103620/25/26); flagged as a possible future fold, not actioned here (out of scope for this fix).",
+    "gaps": [
+      "C4103729–C4103732 (Ticket Collection section) duplicate the entry-validation cases already in Barcode Redemption (C4103620/25/26) — candidate for consolidation in a future pass, not part of this fix."
+    ]
+  },
+  {
+    "id": 4103677,
+    "title": "Ticket Collection — a pre-paid ticket is collected and printed",
+    "preface": "This test is to confirm a customer can collect a pre-paid ticket and receive a printed ticket, by entering the booking reference (Collect Ticket Code) — the TVM has no barcode scanner (FBD-100317; confirmed by George (live-system confirmation), 2026-07-21).",
+    "preconds": "**GIVEN** a TVM (Kiosk or Astreo) is at the Sales home screen with ticket paper loaded\n**AND** an example pre-paid order identified by a valid booking reference (Collect Ticket Code)",
+    "steps": [
+      {
+        "content": "**WHEN** the customer selects Collect\n**AND** enters the booking reference (Collect Ticket Code)",
+        "expected": "**THEN** the pre-paid ticket is printed\n**AND** presented at the ticket chute\n**AND** a confirmation of collection is displayed"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100317 (TVM = Collect Ticket Code entry only, no scanner)",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q5"
+    ],
+    "change_note": "Dropped 'barcode' and 'presents' — the precondition 'identified by a valid collection barcode or booking code' and the step 'presents the collection reference' both implied a scan, which the TVM cannot do. Reworded to booking reference / Collect Ticket Code entry, consistent with C4103620/C4103629/C4103628/C4103729.",
+    "gaps": []
+  },
+  {
+    "id": 4103641,
+    "title": "Banknotes — a Scottish banknote is accepted as valid sterling",
+    "preface": "This test is to confirm the TVM accepts a Scottish-issued banknote as valid sterling currency, the same as a Bank of England note. **CORRECTED 2026-07-21** — this case previously asserted the note was rejected as 'foreign/non-sterling', which was factually wrong: Scottish banknotes are sterling, issued under UK law, not foreign currency. George confirms it should be accepted like any other GBP note (gap-register Q15).",
+    "preconds": "**GIVEN** a TVM is at the payment screen for a cash transaction\n**AND** a valid Scottish-issued banknote (e.g. Bank of Scotland / RBS / Clydesdale Bank) is to be used",
+    "steps": [
+      {
+        "content": "**WHEN** the customer inserts the Scottish banknote",
+        "expected": "**THEN** the note is accepted\n**AND** the amount paid increases by the note's value"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — gap-register Q15 (Scottish notes are sterling; expected outcome was wrong)"
+    ],
+    "change_note": "Flipped the expected outcome from 'rejected as foreign/non-sterling' to 'accepted', per George's confirmation that Scottish banknotes are sterling. Retitled from 'foreign notes are rejected' to 'a Scottish banknote is accepted as valid sterling' so the title/preface stay coherent with the corrected (accept) outcome — a title claiming rejection with an accept expected-result would itself be an audit-blocking incoherence. This also resolves the contradiction the audit flagged against C4103639 ('valid UK banknotes from every issuing bank').",
+    "gaps": [
+      "This case was the only 'foreign notes rejected' case in the Payments — Cash section and its premise (Scottish = foreign) was wrong, so repurposing it to 'Scottish accepted' leaves no case exercising genuine non-sterling currency (e.g. Euro) rejection for banknotes. C4103638 covers foreign COINS being rejected, but no sibling case covers foreign banknotes. Confirm whether a dedicated foreign-banknote-rejection case is needed — not added here as it would be new coverage, out of scope for this fix."
+    ]
+  },
+  {
+    "id": 4103599,
+    "title": "Buy a Smartcard — issuing a new journey-based card writes the product and prints a receipt",
+    "action": "remove",
+    "citations": [
+      "FBD-100261 (\"POS is the only device that issues these smartcard products\")",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6: TVM has no smartcard reader/writer, issue/read is POS/Card-Bureau only"
+    ],
+    "change_note": "Condemned. Premise (TVM issues a new Multi-Journey smartcard) is wrong — confirmed by George: the TVM has no smartcard reader/writer at all; issue is POS-only (FBD-100261). Nothing salvageable at the TVM — there is no TVM-side smartcard action to reword this into.",
+    "gaps": []
+  },
+  {
+    "id": 4103600,
+    "title": "Smartcard Top-up — adding journeys to a Multi-Journey card updates the balance and prints a receipt",
+    "action": "remove",
+    "citations": [
+      "FBD-100260/FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6: TVM has no smartcard reader/writer at all (not issue-only restricted — read/top-up also impossible)"
+    ],
+    "change_note": "Condemned. Top-up requires presenting the card to a reader and writing the new balance; George confirmed the TVM has no smartcard reader/writer whatsoever, so there is no TVM-side top-up action to salvage. Smartcard top-up is a POS/Card-Bureau capability.",
+    "gaps": []
+  },
+  {
+    "id": 4103601,
+    "title": "Smartcard Top-up — a Travelcard or Period Pass top-up adds a period and prints a receipt",
+    "action": "remove",
+    "citations": [
+      "FBD-100260/FBD-100277",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason as C4103600: no TVM smartcard reader/writer, so period-pass top-up at the TVM is not a real capability.",
+    "gaps": []
+  },
+  {
+    "id": 4103602,
+    "title": "Smartcard Top-up — top-up amount labels come from the recharge product Display Descriptions",
+    "action": "remove",
+    "citations": [
+      "FBD-100260",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on presenting a smartcard to the TVM to reach the top-up screen, which is not possible; the SmartRecharge labelling behaviour itself may be valid on POS but this case is scoped to the TVM.",
+    "gaps": []
+  },
+  {
+    "id": 4103603,
+    "title": "Smartcard Details — presenting a card displays its details screen",
+    "action": "remove",
+    "citations": [
+      "FBD-100277",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — requires the TVM to read a presented smartcard, which it cannot do (no reader).",
+    "gaps": []
+  },
+  {
+    "id": 4103604,
+    "title": "Mini Statement — a mini-statement prints the card balance after a top-up",
+    "action": "remove",
+    "citations": [
+      "FBD-100260",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on a prior TVM smartcard top-up (itself impossible) and reading the card to print its balance. Also flagged by the audit as a duplicate of C4103733.",
+    "gaps": []
+  },
+  {
+    "id": 4103605,
+    "title": "Concession — a yLink smartcard prices a ticket at the yLink concessionary fare",
+    "action": "remove",
+    "citations": [
+      "FBD-100260/FBD-100293",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — concession pricing here depends on presenting a physical yLink smartcard to the TVM's reader, which does not exist. Concession-by-smartcard at the TVM is not a real capability; the fare taxonomy itself (yLink) is fine, only the device attribution is wrong.",
+    "gaps": []
+  },
+  {
+    "id": 4103606,
+    "title": "Concession — a 24+ smartcard prices a ticket at the 24+ discounted fare",
+    "action": "remove",
+    "citations": [
+      "FBD-100236/FBD-100260",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason as C4103605: no TVM smartcard reader to present a 24+ card to.",
+    "gaps": []
+  },
+  {
+    "id": 4103607,
+    "title": "Concession — a half-fare Smartpass prices a single at half fare",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader to present a Smartpass to.",
+    "gaps": []
+  },
+  {
+    "id": 4103608,
+    "title": "Concession — a free-concession Smartpass issues a free pass ticket",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader to present a Fare Foregone Smartpass to.",
+    "gaps": []
+  },
+  {
+    "id": 4103609,
+    "title": "Concession — funded-disability Smartpasses are accepted for concessionary travel",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader for funded-disability Smartpass variants.",
+    "gaps": []
+  },
+  {
+    "id": 4103610,
+    "title": "Staff Pass — a staff smartcard issues a staff free-travel ticket",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader for a staff smartcard.",
+    "gaps": []
+  },
+  {
+    "id": 4103611,
+    "title": "Invalid Smartcard — a faulty or unreadable card is rejected",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — there is no TVM smartcard reader to attempt to read a faulty card in the first place.",
+    "gaps": []
+  },
+  {
+    "id": 4103612,
+    "title": "Invalid Smartcard — an expired card cannot be topped up",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on presenting a card for a TVM top-up, which does not exist.",
+    "gaps": []
+  },
+  {
+    "id": 4103613,
+    "title": "Invalid Smartcard — presenting two cards simultaneously is rejected",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — there is no TVM smartcard reader to present cards to.",
+    "gaps": []
+  },
+  {
+    "id": 4103614,
+    "title": "Invalid Smartcard — re-presenting a card within the passback period is rejected",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — passback logic depends on the TVM reading a presented card, which does not happen.",
+    "gaps": []
+  },
+  {
+    "id": 4103615,
+    "title": "Smartcard Top-up — presenting a different card mid top-up aborts the top-up",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on a TVM top-up flow that does not exist.",
+    "gaps": []
+  },
+  {
+    "id": 4103616,
+    "title": "Smartcard removed early — removing the card during payment cancels the transaction",
+    "action": "remove",
+    "citations": [
+      "FBD-100250",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on a card being presented to a TVM reader during payment, which does not exist.",
+    "gaps": []
+  },
+  {
+    "id": 4103617,
+    "title": "ABT — issuing an ABT smartcard registers a personalised card",
+    "action": "remove",
+    "citations": [
+      "FBD-100236 (ABT Data + SigFile written by the Card Bureau / AbtPerso, not a device)",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — ABT card personalisation (writing ABT Data + SigFile with the issuer private key) is a Card Bureau function per FBD-100236, and the TVM has no smartcard reader/writer to perform it. Nothing salvageable at the TVM.",
+    "gaps": []
+  },
+  {
+    "id": 4103618,
+    "title": "ABT — a card with the ABT application but no ABT Tracking application is rejected",
+    "action": "remove",
+    "citations": [
+      "FBD-100236",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on the TVM reading a presented DESFire card's applications, which it cannot do (no reader). The AID values themselves are accurate but the device attribution is wrong.",
+    "gaps": []
+  },
+  {
+    "id": 4103619,
+    "title": "ABT — an ABT product top-up posts a transaction to the back office",
+    "action": "remove",
+    "citations": [
+      "FBD-100236/FBD-100260",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on the TVM reading/writing an ABT card for a top-up, which it cannot do.",
+    "gaps": []
+  },
+  {
+    "id": 4103733,
+    "title": "Mini Statement — Multi-Journey smartcard after a top-up",
+    "action": "remove",
+    "citations": [
+      "FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — mini-statement printing depends on the TVM reading a presented smartcard, which it cannot do. Also flagged by the audit as a duplicate of C4103604.",
+    "gaps": []
+  },
+  {
+    "id": 4103734,
+    "title": "Mini Statement — Multi-Journey smartcard after a validation",
+    "action": "remove",
+    "citations": [
+      "FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader.",
+    "gaps": []
+  },
+  {
+    "id": 4103735,
+    "title": "Mini Statement — Period Pass smartcard after a top-up",
+    "action": "remove",
+    "citations": [
+      "FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader.",
+    "gaps": []
+  },
+  {
+    "id": 4103736,
+    "title": "Mini Statement — DayLink smartcard after a top-up",
+    "action": "remove",
+    "citations": [
+      "FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — same reason: no TVM smartcard reader.",
+    "gaps": []
+  },
+  {
+    "id": 4103737,
+    "title": "Mini Statement — the printed layout matches the HMI",
+    "action": "remove",
+    "citations": [
+      "FBD-100261",
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on the TVM HMI showing a presented smartcard's mini-statement details, which cannot happen without a reader.",
+    "gaps": []
+  },
+  {
+    "id": 4103795,
+    "title": "Screensaver Wake-Up — a smartcard starts the smartcard flow",
+    "action": "remove",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6"
+    ],
+    "change_note": "Condemned — depends on presenting a smartcard to a TVM reader to wake/start a smartcard flow, which does not exist. A near-duplicate wake-on-tap case (C4103674 vs C4103794, both EMV/contactless-based) is unaffected.",
+    "gaps": []
+  },
+  {
+    "id": 4103786,
+    "title": "Device Lockout — cash sale at the lockout limit goes Out of Service",
+    "preface": "This test is to confirm the TVM goes Out of Service when a cash transaction meets or exceeds the configured lockout sales limit.",
+    "preconds": "**GIVEN** a TVM whose cumulative cash sales are just below the configured lockout sales limit (example limit £250)",
+    "steps": [
+      {
+        "content": "**WHEN** a cash sale takes the cumulative total to the lockout limit",
+        "expected": "**THEN** the sale completes\n**AND** the TVM goes Out of Service\n**AND** Data variations — paper ticket / discounted ticket"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6: TVM has no smartcard reader/writer"
+    ],
+    "change_note": "Removed 'smartcard top-up' from the Data Variations list — it is not a real TVM sale type (no smartcard reader/writer). The case's actual subject (cash-sale lockout) is unaffected and otherwise unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4103797,
+    "title": "Audio Prompts — speech prompts and payment feedback play",
+    "preface": "This test is to confirm the TVM plays speech prompts on workflow screens and audible feedback on payment input.",
+    "preconds": "**GIVEN** an in-service TVM with audio enabled at the configured volume",
+    "steps": [
+      {
+        "content": "**WHEN** the customer works through the purchase screens",
+        "expected": "**THEN** the speech prompt for the current screen plays"
+      },
+      {
+        "content": "**WHEN** the customer makes a payment input",
+        "expected": "**THEN** audible feedback confirms the payment input\n**AND** Data variations — cash / card / contactless input"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6: TVM has no smartcard reader/writer"
+    ],
+    "change_note": "Removed 'smartcard' from the payment-input Data Variations list — the TVM has no smartcard reader, so smartcard input cannot be one of the tested payment methods here. Rest of the case unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4103798,
+    "title": "Performance — workflows launch from idle within tolerance",
+    "preface": "This test is to confirm the TVM launches the main sales workflows from idle within the expected response time.",
+    "preconds": "**GIVEN** an in-service TVM at the idle screensaver",
+    "steps": [
+      {
+        "content": "**WHEN** a customer starts a sales workflow from idle",
+        "expected": "**THEN** the first workflow screen is displayed within the expected response tolerance\n**AND** Data variations — Quick Select / Buy Other Tickets"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — gap-register Q6: TVM has no smartcard reader/writer"
+    ],
+    "change_note": "Removed 'Smartcard Top-up' from the workflow Data Variations list — it is not a real TVM workflow (no smartcard reader/writer). Rest of the case unchanged.",
+    "gaps": []
+  }
+]

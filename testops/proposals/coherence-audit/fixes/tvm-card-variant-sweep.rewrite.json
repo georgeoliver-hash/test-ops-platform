@@ -1,0 +1,27 @@
+[
+  {
+    "id": 4103658,
+    "refs": "gap-register Q30 (old suite C1831229/C3546444 test the same no-PIN case; C1831399 Visa Debit / C1831402 Mastercard Debit name the specific schemes tested; card-variant sweep 2026-07-23)",
+    "expected": "With no PIN entered the Chip & PIN payment does not complete and no ticket is issued. Data variations: Visa Debit, Mastercard Debit.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+  },
+  {
+    "id": 4103662,
+    "refs": "REQ-1488,REQ-1489,REQ-2519 (old suite C1831357/C3546404 Visa contactless-above-limit; C1831394/C1831396 Mastercard credit/debit contactless-above-limit; Q30 resolved; card-variant sweep 2026-07-23)",
+    "expected": "A tap above the contactless limit is declined for contactless and falls back to Chip & PIN. Data variations: Visa credit/debit, Mastercard credit/debit.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+  },
+  {
+    "id": 4103665,
+    "refs": "REQ-1515,REQ-1591 (old suite C1831362/C3546374 manual cancel at pinpad; C1831417 magnetic-stripe cancel; Q30 resolved; card-variant sweep 2026-07-23)",
+    "expected": "Cancelling at the pinpad ends the payment and no ticket is issued. Data variations: Chip & PIN, Contactless, Magnetic Stripe.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+  },
+  {
+    "id": 4103666,
+    "refs": "REQ-1591 (old suite C1831418/C3546396 Magnetic Stripe payment timeout — closest old-suite analogue; Q30 resolved; card-variant sweep 2026-07-23)",
+    "expected": "A timed-out EMV payment is not completed and no ticket is issued. Data variations: Chip & PIN, Contactless, Magnetic Stripe.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+  },
+  {
+    "id": 4103667,
+    "refs": "REQ-1515,REQ-1591,REQ-0847 (old suite C1831351/1363/C3546375 print-failure-voids-payment family; C1831419 magnetic-stripe print failure; Q30 resolved; card-variant sweep 2026-07-23)",
+    "expected": "A print failure during a card sale voids the card payment and issues no ticket. Data variations: Chip & PIN, Contactless, Magnetic Stripe.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+  }
+]

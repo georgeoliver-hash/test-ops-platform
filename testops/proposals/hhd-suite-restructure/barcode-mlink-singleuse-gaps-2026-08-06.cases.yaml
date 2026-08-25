@@ -1,0 +1,162 @@
+# HHD — Single-Use Barcode Scan, Manual Reference Entry & Redemption — gap-fill for MISSING rows
+# Source: knowledge/flows/translink-hhd-barcode-mlink-singleuse.md (Paths table, rows marked MISSING).
+# Grounded strictly in that file's Mermaid diagram + Screen states + Notes; no invented screen names.
+# Section [Functional, Single-Use Barcodes (NIR)] reused as the closest existing fit (same feature
+# area as the CR094 single-use API cases already authored there in
+# barcode-inspection-nonfunctional-smoke.cases.yaml).
+# DO NOT PUSH. Copy-into-new-suite only, per repo hard rules.
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  - path: [Functional, Single-Use Barcodes (NIR)]
+    cases:
+      # Row 1
+      - title: "Single-Use Barcode — a barcode failing the Single-Use format check shows Not Valid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a barcode that fails the Single-Use format check shows the Ticket
+          Not Valid screen.
+        steps: |
+          **GIVEN** a barcode has been scanned and decrypted for validation
+          **WHEN** the decrypted barcode does not match the Single-Use format
+          **THEN** the "24.2.2 Barcode Scan - Transaction Cancelled - Ticket Not Valid" screen is displayed
+          **AND** after a 3 second timeout the HHD returns to the Sales screen
+        expected: "A barcode failing the Single-Use format check shows Ticket Not Valid, then times out to Sales."
+
+      # Row 4
+      - title: "Barcode Reference Entry — selecting Cancel from the entry screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm what happens when the operator selects Cancel on the Barcode
+          Reference Entry screen.
+        steps: |
+          **GIVEN** the HHD is on the "24 - Barcode Reference Entry" screen
+          **WHEN** the operator selects the Cancel option
+          **THEN** **GAP** — the destination after Cancel is an unlabelled/orphan decision node in the source flow (Overflow internal id, no readable screen name) — not in requirements; confirm on the live system before running
+        expected: "GAP — confirm live what screen/state Cancel on Barcode Reference Entry actually leads to; not determinable from the flow source."
+
+      # Row 5
+      - title: "Barcode Reference Entry — cancelling a keyed reference returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling after entering a barcode reference number returns to
+          the Sales screen.
+        steps: |
+          **GIVEN** the HHD is on the "24.1.1 - Barcode Reference Entry - Field Tapped - Number Entered" screen with a reference keyed
+          **WHEN** the operator taps the Cancel button
+          **THEN** the HHD returns to the Sales screen
+        expected: "Cancelling a keyed barcode reference returns the HHD to the Sales screen."
+
+      # Row 7
+      - title: "Single-Use Barcode — cancelling a failed validation returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Cancel on Validation Failed returns the HHD to the Sales
+          screen.
+        steps: |
+          **GIVEN** the HHD is on the "24.2 Barcode Scan - Validation Failed" screen
+          **WHEN** the operator selects Cancel
+          **THEN** the HHD returns to the Sales screen
+        expected: "Selecting Cancel on Validation Failed returns the HHD to Sales."
+
+      # Row 8
+      - title: "Single-Use Barcode — a barcode passing the offline limit check but failing validation shows Not Valid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a barcode that passes the offline value/product limit check but
+          fails the Valid Barcode check shows Ticket Not Valid.
+        steps: |
+          **GIVEN** a scanned barcode has passed the "24.3.2 Barcode Scan - Offline Check" value/product limit
+          **WHEN** the barcode fails the Valid Barcode check
+          **THEN** the "24.2.2 Barcode Scan - Transaction Cancelled - Ticket Not Valid" screen is displayed
+        expected: "A barcode passing the offline limit check but failing validation shows Ticket Not Valid."
+
+      # Row 9
+      - title: "Single-Use Barcode — a Type U barcode with mismatched dates shows Ticket Valid inc. Date with Expiry and Depart Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Type U barcode whose departure date does not match its expiry
+          date shows the Ticket Valid inc. Date with Expiry and Depart Time screen.
+        steps: |
+          **GIVEN** online validation is available and a Type U barcode has been confirmed valid
+          **AND** the barcode's departure date does not match its expiry date
+          **WHEN** the HHD determines the ticket-valid screen for the barcode
+          **THEN** the "24.4.2 - Barcode Scan - Ticket Valid inc. Date with Expiry and Depart Time" screen is displayed
+        expected: "A Type U barcode with mismatched departure/expiry dates shows Ticket Valid inc. Date with Expiry and Depart Time."
+
+      # Row 10
+      - title: "Single-Use Barcode — a Type U barcode with matching dates shows Ticket Valid inc. Date and Depart Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Type U barcode whose departure date matches its expiry date shows
+          the Ticket Valid inc. Date and Depart Time screen.
+        steps: |
+          **GIVEN** online validation is available and a Type U barcode has been confirmed valid
+          **AND** the barcode's departure date matches its expiry date
+          **WHEN** the HHD determines the ticket-valid screen for the barcode
+          **THEN** the "24.4.1 - Barcode Scan - Ticket Valid inc. Date and Depart Time" screen is displayed
+        expected: "A Type U barcode with matching departure/expiry dates shows Ticket Valid inc. Date and Depart Time."
+
+      # Row 11
+      - title: "Single-Use Barcode — a Type B or E barcode shows Ticket Valid inc. Date and Depart Time"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Type B or Type E barcode shows the Ticket Valid inc. Date and
+          Depart Time screen.
+        steps: |
+          **GIVEN** online validation is available and a Type B or Type E barcode has been confirmed valid
+          **WHEN** the HHD determines the ticket-valid screen for the barcode
+          **THEN** the "24.4.1 - Barcode Scan - Ticket Valid inc. Date and Depart Time" screen is displayed
+        expected: "A Type B or E barcode shows Ticket Valid inc. Date and Depart Time."
+
+      # Row 12
+      - title: "Single-Use Barcode — a Type D barcode shows Ticket Valid inc. 3 Use Times"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Type D barcode shows the Ticket Valid inc. 3 Use Times screen.
+        steps: |
+          **GIVEN** online validation is available and a Type D barcode has been confirmed valid
+          **WHEN** the HHD determines the ticket-valid screen for the barcode
+          **THEN** the "24.4.4 - Barcode Scan - Ticket Valid inc. 3 Use Times" screen is displayed
+        expected: "A Type D barcode shows Ticket Valid inc. 3 Use Times."
+
+      # Row 13
+      - title: "Single-Use Barcode — a Type H or S barcode shows Ticket Valid inc. Outbound and Return"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Type H or Type S barcode shows the Ticket Valid inc. Outbound and
+          Return screen.
+        steps: |
+          **GIVEN** online validation is available and a Type H or Type S barcode has been confirmed valid
+          **WHEN** the HHD determines the ticket-valid screen for the barcode
+          **THEN** the "24.4.3 - Barcode Scan - Ticket Valid inc. Outbound ands Return" screen is displayed
+        expected: "A Type H or S barcode shows Ticket Valid inc. Outbound and Return."
+
+      # Row 14
+      - title: "Single-Use Barcode — a ticket failing visual inspection shows Not Passed Visual Inspection"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Ticket Valid barcode that the operator marks Not Valid on visual
+          inspection shows Ticket Not Passed Visual Inspection.
+        steps: |
+          **GIVEN** a Ticket Valid screen is displayed for a scanned barcode
+          **WHEN** the operator selects 'Not Valid' because the ticket does not pass visual inspection
+          **THEN** the "24.2.6 Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection" screen is displayed
+          **AND** after a 3 second timeout the HHD returns to the Sales screen
+        expected: "A ticket failing visual inspection shows Ticket Not Passed Visual Inspection, then times out to Sales."
+
+      # Row 16
+      - title: "Single-Use Barcode — a failed redemption shows Not Valid"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a barcode redemption that is not successful shows Ticket Not Valid.
+        steps: |
+          **GIVEN** the HHD is on the "24.3.3 Barcode Scan - Redeeming" screen for a barcode the operator marked Valid
+          **WHEN** the redemption is not successful
+          **THEN** the "24.2.2 Barcode Scan - Transaction Cancelled - Ticket Not Valid" screen is displayed
+        expected: "A failed redemption shows Ticket Not Valid."

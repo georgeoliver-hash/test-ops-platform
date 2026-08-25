@@ -1,0 +1,100 @@
+[
+  {
+    "id": 4102816,
+    "refs": ["TODEV-24258", "FBD-100690 para 469", "FBD-100690 para 472", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail (Model 1 / KFT ticket) transaction on the device at 09:02",
+        "expected": "**THEN** the 09:00 tap appears in Journey History\n**AND** the 09:02 retail transaction is recorded at its own ticket price"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:06, inside the duplicate window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** at settlement the 09:00 tap is charged the full £2.30\n**AND** the 09:06 tap is not charged again (day total stays £2.30)\n**AND** the repeat tap is flagged duplicate (icon + Show More detail) — **UNCONFIRMED** exact representation, not necessarily a separate \"£0.00 Duplicate\" row (gap Q21)"
+      }
+    ]
+  },
+  {
+    "id": 4102817,
+    "refs": ["TODEV-24258", "FBD-100690 para 469", "FBD-100690 para 472", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02\n**AND** you tap again at Casement Park (10A IN) at 09:06\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:06 tap is not charged again (day total stays £2.30)\n**AND** it is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)"
+      },
+      {
+        "content": "**WHEN** the buffered same-stage tap uploads with an 08:58 timestamp — earlier than the 09:00 original but arriving after it (out of order), inside the window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 08:58 out-of-order tap is not charged (day total stays £2.30)\n**AND** it is flagged a duplicate against the 09:00 tap — **UNCONFIRMED**: spec does not state how out-of-order timestamps are ordered/linked for duplicate detection (gap Q21)"
+      }
+    ]
+  },
+  {
+    "id": 4102818,
+    "refs": ["TODEV-24258", "FBD-100690 para 472", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02\n**AND** you tap again at Casement Park (10A IN) at 09:05\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:05 tap is not charged again and is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)"
+      },
+      {
+        "content": "**WHEN** you make another same-stage retail transaction at 09:07\n**AND** you tap again at Casement Park (10A IN) at 09:10\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:10 tap is not charged and is flagged a duplicate of the same 09:00 tap\n**AND** the day total is unchanged at £2.30"
+      }
+    ]
+  },
+  {
+    "id": 4102819,
+    "refs": ["TODEV-24258", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a retail transaction from a different stage (Slievegallion Drive, 10A IN) at 09:02",
+        "expected": "**THEN** the 09:00 tap appears in Journey History"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:06\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** at settlement the 09:00 tap is charged the full £2.30, day total £2.30\n**AND** the 09:06 same-stage tap is not charged and is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)"
+      }
+    ]
+  },
+  {
+    "id": 4102820,
+    "refs": ["TODEV-24258", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02",
+        "expected": "**THEN** the 09:00 tap appears in Journey History"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:16, beyond the duplicate window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** at settlement the 09:00 and 09:16 taps are both charged (£2.30 then £1.70) to complete the £4.00 Metro cap\n**AND** the 09:16 tap is a genuine second tap, not flagged a duplicate\n**AND** the day total is £4.00"
+      }
+    ]
+  },
+  {
+    "id": 4102821,
+    "refs": ["TODEV-24258", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail (Model 1 / KFT ticket) transaction at 09:06, inside the window",
+        "expected": "**THEN** the 09:00 tap appears in Journey History\n**AND** the 09:06 retail transaction is recorded at its own ticket price"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement",
+        "expected": "**THEN** at settlement the 09:00 tap is charged the full £2.30\n**AND** the retail transaction is not flagged a duplicate of the 09:00 tap"
+      }
+    ]
+  },
+  {
+    "id": 4102822,
+    "refs": ["TODEV-24258", "George-settlement-timing-2026-07-22"],
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02",
+        "expected": "**THEN** the 09:00 Casement Park tap appears in Journey History"
+      },
+      {
+        "content": "**WHEN** you tap at Slievegallion Drive (10A IN) at 09:06, a different boarding stage\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** at settlement the 09:00 Casement Park tap is charged £2.30 and the 09:06 Slievegallion Drive tap (a genuine second tap, not a duplicate) is charged £1.70\n**AND** the day total completes the £4.00 Metro cap"
+      }
+    ]
+  }
+]

@@ -1,0 +1,89 @@
+[
+  {
+    "id": 4103480,
+    "preface": "This test is to confirm a passenger's first alighting-stop correction in a calendar month is accepted (CR122, mechanism unconfirmed; limit is 1/month, 3/year).",
+    "preconds": "**GIVEN** a settled Tap-On-Only journey on the seeded card with no prior alighting-stop correction this calendar month (limit 1/month, 3/year)\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (£4.50), to be corrected to alight earlier at Greys Farm (£1.90 — **UNCONFIRMED** fare, not verified against a fares export; gap Q14)\n**AND** **UNCONFIRMED** — CR122 alighting-stop correction UX is TBD; confirm the feature exists live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the journey, correct the alighting stop to Greys Farm and confirm",
+        "expected": "**THEN** the correction is accepted (within the 1/month, 3/year limit) — **UNCONFIRMED** (CR122)"
+      },
+      {
+        "content": "**WHEN** the next EndOfDay settlement runs and you re-open the journey",
+        "expected": "**THEN** the journey fare is recalculated for the new alighting stop — **UNCONFIRMED** (CR122)"
+      }
+    ],
+    "action": "reword",
+    "refs": "CR122,FBD-100662 §5.6 paras 691,692,693",
+    "citations": ["FBD-100662 para 692", "FBD-100662 §5.6 paras 691-693"],
+    "change_note": "Terse-rewrite pass: moved inline '— FBD-100662 para 692/691/§5.6 paras 691–693' citations out of preface/preconds/steps into Refs; shortened 'NOTE: the correction feature is CR122, an unconfirmed proposal; only the monthly/annual LIMIT...is specified' preface prose to one parenthetical. UNCONFIRMED markers and gap ids (Q14/Q21) kept intact — behaviour/meaning unchanged, only citation placement and prose length."
+  },
+  {
+    "id": 4103481,
+    "preface": "This test is to confirm a second alighting-stop correction in the same calendar month is refused (CR122, mechanism unconfirmed; limit is 1/month).",
+    "preconds": "**GIVEN** the seeded card has already had one accepted alighting-stop correction this calendar month\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a second correction attempted on a settled 72b (IN) Greys Farm → Armagh Bus Centre journey (£4.50) in the same month\n**AND** **UNCONFIRMED** — CR122 correction UX is TBD; the refusal behaviour (a warning message) is confirmed only for the analogous TOTO missing-tap correction, not CR122 itself; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you attempt a second alighting-stop correction in the same calendar month and confirm",
+        "expected": "**THEN** the correction is refused because the monthly limit of one is reached — **UNCONFIRMED** (CR122)\n**AND** the journey keeps its previous alighting stop and fare"
+      }
+    ],
+    "action": "reword",
+    "refs": "CR122,FBD-100662 §5.6 paras 691-693,FBD-100662 para 692,FBD-100690 para 810",
+    "citations": ["FBD-100662 §5.6 paras 691-693", "FBD-100662 para 692", "FBD-100690 para 810 (analogous TOTO missing-tap refusal warning)"],
+    "change_note": "Terse-rewrite pass: moved inline FBD citations to Refs; shortened preface/UNCONFIRMED prose. Meaning unchanged (CR122 UX still marked unconfirmed; TOTO analogy note kept, citation relocated)."
+  },
+  {
+    "id": 4103482,
+    "preface": "This test is to confirm the monthly allowance resets so a correction in a new month is accepted while within the annual limit of three (CR122, mechanism unconfirmed).",
+    "preconds": "**GIVEN** the seeded card used its one correction in the previous calendar month and is still within the annual limit of three\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a 72b (IN) Moygashel Busby Shop → Armagh Bus Centre journey corrected in the new month\n**AND** **UNCONFIRMED** — CR122 correction UX is TBD; the monthly reset is implied by the 1/month, 3/year limits but not explicitly stated; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you make an alighting-stop correction in the new calendar month and confirm",
+        "expected": "**THEN** the correction is accepted because the monthly allowance has reset — **UNCONFIRMED** (CR122; explicit reset behaviour not stated)"
+      },
+      {
+        "content": "**WHEN** the next EndOfDay settlement runs and you re-open the journey",
+        "expected": "**THEN** the journey fare is recalculated for the new alighting stop — **UNCONFIRMED** (CR122)"
+      }
+    ],
+    "action": "reword",
+    "refs": "CR122,FBD-100662 §5.6 paras 691-693,FBD-100662 para 692,691",
+    "citations": ["FBD-100662 §5.6 paras 691-693", "FBD-100662 para 692", "FBD-100662 para 691"],
+    "change_note": "Terse-rewrite pass: moved inline FBD citations to Refs; shortened preface/UNCONFIRMED prose. Meaning unchanged."
+  },
+  {
+    "id": 4103483,
+    "preface": "This test is to confirm the annual limit of three corrections is enforced across calendar months (CR122, mechanism unconfirmed).",
+    "preconds": "**GIVEN** the seeded card has already made three accepted corrections this year\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a fourth correction attempted in a fresh calendar month on a settled 72b (IN) journey\n**AND** **UNCONFIRMED** — CR122 correction UX is TBD; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you attempt a fourth alighting-stop correction and confirm",
+        "expected": "**THEN** the correction is refused even in a new month, because the annual limit of three is reached — **UNCONFIRMED** (CR122)"
+      }
+    ],
+    "action": "reword",
+    "refs": "CR122,FBD-100662 §5.6 paras 691-693,FBD-100662 para 692",
+    "citations": ["FBD-100662 §5.6 paras 691-693", "FBD-100662 para 692"],
+    "change_note": "Terse-rewrite pass: moved inline FBD citations to Refs; shortened preface/UNCONFIRMED prose. Meaning unchanged."
+  },
+  {
+    "id": 4103484,
+    "preface": "This test is to confirm the annual boundary: the third correction of the year is accepted and a further attempt is refused (CR122, mechanism unconfirmed).",
+    "preconds": "**GIVEN** the seeded card has made two accepted corrections earlier in the year\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a third correction on a settled 72b (IN) journey in a fresh month, then an immediate fourth attempt\n**AND** **UNCONFIRMED** — CR122 correction UX is TBD; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you make the third correction of the year and confirm",
+        "expected": "**THEN** the third correction is accepted (within the 3/year limit) — **UNCONFIRMED** (CR122)"
+      },
+      {
+        "content": "**WHEN** you immediately attempt a fourth correction and confirm",
+        "expected": "**THEN** the fourth correction is refused at the annual limit of three — **UNCONFIRMED** (CR122)"
+      }
+    ],
+    "action": "reword",
+    "refs": "CR122,FBD-100662 §5.6 paras 691-693,FBD-100662 para 692",
+    "citations": ["FBD-100662 §5.6 paras 691-693", "FBD-100662 para 692"],
+    "change_note": "Terse-rewrite pass: moved inline FBD citations to Refs; shortened preface/UNCONFIRMED prose. Meaning unchanged."
+  }
+]

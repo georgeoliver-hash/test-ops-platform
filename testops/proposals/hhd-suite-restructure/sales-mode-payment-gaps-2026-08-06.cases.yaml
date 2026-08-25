@@ -1,0 +1,145 @@
+# HHD — Sales Mode: Payment Area (Cash & Card) — MISSING-row gap fill
+# Source: knowledge/flows/translink-hhd-sales-mode-payment.md (Paths table), 2026-08-06.
+# Authors ONLY the rows whose "Covered by" column was the literal string MISSING. Rows already
+# holding a case id, GAP, FRAGMENTED, or STALE note are untouched (see the flow-map file itself).
+# Grounded strictly in that file's Screen states / Notes sections — no invented screen names or
+# button labels. NOT pushed. New-suite-only, per repo convention (suite 30285).
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  # =====================================================================================
+  - path: [Functional, Sales - Paper Tickets, Basket]
+    cases:
+      # Row 1
+      - title: "Payment Area — Cancel returns to the Sales screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping 'Cancel' in the Payment Area returns to the Sales screen.
+        steps: |
+          **GIVEN** the HHD shows the 2.4 Payment Area screen for a sale in progress
+          **WHEN** the operator taps 'Cancel'
+          **THEN** the HHD returns to the Sales screen
+        expected: "Tapping 'Cancel' on the Payment Area screen returns the HHD to the Sales screen."
+
+  # =====================================================================================
+  - path: [Functional, Card Payment (M020)]
+    cases:
+      # Row 6
+      - title: "Card Payment — contactless over £45 redirects to Chip & PIN"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a contactless tap over £45 redirects the transaction back to User
+          to Present Card to follow the Chip & PIN flow.
+        steps: |
+          **GIVEN** the HHD shows User to Present Card for a card sale over £45
+          **WHEN** the passenger presents contactless and either the customer chooses Chip & PIN or
+          the payment device requires Chip & PIN for the amount
+          **THEN** the HHD returns to User to Present Card
+          **AND** the transaction continues via the Chip & PIN flow
+        expected: "A contactless tap over £45 returns to User to Present Card and continues via Chip & PIN."
+
+      # Row 7
+      - title: "Card Payment — a swiped Chip & PIN-capable card is redirected to Chip & PIN"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a swiped card that supports Chip & PIN is redirected to the
+          Chip & PIN flow rather than processed as a swipe.
+        steps: |
+          **GIVEN** the HHD shows User to Present Card for a card sale
+          **WHEN** the passenger swipes a card that supports Chip & PIN
+          **THEN** the HHD follows the Chip & PIN flow
+        expected: "Swiping a Chip & PIN-capable card routes the transaction into the Chip & PIN flow."
+
+      # Row 8
+      - title: "Card Payment — a swiped card without Chip & PIN goes to Confirm Amount"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a swiped card with no Chip & PIN capability shows User to Confirm
+          Amount rather than the Chip & PIN flow.
+        steps: |
+          **GIVEN** the HHD shows User to Present Card for a card sale
+          **WHEN** the passenger swipes a card with no Chip & PIN capability
+          **THEN** the HHD shows User to Confirm Amount
+        expected: "A swiped card without Chip & PIN capability shows User to Confirm Amount, not the Chip & PIN flow."
+
+      # Row 9
+      - title: "Card Payment — customer cancels the transaction before payment"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the passenger can cancel a card transaction on the payment device
+          from User to Confirm Amount.
+        steps: |
+          **GIVEN** the HHD shows User to Confirm Amount for a card sale
+          **WHEN** the customer cancels the transaction on the payment device
+          **THEN** the HHD shows User Cancelled Transaction
+        expected: "Cancelling on the payment device at Confirm Amount shows the User Cancelled Transaction screen."
+
+      # Row 10
+      - title: "Card Payment — repeated PIN entry failures decline the transaction"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the transaction is declined after the customer exceeds the
+          configured number of incorrect PIN attempts.
+        steps: |
+          **GIVEN** the HHD is at PIN Entry for a card sale
+          **AND** the tester knows the configured PIN attempt limit
+          **WHEN** the customer enters an incorrect PIN the configured number of times
+          **THEN** the HHD shows Payment/Card/Declined
+        expected: "Exceeding the configured PIN attempt limit at PIN Entry declines the card transaction."
+
+      # Row 12
+      - title: "Card Payment — a signature mismatch voids the transaction"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a card receipt signature that does not match voids the just-completed
+          transaction.
+        steps: |
+          **GIVEN** a card transaction has succeeded and the receipt has printed for signature
+          **WHEN** the signature does not match
+          **THEN** the transaction is voided via Voiding Last Card Transaction
+        expected: "A non-matching signature on the printed receipt voids the just-completed card transaction."
+
+      # Row 13
+      - title: "Card Reader — a successful reconnect proceeds to the Card Payment flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm reconnecting the card reader from View Basket, once successful,
+          proceeds into the Card Payment flow.
+        steps: |
+          **GIVEN** the HHD shows View Basket with the card reader disconnected
+          **WHEN** the operator taps 'Card' to reconnect
+          **THEN** the status bar shows Connecting
+          **AND** on a successful connection the HHD proceeds to the Card Payment flow
+        expected: "Reconnecting the card reader from View Basket shows Connecting, then on success proceeds to the Card Payment flow."
+
+      # Row 14
+      - title: "Card Reader — a failed reconnect with tries remaining retries Connecting"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed reconnect attempt with tries remaining returns to the
+          Connecting screen on Retry.
+        steps: |
+          **GIVEN** the HHD shows Not Connected with tries remaining (up to 3 attempts total per the
+          reconnect screen)
+          **WHEN** the operator taps 'Retry'
+          **THEN** the HHD returns to the Connecting status bar screen
+        expected: "With tries remaining, tapping 'Retry' on Not Connected returns to the Connecting screen."
+
+      # Row 15
+      - title: "Card Reader — exhausted reconnect retries prompts Contact Supervisor"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm exhausting the reconnect retries shows Contact Supervisor, and that
+          Back to Payment returns to View Basket/Reconnect Card Reader.
+        steps: |
+          **GIVEN** the HHD shows Not Connected with no tries remaining (all 3 attempts used)
+          **WHEN** the operator taps 'Retry'
+          **THEN** the HHD shows Contact Supervisor
+          **WHEN** the operator taps 'Back to Payment'
+          **THEN** the HHD returns to View Basket/Reconnect Card Reader
+        expected: "Exhausting the reconnect retries shows Contact Supervisor; Back to Payment returns to View Basket/Reconnect Card Reader."

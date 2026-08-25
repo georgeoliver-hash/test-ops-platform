@@ -1,0 +1,246 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      - title: "Smartcards — a fully topped-up card shows No more top up and offers a statement"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a fully topped-up multi-journey card shows the No more top up
+          message and proceeds to the Smartpass statement flow.
+        steps: |
+          **GIVEN** the TVM is at the Home Screen
+          **AND** the customer presents a multi-journey card already at the 50-journey cap
+          **WHEN** the customer inserts the card
+          **THEN** the "No more top up" message is displayed
+          **AND** the TVM proceeds to the Smartpass statement screen
+        expected: "A card already at the 50-journey cap shows No more top up and moves to the Smartpass statement screen."
+
+      - title: "Smartcards — a printed Smartpass statement can only be taken once"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Smartpass statement print button fades after use and the
+          customer is prompted to take the printed statement.
+        steps: |
+          **GIVEN** the TVM is showing the Smartpass statement screen
+          **WHEN** the customer prints the statement
+          **THEN** the "Take your statement" message is displayed
+          **AND** the print button fades on the post-print screen so the statement cannot be
+          printed again
+        expected: "Printing a Smartpass statement prompts the customer to take it and disables further printing."
+
+      - title: "Smartcards — a discount card on a Bus TVM offers DepCh1 and yLink ticket selection"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a discount card presented on a Bus TVM (or when the user selects
+          BUS) reaches the DepCh1 and yLink ticket selection screens.
+        steps: |
+          **GIVEN** the TVM is at the Destination and Boarding Selection screen for a discount card
+          **AND** the user selected BUS, or is using a BUS TVM
+          **WHEN** the customer proceeds to select a ticket
+          **THEN** the "Select Tickets - DepCh1" screen is available
+          **AND** the "Select Tickets - yLink" screen is available
+        expected: "On a Bus TVM, a discount card's ticket selection offers DepCh1 and yLink tickets."
+
+      - title: "Smartcards — a discount card on a Rail TVM offers Rail ticket selection"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a discount card presented on a Rail TVM (or when the user selects
+          RAIL) reaches the Rail ticket selection screens.
+        steps: |
+          **GIVEN** the TVM is at the Destination and Boarding Selection screen for a discount card
+          **AND** the user selected RAIL, or is using a RAIL TVM
+          **WHEN** the customer proceeds to select a ticket
+          **THEN** the "Select Tickets - yLink Rail" screen is available
+          **AND** the "Select Tickets - 24 Rail" screen is available
+          **AND** the "Select Tickets - Half-Fare Smartpass" screen is available
+          **AND** the "Select Tickets - DepCh1 Rail" screen is available
+          **AND** the "Select Tickets - Free Smartpass" screen is available
+        expected: "On a Rail TVM, a discount card's ticket selection offers yLink Rail, 24 Rail, Half-Fare Smartpass, DepCh1 Rail and Free Smartpass tickets."
+
+      - title: "Smartcards — a free DepCh1 ticket skips payment and prints directly"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a free DepCh1 ticket skips the Payment Process and goes
+          straight to Ticket Printing.
+        steps: |
+          **GIVEN** the TVM is showing the "Select Tickets - DepCh1" screen
+          **WHEN** the customer selects a free DepCh1 ticket
+          **THEN** the Payment Process is skipped
+          **AND** the TVM proceeds directly to Ticket Printing
+        expected: "A free DepCh1 ticket bypasses payment and goes straight to Ticket Printing."
+
+      - title: "Smartcards — DepCh1 Rail and Free Smartpass tickets go straight to Ticket Printing"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a DepCh1 Rail or Free Smartpass ticket proceeds directly
+          to Ticket Printing.
+        steps: |
+          **GIVEN** the TVM is showing the "Select Tickets - DepCh1 Rail" or "Select Tickets - Free
+          Smartpass" screen
+          **WHEN** the customer selects the ticket
+          **THEN** the TVM proceeds directly to Ticket Printing
+        expected: "Selecting a DepCh1 Rail or Free Smartpass ticket proceeds directly to Ticket Printing."
+
+      - title: "Smartcards — yLink, yLink Rail, 24 Rail and Half-Fare Smartpass tickets go to Payment Process"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a yLink, yLink Rail, 24 Rail or Half-Fare Smartpass
+          ticket proceeds to the Payment Process.
+        steps: |
+          **GIVEN** the TVM is showing the "Select Tickets - yLink", "Select Tickets - yLink Rail",
+          "Select Tickets - 24 Rail" or "Select Tickets - Half-Fare Smartpass" screen
+          **WHEN** the customer selects the ticket
+          **THEN** the TVM proceeds to the Payment Process
+        expected: "Selecting a yLink, yLink Rail, 24 Rail or Half-Fare Smartpass ticket proceeds to the Payment Process."
+
+      - title: "Smartcards — a new or from-first-use card shows Use before top up and offers a statement"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a new card, or a card topped up with a "from first use" expiry
+          date, shows the Use before top up message and proceeds to the Smartpass statement flow.
+        steps: |
+          **GIVEN** the TVM is at the Home Screen
+          **AND** the customer presents a new card, or a card topped up with a "from first use"
+          expiry date
+          **WHEN** the customer inserts the card
+          **THEN** the "Use before top up" message is displayed
+          **AND** the TVM proceeds to the Smartpass statement screen
+        expected: "A new or from-first-use card shows Use before top up and moves to the Smartpass statement screen."
+
+      - title: "Smartcards — an ABT deny-list top-up can print a receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm an ABT deny-list top-up can reach the ABT deny-list receipt
+          screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Top-up ABT - Standard Amounts - Deny list" screen
+          **WHEN** the customer completes the deny-list top-up
+          **THEN** the "Top-up ABT - Receipt - Deny list" screen can be reached
+          **AND** **GAP** — the source flow-map does not label what determines whether this receipt
+          branch or the Top Up Summary branch is taken from this screen; confirm before running
+        expected: "An ABT deny-list top-up can reach the deny-list receipt screen (branch trigger unconfirmed)."
+
+      - title: "Smartcards — an ABT top-up can print a receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm an ABT standard-amount top-up can reach the ABT receipt screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Top-up ABT - Standard Amounts" screen
+          **WHEN** the customer completes the ABT top-up
+          **THEN** the "Top-up ABT - Receipt" screen can be reached
+          **AND** **GAP** — the source flow-map does not label what determines whether this receipt
+          branch or the Top Up Summary branch is taken from this screen; confirm before running
+        expected: "An ABT top-up can reach the receipt screen (branch trigger unconfirmed)."
+
+      - title: "Smartcards — a card offering free or half-fare travel routes to Present to Driver"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a card offering free or half-fare travel shows the Present to
+          Driver message and proceeds to the Smartpass statement flow.
+        steps: |
+          **GIVEN** the TVM is at the Home Screen
+          **AND** the customer presents a card offering free or half-fare travel
+          **WHEN** the customer inserts the card
+          **THEN** the "Present to Driver" message is displayed
+          **AND** the TVM proceeds to the Smartpass statement screen
+        expected: "A free or half-fare travel card shows Present to Driver and moves to the Smartpass statement screen."
+
+      - title: "Smartcards — a card write error can end in Faulty smartcard No Update"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a card write error during the Payment Process, followed by the
+          Faulty smartcard - Try Again message, can end at the Faulty smartcard - No Update message.
+        steps: |
+          **GIVEN** the TVM has shown the "Faulty smartcard - Try Again" message following a card
+          write error
+          **WHEN** the customer retries and the write still fails
+          **THEN** the "Faulty smartcard - No Update" message is displayed
+          **AND** **GAP** — the source flow-map does not label what determines this outcome versus
+          the "No Update - Cash" outcome from the same screen; confirm before running
+        expected: "A card write error can end in the Faulty smartcard No Update message (trigger for this vs. the Cash variant unconfirmed)."
+
+      - title: "Smartcards — a card write error can end in Faulty smartcard No Update - Cash"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a card write error during the Payment Process, followed by the
+          Faulty smartcard - Try Again message, can end at the Faulty smartcard - No Update - Cash
+          message.
+        steps: |
+          **GIVEN** the TVM has shown the "Faulty smartcard - Try Again" message following a card
+          write error
+          **WHEN** the customer retries and the write still fails
+          **THEN** the "Faulty smartcard - No Update - Cash" message is displayed
+          **AND** **GAP** — the source flow-map does not label what determines this outcome versus
+          the "No Update" outcome from the same screen; confirm before running
+        expected: "A card write error can end in the Faulty smartcard No Update - Cash message (trigger for this vs. the No Update variant unconfirmed)."
+
+      - title: "Smartcards — the faulty-smartcard no-update flow returns to Home Screen if the card is already removed"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that, if the customer has already removed the card, the Faulty
+          smartcard - No Update message goes directly to the Home Screen instead of prompting to
+          take the smartcard.
+        steps: |
+          **GIVEN** the TVM is showing the "Faulty smartcard - No Update" message
+          **AND** the customer has already removed the card
+          **WHEN** the TVM proceeds from this message
+          **THEN** the TVM goes directly to the Home Screen
+        expected: "When the card is already removed, the Faulty smartcard No Update message routes straight to the Home Screen."
+
+      - title: "Smartcards — top-up completes and prompts for the card once re-presented after removal"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that after the customer removes their smartcard mid-top-up and
+          re-presents it at Place your card, the top-up completes and the customer is prompted to
+          take their smartcard.
+        steps: |
+          **GIVEN** the TVM is showing the "Place your card" message after the customer removed
+          their smartcard during a top-up
+          **WHEN** the customer re-presents the smartcard
+          **THEN** the "top up complete" message is displayed
+          **AND** the "take your smartcard" message is displayed
+        expected: "Re-presenting a removed smartcard during top-up completes the top-up and prompts the customer to take the card."
+
+      - title: "Smartcards — the TVM re-prompts for a card removed earlier before printing a ticket"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM re-prompts the customer for their smartcard, if it was
+          removed earlier in the process, before proceeding to Ticket Printing.
+        steps: |
+          **GIVEN** the customer removed their smartcard earlier during the Payment Process
+          **WHEN** the TVM reaches the point of needing the card again
+          **THEN** the TVM re-prompts for the card
+          **AND** the TVM proceeds to Ticket Printing once the card is presented
+        expected: "The TVM re-prompts for a smartcard removed earlier before proceeding to Ticket Printing."
+
+      - title: "Smartcards — the customer can opt to take both a top-up receipt and a card receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a customer who opts in to both receipts is prompted to take the
+          top-up receipt then the card receipt before returning to the Home Screen.
+        steps: |
+          **GIVEN** the TVM is showing the "take your smartcard" message after a smartcard
+          transaction
+          **WHEN** the customer opts to take a top-up receipt and a card receipt
+          **THEN** the "Take your top up receipt" message is displayed
+          **AND** the "Take your card receipt" message is displayed
+          **AND** the TVM returns to the Home Screen
+        expected: "Opting in to both receipts prompts the customer for the top-up receipt then the card receipt before returning to the Home Screen."
+
+      - title: "Smartcards — the customer can decline both the top-up receipt and the card receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a customer who declines both receipts returns straight to the
+          Home Screen.
+        steps: |
+          **GIVEN** the TVM is showing the "take your smartcard" message after a smartcard
+          transaction
+          **WHEN** the customer declines a top-up receipt and a card receipt
+          **THEN** the TVM returns to the Home Screen
+        expected: "Declining both the top-up receipt and card receipt returns the customer straight to the Home Screen."

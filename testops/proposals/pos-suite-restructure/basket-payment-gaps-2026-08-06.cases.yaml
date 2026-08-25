@@ -1,0 +1,131 @@
+# Basket & Payment — MISSING paths from knowledge/flows/translink-pos-basket-payment.md
+# (rows 4, 6, 8, 11, 13, 14, 15, 16, 17, 18). Grounded on that flow-map's Screen states / Notes
+# sections only. Row 16 is genuinely unconfirmed in the source (see its Notes) and is marked GAP
+# rather than guessed.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Ulsterbus", "Fare Look-Up"]
+    cases:
+      - title: "Basket — increase or decrease passenger count on a basket line"
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm the operator can increase or decrease the passenger count on a
+          selected basket line, up to the maximum of 100 passengers per line.
+        steps: |
+          **GIVEN** a bus basket has multiple items on page 1, with one item Selected
+          **WHEN** the operator presses + or - to change the passenger count on that line
+          **THEN** the passenger count on the line updates
+          **AND** the line's Selected Added state is shown
+        expected: "The passenger count on a basket line can be increased or decreased via +/-, up to the 100-passengers-per-line maximum."
+
+      - title: "Basket — Bus Advance Ticket with a valid date is added to the basket"
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm entering a valid date for a Bus Advance Ticket adds it to the
+          basket and proceeds to Payment.
+        steps: |
+          **GIVEN** a bus basket has 1 item and the operator has selected the Advance Ticket option
+          **WHEN** the operator enters a valid date
+          **THEN** the Bus Advance Ticket is added to the basket
+          **AND** the Payment screen is shown
+        expected: "A valid advance-ticket date adds the Bus Advance Ticket to the basket and proceeds to Payment."
+
+      - title: "Payment — Bank Card unavailable when no PCD is attached (Bus basket)"
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm the Bank Card option is unavailable at the bus basket Payment
+          screen when no PCD is attached to the POS.
+        steps: |
+          **GIVEN** a bus basket is at the Payment screen with no PCD attached to the POS
+          **WHEN** the operator views the payment options
+          **THEN** the Bank Card option is unavailable
+        expected: "With no PCD attached, the bus basket Payment screen shows the Bank Card option as unavailable."
+
+  - path: ["NIR (Rail)", "Fare Look-Up"]
+    cases:
+      - title: "Payment — Popular ticket Bank Card unavailable when no PCD is attached"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm selecting a Popular rail ticket with no PCD attached shows Card
+          Unavailable and returns to Rail selected.
+        steps: |
+          **GIVEN** the operator has selected a Popular ticket from Rail selected, with no PCD attached to the POS
+          **WHEN** the operator attempts payment
+          **THEN** Payment - Popular - Card Unavailable is shown
+          **AND** the POS returns to Rail selected
+        expected: "With no PCD attached, a Popular ticket shows Card Unavailable and returns to Rail selected."
+
+      - title: "Payment — 3-Day Ticket Bank Card unavailable when no PCD is attached"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm attempting to pay for a 3-Day Ticket with no PCD attached shows
+          Card Unavailable and returns to the 3-Day Ticket screen.
+        steps: |
+          **GIVEN** the operator is on the 3-Day Ticket screen with no PCD attached to the POS
+          **WHEN** the operator attempts payment
+          **THEN** Payment - 3day ticket - card unavailable is shown
+          **AND** the POS returns to the 3-Day Ticket screen
+        expected: "With no PCD attached, the 3-Day Ticket screen shows Card Unavailable and returns to the 3-Day Ticket screen."
+
+      - title: "Payment — Rail Advance Ticket payment confirms the ticket"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm a Rail Advance Ticket paid by card, with a PCD attached, results
+          in a Confirmed Ticket.
+        steps: |
+          **GIVEN** a Rail Advance Ticket is selected with a PCD attached to the POS
+          **WHEN** the operator completes payment by card
+          **THEN** the Payment - Advance Ticket screen is shown
+          **AND** the ticket is Confirmed
+        expected: "With a PCD attached, a Rail Advance Ticket card payment shows the Payment - Advance Ticket screen and confirms the ticket."
+
+      - title: "Payment — Rail Advance Ticket Bank Card unavailable when no PCD is attached"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm attempting to pay for a Rail Advance Ticket with no PCD attached
+          shows Card Unavailable.
+        steps: |
+          **GIVEN** a Rail Advance Ticket is selected with no PCD attached to the POS
+          **WHEN** the operator attempts payment
+          **THEN** Payment - Advance Ticket - Card Unavailable is shown
+        expected: "With no PCD attached, a Rail Advance Ticket shows Payment - Advance Ticket - Card Unavailable."
+
+      - title: "Basket — Rail Advance Ticket routing into the Bus Advance Ticket screen (GAP)"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm whether Rail Advance Ticket Selected genuinely routes into the Bus
+          Advance Ticket basket screen, a cross-flow link flagged unconfirmed in the source flow-map
+          transcription.
+        steps: |
+          **GIVEN** a Rail Advance Ticket is selected
+          **WHEN** the operator proceeds from Advance Ticket Selected
+          **THEN** **GAP** — whether this routes into the Bus Advance Ticket basket screen or is a source-transcription artifact is not confirmed; confirm on the live system before running
+        expected: "GAP — the cross-flow link between Rail Advance Ticket Selected and the Bus Advance Ticket basket screen is unconfirmed; verify on the live system before treating it as real behaviour."
+
+      - title: "Payment — Rail ticket confirmation returns to the Rail main screen"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm a completed Rail ticket payment returns from Confirmed Ticket to
+          the Rail main screen as the default landing.
+        steps: |
+          **GIVEN** a Rail ticket payment has completed and Confirmed Ticket is shown
+          **WHEN** the confirmation banner times out
+          **THEN** the POS returns to Main Screen-Rail-v4
+        expected: "After the confirmation banner times out, Confirmed Ticket returns to Main Screen-Rail-v4."
+
+      - title: "Payment — Rail ticket confirmation returns to the 3-Day Ticket screen"
+        refs: MODE-NIR-ONLY
+        objective: |
+          This test is to confirm a completed Rail ticket payment can return from Confirmed Ticket to
+          the 3-Day Ticket screen as an alternate landing.
+        steps: |
+          **GIVEN** a Rail ticket payment has completed and Confirmed Ticket is shown
+          **WHEN** the confirmation banner times out
+          **THEN** the POS returns to the 3-Day Ticket screen
+        expected: "After the confirmation banner times out, Confirmed Ticket can return to the 3-Day Ticket screen."

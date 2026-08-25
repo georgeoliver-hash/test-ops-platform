@@ -1,0 +1,296 @@
+# CloudFare (BOS) — Reports, Events & Alerts, Dashboard, Ticket Editor, Station Manager.
+# Consolidated from old suite 14441 (~84 cases): Dashboard tile micro-cases folded;
+# Engineer Visits per-device folded; Ticket Editor card-field cases folded; reports kept
+# one-per-report (reporting is a priority area). devtype [100]. Single-predicate THENs.
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [100]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [CloudFare, Functional, Dashboard]
+    cases:
+      - title: View the Dashboard summary tiles
+        objective: This test is to confirm that the CloudFare Dashboard shows the configured summary tiles with their key metrics.
+        steps: |-
+          **GIVEN** an operator has configured a Dashboard with summary tiles
+          **AND** the operator is signed into CloudFare
+          **WHEN** the operator views the Dashboard
+          **THEN** each tile shows its metric (hours since last communication, missing transactions, devices by status, recent alerts, ABT users, ABT journeys, ABT revenue, TVM status, quarantine count)
+        expected: The Dashboard tiles show their key metrics.
+      - title: Create, clone, favourite and delete a dashboard
+        objective: This test is to confirm that a user can create, clone, favourite and delete dashboards.
+        steps: |-
+          **GIVEN** a user is signed into CloudFare on the dashboard homepage
+          **WHEN** the user creates, clones, favourites or deletes a dashboard
+          **THEN** each change is applied to the user's dashboards
+        expected: Dashboards can be created, cloned, favourited and deleted.
+      - title: Add and remove dashboard tiles
+        objective: This test is to confirm that a user can add and remove tiles on a dashboard.
+        steps: |-
+          **GIVEN** a user is signed into CloudFare with a dashboard created
+          **WHEN** the user adds and removes tiles
+          **THEN** the dashboard reflects the tile changes
+        expected: Dashboard tiles can be added and removed.
+      - title: View a dashboard full screen
+        objective: This test is to confirm that a user can view a dashboard in full screen.
+        steps: |-
+          **GIVEN** a dashboard with tiles is displayed
+          **WHEN** the user selects full screen
+          **THEN** the dashboard is shown full screen
+        expected: The dashboard is shown in full screen.
+
+  - path: [CloudFare, Functional, Events & Alerts]
+    cases:
+      - title: Create, view, edit and delete an alert configuration
+        objective: This test is to confirm that a user can create, view, edit and delete an alert configuration.
+        steps: |-
+          **GIVEN** the Alert Configuration page is displayed under Events & Alerts
+          **WHEN** the user creates, views, edits or deletes an alert
+          **THEN** each change is applied to the alert configuration
+        expected: Alert configurations can be created, viewed, edited and deleted.
+      - title: Alert Viewer — filter, acknowledge and clear alerts
+        objective: This test is to confirm that a user can filter the alert list and acknowledge or clear alerts, with or without a note.
+        steps: |-
+          **GIVEN** the Alert Viewer page is displayed with alerts
+          **WHEN** the user filters the list and acknowledges or clears an alert, with or without a note
+          **THEN** the alert status is updated to acknowledged or cleared
+          **AND** any note is recorded against the alert
+        expected: Alerts can be filtered, acknowledged and cleared, with notes recorded.
+      - title: Configure event groups
+        objective: This test is to confirm that a user can add, view, modify and delete event groups.
+        steps: |-
+          **GIVEN** the Event Group Configuration page is displayed under Events & Alerts
+          **WHEN** the user adds, modifies or deletes an event group
+          **THEN** each change is applied to the event groups
+        expected: Event groups can be added, modified and deleted.
+      - title: Events Viewer — filter the events list
+        objective: This test is to confirm that a user can filter the events list in the Events Viewer.
+        steps: |-
+          **GIVEN** the Event Viewer page is displayed under Events & Alerts
+          **WHEN** the user filters the events list by its adjustable fields
+          **THEN** only the events matching the filters are shown
+        expected: The events list is filtered to the selected fields.
+
+  - path: [CloudFare, Functional, Reports]
+    cases:
+      - title: Run the Depot Location Report
+        objective: This test is to confirm that a user can run and export the Assets Depot Location Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Assets sub-page with audit data processed
+          **WHEN** the user runs the Depot Location Report
+          **THEN** the Depot Location Report is generated
+          **AND** the report can be exported
+        expected: The Depot Location Report generates and can be exported.
+      - title: Run the Devices Last Seen Report
+        objective: This test is to confirm that a user can run and export the Devices Last Seen Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Assets sub-page with audit data processed
+          **WHEN** the user runs the Devices Last Seen Report
+          **THEN** the Devices Last Seen Report is generated
+          **AND** the report can be exported
+        expected: The Devices Last Seen Report generates and can be exported.
+      - title: Run the Software Versions Report
+        objective: This test is to confirm that a user can run and export the Software Versions Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Assets sub-page with audit data processed
+          **WHEN** the user runs the Software Versions Report
+          **THEN** the Software Versions Report is generated
+          **AND** the report can be exported
+        expected: The Software Versions Report generates and can be exported.
+      - title: Run the Staff Activity Report
+        objective: This test is to confirm that a user can run and export the Staff Activity Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Assets sub-page with audit data processed
+          **WHEN** the user runs the Staff Activity Report
+          **THEN** the Staff Activity Report is generated
+          **AND** the report can be exported
+        expected: The Staff Activity Report generates and can be exported.
+      - title: Run the Engineer Visits Report
+        objective: This test is to confirm that a user can run and export the Engineer Visits Report for TVM, PV and GV devices.
+        steps: |-
+          **GIVEN** a user is on the Reports Staff sub-page with audit data processed
+          **WHEN** the user runs the Engineer Visits Report for a TVM, PV or GV
+          **THEN** the Engineer Visits Report is generated for the selected device type
+          **AND** the report can be exported
+        expected: The Engineer Visits Report generates for TVM, PV and GV and can be exported.
+      - title: Run the Revenue Inspector's Report
+        objective: This test is to confirm that a user can run and export the Revenue Inspector's Report, including the BRT operator variant.
+        steps: |-
+          **GIVEN** a user is on the Reports Staff sub-page with audit data processed
+          **WHEN** the user runs the Revenue Inspector's Report, including for the BRT operator level
+          **THEN** the Revenue Inspector's Report is generated
+          **AND** the report can be exported
+        expected: The Revenue Inspector's Report, including BRT, generates and can be exported.
+      - title: Run the TVM cash collection reports
+        objective: This test is to confirm that a user can run and export the TVM cash collection reports (coins/notes, refloat, float balances, recycling, exceptions).
+        steps: |-
+          **GIVEN** a user is on the Reports Cash sub-page with audit data processed
+          **WHEN** the user runs a TVM cash collection report (total coins and notes from vaults, coin refloat and residual hopper total, float balances by hopper and vault, coin acceptance recycling, no change available, almost full exceptions)
+          **THEN** the selected cash collection report is generated
+          **AND** the report can be exported
+        expected: The TVM cash collection reports generate and can be exported.
+      - title: Run the TVM cash revenue reports
+        objective: This test is to confirm that a user can run and export the TVM cash revenue reports (ticket sales revenue, change to customer, summary totals by driver).
+        steps: |-
+          **GIVEN** a user is on the Reports Cash sub-page with audit data processed
+          **WHEN** the user runs a cash revenue report (cash ticket sales revenue, change to customer, summary totals by driver)
+          **THEN** the selected cash revenue report is generated
+          **AND** the report can be exported
+        expected: The TVM cash revenue reports generate and can be exported.
+      - title: Run the Rules List Export
+        objective: This test is to confirm that a user can run and export the Topology Rules List Export.
+        steps: |-
+          **GIVEN** a user is on the Reports Topology sub-page
+          **WHEN** the user runs the Rules List Export
+          **THEN** the Rules List Export is generated
+          **AND** the report can be exported
+        expected: The Rules List Export generates and can be exported.
+      - title: Run the Concise Area & Reference Fare Report
+        objective: This test is to confirm that a user can run and export the Concise Area & Reference Fare Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Topology sub-page
+          **WHEN** the user runs the Concise Area & Reference Fare Report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Concise Area & Reference Fare Report generates and can be exported.
+      - title: Run the Route List Export
+        objective: This test is to confirm that a user can run and export the Route List Export.
+        steps: |-
+          **GIVEN** a user is on the Reports Topology sub-page
+          **WHEN** the user runs the Route List Export
+          **THEN** the Route List Export is generated
+          **AND** the report can be exported
+        expected: The Route List Export generates and can be exported.
+      - title: Run the Product to Ticket Assignment Report
+        objective: This test is to confirm that a user can run and export the Product to Ticket Assignment Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Topology sub-page
+          **WHEN** the user runs the Product to Ticket Assignment Report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Product to Ticket Assignment Report generates and can be exported.
+      - title: Run the Product List Report
+        objective: This test is to confirm that a user can run and export the Product List Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Topology sub-page
+          **WHEN** the user runs the Product List Report
+          **THEN** the Product List Report is generated
+          **AND** the report can be exported
+        expected: The Product List Report generates and can be exported.
+      - title: Run the Events & Alerts Report
+        objective: This test is to confirm that a user can run and export the Events & Alerts Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Events & Alerts sub-page with audit data processed
+          **WHEN** the user runs the Events & Alerts Report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Events & Alerts Report generates and can be exported.
+      - title: Run the Vehicle Check Report
+        objective: This test is to confirm that a user can run and export the Vehicle Check Report.
+        steps: |-
+          **GIVEN** a user is on the Reports Events & Alerts sub-page with audit data processed
+          **WHEN** the user runs the Vehicle Check Report
+          **THEN** the Vehicle Check Report is generated
+          **AND** the report can be exported
+        expected: The Vehicle Check Report generates and can be exported.
+      - title: Run the CloudFare Usage Report
+        objective: This test is to confirm that the CloudFare Usage Report audits user actions and can be filtered and downloaded.
+        steps: |-
+          **GIVEN** user actions have been performed on the environment
+          **AND** the CloudFare Reporting module is displayed
+          **WHEN** the user runs, filters and downloads the CloudFare Usage Report
+          **THEN** the report shows the audited user actions for the filter
+          **AND** the report can be downloaded
+        expected: The CloudFare Usage Report audits user actions, filters and downloads.
+      - title: Run the Reports end-to-end flow
+        objective: This test is to confirm that audit data flows end to end into a CloudFare report.
+        steps: |-
+          **GIVEN** device audit data has been generated and processed by CloudFare
+          **WHEN** the user runs the corresponding report
+          **THEN** the report reflects the processed audit data end to end
+        expected: A CloudFare report reflects the processed device audit data end to end.
+
+  - path: [CloudFare, Functional, Ticket Editor]
+    cases:
+      - title: Create, edit and copy a ticket layout
+        objective: This test is to confirm that a user can create, edit and copy a ticket layout.
+        steps: |-
+          **GIVEN** a user is signed into CloudFare with the Ticket Editor available
+          **WHEN** the user creates, edits or copies a ticket layout
+          **THEN** each change is saved to the ticket layout
+        expected: Ticket layouts can be created, edited and copied.
+      - title: Add ticket elements to a template
+        objective: This test is to confirm that a user can add ticket elements to a ticket template.
+        steps: |-
+          **GIVEN** a ticket template is loaded in the Ticket Editor preview
+          **WHEN** the user adds ticket elements
+          **THEN** the elements are added to the template
+        expected: Ticket elements are added to the template.
+      - title: Configure a ticket for different devices
+        objective: This test is to confirm that a user can configure a ticket layout for different device types.
+        steps: |-
+          **GIVEN** a user is in the Ticket Editor
+          **WHEN** the user configures a ticket for different device types
+          **THEN** the ticket layout is saved per device type
+        expected: A ticket layout is configured per device type.
+      - title: Configure a change ticket
+        objective: This test is to confirm that a user can configure a change ticket.
+        steps: |-
+          **GIVEN** a user is in the Ticket Editor
+          **WHEN** the user configures a change ticket
+          **THEN** the change ticket configuration is saved
+        expected: A change ticket is configured and saved.
+      - title: Configure a product on a ticket
+        objective: This test is to confirm that a user can configure a product on a ticket.
+        steps: |-
+          **GIVEN** a user is in the Ticket Editor
+          **WHEN** the user configures a product on a ticket
+          **THEN** the product configuration is saved to the ticket
+        expected: A product is configured on the ticket.
+      - title: Group a set of ticket layouts
+        objective: This test is to confirm that a user can group a set of ticket layouts.
+        steps: |-
+          **GIVEN** a user is in the Ticket Editor with ticket layouts available
+          **WHEN** the user groups a set of ticket layouts
+          **THEN** the ticket layout group is saved
+        expected: A set of ticket layouts is grouped and saved.
+      - title: Add a barcode to a ticket
+        objective: This test is to confirm that a user can add a barcode to a ticket layout.
+        steps: |-
+          **GIVEN** a user has access to the Ticket Editor in CloudFare
+          **WHEN** the user adds a barcode to a ticket
+          **THEN** the barcode is added to the ticket layout
+        expected: A barcode is added to the ticket layout.
+      - title: Configure payment-card fields on a ticket
+        objective: This test is to confirm that a user can configure the payment-card fields on a ticket (unique reference, obfuscated card number, printed serial number, card start and expiry dates).
+        steps: |-
+          **GIVEN** a user has access to the Ticket Editor in CloudFare
+          **WHEN** the user adds the payment-card fields to a ticket (unique reference number, obfuscated card number, printed serial number, card start date, expiry date)
+          **THEN** each payment-card field is added to the ticket layout
+        expected: The payment-card fields are configured on the ticket layout.
+
+  - path: [CloudFare, Functional, Station Manager]
+    cases:
+      - title: Create a rail line and station
+        objective: This test is to confirm that a user can add a new rail line and create a station in Station Manager.
+        steps: |-
+          **GIVEN** a user is on the Station Management Network View page
+          **WHEN** the user adds a new rail line and creates a station
+          **THEN** the rail line and station are added to the network
+        expected: A new rail line and station are added to the network.
+      - title: Delete or change a station
+        objective: This test is to confirm that a user can delete or change a station in Station Manager.
+        steps: |-
+          **GIVEN** a user is on the Station Management Network View page
+          **WHEN** the user deletes or changes a station
+          **THEN** the change is applied to the network
+        expected: A station is deleted or changed in the network.
+      - title: Add a branch
+        objective: This test is to confirm that a user can add a branch in Station Manager.
+        steps: |-
+          **GIVEN** a user is on the Station Management Network View page
+          **WHEN** the user adds a branch
+          **THEN** the branch is added to the network
+        expected: A branch is added to the network.

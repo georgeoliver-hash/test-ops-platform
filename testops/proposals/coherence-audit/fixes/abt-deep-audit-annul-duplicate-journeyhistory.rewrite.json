@@ -1,0 +1,917 @@
+[
+  {
+    "id": 4102816,
+    "title": "Duplicate Detection — a repeated same-stage tap is not charged again",
+    "preface": "This test is to confirm that a repeat tap of the same boarding stage within the duplicate window is not charged again, even after an intervening same-stage retail transaction.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail (Model 1 / KFT ticket) transaction on the device at 09:02",
+        "expected": "**THEN** in Journey History the 09:00 tap is charged the full £2.30\n**AND** the 09:02 retail transaction is recorded at its own ticket price"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:06, inside the duplicate window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:06 tap is not charged again (day total stays £2.30)\n**AND** the repeat tap is flagged duplicate (icon + Show More detail) — **UNCONFIRMED** exact representation, not necessarily a separate \"£0.00 Duplicate\" row (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258,FBD-100690 para 469,FBD-100690 para 472",
+    "citations": [
+      "FBD-100690 para 469",
+      "FBD-100690 para 472"
+    ],
+    "change_note": "Relocated inline FBD-100690 citations to Refs; reframed the duplicate-window value as an assumed-knowledge/example-per-config note (per Q14's generalised resolution) instead of a blocking UNCONFIRMED; trimmed the representation marker to a short tag, kept the gap Q21 substance (icon/Show-More vs a separate row is still unconfirmed).",
+    "gaps": [
+      "Exact on-screen representation of a duplicate tap (icon + Show More vs a distinct '£0.00 Duplicate' row) is not described in FBD-100690 — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102817,
+    "title": "Duplicate Detection — an out-of-order (earlier-timestamp) repeat tap is still a duplicate",
+    "preface": "This test is to confirm that a later same-stage tap, and a buffered tap that uploads out of order with an earlier timestamp, are both treated as duplicates of the original within the duplicate window.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today\n**AND** a second validator was briefly offline (or its clock was skewed) so a tap it buffered uploads late, carrying a timestamp earlier than taps already processed",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02\n**AND** you tap again at Casement Park (10A IN) at 09:06",
+        "expected": "**THEN** the 09:06 tap is not charged again (day total stays £2.30)\n**AND** it is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)"
+      },
+      {
+        "content": "**WHEN** the buffered same-stage tap uploads with an 08:58 timestamp — earlier than the 09:00 original but arriving after it (out of order), inside the window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 08:58 out-of-order tap is not charged (day total stays £2.30)\n**AND** it is flagged a duplicate against the 09:00 tap — **UNCONFIRMED**: spec does not state how out-of-order timestamps are ordered/linked for duplicate detection (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258,FBD-100690 para 469,FBD-100690 para 472",
+    "citations": [
+      "FBD-100690 para 469",
+      "FBD-100690 para 472"
+    ],
+    "change_note": "Relocated inline FBD-100690 citations to Refs; reframed the duplicate-window value; trimmed both representation UNCONFIRMED markers to short tags, kept their substance (gap Q21).",
+    "gaps": [
+      "Exact representation of a duplicate tap is unconfirmed (gap Q21).",
+      "How out-of-order/skewed timestamps are ordered and linked to the original tap for duplicate detection is not stated in FBD-100690 — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102818,
+    "title": "Duplicate Detection — interleaved retail transactions do not reset the duplicate reference",
+    "preface": "This test is to confirm that every same-stage tap after the first within the window is treated as a duplicate regardless of interleaved retail transactions.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02\n**AND** you tap again at Casement Park (10A IN) at 09:05",
+        "expected": "**THEN** the 09:05 tap is not charged again and is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)"
+      },
+      {
+        "content": "**WHEN** you make another same-stage retail transaction at 09:07\n**AND** you tap again at Casement Park (10A IN) at 09:10\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:10 tap is not charged and is flagged a duplicate of the same 09:00 tap\n**AND** the day total is unchanged at £2.30"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258,FBD-100690 para 472",
+    "citations": [
+      "FBD-100690 para 472"
+    ],
+    "change_note": "Relocated inline FBD-100690 citation to Refs; reframed the duplicate-window value; trimmed the representation UNCONFIRMED marker, kept the gap Q21 substance.",
+    "gaps": [
+      "Exact representation of a duplicate tap is unconfirmed (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102819,
+    "title": "Duplicate Detection — a same-stage repeat tap after a different-stage retail is still a duplicate",
+    "preface": "This test is to confirm that a same-stage repeat tap within the window is treated as a duplicate even when a retail transaction from a different stage occurred in between.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a retail transaction from a different stage (Slievegallion Drive, 10A IN) at 09:02",
+        "expected": "**THEN** in Journey History the 09:00 tap is charged the full £2.30"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:06\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:06 same-stage tap is not charged and is flagged a duplicate of the 09:00 tap — **UNCONFIRMED** exact representation (gap Q21)\n**AND** the day total is £2.30"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258",
+    "citations": [],
+    "change_note": "Reframed the duplicate-window value (assumed-knowledge/example-per-config, per Q14); no inline FBD citation was present in this case to relocate — trimmed the representation marker wording only.",
+    "gaps": [
+      "Exact representation of a duplicate tap is unconfirmed (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102820,
+    "title": "Duplicate Detection — a same-stage tap outside the window is a genuine new tap",
+    "preface": "This test is to confirm that a same-stage tap beyond the duplicate window is treated as a genuine second tap and charged toward the daily cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02",
+        "expected": "**THEN** in Journey History the 09:00 tap is charged the full £2.30"
+      },
+      {
+        "content": "**WHEN** you tap again at Casement Park (10A IN) at 09:16, beyond the duplicate window\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:16 tap is a genuine second tap, not flagged a duplicate\n**AND** it is charged £1.70 to complete the £4.00 Metro cap\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258",
+    "citations": [],
+    "change_note": "Reframed the duplicate-window value (assumed-knowledge/example-per-config, per Q14). No other change — rest of the case was already terse and grounded.",
+    "gaps": []
+  },
+  {
+    "id": 4102821,
+    "title": "Duplicate Detection — a retail transaction is never flagged as a duplicate of a tap",
+    "preface": "This test is to confirm that a retail transaction is recorded on its own and is not cross-flagged as a duplicate of a Tap-On-Only tap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail (Model 1 / KFT ticket) transaction at 09:06, inside the window",
+        "expected": "**THEN** in Journey History the 09:00 tap is charged the full £2.30\n**AND** the 09:06 retail transaction is recorded at its own ticket price"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement",
+        "expected": "**THEN** the retail transaction is not flagged a duplicate of the 09:00 tap"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258",
+    "citations": [],
+    "change_note": "Reframed the duplicate-window value (assumed-knowledge/example-per-config, per Q14). No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102822,
+    "title": "Duplicate Detection — a later tap from a different boarding stage is a genuine new tap",
+    "preface": "This test is to confirm that duplicate detection is per boarding stage, so a tap from a different stage within the window charges normally toward the cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify\n**AND** the back-office duplicate window (\"Same Location Time\") is 15 minutes — example per current config; tester confirms the live value\n**AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)\n**AND** the card has no prior taps today",
+    "steps": [
+      {
+        "content": "**WHEN** you tap at Casement Park (10A IN) at 09:00\n**AND** you make a same-stage retail transaction at 09:02",
+        "expected": "**THEN** in Journey History the 09:00 Casement Park tap is charged the full £2.30"
+      },
+      {
+        "content": "**WHEN** you tap at Slievegallion Drive (10A IN) at 09:06, a different boarding stage\n**AND** you run the EndOfDay settlement",
+        "expected": "**THEN** the 09:06 Slievegallion Drive tap is a genuine second tap, not flagged a duplicate\n**AND** it is charged £1.70 to complete the £4.00 Metro cap\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24258",
+    "citations": [],
+    "change_note": "Reframed the duplicate-window value (assumed-knowledge/example-per-config, per Q14). No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102823,
+    "title": "Journey History — an annulled (cancelled) journey remains visible",
+    "preface": "This test is to confirm that a journey cancelled by an ETM annulment is retained and shown in Journey History after settlement.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its customer account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a Metro-zone journey is available to tap (e.g. 10b (IN) High School → Cherry Hill, ref.20, single £2.30, Metro daily cap £4.00)\n**AND** cancellation is ETM-annul only (most recent tap, ≤ 1 min, boarding stage unchanged); no portal cancel action exists",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card to make the Metro journey\n**AND** you annul that tap on the ETM within 1 minute (most recent tap, boarding stage unchanged)",
+        "expected": "**THEN** the tap shows cancelled on the device"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day (04:00–03:59)\n**AND** you open the card's Journey History",
+        "expected": "**THEN** Journey History still shows a single journey row for that tap\n**AND** the row is marked cancelled — **UNCONFIRMED** exact \"**\" indicator; not a spec requirement, reads as a defect-fix criterion (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 204,FBD-100662 para 264",
+    "citations": [
+      "FBD-100662 para 204",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; removed self-referential provenance prose (\"the original wording was cross-surface invention and has been removed\" — changelog text, not test content); compressed the '**' indicator marker to a short tag, kept the gap Q21 substance.",
+    "gaps": [
+      "Exact \"**\" cancelled-indicator and the retain-after-cancel behaviour read as a defect-fix acceptance criterion, not a stated requirement — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102827,
+    "title": "Journey History — correcting a non-cancelled journey keeps it active at its new fare (CR122)",
+    "preface": "This test is to confirm the proposed correction on a normal (non-cancelled) journey recalculates the fare and keeps it active (CR122 — unconfirmed proposal).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a normal (non-cancelled) Metro journey exists for today (e.g. 10b (IN) High School → City Hall, ref.35, £3.10)\n**AND** **UNCONFIRMED** — CR122 alighting-stop correction, UX TBD; \"Update Stop list\" screen name not in spec; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you correct the alighting stop (CR122) to a different onward stop on the same route and confirm\n**AND** you run the EndOfDay settlement for the operating day\n**AND** you re-open the card's Journey History",
+        "expected": "**THEN** Journey History shows the journey with the corrected stop charged its recalculated fare\n**AND** it is not marked as cancelled\n**AND** all of the above is **UNCONFIRMED** (CR122 proposal)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 691,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; trimmed the CR122 precondition to a short tag, kept the UNCONFIRMED substance.",
+    "gaps": []
+  },
+  {
+    "id": 4102833,
+    "title": "Journey History — a settled TOO journey offers onward stops for correction (CR122)",
+    "preface": "This test is to confirm that the proposed alighting-stop correction offers the onward stops for a settled Ulsterbus TOO journey (CR122 — unconfirmed proposal; screen mechanics not in spec).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Ulsterbus TOO journey exists on route 72b (IN) boarding from Greys Farm\n**AND** **UNCONFIRMED** — CR122 correction UX TBD; spec says only that selectable stops are those after the boarding stop on the same route — the screen name, \"No options\" text, exact stop count and fare-based filtering are not in any requirement; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey (CR122 — screen mechanics unconfirmed)",
+        "expected": "**THEN** the onward stops after the boarding stop on the same route are offered for selection — **UNCONFIRMED** (CR122 proposal)\n**AND** the specific count (\"14 stops\"), the \"No options\" wording, and the zero-fare exclusion are **UNCONFIRMED** — not in requirements (gap Q14, Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; compressed the CR122/filter-rules precondition prose, kept the gap Q14/Q21 substance unchanged.",
+    "gaps": [
+      "The exact onward-stop count (\"14 stops\"), \"No options\" wording, and zero-fare exclusion are invented UI specifics not in any requirement — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102834,
+    "title": "Journey History — a settled TOO journey from another stage offers onward stops (CR122)",
+    "preface": "This test is to confirm the proposed alighting-stop correction offers onward stops for a settled TOO journey from a different boarding stage (CR122 unconfirmed; \"No options\"/count mechanics not in specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Ulsterbus TOO journey exists on route 72b (IN) boarding from Moygashel Busby Shop\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop list\", \"No options\", the \"15 stops\" count and fare filtering are not spec terms (gap Q14, Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey (CR122 — mechanics unconfirmed)",
+        "expected": "**THEN** the onward stops after the boarding stop on the same route are offered — **UNCONFIRMED**\n**AND** the \"15 stops\" count, \"No options\" wording and zero-fare exclusion are **UNCONFIRMED** (gap Q14, Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; body prose was already fairly terse — no other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102835,
+    "title": "Journey History — two settled ref.60 taps from the same stage each offer onward stops (CR122)",
+    "preface": "This test is to confirm the proposed correction offers onward stops for each of two settled ref.60 taps from the same boarding stage (CR122 unconfirmed; \"No options\" mechanics not in specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** two settled TOO ref.60 taps exist on route 72b (IN) from the same boarding stage (e.g. Moygashel Busby Shop → Armagh Bus Centre, ref.60, £4.50)\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop list\" and \"No options\" are not spec terms (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for each of the two taps (CR122 — mechanics unconfirmed)",
+        "expected": "**THEN** each offers the onward stops after the boarding stop on the same route — **UNCONFIRMED**\n**AND** neither shows \"No options\" — **UNCONFIRMED** (not a spec term; gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102836,
+    "title": "Journey History — re-opening the correction always offers the onward stops (CR122)",
+    "preface": "This test is to confirm the proposed correction offers onward stops on every open, not intermittently (CR122 unconfirmed; reads as a defect-fix acceptance test, not a requirement).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled TOO journey exists on route 72b (IN) (e.g. Greys Farm boarding)\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop list\"/\"No options\"/the intermittent-population defect are not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open, close and re-open the journey's alighting-stop correction several times",
+        "expected": "**THEN** the onward stops are offered on every open — **UNCONFIRMED**\n**AND** it never shows \"No options\" — **UNCONFIRMED** (defect-fix criterion, not a requirement; gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102837,
+    "title": "Journey History — no onward stops offered when boarding is the last stop on the route (CR122)",
+    "preface": "This test is to confirm the proposed correction offers no stops only when there are no onward stops after the boarding stop (CR122 unconfirmed; \"No options\" is not a spec term).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled TOO journey exists boarding from the last stop on the route (e.g. 72b (IN) boarding from Armagh Bus Centre, the final stop)\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"No options\" is not a spec term; the fare-bearing qualifier is invented — para 693 says only \"after the boarding stop on the same route\" (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** no onward stops are offered, because there are no stops after the boarding stop on the route — **UNCONFIRMED**\n**AND** the exact \"No options\" wording and the \"with a fare\" qualifier are **UNCONFIRMED** (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102838,
+    "title": "Journey History — correction offers stops for the journey's operator (CR122)",
+    "preface": "This test is to confirm the proposed correction returns onward stops for the journey's correct operator (CR122 unconfirmed; the operator-match rule is not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled TOO journey exists on route 72b (IN) from Greys Farm, whose operator is Ulsterbus\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; the operator-match filtering rule (correct operator returns stops, mismatched returns none) is NOT in any requirement — reads as an implementation/API detail; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the alighting-stop correction for the journey (CR122 — mechanics unconfirmed)",
+        "expected": "**THEN** the onward stops after the boarding stop on the same route are offered — **UNCONFIRMED**"
+      },
+      {
+        "content": "**WHEN** you open the correction using a mismatched operator id (negative case)",
+        "expected": "**THEN** no stops are returned — **UNCONFIRMED**: the operator-match rule is not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24397,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; trimmed the operator-match precondition prose, kept the gap Q21 substance.",
+    "gaps": []
+  },
+  {
+    "id": 4102824,
+    "title": "Journey History — an annulled £0.00 journey is still visible",
+    "preface": "This test is to confirm that a journey charged £0.00 (daily cap already reached) still appears in Journey History after it is annulled.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** the Metro day has already reached the £4.00 cap, so the next Metro tap is charged £0.00 (e.g. a further 10b (IN) High School → Cherry Hill tap)\n**AND** cancellation is ETM-annul only (most recent tap, ≤ 1 min, boarding stage unchanged); no portal cancel action exists",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the card for that capped Metro journey (charged £0.00)\n**AND** you annul that tap on the ETM within 1 minute",
+        "expected": "**THEN** the £0.00 tap shows cancelled on the device"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you open the card's Journey History",
+        "expected": "**THEN** Journey History still shows the £0.00 journey\n**AND** the row is marked cancelled — **UNCONFIRMED** \"**\" indicator / retain-after-cancel behaviour not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 204,FBD-100662 para 264",
+    "citations": [
+      "FBD-100662 para 204",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102825,
+    "title": "Journey History — correcting the alighting stop on a cancelled tap keeps it visible (CR122)",
+    "preface": "This test is to confirm the proposed alighting-stop correction leaves a cancelled tap visible and still cancelled (CR122 — unconfirmed proposal).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) Metro tap exists for today (e.g. 10b (IN) High School → Cherry Hill, ref.20)\n**AND** **UNCONFIRMED** — CR122 alighting-stop correction, UX TBD; \"Update Stop list\" screen name not in spec; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the cancelled journey's alighting-stop correction (CR122 — screen mechanics unconfirmed)\n**AND** you select another onward stop on the same route and confirm",
+        "expected": "**THEN** the journey's alighting stop shows the corrected stop — **UNCONFIRMED** (CR122 proposal)"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you re-open the card's Journey History",
+        "expected": "**THEN** Journey History shows a single journey with the corrected stop\n**AND** it is still marked cancelled — **UNCONFIRMED** \"**\" indicator / retention behaviour (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs; trimmed the CR122 precondition to a short tag, kept the substance (\"Update Stop list\" name invented and removed).",
+    "gaps": []
+  },
+  {
+    "id": 4102826,
+    "title": "Journey History — a zero-fare correction on a cancelled tap leaves one visible row (CR122)",
+    "preface": "This test is to confirm the proposed alighting-stop correction that recalculates a cancelled tap to £0.00 does not hide or duplicate the row (CR122 — unconfirmed proposal).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) Metro tap exists for today\n**AND** **UNCONFIRMED** — CR122 alighting-stop correction, UX TBD; \"Update Stop list\" screen name not in spec; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you correct the alighting stop (CR122) so the recalculated fare is £0.00\n**AND** you confirm the change",
+        "expected": "**THEN** the correction is accepted for the cancelled journey — **UNCONFIRMED** (CR122 proposal)"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you re-open the card's Journey History",
+        "expected": "**THEN** Journey History still shows a single cancelled journey for that tap\n**AND** exactly one journey row exists for it — **UNCONFIRMED** retention behaviour (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102828,
+    "title": "Journey History — a cancelled journey stays cancelled after a stop correction and further settlement (CR122)",
+    "preface": "This test is to confirm that a proposed stop correction does not flip a cancelled journey back to active across settlements (CR122 — unconfirmed proposal).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) Metro tap whose alighting stop has already been corrected via CR122 exists for today\n**AND** **UNCONFIRMED** — CR122 correction is a proposal, UX TBD; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you run a further EndOfDay settlement for the operating day\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the journey is still marked cancelled\n**AND** it remains visible in Journey History — **UNCONFIRMED** \"**\" indicator / retention behaviour, and CR122 correction precondition (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102829,
+    "title": "Journey History — annulling one journey does not affect other journeys",
+    "preface": "This test is to confirm that cancelling one journey by ETM annulment leaves other journeys of the day unaffected.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** two Metro journeys exist on the same day (e.g. two 10b (IN) High School → Cherry Hill taps)\n**AND** cancellation is ETM-annul only (most recent tap, ≤ 1 min, boarding stage unchanged); no portal cancel action exists",
+    "steps": [
+      {
+        "content": "**WHEN** you annul one of the two taps on the ETM (most recent, within 1 minute, boarding stage unchanged)\n**AND** you run the EndOfDay settlement for the operating day\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the annulled journey is marked cancelled — **UNCONFIRMED** \"**\" indicator (gap Q21)\n**AND** the other journey is shown as not cancelled"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 204",
+    "citations": [
+      "FBD-100662 para 204"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102830,
+    "title": "Journey History — cancelling a charged journey refunds it and retains the record",
+    "preface": "This test is to confirm that cancelling a settled charged journey produces a refund and keeps the record in Journey History.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Metro journey charged £2.30 exists (e.g. 10b (IN) High School → Cherry Hill, ref.20)\n**AND** the cancellation/refund mechanism is **UNCONFIRMED** — annulment is DEVICE-only and time-limited; a portal refund exists as a \"normal mechanism\" but no portal \"cancel a settled journey\" action is specified; confirm the intended mechanism (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you cancel/refund the settled journey (mechanism unconfirmed — see preconditions)\n**AND** you run the EndOfDay settlement for the operating day",
+        "expected": "**THEN** a refund of £2.30 for the journey is recorded on the account's transactions — **UNCONFIRMED** (refund-on-cancel of a settled journey not specified; the normal portal refund is noted only in passing)"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** Journey History shows a single cancelled journey for it — **UNCONFIRMED** retention/indicator behaviour (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 204,FBD-100662 para 690",
+    "citations": [
+      "FBD-100662 para 204",
+      "FBD-100662 para 690"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; compressed the mechanism-unconfirmed precondition prose, kept the substance (device-only annulment vs. a separately-noted portal refund mechanism, no confirmed 'cancel a settled journey' portal action).",
+    "gaps": []
+  },
+  {
+    "id": 4102831,
+    "title": "Journey History — correcting the stop on a refunded cancelled tap keeps one record and raises no further refund (CR122)",
+    "preface": "This test is to confirm that a proposed correction on an already-refunded cancelled tap keeps a single record and raises no further refund (CR122 — unconfirmed proposal).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Metro journey that was cancelled and refunded £2.30 exists\n**AND** **UNCONFIRMED** — both the cancel/refund of a settled journey (see C4102830) and the CR122 alighting-stop correction are unconfirmed; \"Update Stop list\" removed; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you correct the alighting stop (CR122) and confirm\n**AND** you run the EndOfDay settlement for the operating day",
+        "expected": "**THEN** no additional refund is made on the account — **UNCONFIRMED** (CR122 recalculation of an already-refunded cancelled tap is not specified)"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** Journey History shows a single cancelled journey with the corrected stop — **UNCONFIRMED** (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102832,
+    "title": "Journey History — a cancelled transfer journey remains visible",
+    "preface": "This test is to confirm that a cancelled free-transfer leg charged £0.00 stays visible in Journey History.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a Metro transfer leg accepted as a free transfer (Metro Transfer Zone 512), charged £0.00 with a non-zero initial fare, has been cancelled by ETM annulment\n**AND** \"Metro Transfer Zone 512\" is **UNCONFIRMED** — not found in the cited specs; confirm against the fares/topology config (gap Q14)",
+    "steps": [
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you open the card's Journey History",
+        "expected": "**THEN** Journey History shows a single cancelled transfer journey\n**AND** it is marked cancelled — **UNCONFIRMED** \"**\" indicator (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24061,FBD-100662 para 204,FBD-100662 para 264",
+    "citations": [
+      "FBD-100662 para 204",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102845,
+    "title": "Journey History — a cancelled £0.00 journey stays visible and correctable (CR122)",
+    "preface": "This test is to confirm a cancelled £0.00 journey remains visible and correctable (CR122, fare filter, and \"**\" indicator are unconfirmed).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) journey charged £0.00 exists\n**AND** **UNCONFIRMED** — CR122 correction proposal, UX TBD; \"**\" indicator and fare>0 filter not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** the journey is still shown, marked cancelled — **UNCONFIRMED** indicator\n**AND** it is correctable — **UNCONFIRMED** (CR122)\n**AND** the fare>0 filter behaviour is **UNCONFIRMED** (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 264,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 264",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102941,
+    "title": "Late Taps — a tap received within the 14-day window is processed for its travel date",
+    "preface": "This test is to confirm that a tap held by a comms failure and received within the maximum late-data period is processed for its original travel date.",
+    "preconds": "**GIVEN** the maximum late-data period is 14 days\n**AND** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a tap was made on an in-service ETM but held/quarantined by a comms failure",
+    "steps": [
+      {
+        "content": "**WHEN** the ABT system receives the held tap within 14 days of the tap date (e.g. it arrives on day 10)\n**AND** the next settlement runs",
+        "expected": "**THEN** in the card's Journey History the tap is processed against its travel date\n**AND** it is shown as a settled journey, marked \"Late Tap\" on the portal"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100389 para 229,FBD-100389 para 233,FBD-100389 para 278",
+    "citations": [
+      "FBD-100389 para 229",
+      "FBD-100389 para 233",
+      "FBD-100389 para 278"
+    ],
+    "change_note": "Relocated inline FBD-100389 citations to Refs (case previously had Refs: None). No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4102942,
+    "title": "Late Taps — a tap received beyond the 14-day window is not accepted",
+    "preface": "This test is to confirm that a tap received beyond the maximum late-data period is not accepted for processing.",
+    "preconds": "**GIVEN** the maximum late-data period is 14 days\n**AND** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a tap was made on an in-service ETM but held beyond the window",
+    "steps": [
+      {
+        "content": "**WHEN** the ABT system receives the tap more than 14 days after the tap date",
+        "expected": "**THEN** the tap is not accepted for processing\n**AND** no journey or charge is created for it — **GAP**: exact reject label beyond 14 days not specified; not to be confused with Declined Reason 1 (Card Expired), which is card expiry, not late-data expiry (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100389 para 233,FBD-100658 para 210",
+    "citations": [
+      "FBD-100389 para 233",
+      "FBD-100658 para 210"
+    ],
+    "change_note": "Relocated inline FBD-100389/FBD-100658 citations to Refs; compressed the GAP marker to a short tag, kept its substance (reject label unspecified; not to be confused with Declined Reason 1).",
+    "gaps": [
+      "Exact reject behaviour/label for a tap beyond the 14-day late-data window is not specified — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102943,
+    "title": "Late Taps — capping is applied retrospectively to a late tap",
+    "preface": "This test is to confirm that a late tap within the window is retrospectively treated as the last tap of its travel day and the day's cap total is corrected.",
+    "preconds": "**GIVEN** the maximum late-data period is 14 days\n**AND** active capping rules are configured (e.g. Metro £4.00, ref.60 £7.20)\n**AND** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** the target day already has live taps of that cap group",
+    "steps": [
+      {
+        "content": "**WHEN** a late tap for that day is received within the window\n**AND** the settlement reconciliation runs",
+        "expected": "**THEN** the late tap is retrospectively regarded as the last tap of that travel day\n**AND** in the day's Journey History the capping rules are re-applied so the day's charge total is corrected to the cap"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100389 para 226,FBD-100389 para 233,FBD-100389 paras 263-288",
+    "citations": [
+      "FBD-100389 para 226",
+      "FBD-100389 para 233",
+      "FBD-100389 paras 263-288"
+    ],
+    "change_note": "Relocated inline FBD-100389 citations to Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4102944,
+    "title": "Late Taps — a duplicate of an already-processed tap is disregarded",
+    "preface": "This test is to confirm that a duplicate of a tap already processed by the ABT system is disregarded and creates no second journey or charge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a tap has already been processed by the ABT system for the card",
+    "steps": [
+      {
+        "content": "**WHEN** the ABT system receives a duplicate of that tap",
+        "expected": "**THEN** the duplicate tap is disregarded for journey creation, capping and charging\n**AND** no second journey or charge appears in Journey History (the duplicate is indicated via an icon + Show More detail)"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100690 para 469,FBD-100690 para 472",
+    "citations": [
+      "FBD-100690 para 469",
+      "FBD-100690 para 472"
+    ],
+    "change_note": "Relocated inline FBD-100690 citations to Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4103485,
+    "title": "Late Taps — taps held on a device are processed and capped once uploaded",
+    "preface": "This test is to confirm that taps held on a device and uploaded late are processed and capped retrospectively for their travel day.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** taps were made on an ETM that is not communicating with the back office and are held on the device — **GAP**: a specific \"ETM blocked from the back office\" state that holds and later releases taps is not described in the cited specs (which describe taps held by comms failure or quarantine); confirm the exact device state (gap Q21)\n**AND** example journeys: two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps (£4.50, ref.60) held while the device is not communicating",
+    "steps": [
+      {
+        "content": "**WHEN** the device resumes communication and the held taps are uploaded within 14 days\n**AND** the EndOfDay settlement runs",
+        "expected": "**THEN** in Journey History the held taps are processed for their travel day\n**AND** the applicable daily cap is applied (ref.60 cap £7.20)"
+      }
+    ],
+    "action": "reword",
+    "refs": "UB-TOO,FBD-100389 para 226,FBD-100389 para 229,FBD-100389 para 233,FBD-100389 paras 263-288",
+    "citations": [
+      "FBD-100389 para 226",
+      "FBD-100389 para 229",
+      "FBD-100389 para 233",
+      "FBD-100389 paras 263-288"
+    ],
+    "change_note": "Relocated inline FBD-100389 citations to Refs; compressed the GAP marker, kept its substance.",
+    "gaps": [
+      "A specific 'ETM blocked from the back office' held/release state is not described in the cited specs — confirm the exact device state (gap Q21)."
+    ]
+  },
+  {
+    "id": 4103486,
+    "title": "Late Taps — an intraday late tap is capped with the day's live taps",
+    "preface": "This test is to confirm that a late tap arriving the same day before settlement is combined with the day's live taps and capped as one day.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** the day has live taps plus further taps held for late arrival\n**AND** example journeys: one live 72b (IN) Moygashel Busby Shop → Armagh Bus Centre tap plus a held tap on the same route and day",
+    "steps": [
+      {
+        "content": "**WHEN** the held taps arrive later the same day before settlement\n**AND** the EndOfDay settlement runs",
+        "expected": "**THEN** in Journey History the late taps are combined with the day's live taps\n**AND** the daily cap is applied across all of them"
+      }
+    ],
+    "action": "reword",
+    "refs": "UB-TOO,FBD-100389 para 226,FBD-100389 paras 263-288",
+    "citations": [
+      "FBD-100389 para 226",
+      "FBD-100389 paras 263-288"
+    ],
+    "change_note": "Relocated inline FBD-100389 citations to Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4103487,
+    "title": "Late Taps — a tap arriving after settlement is reconciled into the correct travel day",
+    "preface": "This test is to confirm that a late tap arriving after a day has settled is reconciled into that travel day and its cap total corrected.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a day that has already run EndOfDay settlement\n**AND** example: a 72b (IN) Greys Farm → Armagh Bus Centre tap for that day arriving after settlement (within 14 days)",
+    "steps": [
+      {
+        "content": "**WHEN** the late tap arrives after settlement\n**AND** the next settlement reconciliation runs",
+        "expected": "**THEN** in Journey History the late tap is reconciled against its correct travel day\n**AND** that day's cap total is corrected to include it"
+      }
+    ],
+    "action": "reword",
+    "refs": "UB-TOO,FBD-100389 para 226,FBD-100389 paras 263-288",
+    "citations": [
+      "FBD-100389 para 226",
+      "FBD-100389 paras 263-288"
+    ],
+    "change_note": "Relocated inline FBD-100389 citations to Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4103488,
+    "title": "Late Taps — a late annulment leaves the annulled tap free and the rest capped",
+    "preface": "This test is to confirm that a batch of held late taps including an annulment settles with the annulled tap charged £0.00 and the remaining taps capped.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** held late taps that include a tap annulled on the ETM (annulment is device-only: most recent tap, within 1 minute, boarding stage unchanged)\n**AND** example journeys: two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps held, one of which was annulled on the device",
+    "steps": [
+      {
+        "content": "**WHEN** the held taps and the annulment are uploaded within 14 days\n**AND** the EndOfDay settlement runs",
+        "expected": "**THEN** the annulled tap is charged £0.00 and shown cancelled in Journey History — **GAP**: exact settlement representation of an annulled tap among late taps not spelled out; confirm live (gap Q21)\n**AND** the remaining late taps are capped retrospectively"
+      }
+    ],
+    "action": "reword",
+    "refs": "UB-TOO,FBD-100662 para 204,FBD-100389 para 226,FBD-100389 paras 263-288",
+    "citations": [
+      "FBD-100662 para 204",
+      "FBD-100389 para 226",
+      "FBD-100389 paras 263-288"
+    ],
+    "change_note": "Relocated inline FBD-100662/FBD-100389 citations to Refs; compressed the GAP marker, kept its substance.",
+    "gaps": [
+      "Exact settlement representation of an annulled tap among a batch of late taps is not spelled out — confirm live (gap Q21)."
+    ]
+  },
+  {
+    "id": 4102839,
+    "title": "Alighting-Stop Correction — fare-based filter of offered stops (CR122)",
+    "preface": "This test is to confirm the proposed correction offers only appropriate onward stops (CR122 — unconfirmed proposal; filter rules not in the requirement specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Ulsterbus TOO journey exists on route 273 boarding from Newbuildings Primary School\n**AND** **UNCONFIRMED** — CR122 correction UX TBD; \"Update Stop List\" section name not in spec; the fare-based filter rule is not in spec — para 693 says only \"stops after the boarding stop on the same route\"; confirm live (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey (CR122 — mechanics unconfirmed)",
+        "expected": "**THEN** the onward stops after the boarding stop are offered\n**AND** the specific \"fare greater than zero\" filter is **UNCONFIRMED** — not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs; compressed the repeated CR122/filter-rule precondition to a short tag, kept the gap Q21 substance.",
+    "gaps": []
+  },
+  {
+    "id": 4102840,
+    "title": "Alighting-Stop Correction — zero-fare transfer stops excluded (CR122)",
+    "preface": "This test is to confirm the proposed correction excludes zero-fare transfer stops (CR122 unconfirmed; the zero-fare exclusion rule is not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 from a stage that has several zero-fare transfer stops onward\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop List\" and the zero-fare exclusion are not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** whether zero-fare transfer stops are excluded is **UNCONFIRMED** — not in requirements; para 693 only limits selection to stops after the boarding stop on the same route (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102841,
+    "title": "Alighting-Stop Correction — positive-fare stops offered (CR122)",
+    "preface": "This test is to confirm the proposed correction offers valid onward stops (CR122 unconfirmed; the fare-based framing is not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 from a stage with onward stops\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop List\" removed; \"positive reference fare\" filter not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** the onward stops after the boarding stop on the same route are offered — **UNCONFIRMED**; the \"positive reference fare\" qualifier is not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102842,
+    "title": "Alighting-Stop Correction — selecting a stop updates the alighting stage and recalculates the fare (CR122)",
+    "preface": "This test is to confirm the proposed correction updates the alighting stage and recalculates the fare (CR122 unconfirmed; the recalculation itself IS specified).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 with a settled alighting stage to be corrected\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; \"Update Stop List\" removed. On the operator portal the new fare is shown before confirmation; the fare is then recalculated and caps updated — but the feature's live existence is unconfirmed (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you select an onward stop after the boarding stop on the same route\n**AND** you confirm the change (the new fare is shown first)",
+        "expected": "**THEN** the journey's alighting stage is updated to the selected stop\n**AND** the fare is recalculated and any affected caps updated\n**AND** all of the above is **UNCONFIRMED** (CR122 proposal; gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 691,FBD-100662 para 693,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102843,
+    "title": "Alighting-Stop Correction — zero-fare stop hidden while smallest positive-fare stop shown (CR122)",
+    "preface": "This test is to confirm the proposed correction's fare filter (CR122 unconfirmed; the fare>0 filter is not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 whose onward stops include a zero-fare stop and a smallest positive-fare stop\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; the fare>0 filter is not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** the fare>0 filter behaviour (zero-fare hidden, smallest positive shown) is **UNCONFIRMED** — not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102844,
+    "title": "Journey History — a £0.00 capped journey stays visible and correctable (CR122)",
+    "preface": "This test is to confirm a journey charged £0.00 by the daily cap remains visible and correctable (CR122 and its fare filter are unconfirmed).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a journey charged £0.00 because the daily cap was reached exists (e.g. a Metro tap after the £4.00 cap)\n**AND** **UNCONFIRMED** — CR122 correction proposal, UX TBD; fare>0 filter not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** the journey is still shown in Journey History\n**AND** it is correctable — **UNCONFIRMED** (CR122)\n**AND** the fare>0 filter behaviour is **UNCONFIRMED** — not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 264,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 264",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102846,
+    "title": "Journey History — a transfer journey charged £0.00 stays displayed and correctable (CR122)",
+    "preface": "This test is to confirm a transfer journey charged £0.00 remains displayed and correctable (correction (CR122), fare filter, and transfer icon are unconfirmed).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a journey accepted as a transfer and charged £0.00 exists\n**AND** **UNCONFIRMED** — CR122 correction proposal, UX TBD; the \"transfer icon\" and fare>0 filter are not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** the journey is still shown — **UNCONFIRMED** transfer icon\n**AND** it is correctable — **UNCONFIRMED** (CR122)\n**AND** the fare>0 filter behaviour is **UNCONFIRMED** (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 para 264,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 para 264",
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citations to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102847,
+    "title": "Alighting-Stop Correction — negative-fare stop excluded (CR122)",
+    "preface": "This test is to confirm the proposed correction excludes negative-fare anomalies (CR122 unconfirmed; the fare filter and the negative-fare data-anomaly scenario are not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 whose onward stops include one carrying a negative fare (data anomaly)\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; the fare>0 filter and the negative-fare anomaly premise are not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** whether a negative-fare stop is excluded is **UNCONFIRMED** — not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102848,
+    "title": "Alighting-Stop Correction — positive-fare transfer stops still offered (CR122)",
+    "preface": "This test is to confirm positive-fare transfer stops still appear (CR122 unconfirmed; the fare filter is not in the specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 whose onward stops include transfer stops carrying a positive fare\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; the fare-based filter is not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** whether positive-fare transfer stops still appear is **UNCONFIRMED** — the filter is not in requirements (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102849,
+    "title": "Alighting-Stop Correction — TVM-only positive-fare stops still offered (CR122)",
+    "preface": "This test is to confirm TVM-only positive-fare stops still appear, their exclusion being a separate known limitation (CR122 unconfirmed; both the fare filter and the TVM-only limitation are not in the requirement specs).",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a TOO journey exists on route 273 whose onward stops include TVM-only stops carrying a positive fare\n**AND** **UNCONFIRMED** — CR122 proposal, UX TBD; the fare filter and the \"TVM-only stops tracked separately\" limitation are not in requirements (gap Q21)",
+    "steps": [
+      {
+        "content": "**WHEN** you open the card's Journey History\n**AND** you open the alighting-stop correction for that journey",
+        "expected": "**THEN** whether TVM-only positive-fare stops still appear is **UNCONFIRMED** — not in requirements\n**AND** the reference to a separately-tracked TVM-only limitation is **UNCONFIRMED** — no such tracker cited (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "refs": "TODEV-24300,FBD-100662 §5.6 paras 691-693",
+    "citations": [
+      "FBD-100662 §5.6 paras 691-693"
+    ],
+    "change_note": "Relocated inline FBD-100662 citation to Refs. No other change.",
+    "gaps": []
+  },
+  {
+    "id": 4102947,
+    "title": "Deny List — a card is removed and re-enabled when its debt is recovered via any trigger",
+    "preface": "This test is to confirm that a card is removed from the Deny List and re-enabled for travel when its debt is recovered through any of the four recovery triggers.",
+    "preconds": "**GIVEN** the seeded ABT test card is on the Deny List with an outstanding debt\n**AND** you are signed in to the ABT Operator Portal on the Customers page",
+    "steps": [
+      {
+        "content": "**WHEN** the debt is recovered via one of the four triggers — passenger web-initiated, operator web-initiated, automated (per card-scheme rules), or tap-initiated (a tap by the already-denied card)\n**AND** you refresh the card on the Customers page",
+        "expected": "**THEN** the card is removed from the Deny List\n**AND** the card is re-enabled for future travel"
+      }
+    ],
+    "action": "reword",
+    "refs": "None",
+    "citations": [],
+    "change_note": "Fixed an internal inconsistency: the step previously bundled 'web-initiated (passenger OR operator)' as one trigger + automated + tap-initiated (worded as three), while the Expected summary said 'four channels' — split web-initiated into its two distinct actors (passenger, operator) so the step names four triggers explicitly and the count matches the summary throughout. No new behaviour asserted, just the same four already implied.",
+    "gaps": [],
+    "expected": "Debt recovery via any of the four triggers (passenger web-initiated, operator web-initiated, automated, tap-initiated) removes the card from the Deny List and re-enables travel."
+  }
+]

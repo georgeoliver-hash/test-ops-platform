@@ -1,0 +1,649 @@
+# HHD — Barcodes / Smartcard & Revenue Inspection / Non-Functional / Smoke  (suite 30285)
+# NEW consolidated coverage for the restructured **NEW** HHD Test Suite.
+# Grounded in: FBD-100483 (Integrated Barcode API / CR094), FBD-100167 + FBD-100317 (multi-use
+# barcodes, CR116), FBD-100716 + FBD-100651 (Revenue Inspection cEMV/RID, Glider TOO),
+# FBD-100266 (heartbeat), FBD-100359 (SaaS/offline).  Old-suite titles from 5446/13958/5608 anchor
+# the behaviours; regression themes are folded via Refs (see regression-register.md).
+#
+# DECISIONS baked in:
+#  - Modes {NIR-Rail, Glider} = TestRail Run Configurations, NOT sections. Shared behaviour authored once.
+#  - Single-Use Barcodes (CR094) = NIR-only leaf; Glider HHD does NOT do single-use (FBD-100483).
+#  - Revenue Inspection (cEMV/RID) authored for the GLIDER TOO live path only. NIR TOTO inspection is
+#    FUTURE scope (FBD-100690) — flagged @future in section notes, NOT authored here.
+#  - Inspection tap cannot be annulled; 30s no-card timeout; events 5008-5013 (FBD-100716).
+# DO NOT PUSH. DO NOT edit existing cases. Copy-into-new-suite only.
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+
+  # =====================================================================================
+  - path: [Functional, Single-Use Barcodes (NIR)]
+    # NIR-only (CR094). Glider excluded from single-use. Author to FBD-100483, NOT the legacy
+    # FBD-100317 online flow. Folds old 5446 "Single Use Barcodes (CR094)", "Barcode Reference
+    # Entry Validation", TIBU-13236, TIBU-13161 single-use scenarios.
+    cases:
+      - title: Single-Use Barcode — encryption keys are fetched once per shift at sign-on
+        refs: [FBD-100483]
+        objective: This test is to confirm the NIR HHD fetches the single-use barcode encryption keys once at sign-on.
+        steps: |-
+          **GIVEN** the HHD is signed off with a NIR rail route home location
+          **AND** the Corethree /encryptionkeys endpoint is reachable with the device x-api-key
+          **WHEN** the operator signs on to start a shift
+          **THEN** the HHD performs a single GET to /encryptionkeys for the shift
+          **AND** up to six keys with expiry dates are stored on the device
+        expected: On sign-on the HHD retrieves and stores the shift's encryption keys in a single call.
+      - title: Single-Use Barcode — an encryption-key fetch failure does not block sign-on
+        refs: [FBD-100483]
+        objective: This test is to confirm a failed encryption-key fetch retries in the background without blocking sign-on.
+        steps: |-
+          **GIVEN** the HHD is signing on with previously stored (still valid) encryption keys
+          **AND** the /encryptionkeys endpoint returns 500 or does not respond within 30 seconds
+          **WHEN** the operator signs on
+          **THEN** sign-on completes normally using the existing stored keys
+          **AND** the HHD retries the key fetch every 30 seconds until it succeeds
+        expected: Sign-on is not blocked by a key-fetch failure; the old keys stay usable and a retry runs every 30s.
+      - title: Single-Use Barcode — AES versus TripleDES is selected from the encrypted string
+        refs: [FBD-100483]
+        objective: This test is to confirm the HHD picks the AES or TripleDES key from the barcode's version marker.
+        steps: |-
+          **GIVEN** the HHD holds both AES and TripleDES encryption keys during migration
+          **AND** a scanned barcode carries a pipe delimiter followed by a version number greater than 1 (AES)
+          **WHEN** the HHD determines the cipher for the barcode
+          **THEN** the barcode is treated as AES
+          **AND** it is decrypted with an AES key only
+        expected: The pipe/version marker selects AES vs TripleDES and only the matching key type decrypts the barcode.
+      - title: Single-Use Barcode — a valid decrypt has exactly 17 commas and a known type
+        refs: [FBD-100483]
+        objective: This test is to confirm a successful decrypt is recognised by 17 commas and a valid barcode type.
+        steps: |-
+          **GIVEN** the HHD is signed on to a NIR route
+          **AND** a Type B (Adult Single) single-use barcode is presented
+          **WHEN** the HHD decrypts the scanned barcode
+          **THEN** the decrypted payload contains exactly 17 commas
+          **AND** the BarcodeType is one of B, D, E, H, S or U
+        expected: A valid single-use barcode decrypts to 17 comma-separated fields with a recognised barcode type.
+      - title: Single-Use Barcode — a decrypt failure shows the decryption-failed message
+        refs: [FBD-100483]
+        objective: This test is to confirm a barcode that cannot be decrypted shows the decryption-failed message.
+        steps: |-
+          **GIVEN** the HHD is signed on to a NIR route
+          **AND** a scanned barcode cannot be decrypted with any stored key
+          **WHEN** the HHD attempts to decrypt the barcode
+          **THEN** the message "Barcode decryption has failed" is displayed
+          **AND** the screen times out to Home after 3 seconds
+        expected: An undecryptable barcode shows "Barcode decryption has failed" and returns Home after 3 seconds.
+      - title: Single-Use Barcode — a manual 12-digit reference is validated as the ShortID
+        refs: [FBD-100483]
+        objective: This test is to confirm a manually keyed 12-digit reference is validated as the barcode ShortID.
+        steps: |-
+          **GIVEN** the HHD is signed on to a NIR route on the Barcode Reference Entry screen
+          **AND** an example 12-digit reference 012345678901 is available for a Type B Adult Single
+          **WHEN** the operator keys the 12-digit reference and submits it
+          **THEN** the reference is sent to /validate as the ShortID
+          **AND** the barcode inspection screen is displayed for the operator decision
+        expected: A manual 12-digit reference is used as the ShortID for /validate and reaches the inspection screen.
+      - title: Single-Use Barcode — a locally used ShortID is rejected before going online
+        refs: [FBD-100483]
+        objective: This test is to confirm a ShortID already validated offline is rejected before any online call.
+        steps: |-
+          **GIVEN** the HHD holds a ShortID in its local offline-validated list
+          **AND** the same single-use barcode is presented again
+          **WHEN** the HHD checks the ShortID before calling /validate
+          **THEN** the message "The ticket has already been used" is displayed
+          **AND** no /validate call is made
+        expected: A ShortID already used offline is rejected locally with "The ticket has already been used".
+      - title: Single-Use Barcode — a redeemed barcode emits the Barcode Redemption event 1412
+        refs: [FBD-100483]
+        objective: This test is to confirm an online redemption prints the ticket and emits event 1412.
+        steps: |-
+          **GIVEN** the HHD is signed on to a NIR route with a live Corethree connection
+          **AND** a valid Type B Adult Single barcode has passed inspection and the operator selects Valid
+          **WHEN** the HHD calls /redeem and then /print
+          **THEN** the ticket is printed
+          **AND** a "Barcode Redemption" event 1412 is sent to CloudFare
+        expected: An online single-use redemption prints the ticket and records event 1412.
+      - title: Single-Use Barcode — a redeem timeout queues offline and emits event 1416
+        refs: [FBD-100483]
+        objective: This test is to confirm a failed online redeem still prints and records the offline redemption event 1416.
+        steps: |-
+          **GIVEN** the HHD is signed on to a NIR route and a valid single-use barcode has passed inspection
+          **AND** the /redeem call returns 500 or does not respond within 30 seconds
+          **WHEN** the operator selects Valid to redeem the barcode
+          **THEN** the ShortID is added to the offline redemptions list
+          **AND** the ticket is still printed
+          **AND** an "Offline Barcode Redemption" event 1416 is recorded
+        expected: A redeem timeout queues the ShortID offline, still prints the ticket, and records event 1416.
+      - title: Single-Use Barcode — offline value above the ceiling limit is rejected
+        refs: [FBD-100483]
+        objective: This test is to confirm offline validation rejects a barcode whose value exceeds the ceiling limit.
+        steps: |-
+          **GIVEN** the HHD is validating offline with a TMS Barcode Ceiling Limit of £10.00
+          **AND** a single-use barcode carries a Value of £15.00
+          **WHEN** the HHD validates the barcode offline
+          **THEN** the message "The ticket value exceeds offline validation limit" is displayed
+          **AND** Retry and Cancel options are offered
+        expected: An offline barcode above the ceiling limit is rejected with the exceeds-limit message and Retry/Cancel.
+      - title: Single-Use Barcode — the offline sweep redeems queued barcodes without CloudFare events
+        refs: [FBD-100483]
+        objective: This test is to confirm the offline redemption sweep clears queued barcodes and sends no CloudFare events.
+        steps: |-
+          **GIVEN** the HHD holds queued ShortIDs in its offline redemptions list
+          **AND** the Corethree connection is restored
+          **WHEN** the 15-minute offline sweep runs
+          **THEN** each queued ShortID is redeemed
+          **AND** each swept ticket is printed
+          **AND** no redemption events are sent to CloudFare for the swept items
+        expected: The 15-minute sweep redeems and prints queued barcodes but emits no CloudFare events for them.
+
+  # =====================================================================================
+  - path: [Functional, Multi-Use Barcodes]
+    # Shared NIR + Glider (both validate multi-use offline -> Merit transaction). FBD-100167/100317.
+    # Folds TIBU-13315/13316 (check order), TIBU-13240 (zone), TIBU-13392 (location),
+    # TIBU-3869/13244/13390 (BO txn/event), TIBU-2937 (waybill count), CR116.
+    cases:
+      - title: Multi-Use Barcode — a valid barcode shows a green tick and audio
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode validates with a green tick and audio confirmation.
+        steps: |-
+          **GIVEN** the HHD is signed on with a route on which the barcode is valid
+          **AND** an in-date Rail multi-use barcode boarding within the encoded window is presented
+          **WHEN** the operator scans the barcode
+          **THEN** a green tick is displayed
+          **AND** an audio confirmation tone is played
+        expected: A valid multi-use barcode is accepted with a green tick and confirmation tone.
+      - title: Multi-Use Barcode — a route/location-only failure shows a yellow question mark
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode that fails only the route/location check shows the yellow question-mark result.
+        steps: |-
+          **GIVEN** the HHD is signed on to a route that is not on the barcode's boarding-to-alighting path
+          **AND** the barcode passes all checks except the route/location check
+          **WHEN** the operator scans the barcode
+          **THEN** a yellow question mark is displayed
+          **AND** the result is shown for 3 seconds or until the next transaction
+        expected: A route/location-only failure is shown as a yellow question mark, not a hard reject.
+      - title: Multi-Use Barcode — an invalid barcode shows a red cross and reason
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode failing a hard check shows a red cross with the failure reason.
+        steps: |-
+          **GIVEN** the HHD is signed on to a valid route
+          **AND** an expired multi-use barcode is presented
+          **WHEN** the operator scans the barcode
+          **THEN** a red cross is displayed
+          **AND** the failure reason is shown on screen
+        expected: An invalid multi-use barcode is rejected with a red cross and a stated reason.
+      - title: Multi-Use Barcode — a re-presented barcode within the passback window is rejected
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode re-presented inside the configured passback window is rejected.
+        steps: |-
+          **GIVEN** the HHD retains a barcode Unique ID after a successful validation
+          **AND** the same barcode is presented again within the configured passback minutes
+          **WHEN** the operator scans the barcode again
+          **THEN** the barcode is rejected as passback
+        expected: A barcode re-presented within the passback window is rejected on the retained Unique ID.
+      - title: Multi-Use Barcode — a rail location failure falls back to valid above the fare threshold
+        refs: [FBD-100167]
+        objective: This test is to confirm a rail barcode failing location validation is treated as valid when its fare meets the configured threshold.
+        steps: |-
+          **GIVEN** the HHD is signed on to a rail route with the fare-fallback threshold set to £90.00
+          **AND** a rail multi-use barcode with a product rule value of £95.00 fails the rail location check
+          **WHEN** the operator scans the barcode
+          **THEN** the barcode is treated as valid on the fare fallback
+        expected: A rail barcode failing location validation is accepted because its fare meets the £90 fallback threshold (CR105.3).
+      - title: Multi-Use Barcode — a successful validation audits a zero-fare BarcodeUsage transaction
+        refs: [FBD-100167]
+        objective: This test is to confirm a successful multi-use validation sends a zero-fare BarcodeUsage transaction to CloudFare.
+        steps: |-
+          **GIVEN** the HHD is signed on with a live CloudFare connection
+          **AND** a valid Rail multi-use barcode is presented
+          **WHEN** the operator scans and the barcode validates successfully
+          **THEN** a transaction record with the barcode Product ID is sent to CloudFare
+          **AND** the transaction carries a zero fare
+          **AND** the payment type is BarcodeUsage
+        expected: A successful validation sends a zero-fare BarcodeUsage transaction with the barcode Product ID to CloudFare.
+      - title: Multi-Use Barcode — a failed validation sends an event with the Unique ID
+        refs: [FBD-100167]
+        objective: This test is to confirm a failed multi-use validation sends a CloudFare event carrying the barcode Unique ID and reason.
+        steps: |-
+          **GIVEN** the HHD is signed on with a live CloudFare connection
+          **AND** an invalid multi-use barcode is presented
+          **WHEN** the operator scans and the barcode fails validation
+          **THEN** a validation-failure event is sent to CloudFare
+          **AND** the event includes the barcode Unique ID and failure reason
+        expected: A failed validation records a CloudFare event with the barcode Unique ID and reason (no transaction).
+      - title: Multi-Use Barcode — a midnight-to-4am expiry displays the previous day and no time
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode expiring between 00:00 and 04:00 displays the previous day and no time (CR116).
+        steps: |-
+          **GIVEN** the HHD is signed on with the CR116 expiry-display rule enabled
+          **AND** a multi-use barcode with expiry 20240520-0400 is presented
+          **WHEN** the operator scans the barcode and the result screen displays
+          **THEN** the expiry date is shown as 19/05/2024
+          **AND** no expiry time is shown
+        expected: A 00:00-04:00 expiry rolls back to the previous day with no time shown, per CR116.
+
+  - path: [Functional, Multi-Use Barcodes, Old Barcode Redemption (BRS)]
+    # Glider-only leaf (old 5446 section 563621 "Old Barcode Redemption"). @mode(Glider).
+    # Flattened to a top-level section entry: push treats every item under `cases` as a case.
+    cases:
+      - title: Old Barcode Redemption — a legacy BRS barcode is redeemed on Glider
+        refs: [FBD-100167, FBD-100317]
+        objective: This test is to confirm a Glider HHD can redeem a legacy Old Barcode Redemption (BRS) barcode.
+        steps: |-
+          **GIVEN** the HHD is signed on with a Glider (Metro) home location
+          **AND** a legacy BRS barcode valid for the Glider network is presented
+          **WHEN** the operator scans the legacy barcode
+          **THEN** the barcode is redeemed under the Old Barcode Redemption flow
+          **AND** a success result is displayed
+        expected: A Glider HHD redeems a legacy BRS barcode and shows a success result.
+
+  # =====================================================================================
+  - path: [Functional, Smartcard Inspection]
+    # Shared NIR + Glider visual/colour-change period-pass inspection + CR78 break-mode. FBD-100651.
+    # Folds old 5446 "Smartcard Inspection" (58), iLink colour-change sections, 13958 Smartcard
+    # Inspection (21), CR78 New Functionality + Regression.
+    cases:
+      - title: Smartcard Inspection — a valid period pass is inspected successfully
+        refs: [FBD-100651]
+        objective: This test is to confirm a valid period-pass smartcard passes inspection in Inspector Mode.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route
+          **AND** a Senior Smartpass validated within the configurable time is presented
+          **WHEN** the operator inspects the smartcard
+          **THEN** a successful inspection result is displayed
+        expected: A valid, recently-validated period pass inspects successfully.
+      - title: Smartcard Inspection — an adult iLink pass shows the adult colour on inspection
+        refs: [FBD-100651]
+        objective: This test is to confirm an adult iLink period pass displays the adult inspection colour.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to a valid route
+          **AND** a valid Adult iLink Zone 4 period pass is presented
+          **WHEN** the operator inspects the smartcard
+          **THEN** the inspection screen shows the adult colour for the pass
+        expected: An adult iLink pass inspection displays the adult colour indicator.
+      - title: Smartcard Inspection — a child pass shows the child colour on inspection
+        refs: [FBD-100651]
+        objective: This test is to confirm a child iLink period pass displays the child inspection colour.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to a valid route
+          **AND** a valid Child iLink Zone 4 period pass is presented
+          **WHEN** the operator inspects the smartcard
+          **THEN** the inspection screen shows the child colour for the pass
+        expected: A child iLink pass inspection displays the child colour indicator, distinct from the adult colour.
+      - title: Smartcard Inspection — an expired smartcard fails inspection
+        refs: [FBD-100651]
+        objective: This test is to confirm an expired smartcard produces an unsuccessful inspection result.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to a valid route
+          **AND** an expired iLink period pass with no remaining travel is presented
+          **WHEN** the operator inspects the smartcard
+          **THEN** an unsuccessful inspection result is displayed
+        expected: An expired smartcard fails inspection with an unsuccessful result.
+      - title: Smartcard Inspection — a pass inspected within the passback window is accepted
+        refs: [FBD-100651]
+        objective: This test is to confirm a smartcard inspected within the configurable time of validation is accepted without revalidation.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route
+          **AND** a Multi-Journey smartcard validated 20 minutes ago is presented within the 90-minute window
+          **WHEN** the operator inspects the smartcard
+          **THEN** a successful inspection result is displayed
+          **AND** no revalidation is required
+        expected: A smartcard inspected inside the configurable window inspects successfully with no revalidation.
+      - title: Smartcard Inspection — a pass inspected after the window offers revalidation
+        refs: [FBD-100651]
+        objective: This test is to confirm a smartcard inspected after the configurable window offers revalidation.
+        steps: |-
+          **GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route
+          **AND** a Multi-Journey smartcard last validated over 90 minutes ago is presented
+          **WHEN** the operator inspects the smartcard and selects the Validate option
+          **THEN** the smartcard is revalidated for the current journey
+        expected: A smartcard inspected outside the window prompts revalidation, which the operator can accept.
+      - title: Smartcard Inspection — inspection is available in break mode
+        refs: [FBD-100651]
+        objective: This test is to confirm the operator can inspect a smartcard while signed on in break mode (CR78).
+        steps: |-
+          **GIVEN** the HHD is signed on in break mode under CR78
+          **AND** a valid period-pass smartcard is presented
+          **WHEN** the operator inspects the smartcard in break mode
+          **THEN** a successful inspection result is displayed
+        expected: Smartcard inspection works in CR78 break mode and returns a result.
+
+  # =====================================================================================
+  - path: [Functional, Revenue Inspection (cEMV/RID)]
+    # HHD-ONLY, Glider TOO live. FBD-100716 + FBD-100651. Events 5008-5013, 30s timeout, cannot annul.
+    # NIR TOTO inspection = FUTURE scope (FBD-100690) -> @future, NOT authored here. Folds old 5446
+    # "Trigger cEMV Inspection", "Inspection Failure - Card Declined", "Card on RID List",
+    # "Successful cEMV Inspection", "RID List Updates", "Online Inspection Cannot Connect".
+    cases:
+      - title: Revenue Inspection — Inspection Mode is enabled on a Tap-On-Only route
+        refs: [FBD-100716, FBD-100651]
+        objective: This test is to confirm cEMV Inspection Mode is available when the signed-on route is Tap On Only (Flat Fare).
+        steps: |-
+          **GIVEN** the HHD is signed on with a Glider (Metro) home location
+          **AND** the first route's ABT Type is "Tap On Only (Flat Fare)"
+          **WHEN** the operator triggers Inspection Mode from the oval soft key
+          **THEN** the M020 wakes over Bluetooth
+          **AND** the inspection screen is displayed
+        expected: On a Tap-On-Only Glider route, Inspection Mode is enabled and the M020 wakes to inspect.
+      - title: Revenue Inspection — Inspection Mode is disabled on a non-Tap-On-Only route
+        refs: [FBD-100716, FBD-100651]
+        objective: This test is to confirm cEMV Inspection Mode is unavailable when the route is not Tap On Only (Flat Fare).
+        steps: |-
+          **GIVEN** the HHD is signed on to a route whose ABT Type is not "Tap On Only (Flat Fare)"
+          **WHEN** the operator looks for the Inspection Mode control
+          **THEN** the inspection button is disabled
+        expected: On a non-Tap-On-Only route the inspection button is disabled.
+      - title: Revenue Inspection — a valid card inspection succeeds and emits event 5008
+        refs: [FBD-100716]
+        objective: This test is to confirm a valid inspected card returns success, a success tone, and event 5008.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with a live connection
+          **AND** a valid contactless EMV card not on the RID List is presented
+          **WHEN** the customer taps the card on the M020
+          **THEN** a success screen is displayed
+          **AND** a success audio tone is played
+          **AND** a cEMV Inspection Success event 5008 is recorded with the client shift id
+        expected: A valid inspection shows success with the success tone and records event 5008.
+      - title: Revenue Inspection — a card on the RID List fails and emits event 5009
+        refs: [FBD-100716]
+        objective: This test is to confirm a card on the RID List fails inspection with the RID message and event 5009.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with a live connection
+          **AND** the presented card's FEIG token is on the local RID List
+          **WHEN** the customer taps the card on the M020
+          **THEN** the message "Card on RID List" is displayed
+          **AND** a Failure - On RID List event 5009 is recorded
+        expected: A card on the RID List fails with "Card on RID List" and records event 5009.
+      - title: Revenue Inspection — an expired card is declined and emits event 5010
+        refs: [FBD-100716]
+        objective: This test is to confirm an expired card fails the M020 integrity check with Card Declined and event 5010.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route
+          **AND** an expired contactless EMV card is presented
+          **WHEN** the customer taps the card on the M020
+          **THEN** the message "Card Declined" is displayed
+          **AND** a Failure - Card Expired event 5010 is recorded
+        expected: An expired card is declined at the M020 with "Card Declined" and records event 5010.
+      - title: Revenue Inspection — a card failing ODA is declined and emits event 5011
+        refs: [FBD-100716]
+        objective: This test is to confirm a card failing offline data authentication is declined with event 5011.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route
+          **AND** a card that fails offline data authentication is presented
+          **WHEN** the customer taps the card on the M020
+          **THEN** the message "Card Declined" is displayed
+          **AND** a Failure - Failed ODA event 5011 is recorded
+        expected: A card failing ODA is declined with "Card Declined" and records event 5011.
+      - title: Revenue Inspection — an unsupported scheme is declined and emits event 5012
+        refs: [FBD-100716]
+        objective: This test is to confirm a card of an unsupported scheme is declined with event 5012.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route
+          **AND** a card of a scheme other than Visa, Mastercard or Maestro is presented
+          **WHEN** the customer taps the card on the M020
+          **THEN** the message "Card Declined" is displayed
+          **AND** a Failure - Invalid Scheme event 5012 is recorded
+        expected: An unsupported-scheme card is declined with "Card Declined" and records event 5012.
+      - title: Revenue Inspection — no connection to the back office shows the try-again message
+        refs: [FBD-100716]
+        objective: This test is to confirm an inspection with no connection to NMI shows the try-again message.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with no internet connection
+          **AND** a valid contactless EMV card is presented
+          **WHEN** the customer taps the card on the M020
+          **THEN** the message "Failed to connect please try again" is displayed
+        expected: With no connection to the back office the inspection shows "Failed to connect please try again".
+      - title: Revenue Inspection — no card within 30 seconds times out to the Sales screen
+        refs: [FBD-100716]
+        objective: This test is to confirm Inspection Mode times out to the Sales screen when no card is presented within 30 seconds.
+        steps: |-
+          **GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route
+          **AND** no card is presented
+          **WHEN** 30 seconds elapse with no card
+          **THEN** the HHD returns to the Sales screen
+        expected: Inspection Mode times out to the Sales screen after 30 seconds with no card.
+      - title: Revenue Inspection — an inspection tap cannot be annulled
+        refs: [FBD-100716]
+        objective: This test is to confirm an inspection tap cannot be annulled on the HHD.
+        steps: |-
+          **GIVEN** the HHD has completed a successful inspection tap
+          **WHEN** the operator attempts to annul the inspection tap
+          **THEN** the inspection tap cannot be annulled
+        expected: A completed inspection tap is final on the device and cannot be annulled (refund is back-office only).
+      - title: Revenue Inspection — the full RID List is requested on application start-up
+        refs: [FBD-100716]
+        objective: This test is to confirm the HHD requests the full RID List from ABT on application start-up.
+        steps: |-
+          **GIVEN** the HHD application is starting with comms available
+          **WHEN** the application starts up
+          **THEN** a full RID List is requested from ABT
+          **AND** the list is stored with a timestamp
+        expected: On start-up the HHD downloads and timestamps the full RID List.
+      - title: Revenue Inspection — a 15-minute poll requests a delta RID List update
+        refs: [FBD-100716]
+        objective: This test is to confirm the HHD requests a delta RID List update on the 15-minute poll when the stored list is current.
+        steps: |-
+          **GIVEN** the HHD holds a RID List timestamped after the most recent End-of-Day
+          **WHEN** the 15-minute RID List poll runs
+          **THEN** a delta update is requested
+          **AND** any token additions and removals are applied to the local list
+        expected: When the stored list is current the 15-minute poll pulls a delta and applies adds/removals.
+      - title: Revenue Inspection — the first poll after End-of-Day requests a full RID List
+        refs: [FBD-100716]
+        objective: This test is to confirm the first RID List poll after End-of-Day requests a full list.
+        steps: |-
+          **GIVEN** the HHD holds a RID List timestamped before the most recent End-of-Day
+          **WHEN** the next 15-minute RID List poll runs
+          **THEN** a full RID List is requested
+        expected: A stored list older than the last End-of-Day triggers a full RID List download on the next poll.
+
+  # =====================================================================================
+  - path: [Non-Functional, Resilience, Power & Battery]
+    # Battery device - distinctive. Folds old 5446 Power Recovery/Save/Replace Battery/Low Battery,
+    # 13958 HHD Battery, Full Battery + Full Battery Regression (via Refs).
+    cases:
+      - title: Power & Battery — the operator's session recovers after a power loss
+        refs: [FBD-100373]
+        objective: This test is to confirm the HHD recovers the operator session after an unexpected power loss.
+        steps: |-
+          **GIVEN** an operator is signed on and mid-shift on the HHD
+          **AND** the battery is removed during a cash payment
+          **WHEN** the HHD is powered back on and the operator signs in
+          **THEN** the operator session is recovered
+          **AND** the interrupted transaction is resolved without duplication
+        expected: After a power loss the HHD recovers the session and resolves the interrupted transaction cleanly.
+      - title: Power & Battery — the operator can sign on after replacing the battery
+        refs: [FBD-100373]
+        objective: This test is to confirm the operator can sign on after a mid-shift battery replacement.
+        steps: |-
+          **GIVEN** an operator is signed on mid-shift with a low battery
+          **AND** the battery is replaced with a charged battery
+          **WHEN** the operator signs on after the swap
+          **THEN** the operator session resumes
+        expected: After a battery swap the operator signs back on and the session resumes.
+      - title: Power & Battery — a low-battery warning is shown to the operator
+        refs: [FBD-100373]
+        objective: This test is to confirm the HHD displays a low-battery warning when the device battery is low.
+        steps: |-
+          **GIVEN** an operator is signed on to the HHD
+          **AND** the device battery reaches the low-battery threshold
+          **WHEN** the operator is using the device
+          **THEN** a low-battery warning is displayed
+        expected: The HHD warns the operator when its battery reaches the low threshold.
+
+  - path: [Non-Functional, Resilience, Printer]
+    # Folds old 5446 NIR/Glider Printer, Printer NFC pairing, Printer Low Power warnings.
+    cases:
+      - title: Printer — a partially printed ticket is reported to the operator
+        refs: [FBD-100167]
+        objective: This test is to confirm a partial print is reported so the operator can reprint.
+        steps: |-
+          **GIVEN** an operator is signed on with the HHD paired to its printer
+          **AND** the paper runs out during a ticket print
+          **WHEN** the ticket prints only partially
+          **THEN** a partial-print condition is reported to the operator
+        expected: A partial print is flagged to the operator rather than silently completing.
+      - title: Printer — the HHD pairs to a printer by presenting its NFC chip
+        refs: [FBD-100320]
+        objective: This test is to confirm the HHD pairs to a printer when presented to the printer NFC chip.
+        steps: |-
+          **GIVEN** an operator is signed on with an unpaired HHD
+          **AND** the HHD is on a screen expecting to read an NFC chip
+          **WHEN** the HHD is presented to the printer NFC chip
+          **THEN** the HHD pairs to the printer
+        expected: Presenting the HHD to the printer NFC chip on the expected screen pairs the two.
+
+  - path: [Non-Functional, Resilience, Comms / SaaS / Heartbeat]
+    # FBD-100266 (heartbeat) + FBD-100359 (SaaS offline). Folds old CloudFare section.
+    cases:
+      - title: Heartbeat — the HHD calls in at least every 15 minutes even when signed off
+        refs: [FBD-100266]
+        objective: This test is to confirm the HHD updates CloudFare Last Communication at least every 15 minutes even when signed off.
+        steps: |-
+          **GIVEN** the HHD is powered on but signed off with no sales taking place
+          **WHEN** the 15-minute staff-list refresh check runs
+          **THEN** a StaffList message reaches CloudFare
+          **AND** the device Last Communication time is updated
+        expected: The HHD's 15-minute staff-list check acts as a heartbeat even when signed off with no sales.
+      - title: Heartbeat — a StaffList message resets Hours Since Last Communication to zero
+        refs: [FBD-100266]
+        objective: This test is to confirm a received StaffList message resets the device's Hours Since Last Communication to zero.
+        steps: |-
+          **GIVEN** CloudFare shows a non-zero Hours Since Last Communication for the HHD
+          **WHEN** CloudFare receives a StaffList message from the HHD
+          **THEN** Hours Since Last Communication for the device is reset to zero
+        expected: A StaffList message resets the device's Hours Since Last Communication to zero in CloudFare.
+      - title: Comms — a sustained network outage takes the HHD offline
+        refs: [FBD-100359]
+        objective: This test is to confirm the HHD operates offline during a sustained network outage.
+        steps: |-
+          **GIVEN** an operator is signed on with a live CloudFare connection
+          **AND** the network connection is lost for a sustained period
+          **WHEN** the operator continues to use the HHD
+          **THEN** the HHD continues to operate offline
+          **AND** transactions are queued locally for later delivery
+        expected: During a sustained outage the HHD keeps working offline and queues transactions locally.
+      - title: Comms — queued transactions are delivered to the back office on restore
+        refs: [FBD-100359]
+        objective: This test is to confirm transactions queued during an outage are delivered to the back office once the network is restored.
+        steps: |-
+          **GIVEN** the HHD holds transactions queued during a network outage
+          **WHEN** the network connection is restored
+          **THEN** the queued transactions are delivered to the back office
+          **AND** no queued transaction is lost
+        expected: On restore the HHD delivers all queued transactions to the back office with no data loss.
+
+  - path: [Non-Functional, Resilience, Network]
+    cases:
+      - title: Network — the operator can view the HHD connectivity type and strength
+        refs: [FBD-100359]
+        objective: This test is to confirm the operator can view the HHD network connectivity type and signal strength.
+        steps: |-
+          **GIVEN** an operator is signed on to the HHD
+          **WHEN** the operator opens the Network Settings screen
+          **THEN** the connectivity type is displayed
+          **AND** the connectivity strength is displayed
+        expected: Network Settings shows the HHD's connectivity type and signal strength.
+
+  - path: [Non-Functional, Resilience, Security]
+    # Folds old 5446 Device Security (Panic Button) + OS 8.
+    cases:
+      - title: Security — the panic button raises an alert
+        refs: [FBD-100373]
+        objective: This test is to confirm the HHD panic button raises an alert to the back office.
+        steps: |-
+          **GIVEN** an operator is signed on to the HHD
+          **WHEN** the operator triggers the panic button
+          **THEN** a panic alert is raised
+        expected: The HHD panic button raises an alert to the back office.
+      - title: Security — the HHD upgrades from OS 7 to OS 8
+        refs: [FBD-100359]
+        objective: This test is to confirm the HHD can be upgraded from OS 7 to OS 8 and remains operable.
+        steps: |-
+          **GIVEN** an HHD running OS 7 is available for upgrade
+          **WHEN** the OS 8 upgrade is applied
+          **THEN** the HHD boots on OS 8
+          **AND** the operator can sign on after the upgrade
+        expected: The HHD upgrades cleanly from OS 7 to OS 8 and remains operable.
+
+  - path: [Non-Functional, Resilience, Timings]
+    # Folds old 5446/13958 "Timings" (Smartcard Validation Timings) + inspection/print timings.
+    cases:
+      - title: Timings — a smartcard validation completes within the expected time
+        refs: [FBD-100651]
+        objective: This test is to confirm a smartcard validation completes within the expected response time.
+        steps: |-
+          **GIVEN** an operator is signed on with a valid smartcard
+          **WHEN** the operator validates the smartcard
+          **THEN** the validation result is displayed within the expected time
+        expected: A smartcard validation returns its result within the expected response time.
+      - title: Timings — a barcode read to beep completes within one second
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode read to beep completes within one second under reasonable conditions.
+        steps: |-
+          **GIVEN** an operator is signed on with a valid multi-use barcode
+          **WHEN** the operator scans the barcode
+          **THEN** the confirmation beep is produced within one second of the read
+        expected: A barcode read produces its beep within one second under reasonable conditions.
+
+  # =====================================================================================
+  - path: [Smoke]
+    # Thin critical path (basis: FAT suite 5608). @mode(all). Sign on -> sell paper (cash + M020 card)
+    # -> print -> annul -> sign off waybill, plus a smartcard validate and an inspection touch.
+    cases:
+      - title: Smoke — the operator signs on and reaches the main menu
+        refs: [FBD-100373]
+        objective: This test is to confirm the operator can sign on to the HHD and reach the main menu.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the sign-on screen
+          **AND** a seeded operator's credentials are available
+          **WHEN** the operator signs on with the seeded credentials
+          **THEN** the main menu is displayed
+        expected: The operator signs on with seeded credentials and reaches the main menu.
+      - title: Smoke — a paper ticket is sold and paid by cash
+        refs: [FBD-100373]
+        objective: This test is to confirm the operator can sell and print a paper ticket paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on to the HHD
+          **AND** an Adult Single at £2.30 is selected
+          **WHEN** the operator completes the sale by cash
+          **THEN** the paper ticket is printed
+        expected: A cash paper-ticket sale completes and prints the ticket.
+      - title: Smoke — a paper ticket is sold and paid by card on the M020
+        refs: [FBD-100373, FBD-100320]
+        objective: This test is to confirm the operator can sell a paper ticket paid by contactless card on the paired M020.
+        steps: |-
+          **GIVEN** an operator is signed on with the M020 paired over Bluetooth
+          **AND** an Adult Single at £2.30 is selected
+          **WHEN** the operator completes the sale by card on the M020
+          **THEN** the payment is accepted
+          **AND** the paper ticket is printed
+        expected: A card paper-ticket sale is accepted on the M020 and the ticket prints.
+      - title: Smoke — a just-sold ticket is annulled
+        refs: [FBD-100373]
+        objective: This test is to confirm the operator can annul a ticket that was just sold.
+        steps: |-
+          **GIVEN** an operator has just sold an Adult Single paper ticket
+          **WHEN** the operator annuls the ticket
+          **THEN** the ticket is annulled
+        expected: A just-sold ticket is annulled successfully.
+      - title: Smoke — a valid smartcard validates successfully
+        refs: [FBD-100651]
+        objective: This test is to confirm the operator can validate a valid smartcard on the HHD.
+        steps: |-
+          **GIVEN** an operator is signed on to the HHD
+          **AND** a valid Multi-Journey smartcard is presented
+          **WHEN** the operator validates the smartcard
+          **THEN** a successful validation result is displayed
+        expected: A valid smartcard validates successfully on the HHD.
+      - title: Smoke — the operator signs off and prints a waybill
+        refs: [FBD-100373]
+        objective: This test is to confirm the operator can sign off and print a waybill at end of shift.
+        steps: |-
+          **GIVEN** an operator is signed on with a completed shift of activity
+          **WHEN** the operator signs off
+          **THEN** a waybill is printed
+        expected: Signing off prints the operator's waybill.

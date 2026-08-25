@@ -1,0 +1,55 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Sales - Tickets, Ticket Collection]
+    cases:
+      - title: "Ticket Collection — repeated invalid booking reference reaches attempt limit"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm three consecutive invalid booking reference entries reach the
+          attempt limit.
+        steps: |
+          **GIVEN** the TVM shows the booking reference retry screen with the field cleared after an
+          invalid entry
+          **WHEN** the customer enters an invalid booking reference for a 3rd consecutive time
+          **THEN** the Attempt Limit screen is displayed
+        expected: "A 3rd consecutive invalid booking reference attempt shows the Attempt Limit screen."
+
+      - title: "Ticket Collection — Please wait screen returns to the Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Please wait screen can transition back to the Home Screen.
+        steps: |
+          **GIVEN** the TVM shows the Please wait message after a booking reference is submitted
+          **WHEN** the transition to the Home Screen decision point occurs
+          **THEN** **GAP** — the trigger/condition for this transition is not named in the source
+          board's connection list; confirm on the live system before running
+        expected: "GAP — confirm what triggers the Please wait to Home Screen decision transition before running."
+
+      - title: "Ticket Collection — Back returns to the booking reference entry screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Back action returns the customer to booking reference entry.
+        steps: |
+          **GIVEN** the TVM shows the booking reference entry screen
+          **WHEN** the customer presses Back
+          **THEN** the booking reference entry screen is displayed again
+        expected: "Pressing Back on the booking reference entry screen returns to booking reference entry."
+
+      - title: "Ticket Collection — location-restricted reference shows a location error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a booking reference for tickets restricted to certain pickup
+          locations is handled.
+        steps: |
+          **GIVEN** the TVM shows the booking reference entry screen
+          **WHEN** the customer enters a booking reference for tickets that can only be collected at
+          certain locations
+          **THEN** **GAP** — no entry/exit connection for the Location Error message is recorded in
+          the source board; confirm on the live system before running
+        expected: "GAP — confirm how the Location Error message is reached and exited before running."

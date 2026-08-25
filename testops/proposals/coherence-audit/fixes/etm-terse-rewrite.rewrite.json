@@ -1,0 +1,22 @@
+[
+  {
+    "id": 4100586,
+    "preface": "This test is to confirm ABT boarding within a Metro ABT zone (Tap On Only – Flat Fare); the customer taps once to board and the ETM calculates the alighting stop — there is no customer alighting tap on this device.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "refs": "George (live-system confirmation), 2026-07-21",
+    "change_note": "Terse pass (George, 2026-07-21 mandate): removed the inline provenance clause '(George, live-system confirmation, 2026-07-21)' from the preface body — the fact itself ('no customer alighting tap on this device') is kept, the who/when confirmation moves to the Refs field. No change to preconds/steps/expected — already terse and grounded."
+  },
+  {
+    "id": 4100587,
+    "preface": "This test is to confirm ABT boarding and driver-selected alighting within Ulsterbus ABT zones (Tap On Only – Driver Initiated); the customer taps once to board and states their alighting stage, and the Driver selects it on the FLU screen — there is no customer alighting tap on this device.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "refs": "George (live-system confirmation), 2026-07-21",
+    "change_note": "Terse pass (George, 2026-07-21 mandate): removed the inline provenance clause '(George, live-system confirmation, 2026-07-21)' from the preface body — the fact itself ('no customer alighting tap on this device') is kept, the who/when confirmation moves to the Refs field. No change to preconds/steps/expected — already terse and grounded."
+  }
+]

@@ -1,0 +1,37 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Card Payment (M020)]
+    cases:
+      - title: "Payment Device Status — reporting a faulty device notifies the back office and removes card payment"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm reporting the paired Payment Device as faulty from the Status
+          screen notifies the back office and removes the card payment option from the Payment Area.
+        steps: |
+          **GIVEN** the HHD is on Tabbed Navigation - Status with the Payment Device paired
+          **WHEN** the operator taps the Payment Device Status row
+          **THEN** the Status - Report Faulty Device? confirmation prompt is displayed
+          **WHEN** the operator taps 'Confirm'
+          **THEN** the Tabbed Navigation - Status - Payment Device Faulty screen is displayed
+          **AND** the back office is notified of the faulty device
+          **AND** the card payment button is removed from the Payment Area
+        expected: "Confirming a faulty Payment Device from Status shows Payment Device Faulty, notifies the back office, and removes the card payment button from the Payment Area."
+
+  - path: [Non-Functional, Resilience, Power & Battery]
+    cases:
+      - title: "Power On — critical battery shows the Critical Battery Power On screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm turning on the HHD while its battery is at a critical level shows
+          the Critical Battery - Device Power On Attempt screen.
+        steps: |
+          **GIVEN** the HHD battery is at a critical level and the device is powered off
+          **WHEN** the operator turns the HHD on
+          **THEN** the Critical Battery - Device Power On Attempt screen is displayed
+        expected: "Turning on the HHD with a critical battery shows the Critical Battery - Device Power On Attempt screen."

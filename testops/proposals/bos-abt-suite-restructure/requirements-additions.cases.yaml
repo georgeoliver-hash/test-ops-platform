@@ -1,0 +1,208 @@
+# Requirement-grounded ADDITIONS — BOS & ABT Suite (30279)
+# Authored 2026-07-16 from the BOS-ABT cross-examination gap report
+# (proposals/translink-requirements-review/gaps-bos-abt.md) against the distilled FBD specs
+# in knowledge/translink/specs/. These are NEW cases closing the seven high-value holes:
+#   NIR TOTO tap-matching (FBD-100690), capping-timing constants (FBD-100307/100389),
+#   CloudFare/ETM Shift Board (FBD-100831), and user-claims/operator-hierarchy scoping
+#   (FBD-100342/100383). Each carries a CONCRETE worked example in the GIVEN preconds; the
+#   title/WHEN/THEN stay behaviour-level. Single predicate per THEN/AND line.
+#
+# Grounding note: NIR rail STATION names are taken from the authoritative operator hierarchy
+# (FBD-100383). Exact NIR TOTO pound-fares and PJT minute values are NOT in the distilled
+# specs, so they are described structurally and flagged "values from CloudFare topology,
+# exact values need confirming" rather than fabricated (per docs/gherkin-standard.md
+# "Concrete grounding"). Bus/Metro fares reuse the confirmed suite oracle values.
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ───────────────────── NIR Tap-On-Tap-Off (FBD-100690) ─────────────────────
+  - path: [ABT, Functional, NIR Tap-On-Tap-Off]
+    cases:
+      - title: A matched tap-on and tap-off within PJT is charged the point-to-point fare
+        refs: [FBD-100690, FBD-100698]
+        objective: This test is to confirm that a rail tap-on followed by a tap-off within the Programmed Journey Time is charged the single point-to-point fare.
+        steps: |-
+          **GIVEN** a cEMV card taps on at a NIR station and taps off at a later station within the Programmed Journey Time (PJT)
+          **AND** example journey: tap-on Lanyon Place → tap-off Portadown on the Portadown line, tap-off inside the Lanyon Place→Portadown PJT (fare and PJT values from CloudFare topology, exact values need confirming)
+          **AND** the ABT back office prices the matched journey via AreaFare (RouteType 0)
+          **WHEN** the taps are matched after the Maximum Journey Time (MJT) window expires
+          **AND** the EndOfDay settlement runs
+          **THEN** the journey is charged the single Lanyon Place→Portadown point-to-point fare
+          **AND** the journey is recorded with the real tap-off station and time
+        expected: A matched tap-on/tap-off within PJT is charged the single point-to-point fare and recorded with the real tap-off.
+      - title: A missing tap-off is charged the maximum fare
+        refs: [FBD-100690, FBD-100307]
+        objective: This test is to confirm that a rail tap-on with no tap-off within the Maximum Journey Time is charged the maximum fare.
+        steps: |-
+          **GIVEN** a cEMV card taps on at a NIR station and never taps off within the MJT
+          **AND** example: a Lanyon Place tap-on on the Portadown line with no subsequent tap-off before the MJT expires
+          **WHEN** the MJT window expires with no matching tap-off
+          **AND** the EndOfDay settlement runs
+          **THEN** the journey is charged the maximum fare from CloudFare topology
+          **AND** the charge type is shown as "Travel (Max Fare)"
+          **AND** the journey is flagged "Missing Tap" in Journey History
+        expected: A tap-on with no tap-off within the MJT is charged the maximum fare, shown as "Travel (Max Fare)" and flagged Missing Tap.
+      - title: A maximum-fare journey is excluded from capping
+        refs: [FBD-100690, FBD-100389]
+        objective: This test is to confirm that a maximum-fare (missing-tap) rail journey does not count toward the daily cap.
+        steps: |-
+          **GIVEN** a card-day with one maximum-fare rail journey plus further matched rail journeys
+          **AND** example: one missing-tap-off max fare on the Portadown line plus two matched Lanyon Place→Portadown journeys on the same operating day
+          **WHEN** the day's journeys are settled at EndOfDay
+          **THEN** the maximum-fare journey is excluded from the daily cap total
+          **AND** the daily cap is calculated only from the matched non-max-fare journeys
+        expected: The max-fare journey is left out of the cap; only matched journeys count toward the daily cap total.
+      - title: A same-location re-tap within the Same Location Time is suppressed
+        refs: [FBD-100690]
+        objective: This test is to confirm that a duplicate tap at the same location within the Same Location Time is ignored so the journey is charged the correct point-to-point fare.
+        steps: |-
+          **GIVEN** a card taps twice at the same boarding station within the Same Location Time, then taps off later within the MJT
+          **AND** example (Scenario 1): a tap at Botanic, a second tap at Botanic within the Same Location Time, then a tap-off at Bangor within the MJT
+          **WHEN** the taps are matched after the MJT expires
+          **AND** the EndOfDay settlement runs
+          **THEN** the duplicate second Botanic tap is ignored
+          **AND** the journey is charged the single Botanic→Bangor point-to-point fare
+        expected: The same-location re-tap is suppressed and the journey is charged the single Botanic→Bangor fare.
+      - title: A free bus-to-rail transfer within the window leaves the bus leg uncharged
+        refs: [FBD-100690]
+        objective: This test is to confirm that a bus leg is not charged when it transfers to a consecutive rail journey within the transfer window at a free-transfer station.
+        steps: |-
+          **GIVEN** a bus journey and a consecutive rail journey where the bus alighting stop and the rail boarding station share a Bus-to-Rail free-transfer zone (CR133/CR064)
+          **AND** example: an Ulsterbus tap at Lisburn, then a consecutive rail tap-on at Lisburn station, the two boarding taps within the MJT (measured boarding-tap to boarding-tap)
+          **WHEN** the two journeys are matched as a transfer
+          **AND** the EndOfDay settlement runs
+          **THEN** the bus leg is charged zero fare
+          **AND** the bus leg is recorded in MERIT with a Full Fare Equivalent
+          **AND** the rail leg is charged its normal fare
+        expected: The bus leg of a valid bus-to-rail transfer is free with a Full Fare Equivalent recorded, while the rail leg is charged normally.
+      - title: A missing-tap correction recalculates the journey and refunds the difference
+        refs: [FBD-100690]
+        objective: This test is to confirm that correcting a missing rail tap recalculates the journey and refunds the max-fare difference.
+        steps: |-
+          **GIVEN** a settled rail journey charged the maximum fare for a missing tap-off, with the correction time within the MJT of the known tap-on
+          **AND** example: a Lanyon Place tap-on charged max fare, corrected to a Portadown tap-off within the MJT (passenger limit 1/month, 3/calendar year)
+          **WHEN** the passenger corrects the missing tap-off in the portal
+          **AND** the next EndOfDay settlement runs
+          **THEN** the journey is recalculated to the Lanyon Place→Portadown single fare
+          **AND** the difference from the maximum fare is refunded
+        expected: Correcting the missing tap recalculates to the point-to-point fare and refunds the max-fare difference.
+      - title: The 3-Day cap applies within one Monday-to-Sunday week
+        refs: [FBD-100690]
+        objective: This test is to confirm that the 3-Day cap applies across any three operating days within one Monday-to-Sunday week and does not span weeks.
+        steps: |-
+          **GIVEN** a card making rail journeys on three operating days within one Monday-to-Sunday week
+          **AND** example: matched rail journeys on the Tuesday, Thursday and Saturday of one week, each operating day running 04:00 to 03:59 (NIR 3-Day Cap product)
+          **WHEN** the third day's journeys are settled at EndOfDay
+          **THEN** the charge across the three days is held at the NIR 3-Day cap value
+          **AND** journeys in the following Monday-to-Sunday week start a fresh cap
+        expected: Three qualifying days in one Mon-Sun week reach the 3-Day cap; the next week starts a fresh cap and does not carry it over.
+
+  # ───────────────────── Capping Timing (FBD-100307 / FBD-100389) ─────────────────────
+  - path: [ABT, Functional, Capping Timing]
+    cases:
+      - title: A newly configured capping rule activates the next business day
+        refs: [FBD-100307]
+        objective: This test is to confirm that a newly configured capping rule takes effect no earlier than the next business day.
+        steps: |-
+          **GIVEN** a capping rule newly configured in CloudFare today
+          **AND** example: a NIR Daily Cap rule created today, with a card travelling both today and tomorrow
+          **WHEN** the card travels on the same day the rule was configured
+          **AND** the EndOfDay settlement runs for that day
+          **THEN** the new cap is not applied to that same day's journeys
+          **AND** the new cap first applies to the next business day's journeys
+        expected: A newly configured cap never applies same day; its earliest effect is the next business day.
+      - title: Taps either side of the 04:00 operating-day boundary fall into different cap days
+        refs: [FBD-100389]
+        objective: This test is to confirm that taps either side of the 04:00 operating-day boundary are counted in different capping days.
+        steps: |-
+          **GIVEN** a card tapping just before and just after the 04:00 operating-day boundary
+          **AND** example: a tap at 03:59 and a tap at 04:01, with the operating day defined as 04:00:00 to 03:59:59
+          **WHEN** the journeys are settled
+          **THEN** the 03:59 tap is counted in the previous operating day's cap
+          **AND** the 04:01 tap is counted in the new operating day's cap
+        expected: The 03:59 tap belongs to the previous operating day and the 04:01 tap to the new one; their caps are separate.
+      - title: A newly deny-listed token starts being denied within about 30 minutes
+        refs: [FBD-100307, FBD-100690]
+        objective: This test is to confirm that a token added to the Deny List starts being denied at devices within about 30 minutes.
+        steps: |-
+          **GIVEN** a token newly added to the ABT Deny List in CloudFare
+          **AND** example: a card token added after the last full-list build, propagated via the 15-minute delta files (full list pulled at least once/day, delta every 15 minutes)
+          **WHEN** the device pulls the next delta file after the token is added
+          **AND** the card taps at a validator
+          **THEN** the tap is declined with Declined Reason 2 (On Deny List)
+          **AND** the token is being denied within about 30 minutes of being added
+        expected: A newly deny-listed token is refused with Declined Reason 2 within about 30 minutes via the 15-minute delta files.
+      - title: A tap-initiated re-authorisation removes a card within about 15 minutes
+        refs: [FBD-100307]
+        objective: This test is to confirm that a denied card that re-authorises on tap is removed from the Deny List within about 15 minutes.
+        steps: |-
+          **GIVEN** a card on the Deny List from an earlier failed authorisation
+          **AND** example: a deny-listed cEMV card tapping at a NIR validator, triggering a near-real-time online re-authorisation
+          **WHEN** the tap-initiated re-authorisation is approved online
+          **THEN** the card is removed from the Deny List within about 15 minutes
+          **AND** a subsequent tap by that card is accepted
+        expected: An approved tap-initiated re-auth clears the card from the Deny List within about 15 minutes and later taps succeed.
+
+  # ───────────────────── Shift Board (FBD-100831) ─────────────────────
+  - path: [ABT, Functional, Shift Board]
+    cases:
+      - title: Shift Board CSV import rejects a malformed row
+        refs: [FBD-100831]
+        objective: This test is to confirm that the Import Shift Board Data screen rejects a headerless CSV whose rows fail validation.
+        steps: |-
+          **GIVEN** the CloudFare Schedule Management "Import Shift Board Data" screen with a headerless CSV to import
+          **AND** example CSV row (columns 0 Shift Number, 4 Journey Number 4-digit, 5 Days-of-Operation Sun→Sat bitmask, 6 Journey Start Time HHMM, 8 Route Reference): Shift Number blank and Days-of-Operation "0111112" (not a 0/1 bitmask)
+          **WHEN** the malformed CSV is imported
+          **THEN** a red banner names the bad rows
+          **AND** the shift board is not imported
+        expected: A CSV with an empty Shift Number and a non-0/1 bitmask is rejected with a red banner naming the bad rows; nothing imports.
+      - title: A Sunday-start CSV bitmask is stored and filtered as the Monday-start DB order
+        refs: [FBD-100831]
+        objective: This test is to confirm that a CSV Sunday-to-Saturday day bitmask is stored and filtered as the schedule DB's Monday-to-Sunday order.
+        steps: |-
+          **GIVEN** a valid shift board CSV whose Days-of-Operation column is ordered Sunday→Saturday
+          **AND** example: a CSV row with Days-of-Operation "0111110" (Mon–Fri in Sun→Sat order), imported for a Metro depot journey
+          **WHEN** the CSV is imported and an ETM filters its Journey List by day of week
+          **THEN** the schedule DB stores the days in Monday→Sunday order as "1111100"
+          **AND** the journey appears in the ETM Journey List on Monday to Friday only
+        expected: The Sun→Sat CSV bitmask "0111110" is stored Mon→Sun as "1111100" and the journey shows Monday–Friday in the ETM Journey List.
+      - title: A Shift Board re-import sets Valid-From at 4am and purges after 7 days
+        refs: [FBD-100831]
+        objective: This test is to confirm that a re-import sets Valid-From to 4am local and purges entries older than the 7-day retention.
+        steps: |-
+          **GIVEN** a shift board already imported for a depot, now being re-imported
+          **AND** example: a new import that supersedes prior entries, with the default 7-day retention configured
+          **WHEN** the shift board is re-imported
+          **THEN** imported entries get Valid From set to 4am local on the import day
+          **AND** superseded entries get Valid To = 4am local on the import day
+          **AND** entries whose Valid To is older than the 7-day retention are deleted
+        expected: A re-import stamps Valid From/To at 4am local and purges entries whose Valid To is older than the 7-day retention.
+
+  # ───────────────────── Access & Claims (FBD-100342 / FBD-100383) ─────────────────────
+  - path: [ABT, Functional, Access & Claims]
+    cases:
+      - title: A first-login user with no claims is denied the Operator Portal and CloudFare
+        refs: [FBD-100342]
+        objective: This test is to confirm that a first-login user with no assigned claims is denied access to both the Operator Portal and CloudFare.
+        steps: |-
+          **GIVEN** a user pulled from Active Directory into KeyCloak realm "Translink" but not yet added to any user group
+          **AND** example: a first-login account with no base or composite claims, targeting operator-react-client (Operator Portal) and CloudfareWeb (CloudFare)
+          **WHEN** the user signs in to the Operator Portal
+          **AND** the user signs in to CloudFare
+          **THEN** access to the Operator Portal is denied
+          **AND** access to CloudFare is denied
+        expected: A first-login user with no claims is denied both the Operator Portal and CloudFare until an admin adds them to a group.
+      - title: An operator sees own and descendant data but not a sibling branch's
+        refs: [FBD-100383, FBD-100342]
+        objective: This test is to confirm that an operator-scoped user sees their own operator and its descendants but not a sibling branch's data.
+        steps: |-
+          **GIVEN** a user scoped to the Metro operator in the operator hierarchy
+          **AND** example: a Metro-scoped user, where Metro's descendants include Glider, Metro Bus and Falls (Metro), and Ulsterbus is a sibling branch under Translink
+          **WHEN** the user opens operator-scoped data in the portal
+          **THEN** the user sees the Metro branch including its descendant operators (Glider, Metro Bus, Falls)
+          **AND** the user cannot see the sibling Ulsterbus branch's data
+        expected: A Metro-scoped user sees Metro and its descendants (Glider, Metro Bus, Falls) but not the sibling Ulsterbus branch.

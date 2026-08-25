@@ -1,0 +1,32 @@
+[
+  {
+    "id": 4103804,
+    "expected": "The chip-and-PIN Visa credit sale is approved and the ticket prints. Data variations: Visa Debit, Mastercard Credit, Mastercard Debit, Maestro.\n\n[Automatable: Partial — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100320,FBD-100183,REQ-0163.0,REQ-0163.3,REQ-0163.4,REQ-1384.0,REQ-1488.0,REQ-1489.0,REQ-1491.0,REQ-1514.0,REQ-1514.1,REQ-1516.0,REQ-1630.0,REQ-1630.2,REQ-1722.0,REQ-1723.0"
+  },
+  {
+    "id": 4103805,
+    "expected": "The chip-and-PIN Mastercard debit sale is approved and the ticket prints. Data variations: Visa Credit, Visa Debit, Mastercard Credit, Maestro.\n\n[Automatable: Partial — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100320,FBD-100183,REQ-0163.0,REQ-0163.3,REQ-0163.4,REQ-1384.0,REQ-1488.0,REQ-1489.0,REQ-1491.0,REQ-1514.0,REQ-1514.1,REQ-1630.0,REQ-1630.2,REQ-1722.0"
+  },
+  {
+    "id": 4103806,
+    "expected": "The contactless Visa sale is approved and the ticket prints. Data variations: Mastercard.\n\n[Automatable: Partial — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100320,FBD-100183,REQ-0163.0,REQ-0163.3,REQ-0163.4,REQ-1384.0,REQ-1488.0,REQ-1489.0,REQ-1491.0,REQ-1514.0,REQ-1514.1,REQ-1516.0,REQ-1630.0,REQ-1630.2,REQ-1722.0,REQ-1723.0,REQ-1854.0,REQ-2519.0"
+  },
+  {
+    "id": 4103808,
+    "expected": "A declined card shows a decline message and no ticket is issued. Data variations: an unsupported-scheme card (e.g. Diners) is declined at the payment screen without a PIN prompt.\n\n[Automatable: Partial — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100320,FBD-100183,REQ-0163.0,REQ-0163.3,REQ-0163.4,REQ-0890.0,REQ-1384.0,REQ-1488.0,REQ-1489.0,REQ-1491.0,REQ-1514.0,REQ-1514.1,REQ-1630.0,REQ-1630.2,REQ-1722.0"
+  },
+  {
+    "id": 4103980,
+    "expected": "A valid inspection shows success with the success tone and records event 5008. Data variations: Visa Debit, Visa Credit, Mastercard Credit, Mastercard Debit, Maestro.\n\n[Automatable: No — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100716"
+  },
+  {
+    "id": 4103984,
+    "expected": "An unsupported-scheme card is declined with \"Card Declined\" and records event 5012. Data variations: e.g. American Express, Diners.\n\n[Automatable: Partial — Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100716"
+  }
+]

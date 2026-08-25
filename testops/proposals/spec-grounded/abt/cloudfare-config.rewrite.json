@@ -1,0 +1,847 @@
+[
+  {
+    "id": 4102976,
+    "section": "Setup & Import",
+    "action": "grounded-edit",
+    "title": "Topology & Fares Management — each menu option opens its page",
+    "preface": "This test is to confirm the user can open the Topology & Fares Management module and reach each of its pages from the Topology main menu.",
+    "preconds": "**GIVEN** the user is signed into CloudFare with the Dashboard displayed\n**AND** the user has rights to the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user opens the Topology & Fares Management module via the '3 dot' icon to the right of the 'Topology & Fares' text and selects each option on the Topology main menu",
+        "expected": "**THEN** each selected Topology & Fares page opens"
+      }
+    ],
+    "citations": ["FBD-100296 para 138", "FBD-100296 para 161", "FBD-100296 para 162"],
+    "change_note": "Grounded the module name to the spec's 'Topology & Fares Management module' and named the '3 dot' Topology main-menu entry point (FBD-100296 §161-162). Title tightened to <Feature> — <observable behaviour>.",
+    "gaps": []
+  },
+  {
+    "id": 4102977,
+    "section": "Setup & Import",
+    "action": "unconfirmed",
+    "title": "Topology filter — services and routes filter by operator",
+    "preface": "This test is to confirm that services and routes can be filtered and managed by operator level within the CloudFare Operator Hierarchy.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module\n**AND** more than one operator level exists in the CloudFare Operator Hierarchy",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects an operator level in the hierarchy",
+        "expected": "**THEN** only that level's services and routes are shown\n**UNCONFIRMED** — a discrete 'filter by operator' control on the Topology & Fares screen is not described in the governing specs; the specs describe an Operator Hierarchy level (FBD-100385 para 178) and a fixed OperatorId of 1 (FBD-100698 para 86). Confirm the actual filter control on the live system."
+      }
+    ],
+    "citations": ["FBD-100385 para 178", "FBD-100698 para 86"],
+    "change_note": "Re-expressed 'filter by operator' as selecting an Operator Hierarchy level, the only operator-scoping mechanism found in the specs. The specific filter widget is unverified.",
+    "gaps": ["No governing spec describes a 'filter by operator' control on the Topology & Fares Management screen; only hierarchy levels (FBD-100385 §178)."]
+  },
+  {
+    "id": 4102978,
+    "section": "Setup & Import",
+    "action": "unconfirmed",
+    "title": "Fares export — configured fares are exported",
+    "preface": "This test is to confirm the user can export configured fares from CloudFare.",
+    "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the fares export (Fares Export function, or exports fares for routes sharing a Service Group)",
+        "expected": "**THEN** the fares file is produced\n**UNCONFIRMED** — the governing specs place fares export in the Reports module / a dedicated Fares Export function (FBD-100385 para 157-159, detailed in FBD-100336) and describe export for routes sharing a Service Group (FBD-100296 para 241); export 'for a selected operator' from the Topology & Fares page is not confirmed. Confirm the surface and parameters live."
+      }
+    ],
+    "citations": ["FBD-100385 para 157", "FBD-100385 para 159", "FBD-100296 para 241"],
+    "change_note": "Fares export exists but is (a) referenced to FBD-100336 and (b) described as service-group based, not per-operator, and not on the Topology & Fares page. Marked the operator/location claims UNCONFIRMED.",
+    "gaps": ["Detailed fares export behaviour lives in FBD-100336 (Fares File Export), which is outside the governing set for this pass."]
+  },
+  {
+    "id": 4102979,
+    "section": "Setup & Import",
+    "action": "grounded-edit",
+    "title": "Import Map Point File — stops are added and existing stops updated",
+    "preface": "This test is to confirm the user can import a map point CSV file to add new stops and update existing stops.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module\n**AND** a map point CSV file in the specified format is available (see Map Point Import File Example, FBD-100296 ref [1])",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects 'Import Map Point File' from the Topology main menu, selects the CSV file and presses 'Import'",
+        "expected": "**THEN** a success box reports the number of stops added (Stops Added) and updated (Stops Updated)\n**AND** stops not already present are added\n**AND** existing stops are updated from the file"
+      }
+    ],
+    "citations": ["FBD-100296 para 161", "FBD-100296 para 163", "FBD-100296 para 167", "FBD-100296 para 189", "FBD-100296 para 201"],
+    "change_note": "Named the exact function ('Import Map Point File'), the Import button, and the success message fields Stops Added / Stops Updated (FBD-100296 §163,167,189,201).",
+    "gaps": []
+  },
+  {
+    "id": 4102980,
+    "section": "Setup & Import",
+    "action": "unconfirmed",
+    "title": "Import route data at parent and child operator level",
+    "preface": "This test is to confirm the user can import route data at parent and child operator level.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module with an operator selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user imports route data at parent operator level and at child operator level",
+        "expected": "**THEN** the route data is imported at the selected level\n**UNCONFIRMED** — the governing spec covers only CSV map-point import and states a TransXChange route import is NOT required during R2.0 (FBD-100296 para 44, para 72); an XLSX route-data import at parent/child level is not described. Confirm this import exists live and capture its real file format and screen."
+      }
+    ],
+    "citations": ["FBD-100296 para 44", "FBD-100296 para 72"],
+    "change_note": "Removed the invented 'XLSX' file type from the title/preface. Route-data import at parent/child level is not in the governing spec (route import via TransXChange was deferred). Marked UNCONFIRMED.",
+    "gaps": ["No governing spec describes an XLSX route-data import at parent/child operator level; TransXChange route import was deferred (FBD-100296 §72)."]
+  },
+  {
+    "id": 4103007,
+    "section": "Rules",
+    "action": "unconfirmed",
+    "title": "Fares rule — a new rule is added",
+    "preface": "This test is to confirm the user can add a new fares rule.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds a new fares rule",
+        "expected": "**THEN** the rule is saved and appears in the configured rules\n**UNCONFIRMED** — rules exist and can be exported (Rules Report, FBD-100385 para 125-126), but the governing specs do not describe the add-a-rule screen or fields. Confirm the rule-creation flow live."
+      }
+    ],
+    "citations": ["FBD-100385 para 125", "FBD-100385 para 126"],
+    "change_note": "Existence of configurable rules is grounded (Rules Report export, FBD-100385 §125-126); the creation UI is not in the governing set. Marked UNCONFIRMED.",
+    "gaps": ["Rule-creation screen/fields not in the governing specs (only the Rules Report export is)."]
+  },
+  {
+    "id": 4103008,
+    "section": "Rules",
+    "action": "unconfirmed",
+    "title": "Rule — e-Purse single fare charge",
+    "preface": "This test is to confirm the user can configure an e-Purse single-fare charge rule.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures an e-Purse single-fare charge rule",
+        "expected": "**THEN** the rule is saved\n**AND** it is applied to e-Purse single fares\n**UNCONFIRMED** — no governing spec in this set describes an e-Purse single-fare charge rule or its configuration. Confirm the rule type and screen live."
+      }
+    ],
+    "citations": [],
+    "change_note": "No spec grounding for an e-Purse single-fare rule in the governing set. Kept the behaviour but marked UNCONFIRMED end-to-end.",
+    "gaps": ["e-Purse single-fare charge rule not found in any governing spec."]
+  },
+  {
+    "id": 4103009,
+    "section": "Rules",
+    "action": "unconfirmed",
+    "title": "Rule — fixed fare (including smartcard fixed fare)",
+    "preface": "This test is to confirm the user can configure a fixed-fare rule, including a smartcard fixed fare.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a fixed-fare rule, including a smartcard fixed fare",
+        "expected": "**THEN** the fixed-fare rule is saved\n**AND** it is applied\n**UNCONFIRMED** — no governing spec in this set describes a fixed-fare rule type or its configuration. Confirm live."
+      }
+    ],
+    "citations": [],
+    "change_note": "No spec grounding for a fixed-fare rule in the governing set. Marked UNCONFIRMED.",
+    "gaps": ["Fixed-fare rule (and smartcard fixed fare) not found in any governing spec."]
+  },
+  {
+    "id": 4102986,
+    "section": "Route Management",
+    "action": "grounded-edit",
+    "title": "Route Management — create, amend, copy and delete a route",
+    "preface": "This test is to confirm the user can create, amend, copy and delete a route in the Route Management module. Note: this bundles four behaviours; consider splitting per the Gherkin standard.",
+    "preconds": "**GIVEN** the user is in the Route Management module with a Service selected in the Services sub-module",
+    "steps": [
+      {
+        "content": "**WHEN** the user presses 'Create New Route' in the Routes sub-module, completes the route attributes and stops, and presses 'Add Route'",
+        "expected": "**THEN** the new route is added and appears in the Routes drop-down"
+      },
+      {
+        "content": "**WHEN** the user selects the route, opens the '3 dot' menu on the Route Pane and chooses 'Edit Route Attributes' (or 'Copy Route', or 'Delete Route')",
+        "expected": "**THEN** 'Edit Route Attributes' applies the amended attributes\n**AND** 'Copy Route' creates a copy in the same Service named '<route>-copy'\n**AND** 'Delete Route' removes the route after the Yes/No confirmation\n**UNCONFIRMED** — that a copied route 'retains its assigned fare area' is not in FBD-100296 (fares are explicitly out of scope of that spec, para 44); confirm fare-area copy behaviour against the fares spec/live."
+      }
+    ],
+    "citations": ["FBD-100296 para 230", "FBD-100296 para 257", "FBD-100296 para 261", "FBD-100296 para 282", "FBD-100296 para 285", "FBD-100296 para 44"],
+    "change_note": "Named exact controls: Create New Route / Add Route (§230,257), Copy Route ('-copy', same service) (§261), Edit Route Attributes (§282), Delete Route + Yes/No (§285). Flagged the 'retains fare area' claim as UNCONFIRMED (fares out of scope of FBD-100296).",
+    "gaps": ["Whether a copied route retains its fare area is unverified (fares excluded from FBD-100296)."]
+  },
+  {
+    "id": 4102987,
+    "section": "Route Management",
+    "action": "unconfirmed",
+    "title": "Route — service and public route code configured",
+    "preface": "This test is to confirm the user can add a route to a Service and set its route codes.",
+    "preconds": "**GIVEN** the user is in the Route Management module with a Service selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the route's 'Add to a Service' attribute and its 'Public Route Code' (the code printed on tickets)",
+        "expected": "**THEN** the route is saved with the selected Service and Public Route Code\n**UNCONFIRMED** — FBD-100296 route attributes are 'Add to a Service' and 'Public Route Code' (para 236-238); there is no per-route 'service code' field nor a per-route 'operator' assignment (routes belong to a Service, not an operator). Confirm what 'service code' and 'operator' mean on the live screen."
+      }
+    ],
+    "citations": ["FBD-100296 para 236", "FBD-100296 para 238"],
+    "change_note": "Replaced invented 'service code' and per-route 'operator' with the actual route attributes 'Public Route Code' and 'Add to a Service' (FBD-100296 §236-238). Original labels marked UNCONFIRMED.",
+    "gaps": ["No 'service code' field and no per-route operator assignment in FBD-100296; routes attach to a Service."]
+  },
+  {
+    "id": 4102988,
+    "section": "Route Management",
+    "action": "unconfirmed",
+    "title": "Route — enable ABT flat fare",
+    "preface": "This test is to confirm the user can enable ABT flat-fare travel on a route.",
+    "preconds": "**GIVEN** the user has selected a route in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user enables ABT flat fare on the route",
+        "expected": "**THEN** the route is configured for ABT flat-fare travel\n**UNCONFIRMED** — an 'ABT flat fare' route attribute is not among the FBD-100296 route attributes (para 234-249), and fares are out of scope of that spec (para 44). Confirm the flat-fare setting exists and where it lives."
+      }
+    ],
+    "citations": ["FBD-100296 para 234", "FBD-100296 para 44"],
+    "change_note": "No 'ABT flat fare' attribute in the FBD-100296 route-attribute list; fares out of scope of that spec. Marked UNCONFIRMED.",
+    "gaps": ["'ABT flat fare' route setting not found in the governing specs."]
+  },
+  {
+    "id": 4102989,
+    "section": "Route Management",
+    "action": "grounded-edit",
+    "title": "Route — enable Multi-Journey transfers and set the transfer time",
+    "preface": "This test is to confirm the user can permit Multi-Journey transfers on a route and set the transfer time so a transfer within the window retrieves the correct fare.",
+    "preconds": "**GIVEN** the user is editing a route's attributes in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the route's 'Transfer Time' (minutes) — and 'Directional Transfer' if the previous journey's direction must match",
+        "expected": "**THEN** Multi-Journey transfers are permitted on the route with the configured Transfer Time"
+      },
+      {
+        "content": "**WHEN** a second tap is made within the configured Transfer Time",
+        "expected": "**THEN** the fares engine returns the correct transfer fare for the window\n**UNCONFIRMED** — the transfer-fare retrieval is fares-engine behaviour (FBD-100698); confirm the exact fare returned against seeded fares."
+      }
+    ],
+    "citations": ["FBD-100296 para 242", "FBD-100296 para 248"],
+    "change_note": "Grounded 'Transfer Time' (minutes) and 'Directional Transfer' as the actual route attributes (FBD-100296 §242,248). The fare-within-window check is fares-engine behaviour and marked UNCONFIRMED.",
+    "gaps": []
+  },
+  {
+    "id": 4102990,
+    "section": "Route Management",
+    "action": "unconfirmed",
+    "title": "Route — configure the fares triangle and calculate a fare",
+    "preface": "This test is to confirm the user can configure a route's fares triangle, create a fare area and calculate a fare.",
+    "preconds": "**GIVEN** the user has selected a route in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the fares triangle, creates a new fare area and calculates a fare",
+        "expected": "**THEN** the fares triangle is saved\n**AND** the calculated fare matches the configured fare area\n**UNCONFIRMED** — fares management (fares triangle, fare areas) is explicitly OUT of scope of FBD-100296 (para 44); the fares-triangle concept is only referenced in passing (para 239). Fare-triangle/area configuration lives in a fares spec (e.g. FBD-100336), outside this governing set. Confirm the screen and fields live."
+      }
+    ],
+    "citations": ["FBD-100296 para 44", "FBD-100296 para 239"],
+    "change_note": "Fares-triangle/fare-area configuration is out of scope of the governing route/topology specs. Marked UNCONFIRMED and pointed to the fares spec.",
+    "gaps": ["Fares triangle / fare area configuration not in the governing set (fares excluded from FBD-100296; see FBD-100336)."]
+  },
+  {
+    "id": 4102991,
+    "section": "Route Management",
+    "action": "unconfirmed",
+    "title": "Route — ETM rail substitution service",
+    "preface": "This test is to confirm the user can create an ETM rail-substitution service route.",
+    "preconds": "**GIVEN** the user has selected an ETM operator and created a rail replacement service in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the rail-substitute route",
+        "expected": "**THEN** the rail-substitute route is saved\n**UNCONFIRMED** — 'rail substitution' is grounded as a fare-request concept (tap-on-only taps on an ETM split into tap-on/tap-off by ABT — FBD-100698 para 109), but a CloudFare screen to create a rail-substitution *service route* is not described. Confirm the configuration surface live."
+      }
+    ],
+    "citations": ["FBD-100698 para 109"],
+    "change_note": "Rail substitution is grounded as ABT fare-request behaviour (FBD-100698 §109); the route-configuration flow is not in the governing specs. Marked UNCONFIRMED.",
+    "gaps": ["No spec describes configuring a rail-substitution service route in CloudFare; only the ABT fare-request behaviour (FBD-100698 §109)."]
+  },
+  {
+    "id": 4102992,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — a product is configured and saved",
+    "preface": "This test is to confirm the user can configure and save a product for an operator.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a product's properties and saves it",
+        "expected": "**THEN** the product is saved with its configuration\n**AND** the properties correspond to the CloudFare Product Configuration data set (e.g. Description, Short Code, Reference ID)"
+      }
+    ],
+    "citations": ["FBD-100268 para 11", "FBD-100268 para 12", "FBD-100268 para 30", "FBD-100293 para 124"],
+    "change_note": "Grounded product properties to FBD-100268 (Description §11, Short Code §12, Reference ID §30) and located product config under the Products menu of Topology & Fares Management (FBD-100293 §124).",
+    "gaps": []
+  },
+  {
+    "id": 4102993,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — an ABT product is configured",
+    "preface": "This test is to confirm the user can configure an ABT product (ABT Create / ABT TopUp variant).",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures an ABT product (ABT Create or ABT TopUp)",
+        "expected": "**THEN** the ABT product is saved with its configuration\n**AND** it is available to ABT as product type 'ABT Product'"
+      }
+    ],
+    "citations": ["FBD-100268 para 10", "FBD-100698 para 86"],
+    "change_note": "Grounded 'ABT product' to the FBD-100268 product-type columns 'ABT Create'/'ABT TopUp' (§10 header) and to ABT's use of product type 'ABT Product' (FBD-100698 §86).",
+    "gaps": []
+  },
+  {
+    "id": 4102994,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — an Open product is configured",
+    "preface": "This test is to confirm the user can configure an Open product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures an Open product",
+        "expected": "**THEN** the Open product is saved with its configuration"
+      }
+    ],
+    "citations": ["FBD-100268 para 10"],
+    "change_note": "'Open' is a confirmed product type (FBD-100268 §10 header column). Fixed the invented location label 'CloudFare Topology Management page' to 'Topology & Fares Management module' (FBD-100296 §138).",
+    "gaps": []
+  },
+  {
+    "id": 4102995,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — a FLU product is configured",
+    "preface": "This test is to confirm the user can configure a fare look-up (FLU) product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a FLU product",
+        "expected": "**THEN** the FLU product is saved with its configuration"
+      }
+    ],
+    "citations": ["FBD-100268 para 10"],
+    "change_note": "'FLU' is a confirmed product type (FBD-100268 §10 header column). Fixed the location label to 'Topology & Fares Management module'.",
+    "gaps": []
+  },
+  {
+    "id": 4102996,
+    "section": "Products",
+    "action": "unconfirmed",
+    "title": "Product — a Preset product is configured",
+    "preface": "This test is to confirm the user can configure a Preset product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a Preset product",
+        "expected": "**THEN** the Preset product is saved with its configuration\n**UNCONFIRMED** — FBD-100268 confirms a 'Preset' product type (§10 header) but there is no 'Preset Reverse FLU' variant in the spec. Confirm whether 'reverse FLU' is a real Preset sub-type live."
+      }
+    ],
+    "citations": ["FBD-100268 para 10"],
+    "change_note": "'Preset' is a confirmed product type; the 'Reverse FLU' qualifier is not in FBD-100268 and was removed from the asserted title. Marked UNCONFIRMED.",
+    "gaps": ["'Preset Reverse FLU' as a distinct product variant not found in FBD-100268 (only 'Preset')."]
+  },
+  {
+    "id": 4102997,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — a Reference Type product is configured",
+    "preface": "This test is to confirm the user can configure a reference-type product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a reference-type product and sets its Reference Product",
+        "expected": "**THEN** the product is saved with its configuration"
+      }
+    ],
+    "citations": ["FBD-100268 para 10", "FBD-100268 para 25"],
+    "change_note": "Grounded to the 'ReferenceProduct' product-type column (§10 header) and the 'Reference Product' field (§25). Fixed the location label.",
+    "gaps": []
+  },
+  {
+    "id": 4102998,
+    "section": "Products",
+    "action": "unconfirmed",
+    "title": "Product — an Excess (open-value) product is configured",
+    "preface": "This test is to confirm the user can configure an excess product as an open-value product with minimum and maximum values.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the product's Minimum Value and Maximum Value (in pence)",
+        "expected": "**THEN** the product is saved as an open-value / excess product\n**UNCONFIRMED** — FBD-100268 has no distinct 'Excess' product-type column; it describes Excess as an open-value ticket governed by the Minimum Value and Maximum Value fields (§47-48). Confirm whether 'Excess' is a named product type live."
+      }
+    ],
+    "citations": ["FBD-100268 para 47", "FBD-100268 para 48"],
+    "change_note": "'Excess' is not a product-type column in FBD-100268; the spec treats it as an open-value ticket configured via Minimum/Maximum Value (§47-48). Grounded to those fields and marked the 'Excess product type' UNCONFIRMED.",
+    "gaps": ["'Excess' as a named product type is not in FBD-100268 (only Min/Max Value fields for open-value tickets)."]
+  },
+  {
+    "id": 4102999,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — a Smartcard product is configured (WTS SmartCreate / SmartRecharge)",
+    "preface": "This test is to confirm the user can configure a smartcard product, including the WTS SmartCreate and WTS SmartRecharge variants.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a smartcard product, including its WTS SmartCreate and WTS SmartRecharge variants",
+        "expected": "**THEN** the smartcard product is saved with its configuration"
+      }
+    ],
+    "citations": ["FBD-100268 para 10", "FBD-100268 para 80", "FBD-100268 para 56"],
+    "change_note": "Grounded 'WTS SmartCreate' and 'WTS SmartRecharge' to the FBD-100268 product-type columns (§10 header) and their fields (SmartCreate group §80+; Recharge Allowed §56). Fixed the location label.",
+    "gaps": []
+  },
+  {
+    "id": 4103000,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — barcode printing configured on a paper ticket product",
+    "preface": "This test is to confirm the user can configure whether a barcode is printed on a paper ticket product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the product's 'Print Barcode' setting (and, for a BarcodeUse product, links the Barcode Use product)",
+        "expected": "**THEN** the barcode-print configuration is saved on the product"
+      }
+    ],
+    "citations": ["FBD-100268 para 51", "FBD-100268 para 37", "FBD-100268 para 34"],
+    "change_note": "Grounded to the 'Print Barcode' field (§51), the 'Barcode Use' link and 'BarcodeUse' product type (§37), and 'Barcode Passback' (§34).",
+    "gaps": []
+  },
+  {
+    "id": 4103001,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — default alighting stage configured",
+    "preface": "This test is to confirm the user can configure the default alighting stage for a product.",
+    "preconds": "**GIVEN** the user is viewing a product's fares in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the product's default alighting stage",
+        "expected": "**THEN** the alighting stage is saved to the product\n**AND** it is used as the MERIT default alighting stage for the product's transactions"
+      }
+    ],
+    "citations": ["FBD-100268 para 28", "FBD-100268 para 57"],
+    "change_note": "Grounded to 'MERIT Default Alighting Stage' (§28) and 'Alighting Stage ID' (§57).",
+    "gaps": []
+  },
+  {
+    "id": 4103002,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — annulment allowed configured per device type",
+    "preface": "This test is to confirm the user can configure whether a product may be annulled, overridden per device type.",
+    "preconds": "**GIVEN** a product has been set up and the user is viewing its details",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the product's 'Annul Allowed' setting, overriding it per device type",
+        "expected": "**THEN** the 'Annul Allowed' setting is saved, per device type where overridden"
+      }
+    ],
+    "citations": ["FBD-100268 para 18"],
+    "change_note": "Grounded to the 'Annul Allowed' field with Device Override = Yes (§18). 'Annulments per device' = the per-device override of Annul Allowed.",
+    "gaps": []
+  },
+  {
+    "id": 4103003,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product — Passback Time configured",
+    "preface": "This test is to confirm the user can configure the Passback Time for a product (the wait before the same card is accepted again).",
+    "preconds": "**GIVEN** the user is viewing a product in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the product's 'Passback Time' (in minutes)",
+        "expected": "**THEN** the Passback Time is saved to the product"
+      }
+    ],
+    "citations": ["FBD-100268 para 50", "FBD-100268 para 34"],
+    "change_note": "Corrected 'passback period' to the actual field name 'Passback Time' (minutes) (§50); noted 'Barcode Passback' as the barcode equivalent (§34).",
+    "gaps": []
+  },
+  {
+    "id": 4103004,
+    "section": "Products",
+    "action": "unconfirmed",
+    "title": "Product buttons — assigned via Menu product groups per device",
+    "preface": "This test is to confirm the user can add, remove and toggle the device buttons that products appear on, per device type.",
+    "preconds": "**GIVEN** the user is in the Product Groups area of the Products menu with a Menu-type product group open",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds, removes or reorders products against buttons in a Menu-type product group for a device type",
+        "expected": "**THEN** the button assignment is saved for that device type\n**UNCONFIRMED** — device button assignment is done through Menu-type Product Groups (products mapped to L1-L5 / R1-R5 keys), not a per-product 'keyboard button' field (FBD-100293 para 155, para 202). FBD-100268 has no keyboard-button property. Confirm the exact live surface."
+      }
+    ],
+    "citations": ["FBD-100293 para 155", "FBD-100293 para 202"],
+    "change_note": "Cross-surface correction: 'product device keyboard buttons' are configured via Menu-type Product Groups (L1-L5/R1-R5 key mapping), not on the product screen (FBD-100293 §155,202; no such field in FBD-100268). Marked UNCONFIRMED.",
+    "gaps": ["No per-product 'keyboard button' field exists; button mapping is a Menu Product Group function (FBD-100293)."]
+  },
+  {
+    "id": 4103005,
+    "section": "Products",
+    "action": "grounded-edit",
+    "title": "Product Group — create and edit a FLU group per device type",
+    "preface": "This test is to confirm the user can create and edit a FLU-type product group for a device type (ETM, POS, HHD, TVM or All).",
+    "preconds": "**GIVEN** the user is on the Product Groups menu (Products menu > Product Groups) in CloudFare",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects 'FLU' in the Product Group Create Window, presses 'Create', sets the Group Name and Device Type, and adds products via 'Add Product/Group'",
+        "expected": "**THEN** the FLU group is saved for the selected device type on pressing 'Save'"
+      }
+    ],
+    "citations": ["FBD-100293 para 124", "FBD-100293 para 140", "FBD-100293 para 148", "FBD-100293 para 152", "FBD-100293 para 154"],
+    "change_note": "Grounded the whole flow: Products > Product Groups menu (§124), Product Group Create Window + Create (§140), Device Type dropdown incl All (§148), Add Product/Group + Save (§152), FLU-group rule (§154). Fixed the incorrect precondition 'with toggle groups created' (this case is about FLU groups).",
+    "gaps": []
+  },
+  {
+    "id": 4103006,
+    "section": "Products",
+    "action": "unconfirmed",
+    "title": "Product — assignment expiry / enablement",
+    "preface": "This test is to confirm the user can set when a product assignment expires or is disabled.",
+    "preconds": "**GIVEN** the user is viewing a product's ticket/device assignment in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the expiry (or enabled/disabled state) of the product assignment",
+        "expected": "**THEN** the assignment's expiry / enabled state is saved\n**UNCONFIRMED** — FBD-100268 has product-level date fields (e.g. End Date, Travel Token Expiry §89,110) but no 'product assignment expiry'; FBD-100385 shows a ticket-assignment 'Enabled' Yes/No (§202). Confirm what 'product assignment expiry' controls on the live screen."
+      }
+    ],
+    "citations": ["FBD-100268 para 89", "FBD-100268 para 110", "FBD-100385 para 202"],
+    "change_note": "No 'product assignment expiry' field found; product-level expiry (End Date/Travel Token Expiry) and ticket-assignment Enabled flag are the nearest grounded concepts. Marked UNCONFIRMED.",
+    "gaps": ["'Product assignment expiry' not found as a named field; only product-level expiry dates and an assignment Enabled flag."]
+  },
+  {
+    "id": 4103036,
+    "section": "Asset Manager",
+    "action": "unconfirmed",
+    "title": "Device Details — view and edit device information",
+    "preface": "This test is to confirm the user can view and edit a device's information from the Device Details page in Asset Manager.",
+    "preconds": "**GIVEN** the user is in Asset Manager with a device's Device Details page displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user enters Edit mode on the Device Details page and changes the device information",
+        "expected": "**THEN** the device information is updated\n**UNCONFIRMED** — FBD-100263 names the 'Device Details page' and an 'Edit mode' (para 418, 450) and 'Asset Manager' (para 419) but explicitly does not cover the full scope of asset management (para 57/para 5). Confirm the editable fields live."
+      }
+    ],
+    "citations": ["FBD-100263 para 418", "FBD-100263 para 450", "FBD-100263 para 419"],
+    "change_note": "Corrected the invented 'Device Information page' to the spec's 'Device Details page' (FBD-100263 §418) with 'Edit mode' (§450), under Asset Manager (§419). Marked UNCONFIRMED because the spec does not cover full device-edit scope.",
+    "gaps": ["Editable device fields are not enumerated (FBD-100263 covers reports, not full asset management)."]
+  },
+  {
+    "id": 4103037,
+    "section": "Asset Manager",
+    "action": "unconfirmed",
+    "title": "Device — status set from Device Details page",
+    "preface": "This test is to confirm the user can set and clear a device status from the Device Details page.",
+    "preconds": "**GIVEN** the user is in Asset Manager with a device's Device Details page displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user assigns a status to the device, then later changes it back",
+        "expected": "**THEN** the device's status is updated accordingly\n**UNCONFIRMED** — FBD-100263 describes selecting new status categories from the Device Details page (para 418, 423) but does not describe a 'disable/enable' device state. Confirm whether the live control is disable/enable or a status category."
+      }
+    ],
+    "citations": ["FBD-100263 para 418", "FBD-100263 para 423"],
+    "change_note": "'Disable/enable a device' is not in FBD-100263; the spec describes selectable status categories from the Device Details page (§418,423). Re-expressed as status and marked UNCONFIRMED.",
+    "gaps": ["No 'disable/enable device' state described; only selectable status categories (FBD-100263 §423)."]
+  },
+  {
+    "id": 4103038,
+    "section": "Asset Manager",
+    "action": "gap",
+    "title": "Quick Product Assignment — add, remove and abandon products",
+    "preface": "This test is to confirm the user can add and remove products via Quick Product Assignment and abandon unsaved changes.",
+    "preconds": "**GIVEN** the Quick Product Assignment page is displayed with the operator level set",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds products, removes products, or abandons the changes",
+        "expected": "**THEN** saved product changes persist\n**AND** abandoned changes are discarded\n**GAP** — 'Quick Product Assignment' is not described in any governing spec in this set; confirm the page, fields and behaviour on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No governing spec covers Quick Product Assignment. Left the behaviour intact and flagged GAP.",
+    "gaps": ["Quick Product Assignment page/behaviour not found in any governing spec."]
+  },
+  {
+    "id": 4103041,
+    "section": "Device Dataset Deployment",
+    "action": "gap",
+    "title": "Device dataset — create and modify a version",
+    "preface": "This test is to confirm the user can create a device dataset version and modify its details.",
+    "preconds": "**GIVEN** the Device Datasets page is displayed with existing versions",
+    "steps": [
+      {
+        "content": "**WHEN** the user creates a new dataset version and modifies its details",
+        "expected": "**THEN** the dataset version is saved with the modified details\n**GAP** — no governing spec in this set covers Device Dataset Deployment / Device Datasets; confirm screens, states and behaviour on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No governing spec for Device Dataset Deployment. Flagged GAP.",
+    "gaps": ["Device Datasets page/versioning not found in any governing spec."]
+  },
+  {
+    "id": 4103042,
+    "section": "Device Dataset Deployment",
+    "action": "gap",
+    "title": "Device software — upload and configure a version",
+    "preface": "This test is to confirm the user can upload a new software version and configure its parameters.",
+    "preconds": "**GIVEN** the Device Dataset Deployment software distribution page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user uploads a new software version and configures its parameters",
+        "expected": "**THEN** the software version is uploaded with the configured parameters\n**GAP** — no governing spec in this set covers device software distribution; confirm the page and behaviour on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No governing spec for device software distribution. Flagged GAP.",
+    "gaps": ["Software distribution page not found in any governing spec."]
+  },
+  {
+    "id": 4103043,
+    "section": "Device Dataset Deployment",
+    "action": "gap",
+    "title": "Device dataset — change version state and deploy",
+    "preface": "This test is to confirm the user can change a dataset version's state and deploy it to devices.",
+    "preconds": "**GIVEN** the Device Datasets page is displayed with a valid dataset version",
+    "steps": [
+      {
+        "content": "**WHEN** the user changes the version state and deploys it",
+        "expected": "**THEN** the version state is updated\n**AND** the dataset is deployed to the target devices\n**GAP** — no governing spec in this set covers dataset version states or deployment; confirm on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No governing spec for dataset version state/deployment. Flagged GAP.",
+    "gaps": ["Dataset version states and deployment not found in any governing spec."]
+  },
+  {
+    "id": 4103088,
+    "section": "Station Manager",
+    "action": "gap",
+    "title": "Station Manager — create a rail line and station",
+    "preface": "This test is to confirm the user can add a rail line and create a station in Station Manager.",
+    "preconds": "**GIVEN** the user is on the Station Management Network View page",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds a new rail line and creates a station",
+        "expected": "**THEN** the rail line and station are added to the network\n**GAP** — no governing spec in this set covers Station Manager, the Network View, rail lines or stations; confirm all screen/field names on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No CloudFare Station Manager spec in the governing set (only hardware gate/station schematics exist in the library). Flagged GAP; all labels unverified.",
+    "gaps": ["Station Manager / Network View / rail line / station not found in any governing spec."]
+  },
+  {
+    "id": 4103089,
+    "section": "Station Manager",
+    "action": "gap",
+    "title": "Station Manager — delete or change a station",
+    "preface": "This test is to confirm the user can delete or change a station in Station Manager.",
+    "preconds": "**GIVEN** the user is on the Station Management Network View page",
+    "steps": [
+      {
+        "content": "**WHEN** the user deletes or changes a station",
+        "expected": "**THEN** the change is applied to the network\n**GAP** — no governing spec in this set covers Station Manager; confirm screen/field names on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No CloudFare Station Manager spec in the governing set. Flagged GAP.",
+    "gaps": ["Station Manager station edit/delete not found in any governing spec."]
+  },
+  {
+    "id": 4103090,
+    "section": "Station Manager",
+    "action": "gap",
+    "title": "Station Manager — add a branch",
+    "preface": "This test is to confirm the user can add a branch in Station Manager.",
+    "preconds": "**GIVEN** the user is on the Station Management Network View page",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds a branch",
+        "expected": "**THEN** the branch is added to the network\n**GAP** — no governing spec in this set covers Station Manager or a rail 'branch'; confirm screen/field names on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "No CloudFare Station Manager spec in the governing set. Flagged GAP.",
+    "gaps": ["Station Manager 'branch' concept not found in any governing spec."]
+  },
+  {
+    "id": 4102953,
+    "section": "Configuration & Setup",
+    "action": "unconfirmed",
+    "title": "Zones — a multi-zone stop is a member of each of its travel zones",
+    "preface": "This test is to confirm that a stop lying within more than one overlapping zone is recorded as a member of each zone, so capping can evaluate it against each zone's cap.",
+    "preconds": "**GIVEN** the user is signed into CloudFare with rights to Zone Settings (Settings module > Topology sub-module > Zones)\n**AND** a stop that lies within more than one zone (e.g. a 403 (IN) stop within both a Magherafelt Ulsterbus Town Service zone and iLink Zone 4 — Ulsterbus Town Service zones can exist within an iLink zone)",
+    "steps": [
+      {
+        "content": "**WHEN** the user views the stop's zone membership in Zone Settings",
+        "expected": "**THEN** the stop is listed as a member of each overlapping zone it falls within"
+      },
+      {
+        "content": "**WHEN** a card makes qualifying taps at that stop and the EndOfDay settlement runs",
+        "expected": "**THEN** the capping engine evaluates the stop against each of its zones' caps\n**UNCONFIRMED** — zone membership is derived from the drawn zone boundaries in Zone Settings (FBD-100229 para 119, 187), NOT configured 'within the capping rules'; the per-zone capping evaluation is capping-engine behaviour not detailed in the governing zone spec. Confirm the settlement outcome against seeded caps."
+      }
+    ],
+    "citations": ["FBD-100229 para 119", "FBD-100229 para 182", "FBD-100229 para 187", "FBD-100229 para 126"],
+    "change_note": "Grounded the multi-zone concept (overlapping zones / a stop in multiple zones — §119; Ulsterbus Town Service zones within iLink zones — §182,126). Corrected the surface: zone membership is set in Zone Settings (Settings>Topology>Zones §187) from drawn boundaries, not 'within the capping rules'; removed the unverified 'BusinessRules CreateEdit' claim and marked the capping-evaluation THEN UNCONFIRMED.",
+    "gaps": ["Per-zone capping evaluation at settlement is engine behaviour, not covered by the zone spec."]
+  },
+  {
+    "id": 4102954,
+    "section": "Configuration & Setup",
+    "action": "unconfirmed",
+    "title": "Declined taps — each decline reason is recorded on the Declined Taps Report",
+    "preface": "This test is to confirm each decline reason is recorded against its tap and shown on the Declined Taps Report.",
+    "preconds": "**GIVEN** declined card taps have occurred for each reason — an expired card, an ODA/authenticity failure, a BIN-listed card and a Deny-listed card\n**AND** the user is signed into the ABT Operator Portal with the report claim for declined card taps",
+    "steps": [
+      {
+        "content": "**WHEN** the user opens the Declined Taps Report for the test period",
+        "expected": "**THEN** each declined tap is listed with its decline reason (e.g. Expired, Declined/ODA, On BIN List, On Deny List)\n**AND** the reason recorded matches the failure that caused each decline\n**UNCONFIRMED** — the Declined Taps Report, the specific decline-reason labels and the report claim are not defined in any governing spec in this set (this pass's specs are product/topology/zone/export/asset). Confirm the report name, claim and reason strings against the reports/card-verification spec or live."
+      }
+    ],
+    "citations": [],
+    "change_note": "No governing spec in this set defines the Declined Taps Report or its reason labels; softened the asserted labels to examples and marked UNCONFIRMED end-to-end pending the reports/card-verification spec.",
+    "gaps": ["Declined Taps Report, decline-reason strings and report claim not in the governing spec set for this pass."]
+  },
+  {
+    "id": 4102955,
+    "section": "Configuration & Setup",
+    "action": "grounded-edit",
+    "title": "Capping rule — base products are loaded from the fares engine",
+    "preface": "This test is to confirm the base-product list for a capping rule is populated from the fares-engine products (product type 'ABT Product'), not from the topology business service.",
+    "preconds": "**GIVEN** the user is signed into the ABT Operator Portal configuring a base product for a capping rule (Price Capping)",
+    "steps": [
+      {
+        "content": "**WHEN** the user opens the base-product picker for a capping rule",
+        "expected": "**THEN** the product list is populated from the fares-engine products with product type 'ABT Product' (OperatorId 1)\n**AND** it is not sourced from the topology business service"
+      }
+    ],
+    "citations": ["FBD-100698 para 83", "FBD-100698 para 86", "FBD-100698 para 122"],
+    "change_note": "Grounded the base-product source: ABT populates the base-product list by product type 'ABT Product' with OperatorId 1 (FBD-100698 §83,86), and capping-group products are referenced by product id (§122). Kept the fares-engine-vs-topology assertion, now cited.",
+    "gaps": []
+  },
+  {
+    "id": 4103160,
+    "section": "Card Data",
+    "action": "gap",
+    "title": "Smartrack — view and search card data",
+    "preface": "This test is to confirm a user can view single and multiple cards and search by customer name/address, ESN and PSN, and card type in Smartrack.",
+    "preconds": "**GIVEN** a user is signed into Smartrack on the Display Card Data page",
+    "steps": [
+      {
+        "content": "**WHEN** the user searches by customer name and address, ESN and PSN, or card type",
+        "expected": "**THEN** the matching single or multiple cards are displayed\n**GAP** — Smartrack is a separate card-management application and is not covered by any CloudFare governing spec in this set; no spec exists in the library. Confirm all screen/field names on the live Smartrack system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Smartrack is out of scope of the CloudFare governing specs and has no spec in the library. Flagged GAP; left behaviour intact.",
+    "gaps": ["No Smartrack specification exists in the requirements library."]
+  },
+  {
+    "id": 4103161,
+    "section": "Card Data",
+    "action": "gap",
+    "title": "Smartrack — add notes and attached files to a card",
+    "preface": "This test is to confirm a user can add and view notes and attached files against a card in Smartrack.",
+    "preconds": "**GIVEN** a user has selected a card in Smartrack",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds notes and attaches files",
+        "expected": "**THEN** the notes and attached files are saved against the card\n**AND** they can be viewed\n**GAP** — Smartrack is not covered by any governing spec; confirm on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Smartrack out of scope / no spec. Flagged GAP.",
+    "gaps": ["No Smartrack specification exists in the requirements library."]
+  },
+  {
+    "id": 4103162,
+    "section": "Card Data",
+    "action": "gap",
+    "title": "Smartrack — view card transactions",
+    "preface": "This test is to confirm a user can view card transactions for Ulsterbus Multi-Journey and Town Service products, for adult and child, in Smartrack.",
+    "preconds": "**GIVEN** a user has selected a card in Smartrack",
+    "steps": [
+      {
+        "content": "**WHEN** the user views the card transactions for an adult or child Ulsterbus Multi-Journey or Town Service product",
+        "expected": "**THEN** the card transactions are displayed for the selected product and passenger type\n**GAP** — Smartrack is not covered by any governing spec; confirm on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Smartrack out of scope / no spec. Flagged GAP.",
+    "gaps": ["No Smartrack specification exists in the requirements library."]
+  },
+  {
+    "id": 4103163,
+    "section": "Import & Export",
+    "action": "gap",
+    "title": "Smartrack — import a card issue and pass-create record file",
+    "preface": "This test is to confirm a user can import a CSV issue and pass-create record file into Smartrack.",
+    "preconds": "**GIVEN** a user is signed into Smartrack",
+    "steps": [
+      {
+        "content": "**WHEN** the user imports a CSV issue and pass-create record file",
+        "expected": "**THEN** the records are imported into Smartrack\n**GAP** — Smartrack is not covered by any governing spec; confirm the import screen and file format on the live system before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Smartrack out of scope / no spec. Flagged GAP. (Note: distinct from the CloudFare 'Import Map Point File' function.)",
+    "gaps": ["No Smartrack specification exists in the requirements library."]
+  },
+  {
+    "id": 4103164,
+    "section": "Import & Export",
+    "action": "gap",
+    "title": "Smartrack — export the ESN list",
+    "preface": "This test is to confirm a user can export the ESN list from Smartrack.",
+    "preconds": "**GIVEN** a user is signed into Smartrack",
+    "steps": [
+      {
+        "content": "**WHEN** the user exports the ESN list",
+        "expected": "**THEN** the ESN list is exported\n**GAP** — Smartrack ESN export is not a CloudFare configuration export (FBD-100385 covers map point / rules / route / product / product-to-ticket exports only, para 121-196) and Smartrack has no spec. Confirm on the live system before running."
+      }
+    ],
+    "citations": ["FBD-100385 para 121"],
+    "change_note": "ESN list export belongs to Smartrack, not the CloudFare configuration exports of FBD-100385. Flagged GAP.",
+    "gaps": ["ESN list export not in FBD-100385; no Smartrack specification exists in the library."]
+  },
+  {
+    "id": 4103138,
+    "section": "Stored Procedures",
+    "action": "gap",
+    "title": "Merit — Ulsterbus revenue stored procedures",
+    "preface": "This test is to confirm the Ulsterbus bus revenue stored procedures return correct revenue by payment type and operational payment type.",
+    "preconds": "**GIVEN** Merit has processed Ulsterbus audit data",
+    "steps": [
+      {
+        "content": "**WHEN** the Ulsterbus bus revenue stored procedures are run, including by payment type and operational payment type",
+        "expected": "**THEN** the stored procedures return the correct Ulsterbus revenue\n**GAP** — Merit revenue stored procedures are Merit Data Warehouse artefacts, not CloudFare configuration; no stored-procedure spec is in this governing set (related Merit specs exist, e.g. FBD-100387 ABT Reporting Data Warehouse, but were not provided for grounding). Confirm procedure names/outputs against the Merit DWH spec before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Merit stored procedures are out of scope of the CloudFare config governing specs; no stored-proc spec provided. Flagged GAP (pointer to FBD-100387).",
+    "gaps": ["Merit revenue stored procedures not covered by the governing spec set (see FBD-100387, not provided)."]
+  },
+  {
+    "id": 4103139,
+    "section": "Stored Procedures",
+    "action": "gap",
+    "title": "Merit — Metro revenue stored procedures",
+    "preface": "This test is to confirm the Metro bus revenue stored procedures return correct revenue by payment type and operational payment type.",
+    "preconds": "**GIVEN** Merit has processed Metro audit data",
+    "steps": [
+      {
+        "content": "**WHEN** the Metro bus revenue stored procedures are run, including by payment type and operational payment type",
+        "expected": "**THEN** the stored procedures return the correct Metro revenue\n**GAP** — Merit DWH stored procedures are not covered by the governing spec set; confirm against the Merit DWH spec (e.g. FBD-100387) before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Merit stored procedures out of scope; no spec provided. Flagged GAP.",
+    "gaps": ["Merit revenue stored procedures not covered by the governing spec set."]
+  },
+  {
+    "id": 4103140,
+    "section": "Stored Procedures",
+    "action": "gap",
+    "title": "Merit — NIR rail revenue stored procedures",
+    "preface": "This test is to confirm the NIR rail revenue stored procedures return correct revenue by payment type and operational payment type.",
+    "preconds": "**GIVEN** Merit has processed NIR rail audit data",
+    "steps": [
+      {
+        "content": "**WHEN** the NIR rail revenue stored procedures are run, including by payment type and operational payment type",
+        "expected": "**THEN** the stored procedures return the correct NIR rail revenue\n**GAP** — Merit DWH stored procedures are not covered by the governing spec set; confirm against the Merit DWH spec (e.g. FBD-100387) before running."
+      }
+    ],
+    "citations": [],
+    "change_note": "Merit stored procedures out of scope; no spec provided. Flagged GAP.",
+    "gaps": ["Merit revenue stored procedures not covered by the governing spec set."]
+  }
+]

@@ -1,0 +1,64 @@
+# Bus Fare Look-Up — duplicated into BOTH Functional - Ulsterbus and Functional - Metro.
+# Bus FLU does NOT apply to rail, so it must NOT live in Shared. Identical content per mode now;
+# free to diverge later. (Per-section idempotency lets the same titles exist in both sections.)
+# ACTION FOR GEORGE: move the old "Functional - Shared / Fare Look-Up / Bus (Ulsterbus / Metro)"
+# section to the Delete bin — it's superseded by these two copies.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Ulsterbus", "Fare Look-Up"]
+    cases: &bus_flu
+      - title: "Bus FLU — sell a ticket"
+        refs: ["TIBU-19459", "TIBU-19460"]
+        objective: "This test is to confirm the operator can build a bus fare by route number, boarding/alighting stages and fare type, add it to the basket and purchase it."
+        steps: |
+          **GIVEN** an operator is signed on with the POS on the Main Screen
+          **WHEN** the operator enters a route number, sets the boarding and alighting stages and selects a fare type
+          **THEN** the fare and price are shown
+          **AND** the product is added to the basket
+          **AND** the product can be purchased
+        expected: "A bus fare built from route, stages and fare type is added to the basket and can be purchased (regression: TIBU-19459, TIBU-19460). Specific routes/fares are data variations."
+      - title: "Bus FLU — route number letters via the '*' key"
+        refs: ["TIBU-19458"]
+        objective: "This test is to confirm pressing '*' during route-number entry shows the letter options for lettered routes."
+        steps: |
+          **GIVEN** the operator is entering a route number on the Main Screen
+          **WHEN** the operator presses the '*' key
+          **THEN** the route-number letter options are shown
+        expected: "Pressing '*' during route-number entry shows the letter options (regression: TIBU-19458)."
+      - title: "Bus FLU — change boarding stage, alighting stage and fare type"
+        objective: "This test is to confirm the operator can change the boarding stage, alighting stage and fare type while building a bus fare."
+        steps: |
+          **GIVEN** the operator is building a bus fare
+          **WHEN** the operator changes the boarding stage
+          **THEN** the fare updates
+          **WHEN** the operator changes the alighting stage and fare type
+          **THEN** the fare updates to reflect each change
+        expected: "Boarding stage, alighting stage and fare type can each be changed and the fare updates accordingly."
+      - title: "Bus FLU — Misc open fare"
+        objective: "This test is to confirm a Misc product open fare accepts a valid amount and rejects an invalid one."
+        steps: |
+          **GIVEN** the operator selects a Misc product (open fare)
+          **WHEN** the operator enters a valid open-fare amount
+          **THEN** the open fare is accepted
+          **AND** the open fare is added to the basket
+          **WHEN** the operator enters an invalid amount
+          **THEN** the amount is rejected with an error
+        expected: "A Misc open fare accepts valid amounts and rejects invalid ones with an error."
+      - title: "Bus FLU — Default Boarding Stage '*' key"
+        refs: ["TIBU-24026"]
+        objective: "This test is to confirm the '*' key on the Default Boarding Stage entry behaves correctly (not a dead key/error)."
+        steps: |
+          **GIVEN** the operator is on the Default Boarding Stage entry
+          **WHEN** the operator presses the '*' button
+          **THEN** the expected behaviour occurs with no dead key or error
+        expected: "The '*' key on Default Boarding Stage behaves correctly (regression: TIBU-24026)."
+  - path: ["Metro", "Fare Look-Up"]
+    cases: *bus_flu

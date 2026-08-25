@@ -1,0 +1,218 @@
+[
+  {
+    "id": 4100391,
+    "expected": "A Metro Multi-Journey top-up adds and shows journeys via the zone-then-journeys flow, enforces the maximum and shows the correct expiry (regression: TIBU-21133, TIBU-21992, TIBU-25081). Metro top-up is cash only — bank card and warrant are NIR/Ulsterbus only; there is no payment-method data variation on Metro.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "action": "reword",
+    "refs": "TIBU-21133,TIBU-21992,TIBU-25081",
+    "change_note": "MODE-BOUNDARY FIX (highest-value finding in this slice): removed the false 'Data variations: payment by Cash / Card' claim. Metro is cash-only — bank card and warrant are NIR/Ulsterbus only (knowledge/projects/translink.md, Audit-confirmed POS facts) — and this very batch's sibling case 4100425 'Metro — payment is cash only' asserts exactly that, so the two cases directly contradicted each other. Card must not be offered as a Metro top-up payment variation.",
+    "gaps": []
+  },
+  {
+    "id": 4099970,
+    "preconds": "**GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen\n**AND** the POS is communicating with CloudFare\n**AND** example: Lisburn → Belfast Lanyon Place, Adult, Single",
+    "action": "reword",
+    "refs": "TIBU-19374,TIBU-24862,TIBU-24853,FBD-100450",
+    "change_note": "Terse-wording: moved the inline '(stations/price confirm against the NIR fares reference table, FBD-100450)' citation out of the precondition text (a tester reads this) into Refs, per the terse-wording rule — citations belong in Refs/metadata, not the case body.",
+    "gaps": []
+  },
+  {
+    "id": 4099971,
+    "preconds": "**GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode\n**AND** the POS is communicating with CloudFare\n**AND** example: setting both boarding and alighting to Belfast Lanyon Place",
+    "action": "reword",
+    "refs": "TIBU-19292,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4099972,
+    "preconds": "**GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode\n**AND** example: opening the boarding station list and keying the station number for Lisburn",
+    "action": "reword",
+    "refs": "TIBU-22953,TIBU-21771,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4099976,
+    "preconds": "**GIVEN** an operator is signed on and has built a non-Adult-Single rail fare (rail/NIR mode)\n**AND** example: a Child Single, Lisburn → Belfast Lanyon Place",
+    "action": "reword",
+    "refs": "TIBU-24865,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4100429,
+    "preconds": "**GIVEN** an operator is signed on and building a rail fare with a cross-border boarding or alighting station (rail/NIR mode)\n**AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border)",
+    "action": "reword",
+    "refs": "TIBU-19374,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs; kept the (Enterprise cross-border) tag as it names the service, not a source.",
+    "gaps": []
+  },
+  {
+    "id": 4100501,
+    "preconds": "**GIVEN** an operator is signed on and has selected a rail fare with boarding and alighting stations (rail/NIR mode)\n**AND** example: an Adult Single starting Lisburn → Belfast Lanyon Place, then re-pointed to Portadown → Belfast Lanyon Place",
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs (previously refs:null, so this also grounds the case for the first time).",
+    "gaps": []
+  },
+  {
+    "id": 4100502,
+    "preconds": "**GIVEN** an operator is signed on and has selected a Cross-Border product on the POS in rail (NIR) mode\n**AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border)",
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs (previously refs:null).",
+    "gaps": []
+  },
+  {
+    "id": 4099977,
+    "preconds": "**GIVEN** an operator is signed on with the POS on the Rail FLU screen (rail/NIR mode)\n**AND** the POS is communicating with CloudFare\n**AND** example: saving an Adult Single, Lisburn → Belfast Lanyon Place, as a favourite, then selecting it from the list",
+    "action": "reword",
+    "refs": "TIBU-19371,TIBU-24783,TIBU-24781,TIBU-19456,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4099978,
+    "preconds": "**GIVEN** an operator is signed on and is overwriting an existing favourite on the Rail FLU (rail/NIR mode)\n**AND** the POS is communicating with CloudFare\n**AND** example: overwriting the favourite in slot 1 with an Adult Single, Lisburn → Belfast Lanyon Place",
+    "action": "reword",
+    "refs": "TIBU-24095,TIBU-24776,TIBU-24886,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4099979,
+    "preconds": "**GIVEN** an operator is signed on and has selected Advance Ticket on the Rail FLU (rail/NIR mode)\n**AND** the POS is communicating with CloudFare\n**AND** example: an Adult Advance, Lisburn → Belfast Lanyon Place, for a valid future date within the advance window",
+    "action": "reword",
+    "refs": "TIBU-21792,TIBU-22824,TIBU-24826,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4099980,
+    "preconds": "**GIVEN** an operator is signed on and has selected a 3 Day Select ticket on the Rail FLU (rail/NIR mode)\n**AND** example: choosing three available travel days for an Adult 3 Day Select",
+    "action": "reword",
+    "refs": "TIBU-24829,TIBU-24837,FBD-100450",
+    "change_note": "Terse-wording: moved the inline FBD-100450 citation out of the precondition text into Refs.",
+    "gaps": []
+  },
+  {
+    "id": 4100374,
+    "preconds": "**GIVEN** an operator is signed on with the POS in Ulsterbus mode on the Main Screen\n**AND** the POS is communicating with CloudFare\n**AND** example: route 72b, Moygashel Busby Shop → Armagh Bus Centre, Adult Single",
+    "action": "reword",
+    "refs": "TIBU-19459,TIBU-19460,FBD-100207",
+    "change_note": "Terse-wording: moved the inline '(fares confirm against the fares export; Fare Stage names per FBD-100207)' citation out of the precondition text into Refs. FBD-100207 verified: POS displays/prints the Fare Stage name (not the stop name) — matches the case's assertion exactly.",
+    "gaps": []
+  },
+  {
+    "id": 4100378,
+    "steps": [
+      {
+        "content": "**WHEN** the operator presses the '*' button",
+        "expected": "**THEN** no dead key or error occurs\n**AND** **GAP** — the specific resulting behaviour is not documented in any sourced FBD, only known as 'not a dead key' via TIBU-24026; confirm the actual on-screen effect before running"
+      }
+    ],
+    "action": "reword",
+    "refs": "TIBU-24026",
+    "change_note": "The prior THEN ('the expected behaviour occurs') is a non-observable assertion — violates the standard's 'never Then it works' rule. Replaced with the one thing that IS confirmed (no dead key/error) plus an explicit GAP for the unconfirmed specific effect, rather than inventing a plausible behaviour.",
+    "gaps": [
+      "What does '*' actually do on the Default Boarding Stage entry screen (a value, a toggle, a letter suffix list similar to route-number entry)? Not specified in any FBD read for this audit; TIBU-24026 fixed a defect here but the fix detail wasn't available. Needs a live-system confirm."
+    ]
+  },
+  {
+    "id": 4099946,
+    "action": "reword",
+    "refs": "TIBU-24804",
+    "change_note": "Citation gap flagged, no case-body change: the 'Excess Ticket is rail-only, available in Operator menu' claim traces only to the TIBU-24804 regression pin. A filename search of the local requirements library for 'Excess' returned no FBD, so there is no functional spec grounding the rail-only eligibility claim beyond the bug-fix.",
+    "gaps": [
+      "No FBD located (filename search of the local requirements library) documenting Excess Ticket eligibility/behaviour as rail-only. The claim currently rests solely on TIBU-24804 (a bug fix, not a functional spec) — raise as a new gap-register question to confirm whether an FBD covers this, or whether 'rail-only' is a live-system-only fact."
+    ]
+  },
+  {
+    "id": 4100411,
+    "preconds": "**GIVEN** an operator is signed on in Ulsterbus mode running a rail substitution service\n**AND** the POS is communicating with CloudFare\n**AND** example: Larne Line rail-substitution route, Adult single, paid by cash",
+    "action": "reword",
+    "refs": "FBD-100335 para 126,FBD-100335 para 149",
+    "change_note": "Grounded the previously-unrouted worked example to the Larne Line — one of the ~6-7 rail-substitution routes named in FBD-100335 (para 126); added refs (previously null). FBD-100335 confirms Rail Substitution Service reuses normal bus products differentiated by a 'Rail Substitution' fare area (para 149), consistent with this ticket being a real Ulsterbus-only product (per knowledge/projects/translink.md's confirmed UB-only ticket list) and not related to the separate, still-gated ABT rail-sub tap-capping mechanism (gap-register Q20 — not applicable here since this is a paper ticket sale, not an ABT tap).",
+    "gaps": [
+      "FBD-100335 doesn't name a specific fare/price for a Larne Line Rail Substitution Service ticket — treat any £ value as a configured-fare example per current fares config (per the Q14 reframe), not a fixed fact; verify against the live rail-sub fares triangle."
+    ]
+  },
+  {
+    "id": 4100393,
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Added grounding citation (previously refs:null): 'Adult Single' is a confirmed default NIR product in FBD-100450's fares-export column list (rule 'STD Adult Single').",
+    "gaps": []
+  },
+  {
+    "id": 4100394,
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Added grounding citation (previously refs:null): 'Adult Day Return' is a confirmed default NIR product in FBD-100450 (rule 'STD Ad Day Rtn Fare').",
+    "gaps": []
+  },
+  {
+    "id": 4100395,
+    "title": "NIR — 1/3 Off Day Return",
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Renamed to match the 'NIR — <ticket>' convention used by every sibling case in this section (was the only one missing the prefix). Added FBD-100450 citation (previously refs:null): '1/3-Off Adult Day Return' is a confirmed default NIR product (rule 'STD 1/3Off Ad DRtnV').",
+    "gaps": []
+  },
+  {
+    "id": 4100396,
+    "title": "NIR — Weekly Season",
+    "action": "reword",
+    "refs": "FBD-100450",
+    "change_note": "Renamed to match the 'NIR — <ticket>' sibling convention. Added FBD-100450 citation (previously refs:null): 'Adult Weekly Season' is a confirmed default NIR product (rule 'STD Adult Wkly S'son').",
+    "gaps": []
+  },
+  {
+    "id": 4100397,
+    "title": "NIR — Monthly Season",
+    "action": "reword",
+    "refs": "TIBU-19299,FBD-100450",
+    "change_note": "Renamed to match the 'NIR — <ticket>' sibling convention. Added FBD-100450 citation: 'Adult Monthly Season' is a confirmed default NIR product (rule 'STD Adult Mthly Sson'), alongside the existing TIBU-19299 regression pin.",
+    "gaps": []
+  },
+  {
+    "id": 4100399,
+    "title": "NIR — 3 Day Select",
+    "action": "reword",
+    "refs": "knowledge/projects/translink.md (Audit-confirmed POS facts — NIR-only ticket list)",
+    "change_note": "Renamed to match the 'NIR — <ticket>' sibling convention. 3 Day Select is not in FBD-100450's default export column list (it's not a default-export product), so cited to the already-confirmed NIR-only ticket matrix instead of inventing an FBD paragraph.",
+    "gaps": []
+  },
+  {
+    "id": 4100405,
+    "title": "Ulsterbus — Month Return",
+    "action": "reword",
+    "refs": "knowledge/projects/translink.md (Audit-confirmed POS facts — Ulsterbus-only ticket list)",
+    "change_note": "Renamed to match the 'Ulsterbus — <ticket>' sibling convention used by every other case in this section (was the only one missing the prefix). Cited to the confirmed UB-only ticket matrix (no dedicated FBD found for this product name).",
+    "gaps": []
+  },
+  {
+    "id": 4100407,
+    "title": "Ulsterbus — Bus Rambler",
+    "action": "reword",
+    "refs": "knowledge/projects/translink.md (Audit-confirmed POS facts — Ulsterbus-only ticket list)",
+    "change_note": "Renamed to match the 'Ulsterbus — <ticket>' sibling convention. Cited to the confirmed UB-only ticket matrix.",
+    "gaps": []
+  },
+  {
+    "id": 4100409,
+    "title": "Ulsterbus — Jobseeker Single",
+    "action": "reword",
+    "refs": "knowledge/projects/translink.md (Audit-confirmed POS facts — Ulsterbus-only ticket list)",
+    "change_note": "Renamed to match the 'Ulsterbus — <ticket>' sibling convention. Cited to the confirmed UB-only ticket matrix.",
+    "gaps": []
+  },
+  {
+    "id": 4100402,
+    "title": "NIR — Dependants Pass",
+    "action": "reword",
+    "refs": "FBD-100335 para 119",
+    "change_note": "Spelling fix: 'Dependents' → 'Dependants', matching the spec term (FBD-100335 para 119: '...Staff Passes, Spouse Passes, Dependants Passes...') and knowledge/projects/translink.md's entitlement-smartcard list. Added the FBD-100335 citation (previously refs:null) confirming Dependants Pass as a real rail-valid entitlement smartcard.",
+    "gaps": []
+  }
+]

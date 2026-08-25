@@ -1,0 +1,62 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Payments - Cash]
+    cases:
+      - title: "Timeouts — resuming from More Time Required returns to the timed-out screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing "Yes (X)" on More Time Required returns the customer
+          to the screen they timed out on.
+        steps: |
+          **GIVEN** the TVM is on a screen whose timeout has just elapsed, showing More Time Required
+          **WHEN** the customer presses "Yes (X)" before the countdown ends
+          **THEN** the TVM returns to the screen the customer timed out on
+        expected: "Pressing Yes (X) on More Time Required resumes the original screen."
+
+      - title: "Timeouts — no cash or payment type selected times out to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM returns to the Home Screen when More Time Required's
+          countdown expires and no cash was entered and no payment type was selected.
+        steps: |
+          **GIVEN** the TVM is on More Time Required after a screen timeout, with no cash entered
+          and no payment type selected
+          **WHEN** the More Time Required countdown expires without "Yes (X)" being pressed
+          **THEN** the TVM returns to the Home Screen
+        expected: "An unattended timeout with no cash or payment type selected returns to Home Screen."
+
+      - title: "Timeouts — cash entered but payment not completed times out to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM cancels the payment and returns entered cash when More
+          Time Required's countdown expires with cash already entered but payment not completed.
+        steps: |
+          **GIVEN** the TVM is on More Time Required after a screen timeout, with cash already
+          entered but payment not completed
+          **WHEN** the More Time Required countdown expires without "Yes (X)" being pressed
+          **THEN** the "Payment Cancelled - Change returned" message is displayed
+          **AND** the TVM returns to the Home Screen
+          **AND** **GAP** — pairing of this message to this precondition is inferred from board
+          order, not stated verbatim in source; confirm before running
+        expected: "Cash entered but payment not completed times out to Payment Cancelled - Change returned, then Home Screen."
+
+      - title: "Timeouts — payment type selected times out to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM cancels the payment when More Time Required's countdown
+          expires with a payment type already selected.
+        steps: |
+          **GIVEN** the TVM is on More Time Required after a screen timeout, with a payment type
+          already selected
+          **WHEN** the More Time Required countdown expires without "Yes (X)" being pressed
+          **THEN** the "payment cancelled please wait" message is displayed
+          **AND** the TVM returns to the Home Screen
+          **AND** **GAP** — pairing of this message to this precondition is inferred from board
+          order, not stated verbatim in source; confirm before running
+        expected: "Payment type selected times out to payment cancelled please wait, then Home Screen."

@@ -1,0 +1,157 @@
+# PV — Technician Menu (Functional) + Non-Functional. Technician Menu is in the live regression (16).
+# Grounded in old suite 10047 Technician Menu + System Management + Non-Functional sections, and the
+# PV Technician Menu UX screens (login/PIN, location, brightness/ambient, versions, etc.).
+suite_id: 30255
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [10]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician Menu — login
+        match: Technician Menu — login, sign off and reboot
+        objective: This test is to confirm a technician can access the menu by presenting a technician smartcard and entering a PIN, and is rejected on invalid credentials.
+        steps: |
+          **Given** the PV is in service displaying the Technician Menu login screen
+          **WHEN** a technician presents a valid technician smartcard and enters the correct PIN
+          **THEN** the Technician Menu home screen is displayed
+          **WHEN** an invalid technician smartcard or an incorrect PIN is presented
+          **THEN** the incorrect-details message is shown
+          **AND** access to the Technician Menu is refused
+        expected: A valid technician smartcard and PIN reach the Technician Menu; invalid credentials are refused.
+      - title: Technician Menu — sign off
+        objective: This test is to confirm a technician can sign off from the Technician Menu.
+        steps: |
+          **Given** a technician is signed in to the Technician Menu
+          **WHEN** the technician selects Sign Off
+          **THEN** the technician is signed off
+          **AND** the PV returns to its in-service state
+        expected: A technician can sign off and the PV returns to service.
+      - title: Technician Menu — reboot
+        objective: This test is to confirm a technician can reboot the PV from the Technician Menu.
+        steps: |
+          **Given** a technician is signed in to the Technician Menu
+          **WHEN** the technician selects Reboot
+          **THEN** the PV reboots
+          **AND** the PV returns to service after the reboot
+        expected: A technician can reboot the PV, which returns to service after the reboot.
+      - title: Technician Menu — location settings
+        objective: This test is to confirm a technician can view and change the PV home location, that applying a new home location reboots the device, and that clearing and a failed update are handled.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician views the location settings
+          **THEN** the current home location is displayed
+          **WHEN** the technician selects a new home location and confirms
+          **THEN** the home location is updated
+          **AND** the device reboots to apply the new home location
+          **WHEN** the entry is cleared during editing
+          **THEN** the location field is cleared
+          **WHEN** the locations cannot be retrieved from the server
+          **THEN** a "Failed to retrieve locations from server" error is shown
+        expected: The home location can be viewed and changed; applying a new home location reboots the device to apply it; the field can be cleared during editing; a no-comms failure shows "Failed to retrieve locations from server".
+      - title: Technician Menu — auto sign-off and page timeouts
+        objective: This test is to confirm the Technician Menu times out inactive pages to the home screen and auto signs the technician off on inactivity.
+        steps: |
+          **Given** a technician is signed in to the Technician Menu
+          **WHEN** no input is made on a page and it times out
+          **THEN** the PV returns to the Technician Menu home screen
+          **WHEN** the inactivity period elapses
+          **THEN** the PV auto signs the technician off with a tone
+          **AND** the sign-off is audited
+        expected: Inactive pages time out to the Technician Menu home; continued inactivity auto signs-off the technician (with a tone) and audits the sign-off.
+      - title: Technician Menu — display settings
+        match: Technician Menu — display and audio settings
+        objective: This test is to confirm a technician can adjust the screen backlight brightness, that it steps in smaller increments past the configured max/min, and that ambient mode controls it automatically.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician adjusts the screen backlight brightness
+          **THEN** the brightness indicator moves
+          **AND** the backlight changes accordingly
+          **WHEN** the brightness is adjusted beyond the configured maximum or minimum
+          **THEN** the bar continues in smaller increments
+          **WHEN** ambient mode is enabled
+          **THEN** the backlight updates to ambient light automatically without human interaction
+          **AND** the manual brightness bar is unresponsive while ambient mode is in control
+        expected: Brightness adjusts (smaller increments past the configured max/min); ambient mode auto-adjusts the backlight and the manual bar is unresponsive while ambient is in control.
+      - title: Technician Menu — audio settings
+        objective: This test is to confirm a technician can adjust the audio volume.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician adjusts the audio volume
+          **THEN** the audio volume changes accordingly
+        expected: Audio volume adjusts from the Technician Menu.
+      - title: Technician Menu — software and configuration versions
+        objective: This test is to confirm a technician can view the full software and configuration version lists.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician views the Software Versions page
+          **THEN** the software versions are listed (OS, BSP, EBoot, Configuration Version, application software and operating files)
+          **WHEN** the technician views the Configuration Versions page
+          **THEN** the configuration versions are listed (Configuration Version, Furthest Alighting file, TD.Product, TD.Topology, Staff List)
+        expected: The Software Versions page lists OS/BSP/EBoot/config/application/operating files; the Configuration Versions page lists Configuration Version, Furthest Alighting file, TD.Product, TD.Topology and Staff List.
+      - title: Technician Menu — force communications
+        objective: This test is to confirm a technician can force communications with the back office.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician forces communications
+          **THEN** the PV communicates with the back office for downloads and uploads
+        expected: Force communications triggers a back-office exchange.
+      - title: Technician Menu — network settings
+        objective: This test is to confirm a technician can view and edit the PV network settings.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician views and edits the network settings and confirms
+          **THEN** the network settings are updated
+        expected: Network settings can be viewed and edited.
+      - title: Technician Menu — operating times
+        objective: This test is to confirm a technician can reconfigure the PV operating times and that the PV goes out of and back into service accordingly.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician reconfigures the operating start time
+          **THEN** the new operating times are applied
+          **AND** the PV goes out of service and then into service per the configured times
+        expected: Reconfiguring the operating times applies them and the PV transitions out of service then into service per the schedule.
+
+  - path: Non-Functional / PV
+    cases:
+      - title: Power interruption and recovery
+        objective: This test is to confirm the PV handles a power interruption and recovers to service.
+        steps: |
+          **Given** the PV is in service
+          **WHEN** power is interrupted
+          **THEN** the PV shuts down safely without corrupting stored transactions
+          **WHEN** power is restored
+          **THEN** the PV restarts and returns to service with stored transactions intact
+        expected: The PV survives a power interruption and recovers to service with transactions intact.
+      - title: PV to BOS — software and FEIG update via CloudFare TMS
+        objective: This test is to confirm the PV and its FEIG reader can be updated via CloudFare TMS.
+        steps: |
+          **Given** a PV software or FEIG firmware update is available from CloudFare TMS
+          **WHEN** the update is distributed to the PV
+          **THEN** the PV applies the update
+          **AND** the new version is reported to the back office
+        expected: PV/FEIG software updates apply via CloudFare TMS and the new version is reported.
+      - title: PV to BOS — Deny and BIN list download
+        objective: This test is to confirm the PV downloads and applies the Deny and BIN lists to its FEIG.
+        steps: |
+          **Given** the back office has updated Deny and BIN lists
+          **WHEN** the PV downloads them
+          **THEN** the lists are applied to the PV FEIG for cEMV validation
+        expected: Deny/BIN lists download and apply to the PV FEIG.
+      - title: PV to BOS — transaction upload
+        objective: This test is to confirm the PV uploads its validation and tap transactions to the back office.
+        steps: |
+          **Given** the PV has recorded validation and tap transactions
+          **WHEN** the PV communicates with the back office
+          **THEN** the transactions are uploaded to the back office
+        expected: The PV uploads its transactions to the back office.
+      - title: Daylight Saving Time change
+        objective: This test is to confirm the PV applies the daylight saving time changes correctly.
+        steps: |
+          **Given** the PV clock is approaching a daylight saving transition
+          **WHEN** the GMT-to-BST or BST-to-GMT change occurs
+          **THEN** the PV clock adjusts correctly and time-based validation uses the new time
+        expected: The PV applies GMT/BST changes correctly for the clock and time-based validation.

@@ -1,0 +1,64 @@
+[
+  {
+    "id": 4100586,
+    "title": "ABT — Metro zone boarding and alighting",
+    "preface": "This test is to confirm ABT boarding within a Metro ABT zone (Tap On Only – Flat Fare); the customer taps once to board and the ETM calculates the alighting stop — there is no customer alighting tap on this device (George, live-system confirmation, 2026-07-21).\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+    "preconds": "**GIVEN** ABT is enabled in a Metro ABT zone (route ABT Type = \"Tap On Only (Flat Fare)\") and a Driver is signed on to Metro route 10A\n**AND** a seeded contactless card is available",
+    "steps": [
+      {
+        "content": "**WHEN** the customer taps once for boarding on the current Metro route",
+        "expected": "**THEN** the Metro ABT zone records the boarding tap\n**AND** the alighting stop is ETM-calculated as the last stop on the route within the configured Metro Network Zone (no customer alighting tap)"
+      },
+      {
+        "content": "**WHEN** you open the CloudFare activity log",
+        "expected": "**THEN** the tap is recorded with the boarding stop\n**AND** it is recorded with the ETM-calculated alighting stop\nData variations: Metro mode."
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100658 (Alighting-location calculation — Metro ETM: last stop on the route within the configured Metro Network Zone; no driver selection on flat-fare devices)",
+      "FBD-100662 (migration plan — Metro routes set route ABT Type \"Tap On Only (Flat Fare)\")",
+      "George (live-system confirmation), 2026-07-21 — no customer tap-off on Metro/Ulsterbus tap-on-only ETMs; alighting is always ETM-calculated or driver-selected, never a customer tap-off action",
+      "gap-register.md Q7 (ANSWERED)"
+    ],
+    "change_note": "Removed the customer 'alighting-only tap' / 'boarding-and-alighting tap' actions — these implied a customer tap-off that does not exist on this tap-on-only ETM. Reworded to a single customer boarding tap with the alighting stop ETM-calculated as the last stop in the Metro Network Zone (FBD-100658), matching the FBD-100662 Metro 'Tap On Only (Flat Fare)' route configuration. Removed the in-suite UNCONFIRMED marker (audit 2026-07-17, gap Q7) now that George has confirmed the mechanic live — closes gap-register Q7.",
+    "gaps": []
+  },
+  {
+    "id": 4100587,
+    "title": "ABT — Ulsterbus zone boarding and alighting",
+    "preface": "This test is to confirm ABT boarding and driver-selected alighting within Ulsterbus ABT zones (Tap On Only – Driver Initiated); the customer taps once to board and states their alighting stage, and the Driver selects it on the FLU screen — there is no customer alighting tap on this device (George, live-system confirmation, 2026-07-21).\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+    "preconds": "**GIVEN** ABT is enabled in an Ulsterbus ABT zone (route ABT Type = \"Tap On Only (Driver Initiated)\") and a Driver is signed on to Ulsterbus route 72b (IN)\n**AND** a seeded contactless card is available",
+    "steps": [
+      {
+        "content": "**WHEN** the customer taps once for boarding, states their alighting stage, and the Driver selects that alighting stage on the FLU screen",
+        "expected": "**THEN** the Ulsterbus ABT zone records the boarding tap\n**AND** it records the driver-selected alighting stage (not ETM-calculated)"
+      },
+      {
+        "content": "**WHEN** you open the CloudFare activity log",
+        "expected": "**THEN** the tap is recorded with the boarding stop\n**AND** it is recorded with the driver-selected alighting stage\nData variations: Ulsterbus mode."
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 (UX flow — driver-initiated FLU screen; customer states alighting stage, Driver selects it; \"alighting location = the driver-selected stage (not ETM-calculated)\")",
+      "FBD-100658 (Alighting-location calculation — Ulsterbus ETM: driver does choose alighting stage, audited directly)",
+      "George (live-system confirmation), 2026-07-21 — no customer tap-off on Metro/Ulsterbus tap-on-only ETMs; alighting is always ETM-calculated or driver-selected, never a customer tap-off action",
+      "gap-register.md Q7 (ANSWERED)"
+    ],
+    "change_note": "Removed the customer 'alighting-only tap' / 'boarding-and-alighting tap' actions — these implied a customer tap-off that does not exist on this tap-on-only ETM. Reworded to a single customer boarding tap plus a driver-selected alighting stage on the FLU screen (FBD-100662 UX flow), which is the correct TOO mechanic already used for this route type elsewhere in the suite (FLU/basket driver-selects-alighting-stage wording). Removed the in-suite UNCONFIRMED marker (audit 2026-07-17, gap Q7) now that George has confirmed the mechanic live — closes gap-register Q7.",
+    "gaps": []
+  },
+  {
+    "id": 4100588,
+    "title": "ZZ_DELETE_REVIEW - ABT — reverts to standard fixed fare on rule change",
+    "action": "remove",
+    "citations": [
+      "FBD-100662 (Scope — \"Supersedes the old Metro flat-fare rule for Ulsterbus routes... now Ulsterbus routes use the driver-selected-alighting TOO business rules (Metro routes keep flat fare)\")",
+      "George (live-system confirmation), 2026-07-21 — flat-fare/fixed-fare behaviour is Metro-only now; an Ulsterbus 'reverts to fixed fare' claim is stale",
+      "gap-register.md Q19 (ANSWERED)"
+    ],
+    "change_note": "CONDEMNED (George, live-system confirmation, 2026-07-21): C4100588 as written asserts a Ulsterbus ABT journey 'reverts to the standard fixed fare' when a different service/journey/rule is triggered — confirmed stale. Flat-fare behaviour is Metro-only now (FBD-100662); Ulsterbus routes use the driver-selected-alighting TOO business rules instead of a fixed fare, so there is no 'fixed fare' for a UB journey to revert to. No FBD describes an equivalent UB behaviour on a mid-journey service/rule-change trigger for driver-initiated TOO, so rewording to a plausible replacement would be inventing behaviour, not correcting it (CLAUDE.md hard rule: never invent device behaviour). Condemned rather than guessing at what Ulsterbus actually does instead. Was previously stamped UNCONFIRMED in-suite (audit 2026-07-17) pointing at gap-register Q19; Q19 is now ANSWERED by George, closing the loop.",
+    "gaps": []
+  }
+]

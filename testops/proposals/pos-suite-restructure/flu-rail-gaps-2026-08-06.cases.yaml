@@ -1,0 +1,68 @@
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [NIR (Rail), Fare Look-Up]
+    cases:
+      - title: "Rail FLU — selecting Rail opens the Rail FLU working screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that from Main Screen-Rail selected, the operator can proceed
+          into the Main Screen-Rail-v4 working screen.
+        steps: |
+          **GIVEN** the POS is at Main Screen-Rail selected
+          **WHEN** the operator proceeds into the Rail FLU working screen
+          **THEN** Main Screen-Rail-v4 is displayed
+          **AND** Board Stations, Alighting Stations, Passenger Type, and Ticket Type are available
+        expected: "From Main Screen-Rail selected the operator reaches Main Screen-Rail-v4 with the Rail FLU fields available."
+
+      - title: "3-Day Ticket — Available Days pages back to Start"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the operator can navigate back from 3-Day Ticket Available Days
+          to 3-Day Ticket Start.
+        steps: |
+          **GIVEN** the POS is at FLU-3DayTicket-Available Days
+          **WHEN** the operator navigates back to 3-Day Ticket Start
+          **THEN** FLU-3DayTicket-Start is displayed
+        expected: "3-Day Ticket Available Days pages back to 3-Day Ticket Start."
+
+      - title: "Advance Ticket — Cancel discards the advance ticket option"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that cancelling from Main Screen - FLU - Advance Ticket discards
+          the advance ticket option and returns to the Rail FLU working screen.
+        steps: |
+          **GIVEN** the POS is at Main Screen - FLU - Advance Ticket, opened from Main Screen-Rail-v4
+          **WHEN** the operator selects Cancel
+          **THEN** the advance ticket option is discarded
+          **AND** Main Screen-Rail-v4 is displayed
+        expected: "Cancelling on Advance Ticket discards the advance-date option and returns to Main Screen-Rail-v4."
+
+      - title: "Rail favourites — Down arrow shows Favourites 6-10, Up returns"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Down arrow on Main Screen-Rail selected shows Operator
+          Favourites 6-10, and Up returns to Main Screen-Rail selected.
+        steps: |
+          **GIVEN** the POS is at Main Screen-Rail selected
+          **WHEN** the operator presses Down
+          **THEN** Operator Favourites 6-10 is shown
+          **WHEN** the operator presses Up
+          **THEN** Main Screen-Rail selected is displayed
+        expected: "Down shows Operator Favourites 6-10 from Main Screen-Rail selected; Up returns to Main Screen-Rail selected."
+
+      - title: "Rail FLU — L4 toggles the selected ticket type while depressed"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that holding L4 on Main Screen-Rail-v4 toggles the selected
+          ticket type.
+        steps: |
+          **GIVEN** the POS is at Main Screen-Rail-v4 with a ticket type selected
+          **WHEN** the operator holds L4 depressed
+          **THEN** the selected ticket type toggles to the alternate ticket type
+        expected: "Holding L4 on Main Screen-Rail-v4 toggles the selected ticket type."

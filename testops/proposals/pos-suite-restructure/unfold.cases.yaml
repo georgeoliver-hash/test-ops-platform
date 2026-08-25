@@ -1,0 +1,117 @@
+# POS un-fold (function-granularity audit 2026-06-12): re-expand distinct functions the old suite
+# tested separately that were dropped/folded — fare-paying (stored-value) smartcard, its faulty
+# handling, faulty Smartpass / Dependants Pass receipts, passback, top-up on expiry. Each carries the
+# back-office verification STEPS (smartcard => CloudFare activity log + MERIT + SmartTrack). Additive —
+# no existing case replaced. Grounded in old suite 9317.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Top Up & Validation", "Validation"]
+    cases:
+      - title: "Fare-Paying Smartcard — validation"
+        objective: "This test is to confirm a fare-paying (stored-value) smartcard validates by deducting the fare from its balance when in funds and is handled when out of funds, and that the validation is recorded in the back office."
+        steps: |
+          **GIVEN** the POS is signed on and a fare-paying smartcard with sufficient balance is presented
+          **WHEN** the operator validates a fare against the card
+          **THEN** the fare is deducted from the card balance
+          **AND** the remaining balance is shown
+          **WHEN** a fare-paying smartcard with insufficient balance is presented
+          **THEN** the shortfall is handled per the rules
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the validation event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the fare transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard balance appears in SmartTrack
+        expected: "A fare-paying smartcard deducts the fare when in funds and handles insufficient balance otherwise; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      - title: "Validation — passback"
+        objective: "This test is to confirm a smartcard re-presented within the passback period is handled per the passback rules, and that the outcome is recorded in the back office."
+        steps: |
+          **GIVEN** a smartcard has just been validated on the POS
+          **WHEN** the same smartcard is presented again within the passback period
+          **THEN** the passback rule is applied with no second deduction within the period
+          **WHEN** the smartcard is presented again after the passback period
+          **THEN** a new validation is allowed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the validation event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: "Passback is applied within the period and a new validation allowed after it; recorded in the CloudFare activity log, MERIT and SmartTrack."
+
+  - path: ["Functional", "Top Up & Validation", "Top Up"]
+    cases:
+      - title: "Fare-Paying Smartcard — top-up"
+        objective: "This test is to confirm a fare-paying (stored-value) smartcard can be topped up with value, and that the top-up is recorded in the back office."
+        steps: |
+          **GIVEN** the POS is signed on and a fare-paying smartcard is presented
+          **WHEN** the operator tops up the card with value and takes payment
+          **THEN** the value is added to the card balance
+          **AND** the new balance is shown and a receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the top-up transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard balance appears in SmartTrack
+        expected: "A fare-paying smartcard top-up adds value with a receipt; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      - title: "Top Up — on expiry"
+        objective: "This test is to confirm a smartcard topped up on its product expiry date applies the top-up and recalculates the product validity, and that the top-up is recorded in the back office."
+        steps: |
+          **GIVEN** a smartcard is presented on its product expiry date
+          **WHEN** the operator tops up the card
+          **THEN** the top-up is applied
+          **AND** the product validity is recalculated from the top-up
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the top-up transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: "A top-up on the expiry date applies and recalculates the product validity; recorded in the CloudFare activity log, MERIT and SmartTrack."
+
+  - path: ["Functional", "Top Up & Validation", "Faulty Card"]
+    cases:
+      - title: "Faulty — Fare-Paying Smartcard"
+        objective: "This test is to confirm a faulty fare-paying smartcard is handled with the faulty-card options and produces a faulty fare-paying smartcard receipt, recorded in the back office."
+        steps: |
+          **GIVEN** a faulty fare-paying smartcard is presented on the POS
+          **WHEN** the card cannot be read correctly
+          **THEN** the faulty-card options are offered (Charge Full Fare, Select Card Type, Issue Ticket)
+          **WHEN** the operator selects the appropriate option and completes
+          **THEN** a faulty fare-paying smartcard receipt is produced
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** any fare charged appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty fare-paying smartcard is recorded in SmartTrack
+        expected: "A faulty fare-paying smartcard offers the faulty-card options and produces a faulty receipt; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      - title: "Faulty — Smartpass Receipt"
+        objective: "This test is to confirm a faulty Smartpass produces the correct faulty Smartpass receipt and that the event is recorded in the back office."
+        steps: |
+          **GIVEN** a faulty Smartpass (concessionary) is presented on the POS
+          **WHEN** the operator handles the faulty Smartpass and issues the receipt
+          **THEN** a faulty Smartpass receipt is produced with the correct content
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty Smartpass is recorded in SmartTrack
+        expected: "A faulty Smartpass produces the correct faulty Smartpass receipt; recorded in the CloudFare activity log and SmartTrack."
+      - title: "Faulty — Dependants Pass Receipt"
+        objective: "This test is to confirm a faulty Dependants Pass produces the correct faulty Dependants Pass receipt and that the event is recorded in the back office."
+        steps: |
+          **GIVEN** a faulty Dependants Pass is presented on the POS
+          **WHEN** the operator handles the faulty Dependants Pass and issues the receipt
+          **THEN** a faulty Dependants Pass receipt is produced with the correct content
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty Dependants Pass is recorded in SmartTrack
+        expected: "A faulty Dependants Pass produces the correct faulty Dependants Pass receipt; recorded in the CloudFare activity log and SmartTrack."

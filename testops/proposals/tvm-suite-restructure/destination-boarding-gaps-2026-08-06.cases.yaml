@@ -1,0 +1,129 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Sales - Tickets, Ticket Issue]
+    cases:
+      - title: "Destination Selection — selecting a popular destination reaches the Buy Tickets screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a popular destination directly from the Main Screen
+          reaches the Buy Tickets screen.
+        steps: |
+          **GIVEN** the TVM shows the Choose Destination Station Main Screen
+          **WHEN** the customer selects a popular destination as the Alighting Stage
+          **THEN** the Buy Tickets screen is displayed
+        expected: "Selecting a popular destination directly reaches the Buy Tickets screen."
+
+      - title: "Destination Selection — searching and selecting a station greys out unusable keys and reaches Buy Tickets"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that typing in the destination search greys out keys that cannot
+          continue a valid station name, and selecting an Alighting Stage from the results reaches
+          the Buy Tickets screen.
+        steps: |
+          **GIVEN** the TVM shows the Choose Destination Station – search for station screen
+          **WHEN** the customer types letters on the on-screen keyboard until a matching Alighting
+          Stage is available
+          **AND** selects that Alighting Stage
+          **THEN** keys that cannot continue a valid station name greyed out while typing
+          **AND** the Buy Tickets screen is displayed
+        expected: "Typing narrows the Alighting Stage list and greys out unusable keys; selecting a station reaches the Buy Tickets screen."
+
+      - title: "Destination Selection — search narrows to one station and selecting it reaches Buy Tickets"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that when typing narrows the destination search to a single
+          remaining Alighting Stage, selecting it reaches the Buy Tickets screen.
+        steps: |
+          **GIVEN** the Choose Destination Station – search for station, typing screen is narrowed
+          to one remaining Alighting Stage (only the letters that can still follow the typed prefix
+          are lit, along with Delete and Clear)
+          **WHEN** the customer selects the remaining Alighting Stage
+          **THEN** the Buy Tickets screen is displayed
+        expected: "Selecting the single remaining Alighting Stage reaches the Buy Tickets screen."
+
+      - title: "Destination Selection — 'Back' during search returns to the Main Screen and clears typed letters"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm 'Back' from the destination search screen returns to the Main
+          Screen, closing the keyboard and clearing typed letters.
+        steps: |
+          **GIVEN** the Choose Destination Station – search for station, typing screen with letters
+          typed
+          **WHEN** the customer selects 'Back'
+          **THEN** the Choose Destination Station Main Screen is displayed
+          **AND** the keyboard closes and the typed letters are cleared
+        expected: "'Back' returns to the Main Screen with the keyboard closed and typed letters cleared."
+
+      - title: "Destination Selection — scroll buttons page through 6 or more Alighting Stage results"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the scroll buttons let the customer page through the remaining
+          Alighting Stage options when 6 or more possible stages remain.
+        steps: |
+          **GIVEN** the Choose Destination Station – search for station, typing screen with 6 or
+          more possible Alighting Stages remaining
+          **WHEN** the customer uses the scroll buttons
+          **THEN** the scroll buttons page through the remaining Alighting Stage options
+        expected: "Scroll buttons page through the remaining Alighting Stage options while 6 or more remain."
+
+      - title: "Destination Selection — scroll buttons disappear once fewer than 6 Alighting Stages remain"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the scroll buttons disappear once typing narrows the remaining
+          Alighting Stages to fewer than 6.
+        steps: |
+          **GIVEN** the Choose Destination Station – search for station, typing screen with 6 or
+          more possible Alighting Stages remaining and scroll buttons displayed
+          **WHEN** the customer types further letters that narrow the remaining Alighting Stages to
+          fewer than 6
+          **THEN** the scroll buttons disappear
+        expected: "Once fewer than 6 possible Alighting Stages remain, the scroll buttons are no longer shown."
+
+      - title: "Destination Selection — changing the Boarding Stage via 'Departing From' opens selection against the new stage"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm changing the Boarding Stage via 'Departing From' leads to the
+          Alternative Departing screen, letting the customer select an Alighting Stage against the
+          new Boarding Stage.
+        steps: |
+          **GIVEN** the TVM shows the Choose Destination Station Main Screen
+          **WHEN** the customer selects 'Departing From' and searches for and selects a new
+          Boarding Stage
+          **THEN** the Choose Destination Station - Alternative Departing screen is displayed
+          **AND** the customer can now select an Alighting Stage against the new Boarding Stage
+        expected: "Changing the Boarding Stage via 'Departing From' opens the Alternative Departing screen for the new stage."
+
+      - title: "Destination Selection — 'Back' after changing Boarding Stage does not undo the change"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that selecting 'Back' from the destination search screen after
+          changing the Boarding Stage returns to the Main Screen without reverting the Boarding
+          Stage change.
+        steps: |
+          **GIVEN** the TVM's Boarding Stage has been changed away from its default location via
+          'Departing From'
+          **WHEN** the customer selects 'Back' from the destination search screen
+          **THEN** the Choose Destination Station Main Screen is displayed
+          **AND** the changed Boarding Stage is not reverted
+        expected: "'Back' returns to the Main Screen but the previously changed Boarding Stage remains in effect."
+        # @destructive per flow-map Paths table (row 8) — device is left in a state that must
+        # be manually reset to the default Boarding Stage.
+
+      - title: "Destination Selection — a Boarding Stage with no possible Alighting Stages greys out the keyboard"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that when the selected Boarding Stage has no possible Alighting
+          Stages, the destination search keyboard greys out and becomes unusable.
+        steps: |
+          **GIVEN** a Boarding Stage with no possible Alighting Stages has been selected
+          **WHEN** the customer views the Choose Destination Station search screen
+          **THEN** all keyboard buttons are greyed out and unusable
+        expected: "A Boarding Stage with no possible Alighting Stages leaves the destination search keyboard entirely greyed out."
+        # @destructive per flow-map Paths table (row 9) — device is left in an unusable state
+        # requiring manual recovery.

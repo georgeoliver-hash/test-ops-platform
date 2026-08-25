@@ -1,0 +1,25 @@
+[
+  {
+    "id": 4101005,
+    "title": "ZZ_DELETE_REVIEW - Barcode — single-use validation",
+    "action": "remove",
+    "citations": [
+      "FBD-100167 (Scope — PV validates multiple-use barcodes only; POS/TVM validate single-use only)",
+      "FBD-100317",
+      "gap-register.md Q8"
+    ],
+    "change_note": "CONDEMNED (George, live-system confirmation, 2026-07-21): C4101005 as written has the PV validating a SINGLE-USE barcode (accept when valid, reject with reason when invalid) — confirmed wrong. The PV validates MULTI-USE barcodes only (FBD-100167 device matrix); it never runs a single-use accept/reject flow, so there is no distinct 'PV validates a single-use barcode' scenario to correct it into without inventing behaviour. The correct PV behaviour for a single-use barcode — reject as not accepted on this device — is already fully covered by sibling C4103559 ('Single-Use Barcode — rejected as not accepted on this device', FBD-100167/FBD-100317). Rewriting C4101005 to match reality would only duplicate C4103559, so it is condemned rather than reworded. Was previously stamped UNCONFIRMED in-suite (audit 2026-07-17) pointing at gap-register Q8; Q8 is now ANSWERED by George, closing the loop.",
+    "gaps": []
+  },
+  {
+    "id": 4101085,
+    "title": "ZZ_DELETE_REVIEW - PV to BOS — communications resilience and failover",
+    "action": "remove",
+    "citations": [
+      "FBD-100359 (Connectivity behaviour — Ethernet devices operate offline on a sustained Translink-network outage and, after a significant period, enter a communication-locked out-of-service state; no secondary/failover channel is described for Ethernet devices)",
+      "gap-register.md Q9"
+    ],
+    "change_note": "CONDEMNED (George, live-system confirmation, 2026-07-21): C4101085 as written asserts the PV 'keeps working' during a back-office comms interruption and 'uses the secondary failover channel' — confirmed wrong. The PV is Ethernet-only with NO failover path: on a sustained comms outage it goes out-of-service, per FBD-100359's Ethernet hard-failure rule (offline -> after a significant period -> communication-locked out-of-service). There is no secondary/failover channel to describe, so rewording C4101085 to the real behaviour (comms drop -> out-of-service, no failover) would only duplicate sibling C4103568 ('Comms Lock — a sustained network outage drives the PV out of service', FBD-100359), which already models exactly this. The recovery/queue angle (queued transactions delivered on restore) is likewise already covered by C4103569. No genuinely distinct angle remains, so C4101085 is condemned rather than reworded. Was previously stamped UNCONFIRMED in-suite (audit 2026-07-17) pointing at gap-register Q9; Q9 is now ANSWERED by George, closing the loop.",
+    "gaps": []
+  }
+]

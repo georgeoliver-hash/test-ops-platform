@@ -1,0 +1,47 @@
+# ETM un-bundle: retire the 4 bundle cases that merged DISTINCT functions (now split back into
+# discrete per-function cases via re-pushing menus.cases.yaml). One-shot --update.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+sections:
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: "ZZ_DELETE_REVIEW - Driver options — view information screens (un-bundled)"
+        match: Driver options — view information screens
+        objective: This test is to confirm superseded — un-bundled into discrete per-function cases.
+        steps: |
+          **Given** superseded
+          **WHEN** superseded
+          **THEN** superseded
+        expected: Superseded — split into discrete Driver-options info cases (totals, ticket history, messages, Word & Colour, paper status).
+      - title: "ZZ_DELETE_REVIEW - Driver options — device actions (un-bundled)"
+        match: Driver options — device actions
+        objective: This test is to confirm superseded — un-bundled into discrete per-function cases.
+        steps: |
+          **Given** superseded
+          **WHEN** superseded
+          **THEN** superseded
+        expected: Superseded — split into discrete cases (soft reboot, reboot card reader, report faulty reader).
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: "ZZ_DELETE_REVIEW - Supervisor — view information (versions, serial, GPS) (un-bundled)"
+        match: Supervisor — view information (versions, serial, GPS)
+        objective: This test is to confirm superseded — un-bundled into discrete per-function cases.
+        steps: |
+          **Given** superseded
+          **WHEN** superseded
+          **THEN** superseded
+        expected: Superseded — split into Supervisor view-and-print versions + GPS information.
+  - path: Functional / Technician Menu
+    cases:
+      - title: "ZZ_DELETE_REVIEW - Technician — device status and versions (un-bundled)"
+        match: Technician — device status and versions
+        objective: This test is to confirm superseded — un-bundled into discrete per-function cases.
+        steps: |
+          **Given** superseded
+          **WHEN** superseded
+          **THEN** superseded
+        expected: Superseded — split into Technician device status + view-and-print versions.

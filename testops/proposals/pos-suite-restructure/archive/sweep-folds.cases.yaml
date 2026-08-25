@@ -1,0 +1,42 @@
+# New cases for sweep items that had no existing home: device stability/performance + clock display.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Non-Functional", "Device Stability & Performance"]
+    cases:
+      - title: "Stability — recovers from 'Please Wait' without freezing"
+        refs: ["TIBU-25825", "TIBU-25826", "TIBU-25935", "TIBU-26648", "TIBU-26763", "TIBU-21397"]
+        objective: "This test is to confirm the device does not freeze on or get stuck behind a 'Please Wait' screen, and recovers without crashing or randomly rebooting."
+        steps: |
+          **GIVEN** the device is performing actions that show a 'Please Wait' screen (startup, sync, transactions)
+          **WHEN** the device is exercised through these actions repeatedly
+          **THEN** the 'Please Wait' screen always clears within a reasonable time
+          **AND** the device does not freeze, crash or randomly reboot
+        expected: "The device never gets stuck on 'Please Wait' and does not freeze, crash or auto-reboot (regression: TIBU-25825, TIBU-25826, TIBU-25935, TIBU-26648, TIBU-26763, TIBU-21397)."
+      - title: "Performance — responsive under sustained use"
+        refs: ["TIBU-16113", "TIBU-25077"]
+        objective: "This test is to confirm the device stays responsive under sustained use (no progressive slow-down)."
+        steps: |
+          **GIVEN** an operator uses the device continuously through a shift
+          **WHEN** many transactions are performed in sequence
+          **THEN** the device remains responsive throughout
+        expected: "The device stays responsive under sustained use, with no progressive slow-down (regression: TIBU-16113, TIBU-25077)."
+
+  - path: ["Functional", "Technician", "Display"]
+    cases:
+      - title: "Display — clock shows correct 24-hour time"
+        refs: ["TIBU-19560", "TIBU-21411"]
+        objective: "This test is to confirm the device clock shows the correct local time in 24-hour format."
+        steps: |
+          **GIVEN** the device is powered on and time-synced
+          **WHEN** the operator views the on-screen clock
+          **THEN** the time is shown in 24-hour format
+          **AND** the time is correct for the local time zone (not an hour out)
+        expected: "The clock displays the correct local time in 24-hour format, not 12-hour and not an hour out (regression: TIBU-19560, TIBU-21411)."

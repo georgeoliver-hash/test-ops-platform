@@ -1,0 +1,55 @@
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Numerical Input]
+    cases:
+      - title: "Numerical Input — FLU/Cash/Change back returns to Main Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing back from FLU/Cash/Change returns to the Main Screen.
+        steps: |
+          **GIVEN** the POS is at FLU/Cash/Change with change calculated
+          **WHEN** the operator presses back
+          **THEN** Main Screen-Ulsterbus selected is displayed
+        expected: "Pressing back from FLU/Cash/Change returns to the Main Screen."
+
+      - title: "Numerical Input — Basket Group Ticket back returns to Numeric Entry 9"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing back from Basket - Group Ticket returns to Numeric
+          Entry 9 Calculate Change and Group ticket.
+        steps: |
+          **GIVEN** the POS is at Basket - Group Ticket
+          **WHEN** the operator presses back
+          **THEN** Numeric Entry 9 Calculate Change and Group ticket is displayed
+        expected: "Pressing back from Basket - Group Ticket returns to Numeric Entry 9."
+
+      - title: "Numerical Input — Basket Group Ticket routes to Advance Ticket Flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting the advance ticket option from Basket - Group Ticket
+          begins the advance-ticket flow.
+        steps: |
+          **GIVEN** the POS is at Basket - Group Ticket
+          **WHEN** the operator selects the advance ticket option
+          **THEN** the advance ticket flow begins
+          **AND** **GAP** — the advance-ticket flow's onward screens are not captured on this
+          board — not in requirements; confirm before running
+        expected: "Selecting the advance ticket option from Basket - Group Ticket begins the advance-ticket flow; the flow's own onward screens are out of scope for this board (**GAP**)."
+
+      - title: "Numerical Input — Change Boarding and Alighting unlabeled decision node"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the onward behaviour of the decision node reached from Numeric
+          Entry - 9002 - Change Boarding and Alighting.
+        steps: |
+          **GIVEN** the POS is at Numeric Entry - 9002 - Change Boarding and Alighting
+          **WHEN** the operator proceeds past this screen
+          **THEN** **GAP** — the onward decision node's label and behaviour are unconfirmed in
+          the source transcription — confirm in Overflow directly before running
+        expected: "**GAP** — the decision node following Numeric Entry 9002 has no legible label in the source transcription; behaviour unconfirmed. Confirm in Overflow/live system before running this case."

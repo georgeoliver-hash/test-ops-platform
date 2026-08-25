@@ -1,0 +1,537 @@
+# ABT Annulment & Re-tap + Duplicate Detection — EXECUTABLE walk-throughs (BOS & ABT Suite 30279)
+# Authored 2026-07-17. Rewrites the existing "Annulment & Re-tap" and "Duplicate Detection"
+# cases so a tester can follow them start-to-finish, WITHOUT changing what each one tests
+# (titles + objectives + refs + section unchanged; only the GIVEN/WHEN/THEN body is made
+# concrete, ordered and observable). Update-in-place by verbatim title.
+#
+# Grounding:
+#   - Behaviour: FBD-100389 (ABT scenarios / daily cap / operating day), FBD-100307 (TOO data
+#     flow, Model-1/KFT retail, capping activation), FBD-100658 (ABT audit — paymentType=ABT,
+#     on-device revenue=0, charge computed by back office).
+#   - Routes/stops/fares/caps: knowledge/ABT/ABT_FARE_REFERENCE.md.
+#       Metro : 10A (IN) Casement Park → City Hall, single £2.30, Metro daily cap £4.00.
+#               Different Metro boarding stage: Slievegallion Drive (10A IN) → Falls Park, £2.30.
+#       Ulsterbus 72b (IN): Moygashel Busby Shop → Armagh Bus Centre = ref.60, £4.50, cap £7.20;
+#               Moygashel Busby Shop → Currans Brae = ref.25, £2.90 (same board, different alight).
+#       ref.61 : 302d (OUT) Arras Pk → Newtownards (Transfer), £4.50, cap £8.20.
+#   - Duplicate window = 15 minutes; observations are read in the Operator Portal Journey History.
+#   - "annul" wording kept for TODEV-23967; "cancel" wording kept for TODEV-24259 (source terms).
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ═══════════════════════════ Annulment & Re-tap ═══════════════════════════
+  - path: [ABT, Annulment & Re-tap]
+    cases:
+      - title: Re-tap at the same stage after annulment is the first good tap (Metro)
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap at the same boarding stage after an annulment is charged as the first good tap of the day.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap at Casement Park (10A IN) at 09:06, inside the 15-minute window
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap shows £2.30 as the first good tap, not marked Duplicate
+          **AND** the day total is £2.30
+        expected: The annulled 09:00 tap is £0.00; the 09:06 re-tap becomes the first good tap at the full £2.30, and the day total is £2.30.
+      - title: Full Metro day reaches the daily cap after an annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a full Metro day caps correctly at £4.00 following an annulment and re-tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap at Casement Park (10A IN) at 09:06
+          **AND** you tap at Slievegallion Drive (10A IN) → Falls Park at 12:00
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged the full £2.30 as the first good tap
+          **AND** the 12:00 tap is charged £1.70 to complete the £4.00 cap
+          **AND** the day total holds at £4.00
+        expected: The annulled tap is £0.00 and the two good taps cap the Metro day at £4.00 (£2.30 then £1.70).
+      - title: Re-tap at the same stage after annulment is the first ref fare tap (Ulsterbus)
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an Ulsterbus re-tap at the same stage after annulment counts as the first reference-fare tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Ulsterbus reference-fare capping is active, ref.60 = £7.20 with a £4.50 single fare, zonal capping disabled
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (ref.60, £4.50) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged the full £4.50 as the first ref.60 tap, not marked Duplicate
+          **AND** the day total is £4.50
+        expected: The annulled ref.60 tap is £0.00; the re-tap becomes the first ref.60 tap at the full £4.50.
+      - title: Ulsterbus reference fare cap applies on the correct tap after annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that the Ulsterbus reference cap is reached on the correct taps after an annulment and re-tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Ulsterbus reference-fare capping is active, ref.60 = £7.20 with a £4.50 single fare, zonal capping disabled
+          **AND** the card has no prior taps today
+          **WHEN** you tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (ref.60, £4.50) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:06
+          **AND** you tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre again at 12:00
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled and excluded from capping
+          **AND** the 09:06 re-tap is charged the full £4.50 as the first ref.60 tap
+          **AND** the 12:00 tap is charged £2.70 to complete the £7.20 ref.60 cap
+          **AND** the day total holds at £7.20
+        expected: The annulled tap is excluded; the two good ref.60 taps cap the day at £7.20 (£4.50 then £2.70).
+      - title: Re-tap after annulment in the ref.61 band caps at the ref.61 value
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap after annulment is capped in its own reference band, not an adjacent band.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Ulsterbus reference-fare capping is active, ref.61 = £8.20 (adjacent ref.60 = £7.20), single £4.50, zonal capping disabled
+          **AND** the card has no prior taps today
+          **WHEN** you tap on 302d (OUT) Arras Pk → Newtownards (Transfer) (ref.61, £4.50) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap on 302d (OUT) Arras Pk → Newtownards (Transfer) at 09:06
+          **AND** you tap on 302d (OUT) Arras Pk → Newtownards (Transfer) again at 12:00
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged the full £4.50 as the first ref.61 tap
+          **AND** the 12:00 tap is charged £3.70 to complete the £8.20 ref.61 cap
+          **AND** the day total holds at £8.20, not the ref.60 value of £7.20
+        expected: After annulment the ref.61 day caps at its own £8.20, never borrowing the adjacent ref.60 £7.20.
+      - title: Annulment in the ref.60 band does not borrow the higher ref.61 cap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a ref.60 day after an annulment still caps at its own band value.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Ulsterbus reference-fare capping is active, ref.60 = £7.20 (adjacent ref.61 = £8.20), single £4.50, zonal capping disabled
+          **AND** the card has no prior taps today
+          **WHEN** you tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (ref.60, £4.50) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:06
+          **AND** you tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre again at 12:00
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged the full £4.50 as the first ref.60 tap
+          **AND** the 12:00 tap is charged £2.70 to complete the £7.20 ref.60 cap
+          **AND** the day total holds at £7.20, not the ref.61 value of £8.20
+        expected: After annulment the ref.60 day caps at its own £7.20, never borrowing the adjacent ref.61 £8.20.
+      - title: Genuine duplicate without annulment is still rejected as £0.00
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a second same-stage tap without a preceding annulment is still treated as a duplicate.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a second tap at Casement Park (10A IN) at 09:06 with no annulment of the first
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:06 tap shows £0.00, marked Duplicate against the 09:00 original
+          **AND** the day total is £2.30
+        expected: With no annulment, the 09:06 same-stage tap is a duplicate at £0.00 and only the 09:00 tap is charged (£2.30).
+      - title: Re-tap at a different stage after annulment is a normal first tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap at a different boarding stage after annulment is treated as a normal first tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap at Slievegallion Drive (10A IN) → Falls Park at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 Casement Park tap shows £0.00, marked Annulled
+          **AND** the 09:06 Slievegallion Drive tap is charged £2.30 as a normal first tap
+          **AND** the day total is £2.30
+        expected: The annulled Casement Park tap is £0.00; the different-stage Slievegallion Drive re-tap is a normal first tap at £2.30.
+      - title: Annulling the re-tap as well leaves a later tap as the first good tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that two annulments in a row do not leave a phantom successful tap in the count.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00 and annul it in the Operator Portal
+          **AND** you re-tap at Casement Park (10A IN) at 09:06 and annul that one too
+          **AND** you tap at Casement Park (10A IN) again at 09:20
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 tap shows £0.00, marked Annulled
+          **AND** the 09:20 tap is charged £2.30 as the first good tap
+          **AND** the day total is £2.30
+        expected: Both annulled taps are £0.00 and the 09:20 tap is the first good tap at £2.30, with no phantom successful tap counted.
+      - title: Annulment processed in the same settlement run as the re-tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that the fix holds when a cancellation and re-tap settle together in one run.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** no EndOfDay settlement has run yet today and the card has no prior taps
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap at Casement Park (10A IN) at 09:06, with no settlement between the annulment and the re-tap
+          **AND** you run a single EndOfDay settlement covering both
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged £2.30 as the first good tap, not marked Duplicate
+          **AND** the day total is £2.30
+        expected: With the annulment and re-tap in one settlement run, the annulled tap is £0.00 and the re-tap is the first good tap at £2.30.
+      - title: Annulment with no re-tap leaves no chargeable journey
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an annulled tap on its own generates no charge.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal and make no further tap
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** no other journey appears for the card that day
+          **AND** the day total is £0.00
+        expected: The lone annulled tap is £0.00, leaves no other journey, and nothing is charged for the day.
+      - title: Annulling a capped tap does not corrupt the day total
+        refs: [TODEV-23967]
+        objective: This test is to confirm that annulling a capped (free) tap leaves the day's cap total intact.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card already has a Metro day at the £4.00 cap: 09:00 Casement Park £2.30, then 12:00 Slievegallion Drive → Falls Park £1.70
+          **WHEN** you tap at Casement Park (10A IN) at 15:00, which settles at £0.00 because the £4.00 cap is already met
+          **AND** you annul the 15:00 capped tap in the Operator Portal
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 15:00 tap shows £0.00, marked Annulled
+          **AND** the 09:00 tap is still £2.30 and the 12:00 tap is still £1.70
+          **AND** the day total holds at £4.00
+        expected: Annulling the already-free capped 15:00 tap leaves the earlier charges and the £4.00 day total intact.
+      - title: Annulling the first capped-day tap then re-tapping restores correct totals
+        refs: [TODEV-23967]
+        objective: This test is to confirm that removing a tap that contributed to the cap and re-tapping restores the correct day total.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a Metro day approaching the cap: 09:00 Casement Park £2.30, then 12:00 Slievegallion Drive → Falls Park £1.70 (day at £4.00)
+          **WHEN** you annul the 09:00 Casement Park tap in the Operator Portal
+          **AND** you re-tap at Casement Park (10A IN) at 12:30
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the two remaining good taps (12:00 and the 12:30 re-tap) sum to the £4.00 cap
+          **AND** the day total is restored to £4.00
+        expected: Annulling a tap that had contributed to the cap and re-tapping restores the day total to £4.00 with the annulled tap at £0.00.
+      - title: Annulment on one card does not affect a similar tap on another card
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a same-stage tap on a different card is treated independently of another card's annulment.
+        steps: |-
+          **GIVEN** two seeded ABT test cEMV cards, Card A and Card B, both viewable in the Operator Portal Journey History
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** neither card has prior taps today
+          **WHEN** you tap Card A at Casement Park (10A IN) at 09:00 and annul it in the Operator Portal
+          **AND** you tap Card B at Casement Park (10A IN) at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Card A Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** in Card B Journey History the 09:06 tap is charged £2.30 as a normal first tap, not marked Duplicate
+          **AND** Card A's annulment has no effect on Card B's day total of £2.30
+        expected: Card B's same-stage tap is a normal first tap at £2.30, entirely unaffected by Card A's annulment.
+      - title: Ulsterbus re-tap with a different alighting and fare after annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an Ulsterbus re-tap from the same stage with a different alighting and fare is the first good tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Ulsterbus reference-fare capping is active, single fares £4.50 (ref.60) and £2.90 (ref.25), zonal capping disabled
+          **AND** the card has no prior taps today
+          **WHEN** you tap on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (ref.60, £4.50) at 09:00
+          **AND** you annul the 09:00 tap in the Operator Portal
+          **AND** you re-tap on 72b (IN) Moygashel Busby Shop → Currans Brae (ref.25, £2.90) at 09:06, same boarding stage, different alighting
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged its own £2.90 fare as the first good tap, not marked Duplicate
+          **AND** the day total is £2.90
+        expected: The re-tap from the same stage to a different alighting is charged its own £2.90 as the first good tap; the annulled tap is £0.00.
+      - title: Re-tap at the same stage without an annulment is a genuine duplicate
+        refs: [TODEV-23967]
+        objective: This test is to confirm that duplicate detection keys off annulment status, not merely a later tap existing.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00 and leave it un-annulled
+          **AND** you tap again at Casement Park (10A IN) at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:06 tap shows £0.00, marked Duplicate against the 09:00 original
+          **AND** the day total is £2.30
+        expected: Because the 09:00 tap was not annulled, the 09:06 same-stage tap is a genuine duplicate at £0.00 — detection keys off annulment status, not a later tap existing.
+      - title: Multiple annulment and re-tap cycles in one day cap correctly
+        refs: [TODEV-23967]
+        objective: This test is to confirm that several annulment and re-tap cycles in a day still cap correctly.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap at Casement Park (10A IN) at 09:00, annul it, and re-tap at Casement Park at 09:06
+          **AND** you tap at Slievegallion Drive (10A IN) → Falls Park at 12:00, annul it, and re-tap there at 12:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 and 12:00 taps both show £0.00, marked Annulled
+          **AND** the 09:06 re-tap is charged £2.30 as the first good tap
+          **AND** the 12:06 re-tap is charged £1.70 to complete the £4.00 cap
+          **AND** the day total holds at £4.00
+        expected: Across two annul-and-re-tap cycles the annulled taps are £0.00 and the two re-taps cap the Metro day at £4.00.
+      - title: Annulment on a previous day does not affect the new day's first tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that capping windows are per day and a prior-day annulment does not bleed forward.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN), operating day 04:00–03:59
+          **AND** a Casement Park (10A IN) tap made two operating days ago was annulled and already settled
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00 on the new operating day
+          **AND** you run the EndOfDay settlement for the new day
+          **THEN** in Journey History the new day's 09:00 tap is charged the full £2.30 as a normal first tap
+          **AND** the tap is not marked Duplicate against the annulled prior-day tap
+          **AND** the new day total is £2.30
+        expected: The prior-day annulment does not bleed into the new operating day; the new first tap is charged normally at £2.30.
+      - title: A valid tap rejected as duplicate is retained when the first tap is cancelled
+        refs: [TODEV-24259]
+        objective: This test is to confirm that a duplicate-flagged tap becomes the valid journey when the original tap is cancelled.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a 09:00 Casement Park tap (£2.30) and a same-stage 09:06 tap already flagged £0.00 Duplicate against it
+          **WHEN** you cancel the 09:00 Casement Park tap in the Operator Portal
+          **AND** you run the settlement reconciliation
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Cancelled
+          **AND** the 09:06 tap is rehabilitated to the valid first tap and charged £2.30
+          **AND** the 09:06 journey remains present in Journey History and the day total is £2.30
+        expected: Cancelling the original promotes the previously duplicate-flagged 09:06 tap to the valid first journey at £2.30, and it stays in Journey History.
+      - title: Several same-stage taps then cancelling the first promotes the next valid tap
+        refs: [TODEV-24259]
+        objective: This test is to confirm that after several same-stage duplicates, cancelling the first promotes the next tap to the valid journey.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a 09:00 Casement Park tap (£2.30) and three same-stage taps at 09:04, 09:08 and 09:12 flagged £0.00 Duplicate
+          **WHEN** you cancel the 09:00 Casement Park tap in the Operator Portal
+          **AND** you run the settlement reconciliation
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Cancelled
+          **AND** the 09:04 tap is promoted to the valid first tap and charged £2.30
+          **AND** the 09:08 and 09:12 taps remain £0.00, marked Duplicate
+          **AND** the day total is £2.30
+        expected: Cancelling the first tap promotes only the next (09:04) tap to the valid first journey at £2.30; the remaining same-stage taps stay duplicates at £0.00.
+      - title: No valid journey is left missing after the annulment
+        refs: [TODEV-24259]
+        objective: This test is to confirm that exactly one valid journey remains after an annulment, with none missing from Journey History.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a 09:00 Casement Park tap (£2.30) and a same-stage 09:06 tap flagged £0.00 Duplicate
+          **WHEN** you cancel the 09:00 Casement Park tap in the Operator Portal
+          **AND** you run the settlement reconciliation
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Cancelled
+          **AND** the 09:06 tap is the one remaining valid journey, charged £2.30
+          **AND** no journey is missing from Journey History and the day total is £2.30
+        expected: After the cancellation exactly one valid journey remains (the promoted 09:06 tap at £2.30); nothing is missing from Journey History.
+      - title: Annulment processed before the second tap makes it a normal first journey
+        refs: [TODEV-24259]
+        objective: This test is to confirm that when the cancellation completes before the next tap, that tap is a normal first journey.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you cancel the 09:00 tap in the Operator Portal and let the cancellation complete before any further tap
+          **AND** you tap at Casement Park (10A IN) again at 09:20
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Cancelled
+          **AND** the 09:20 tap is charged £2.30 as a normal first journey, not marked Duplicate
+          **AND** the day total is £2.30
+        expected: Because the cancellation completed before the next tap, the 09:20 tap is a normal first journey at £2.30 and the cancelled tap shows the indicator.
+      - title: Cancelling the rehabilitated tap promotes the next tap in turn
+        refs: [TODEV-24259]
+        objective: This test is to confirm that cancelling a rehabilitated tap promotes the following tap to the valid journey.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a 09:00 Casement Park tap already cancelled, so the 09:06 same-stage tap is now the rehabilitated valid tap (£2.30), and a 09:12 same-stage tap is flagged £0.00 Duplicate
+          **WHEN** you cancel the rehabilitated 09:06 Casement Park tap in the Operator Portal
+          **AND** you run the settlement reconciliation
+          **THEN** in Journey History the 09:06 tap shows £0.00, marked Cancelled
+          **AND** the 09:12 tap is promoted to the valid first tap and charged £2.30
+          **AND** the day total is £2.30
+        expected: Cancelling the rehabilitated 09:06 tap promotes the 09:12 tap to the valid first journey at £2.30 in turn.
+      - title: Cancelling a tap with no following tap leaves nothing missing
+        refs: [TODEV-24259]
+        objective: This test is to confirm that cancelling a lone tap leaves no missing journey and no charge.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00 and make no further tap
+          **AND** you cancel the 09:00 tap in the Operator Portal
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap shows £0.00, marked Cancelled
+          **AND** no other journey appears for the card and none is missing
+          **AND** the day total is £0.00
+        expected: The lone cancelled tap shows the indicator at £0.00, nothing else appears, nothing is missing, and the day total is £0.00.
+      - title: A second tap from a different stage is unaffected by the annulment
+        refs: [TODEV-24259]
+        objective: This test is to confirm that a different-stage tap, never a duplicate, is unaffected by cancelling the first tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has a 09:00 Casement Park tap (£2.30) and a valid different-stage 09:06 Slievegallion Drive → Falls Park tap, never flagged a duplicate
+          **WHEN** you cancel the 09:00 Casement Park tap in the Operator Portal
+          **AND** you run the settlement reconciliation
+          **THEN** in Journey History the 09:00 Casement Park tap shows £0.00, marked Cancelled
+          **AND** the 09:06 Slievegallion Drive tap is unaffected and remains the valid first tap at £2.30
+          **AND** the day total is £2.30
+        expected: The different-stage 09:06 tap was never a duplicate, so cancelling the first tap leaves it untouched as the valid first tap at £2.30.
+
+  # ═══════════════════════════ Duplicate Detection ═══════════════════════════
+  - path: [ABT, Duplicate Detection]
+    cases:
+      - title: Second tap after a same-stage retail transaction is flagged duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a second tap remains a duplicate even after an intervening same-stage retail transaction.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail (Model 1 / KFT ticket) transaction on the device at 09:02
+          **AND** you tap again at Casement Park (10A IN) at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:02 retail transaction is recorded and charged its own ticket price
+          **AND** the 09:06 tap shows £0.00, marked Duplicate against the 09:00 original
+          **AND** the tap day total is £2.30
+        expected: The intervening 09:02 retail transaction does not reset detection; the 09:06 same-stage tap is still a duplicate at £0.00.
+      - title: Later taps including an out-of-order timestamp are flagged duplicates
+        refs: [TODEV-24258]
+        objective: This test is to confirm that later same-stage taps, including one timestamped before the original, are flagged as duplicates.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **AND** a second validator was briefly offline (or its clock was skewed), so a tap it buffered uploads late — carrying a timestamp earlier than taps the back office has already processed
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail transaction on the device at 09:02
+          **AND** you tap again at Casement Park (10A IN) at 09:06
+          **AND** the buffered same-stage tap from the offline device then uploads with an 08:58 timestamp — earlier than the 09:00 original but arriving after it (out of order), inside the 15-minute window
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:06 tap shows £0.00, marked Duplicate
+          **AND** the 08:58 out-of-order tap shows £0.00, marked Duplicate
+          **AND** both are linked to the 09:00 original
+          **AND** the day total is unchanged at £2.30
+        expected: Both later same-stage taps — the 09:06 and the out-of-order 08:58 — are duplicates at £0.00 linked to the 09:00 original, leaving the day total unchanged.
+      - title: Multiple interleaved retail transactions never reset the duplicate reference
+        refs: [TODEV-24258]
+        objective: This test is to confirm that every same-stage tap after the first is a duplicate of the original regardless of interleaved retail transactions.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail transaction at 09:02
+          **AND** you tap again at Casement Park (10A IN) at 09:05
+          **AND** you make another same-stage retail transaction at 09:07
+          **AND** you tap again at Casement Park (10A IN) at 09:10
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:05 tap shows £0.00, marked Duplicate against the 09:00 original
+          **AND** the 09:10 tap shows £0.00, marked Duplicate against the same 09:00 original
+          **AND** the tap day total is unchanged at £2.30
+        expected: No matter how many retail transactions are interleaved, every later same-stage tap stays a duplicate at £0.00 against the original 09:00 tap.
+      - title: A retail transaction from a different stage still allows the duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that the previously-working different-stage retail path still flags the later tap as a duplicate.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a retail transaction from a different stage (Slievegallion Drive, 10A IN) at 09:02
+          **AND** you tap again at Casement Park (10A IN) at 09:06
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:06 same-stage tap shows £0.00, marked Duplicate against the 09:00 original
+          **AND** the tap day total is £2.30
+        expected: A retail transaction from a different stage does not reset detection; the 09:06 same-stage tap is still a duplicate at £0.00.
+      - title: A same-stage tap outside the duplicate window is not a duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a same-stage tap beyond the 15-minute window is a genuine new tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail transaction at 09:02
+          **AND** you tap again at Casement Park (10A IN) at 09:16, more than 15 minutes after the first tap
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:16 tap is a genuine second tap, not marked Duplicate
+          **AND** the 09:16 tap is charged £1.70 to complete the £4.00 Metro cap
+          **AND** the day total is £4.00
+        expected: Beyond the 15-minute window the 09:16 same-stage tap is a genuine second tap (charged, not a duplicate), and the Metro day caps at £4.00.
+      - title: The retail transaction itself is never flagged a duplicate of a tap
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a retail transaction is recorded correctly and is not cross-flagged as a duplicate of a TOO tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail (Model 1 / KFT ticket) transaction on the device at 09:06, inside the window
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 tap is charged the full £2.30
+          **AND** the 09:06 retail transaction is recorded and charged its own ticket price
+          **AND** the retail transaction is not marked Duplicate of the 09:00 tap
+        expected: The retail transaction is recorded and charged correctly on its own and is never cross-flagged as a duplicate of the TOO tap.
+      - title: A later tap from a different boarding stage is a genuine new tap
+        refs: [TODEV-24258]
+        objective: This test is to confirm that duplicate detection is per boarding stage, so a different-stage tap charges normally.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, with its account open in the Operator Portal Journey History to verify
+          **AND** the duplicate-detection window is 15 minutes
+          **AND** Metro capping is £4.00 with a £2.30 single fare on 10A (IN)
+          **AND** the card has no prior taps today
+          **WHEN** you tap the card at Casement Park (10A IN) at 09:00
+          **AND** you make a same-stage retail transaction at 09:02
+          **AND** you tap at Slievegallion Drive (10A IN) → Falls Park at 09:06, a different boarding stage
+          **AND** you run the EndOfDay settlement
+          **THEN** in Journey History the 09:00 Casement Park tap is charged the full £2.30
+          **AND** the 09:06 Slievegallion Drive tap is a genuine second tap, not marked Duplicate
+          **AND** the 09:06 tap is charged £1.70 to complete the £4.00 Metro cap
+          **AND** the day total is £4.00
+        expected: Detection is per boarding stage, so the different-stage 09:06 tap is a genuine second tap charged normally, and the Metro day caps at £4.00.

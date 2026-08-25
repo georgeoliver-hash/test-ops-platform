@@ -1,0 +1,326 @@
+# POS Fare Look-Up — clarity pass (suite 30253)
+# UPDATES 23 existing cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: fuller objective; grounded preconditions with a
+# concrete route/station + boarding/alighting + product; one predicate per THEN/AND (no compound);
+# CloudFare audit step (and MERIT/SmartTrack cross-checks) kept where present. No @tags, no
+# [Automatable] line — refs live in the refs field. Push with --update; do NOT create new cases.
+#
+# SCOPE: Fare Look-Up sections under top-levels Functional, NIR (Rail) and Ulsterbus.
+# SKIPPED (out of this pass): Functional > Fare Look-Up "Fare-Stage Selection" cases 4103578/79/80
+#   (case ids >= 4103473); all Non-Functional > Screen Validation FLU cases (not a scoped top-level);
+#   no "ZZ" titles were present.
+# Concrete grounding: bus examples from FBD-100662 (route 72b, Moygashel Busby Shop -> Armagh Bus
+#   Centre, Adult Single) and the Fare-Stage-name display rule FBD-100207; rail/XB station examples
+#   to be confirmed against the NIR fares reference table (FBD-100450) — NIR uses Reference Tables,
+#   not the stop-based model.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Fare Look-Up, Common]
+    cases:
+      - title: FLU — passenger type
+        objective: This test is to confirm the operator can select a passenger type while building a fare and that the chosen type is applied to the fare, updating the displayed price.
+        steps: |-
+          **GIVEN** an operator is signed on and building a fare on the POS
+          **AND** the fare's passenger type can be changed from the passenger-type list
+          **AND** example: on route 72b, Moygashel Busby Shop → Armagh Bus Centre, changing the passenger type from Adult to Child (fares confirm against the fares export)
+          **WHEN** the operator selects a passenger type from the list
+          **THEN** the selected passenger type is applied to the fare
+          **AND** the displayed price updates to the price for that passenger type
+        expected: Selecting a passenger type applies it to the fare and updates the displayed price. Each passenger type (Adult, Child, concession, etc.) is a data variation of the same behaviour.
+      - title: FLU — cash limit
+        objective: This test is to confirm that when the basket total for a cash sale exceeds the configured cash limit, the POS shows the Cash Limit error and blocks the over-limit cash transaction.
+        steps: |-
+          **GIVEN** an operator is signed on and building a fare on the POS
+          **AND** a cash limit is configured above which a cash sale cannot complete
+          **AND** example: on route 72b, adding Adult Single fares (Moygashel Busby Shop → Armagh Bus Centre) until the basket total passes the configured cash limit
+          **WHEN** the basket total exceeds the configured cash limit
+          **THEN** the Cash Limit error is shown
+          **AND** the over-limit cash transaction is blocked
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Exceeding the configured cash limit shows the Cash Limit error and prevents the over-limit cash transaction from completing.
+  - path: [NIR (Rail), Fare Look-Up]
+    cases:
+      - title: Rail FLU — sell a ticket
+        refs: TIBU-19374,TIBU-24862,TIBU-24853
+        objective: This test is to confirm the operator can build a rail fare from a boarding station, alighting station, passenger type and ticket type, that the correct price and field layout are shown, that the fare can be added to the basket, and that the correct stations are audited.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Lisburn → Belfast Lanyon Place, Adult, Single (stations/price confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator selects a boarding station, an alighting station, a passenger type and a ticket type
+          **THEN** the selected fare is displayed
+          **AND** the correct price is shown, including for Cross-Border tickets
+          **AND** the field layout is correct
+          **WHEN** the operator adds the fare to the basket
+          **THEN** the fare is added to the basket
+          **AND** the correct boarding and alighting stations are audited
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A rail fare is built with the correct price (including Cross-Border) and layout, added to the basket, and the correct boarding and alighting stations are audited. Stations and ticket types are data variations.
+      - title: Rail FLU — boarding = alighting rejected
+        refs: TIBU-19292
+        objective: This test is to confirm the POS rejects a rail fare whose boarding and alighting stations are the same station and does not offer issue buttons for it.
+        steps: |-
+          **GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: setting both boarding and alighting to Belfast Lanyon Place (stations confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator sets the boarding and alighting stations to the same station
+          **THEN** the fare is not accepted
+          **AND** no issue buttons are offered for it
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Setting the boarding and alighting stations to the same station is rejected and no issue buttons are offered.
+      - title: Rail FLU — station lists & numeric select
+        refs: TIBU-22953,TIBU-21771
+        objective: This test is to confirm the boarding and alighting station lists are displayed and that a station can be chosen by entering its station number.
+        steps: |-
+          **GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode
+          **AND** example: opening the boarding station list and keying the station number for Lisburn (station numbers confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator opens the station list
+          **THEN** the station list is displayed
+          **WHEN** the operator enters the station number
+          **THEN** the matching station is selected from the list
+        expected: The boarding/alighting station lists display and entering a station number selects the matching station.
+      - title: Rail FLU — function keys
+        refs: TIBU-24774,TIBU-24775,TIBU-21779,TIBU-24827,TIBU-24828,TIBU-21770
+        objective: This test is to confirm the rail FLU function keys list the passenger types and ticket types with real labels, do not crash the device, and leave buttons that should be unavailable un-pressable.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS on the Rail FLU screen (rail/NIR mode)
+          **AND** example: pressing R3 for passenger types and R4 for ticket types while building a Lisburn → Belfast Lanyon Place fare
+          **WHEN** the operator presses a function key (e.g. R3 passengers, R4 ticket types)
+          **THEN** the corresponding list is displayed with real labels, not placeholder "example" text
+          **AND** the device does not crash
+          **AND** buttons that should be unavailable cannot be pressed
+        expected: Rail FLU function keys show the passenger/ticket-type lists with real labels, never crash the device, and keep disabled buttons un-pressable.
+      - title: Rail FLU — C returns
+        refs: TIBU-24810
+        objective: This test is to confirm that pressing the 'C' key on a Rail FLU sub-screen returns the operator to the previous FLU screen.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS on a Rail FLU sub-screen (rail/NIR mode)
+          **AND** example: on the passenger-type list reached while building a Lisburn → Belfast Lanyon Place fare
+          **WHEN** the operator presses the 'C' button
+          **THEN** the operator is returned to the previous Rail FLU screen
+        expected: Pressing 'C' steps back to the previous Rail FLU screen.
+      - title: Rail FLU — Main screen rail-only
+        refs: TIBU-24864
+        objective: This test is to confirm the Main Rail screen presents rail options only and does not show the Bus or Day Tours buttons.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen
+          **AND** example: viewing the Main Rail screen before building any fare
+          **WHEN** the operator views the Main Rail screen
+          **THEN** no 'Bus' button is shown
+          **AND** no 'Day Tours' button is shown
+        expected: The Main Rail screen shows rail options only, with no Bus or Day Tours buttons.
+      - title: Rail FLU — non-Adult-Single keeps state
+        refs: TIBU-24865
+        objective: This test is to confirm that issuing a rail ticket other than an Adult Single leaves the Rail FLU screen in the correct state and does not unexpectedly revert it.
+        steps: |-
+          **GIVEN** an operator is signed on and has built a non-Adult-Single rail fare (rail/NIR mode)
+          **AND** example: a Child Single, Lisburn → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator issues the ticket
+          **THEN** the Rail FLU screen retains the correct state
+          **AND** the screen does not unexpectedly revert
+        expected: Issuing a ticket other than an Adult Single leaves the Rail FLU in the correct state and does not revert.
+      - title: Rail FLU — present smartcard
+        refs: TIBU-21933,TIBU-21786
+        objective: This test is to confirm that presenting a smartcard on the Rail FLU screen is handled without a fatal error and the operator can return to the Rail FLU screen afterwards.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS on the Rail FLU screen (rail/NIR mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: presenting a valid smartcard while building a Lisburn → Belfast Lanyon Place fare
+          **WHEN** the operator presents a smartcard
+          **THEN** the smartcard is handled without a fatal error
+          **AND** the operator can return to the Rail FLU screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Presenting a smartcard on the Rail FLU screen does not crash the device and the operator can return to the Rail FLU screen.
+      - title: Rail FLU — cross-border ticket & currency toggle
+        refs: TIBU-19374
+        objective: This test is to confirm that when a cross-border station is selected on a Rail fare, cross-border (XB) ticket types are offered at the correct price with a working GBP/euro currency toggle. Cross-border is Rail-only.
+        steps: |-
+          **GIVEN** an operator is signed on and building a rail fare with a cross-border boarding or alighting station (rail/NIR mode)
+          **AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border; stations/price confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator views the ticket types
+          **THEN** cross-border ticket types are shown at the correct price
+          **WHEN** the operator presses the price button
+          **THEN** the currency toggles to euro
+          **WHEN** the operator presses the price button again
+          **THEN** the currency toggles back to GBP
+        expected: A cross-border journey offers XB ticket types at the correct price with a GBP↔euro toggle that works both ways; XB is available on Rail only.
+      - title: Rail FLU — change boarding & alighting stations
+        objective: This test is to confirm the operator can change the boarding and alighting stations on a rail fare and that the fare and price update to reflect each change.
+        steps: |-
+          **GIVEN** an operator is signed on and has selected a rail fare with boarding and alighting stations (rail/NIR mode)
+          **AND** example: an Adult Single starting Lisburn → Belfast Lanyon Place, then re-pointed to Portadown → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator changes the boarding station
+          **THEN** the fare updates for the new boarding station
+          **WHEN** the operator changes the alighting station
+          **THEN** the fare updates for the new alighting station
+        expected: Changing the boarding or alighting station on a rail fare updates the fare and price correctly for each change.
+      - title: Cross-Border — enable Euro currency
+        objective: This test is to confirm that Euro currency can be enabled for Cross-Border products and that, once enabled, a Cross-Border fare can be priced and paid in Euros.
+        steps: |-
+          **GIVEN** an operator is signed on and has selected a Cross-Border product on the POS in rail (NIR) mode
+          **AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border; fares confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** Euro currency is enabled and the price is toggled to Euro
+          **THEN** the Cross-Border fare is shown in Euros
+          **AND** payment can be taken in the selected currency
+        expected: With Euro currency enabled, Cross-Border products display and accept payment in Euros, and the GBP↔EUR toggle works.
+  - path: [NIR (Rail), Fare Look-Up — Advance & Multi-day]
+    cases:
+      - title: Rail FLU — Advance Ticket
+        refs: TIBU-21792,TIBU-22824,TIBU-24826
+        objective: This test is to confirm an Advance Ticket accepts a valid in-range date, rejects an invalid or out-of-range date, can only be held one at a time (not combined with other basket items), and resets after inactivity.
+        steps: |-
+          **GIVEN** an operator is signed on and has selected Advance Ticket on the Rail FLU (rail/NIR mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: an Adult Advance, Lisburn → Belfast Lanyon Place, for a valid future date within the advance window (fares/window confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator enters a valid future date within the advance range
+          **THEN** the advance ticket is added
+          **AND** the basket shows 'Ticket Date DD/MM/YY'
+          **WHEN** the operator enters an invalid date or one outside the valid advance range
+          **THEN** an error is shown (3s timeout, override with any key)
+          **AND** the device does not crash
+          **WHEN** the operator tries to add an advance ticket alongside other products
+          **THEN** the advance ticket cannot be combined with other basket items (one at a time)
+          **WHEN** the advance ticket is left for 1 minute with no interaction
+          **THEN** the advance date, passenger and ticket type reset
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The Advance Ticket accepts a valid in-range date, rejects invalid or out-of-range dates with an error, is one-at-a-time (cannot be combined with other basket items), and resets after 1 minute of inactivity.
+      - title: Rail FLU — 3 Day Select
+        refs: TIBU-24829,TIBU-24837
+        objective: This test is to confirm the 3 Day Select ticket lets the operator choose the travel days from the day list, including adjusting them with the + and - buttons.
+        steps: |-
+          **GIVEN** an operator is signed on and has selected a 3 Day Select ticket on the Rail FLU (rail/NIR mode)
+          **AND** example: choosing three available travel days for an Adult 3 Day Select (fares/days confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator chooses the available days from the day list and adjusts them with the + / - buttons
+          **THEN** the selected days are applied to the ticket
+        expected: The 3 Day Select ticket allows the travel days to be chosen from the day list and adjusted with the + and - buttons.
+      - title: Rail FLU — Misc button
+        refs: TIBU-19454
+        objective: This test is to confirm that pressing the Misc button on the Main Rail FLU screen opens the Misc option without a fatal error.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS on the Main Rail FLU screen (rail/NIR mode)
+          **AND** example: pressing Misc from the Main Rail FLU screen before building a fare
+          **WHEN** the operator presses the Misc button
+          **THEN** the Misc option opens
+          **AND** no fatal error occurs
+        expected: Pressing the Misc button opens the Misc option cleanly with no fatal error.
+  - path: [NIR (Rail), Fare Look-Up — Favourites]
+    cases:
+      - title: "Rail FLU — favourites: save & issue"
+        refs: TIBU-19371,TIBU-24783,TIBU-24781,TIBU-19456
+        objective: This test is to confirm a favourite rail ticket can be saved, that the favourites list is shown with paging and correct alignment, that a favourite's ticket details are shown, and that selecting one proceeds to the payment screen.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS on the Rail FLU screen (rail/NIR mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: saving an Adult Single, Lisburn → Belfast Lanyon Place, as a favourite, then selecting it from the list (fares confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator saves a fare as a favourite and opens the favourites list
+          **THEN** the favourites list is shown with paging
+          **AND** the list entries are correctly aligned
+          **WHEN** the operator selects a favourite
+          **THEN** the favourite's ticket details are shown
+          **AND** the flow proceeds to the payment screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A favourite can be saved, listed with paging and correct alignment, shows its ticket details, and selecting one proceeds to the payment screen.
+      - title: "Rail FLU — favourites: overwrite"
+        refs: TIBU-24095,TIBU-24776,TIBU-24886
+        objective: This test is to confirm that overwriting an existing favourite stores it in the correct slot without a fatal error, and that cancelling the overwrite aborts cleanly with no change.
+        steps: |-
+          **GIVEN** an operator is signed on and is overwriting an existing favourite on the Rail FLU (rail/NIR mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: overwriting the favourite in slot 1 with an Adult Single, Lisburn → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+          **WHEN** the operator confirms the overwrite
+          **THEN** the favourite is stored in the correct slot
+          **AND** no fatal error occurs
+          **WHEN** the operator instead cancels an overwrite
+          **THEN** the overwrite is aborted
+          **AND** no change is made to the favourite
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Confirming an overwrite saves the favourite to the correct slot without crashing, and cancelling aborts cleanly with no change.
+  - path: [Ulsterbus, Fare Look-Up]
+    cases:
+      - title: Bus FLU — sell a ticket
+        refs: TIBU-19459,TIBU-19460
+        objective: This test is to confirm the operator can build a bus fare from a route number, boarding and alighting stages and a fare type, add it to the basket and purchase it, with the Fare Stage name (not the stop name) used throughout.
+        steps: |-
+          **GIVEN** an operator is signed on with the POS in Ulsterbus mode on the Main Screen
+          **AND** the POS is communicating with CloudFare
+          **AND** example: route 72b, Moygashel Busby Shop → Armagh Bus Centre, Adult Single (fares confirm against the fares export; Fare Stage names per FBD-100207)
+          **WHEN** the operator enters a route number, sets the boarding and alighting stages and selects a fare type
+          **THEN** the fare and price are shown
+          **AND** the Fare Stage name is shown rather than the stop name
+          **WHEN** the operator adds the product to the basket and purchases it
+          **THEN** the product is added to the basket
+          **AND** the product can be purchased
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A bus fare built from route, boarding/alighting stages and fare type is added to the basket and can be purchased, showing the Fare Stage name. Specific routes and fares are data variations.
+      - title: Bus FLU — route number letters via the '*' key
+        refs: TIBU-19458
+        objective: This test is to confirm that pressing the '*' key during route-number entry shows the letter options for lettered routes.
+        steps: |-
+          **GIVEN** an operator is signed on and is entering a route number on the Main Screen (Ulsterbus mode)
+          **AND** example: entering route 72 then pressing '*' to reach the 'b' of route 72b
+          **WHEN** the operator presses the '*' key during route-number entry
+          **THEN** the route-number letter options are shown
+        expected: Pressing '*' during route-number entry shows the letter options for lettered routes.
+      - title: Bus FLU — change boarding stage, alighting stage and fare type
+        objective: This test is to confirm the operator can change the boarding stage, the alighting stage and the fare type while building a bus fare, and that the fare updates to reflect each change.
+        steps: |-
+          **GIVEN** an operator is signed on and building a bus fare (Ulsterbus mode)
+          **AND** example: route 72b starting Moygashel Busby Shop → Armagh Bus Centre, Adult Single, then re-pointed to a different boarding/alighting stage and Child fare (fares confirm against the fares export)
+          **WHEN** the operator changes the boarding stage
+          **THEN** the fare updates for the new boarding stage
+          **WHEN** the operator changes the alighting stage
+          **THEN** the fare updates for the new alighting stage
+          **WHEN** the operator changes the fare type
+          **THEN** the fare updates for the new fare type
+        expected: The boarding stage, alighting stage and fare type can each be changed and the fare updates to reflect each change.
+      - title: Bus FLU — Misc open fare
+        objective: This test is to confirm that a Misc product open fare accepts a valid entered amount and adds it to the basket, and rejects an invalid amount with an error.
+        steps: |-
+          **GIVEN** an operator is signed on and has selected a Misc product (open fare) (Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: entering a valid open-fare amount on route 72b, then an invalid amount
+          **WHEN** the operator enters a valid open-fare amount
+          **THEN** the open fare is accepted
+          **AND** the open fare is added to the basket
+          **WHEN** the operator enters an invalid amount
+          **THEN** the amount is rejected with an error
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A Misc open fare accepts a valid entered amount and adds it to the basket, and rejects an invalid amount with an error.
+      - title: Bus FLU — Default Boarding Stage '*' key
+        refs: TIBU-24026
+        objective: This test is to confirm the '*' key on the Default Boarding Stage entry behaves correctly and is not a dead key or an error.
+        steps: |-
+          **GIVEN** an operator is signed on and is on the Default Boarding Stage entry (Ulsterbus mode)
+          **AND** example: pressing '*' on the Default Boarding Stage entry for route 72b
+          **WHEN** the operator presses the '*' button
+          **THEN** the expected behaviour occurs
+          **AND** there is no dead key or error
+        expected: The '*' key on the Default Boarding Stage entry behaves correctly, with no dead key or error.

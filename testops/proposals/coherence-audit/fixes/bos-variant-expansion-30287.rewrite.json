@@ -1,0 +1,44 @@
+[
+ {
+  "id": 4104254,
+  "title": "Configure report access for a role — TVM/Cash reports",
+  "preface": "This test is to confirm that an administrator can manage which TVM/Cash reports a role can access, including specific reports.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets the TVM/Cash report access for a role, including specific report access",
+    "expected": "**THEN** the role can access only the permitted TVM/Cash reports"
+   }
+  ],
+  "expected": "A role's TVM/Cash report access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342"
+ },
+ {
+  "id": 4104255,
+  "title": "Configure module and group access for a role — operator-scope claims",
+  "preface": "This test is to confirm that an administrator can set a role's operator-scope claim (CF Full Operator vs CF-Operator-<Name>).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's operator-scope claim — CF Full Operator (AccessControlFullAccess, all operators in hierarchy) or CF-Operator-<Name> (AccessControl<name>, that operator only, no sub-operators)",
+    "expected": "**THEN** the role's visible operators match the configured scope"
+   }
+  ],
+  "expected": "A role's operator-scope claim (Full Operator vs a named single operator) matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342"
+ },
+ {
+  "id": 4104258,
+  "title": "Fares export — standard fares list is exported",
+  "preface": "This test is to confirm the user can export the standard fares list from CloudFare.",
+  "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+  "steps": [
+   {
+    "content": "**WHEN** the user runs the fares export for the standard fares list (XLSX or CSV)",
+    "expected": "**THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+   }
+  ],
+  "expected": "The standard fares list for the selected operator is exported (XLSX or CSV).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143"
+ }
+]

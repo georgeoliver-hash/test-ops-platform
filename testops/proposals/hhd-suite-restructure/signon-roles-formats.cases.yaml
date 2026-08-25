@@ -1,0 +1,609 @@
+# HHD Sign On & Session + Operator/Supervisor/Technician + Ticket Formats & Waybill
+# Target: **NEW** HHD Test Suite (30285). NEW consolidated cases — push YAML.
+# DO NOT push here; DO NOT edit/move/delete old cases. Old suites (5446 AA-HHD, 13958 HHD
+# Master, 5608 FAT Glider) are read-only source-of-truth for grounding only.
+#
+# Consolidation rationale (see proposals/hhd-suite-restructure/structure.md + old-suite-audit.md):
+#   - HHD runs two modes {NIR-Rail, Glider(Metro/Ulsterbus)}. Shared behaviour is authored ONCE and
+#     executed per mode via TestRail Run Configurations — NOT copied per mode. The old suite's
+#     NIR||Glider||HHD-Master triple copy of Sign On/Operator/Supervisor/Technician/Formats collapses
+#     into single shared cases here.
+#   - Mode-specific leaves appear only for a PROVEN divergence. In this scope that is the NIR-only
+#     Cross-Border ticket format (Layout 6). Glider-specific formats (Bus Rambler, yLink,
+#     Metro/Ulsterbus products) are DATA VARIATIONS of the shared catalogue, run on the Glider config.
+#   - Inspector-Mode worked examples use Glider (Glider TOO is live per FBD-100651). NIR TOTO
+#     inspection is FUTURE scope (FBD-100690) — not authored here, only noted.
+#   - EXCLUDED from this file (per decision): Merit (14) + CloudFare back-office (18) report cases —
+#     they belong in the BOS/MERIT suite, not the HHD device suite. None of them fall in these five
+#     sections, so nothing was carried over from them.
+#
+# Concrete-grounding examples are drawn from FBD-100383 (operator hierarchy / home locations) and
+# FBD-100320 (M020 pairing, TID/TK, "HHD Retailing" group); membership is a snapshot — verify live.
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+
+  # =====================================================================================
+  - path: [Functional, Sign On & Session]
+    cases:
+      - title: Sign On — Operator sign on (manual and smartcard)
+        refs: [FBD-100383]
+        objective: This test is to confirm an Operator can sign on to the HHD either by manual ID and PIN entry or by presenting a valid staff smartcard, reaching the Operator menu.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the Sign On screen
+          **AND** the HHD is communicating with CloudFare
+          **AND** the seeded Operator ID and PIN, and a valid staff smartcard, are available
+          **AND** worked example: an Operator signing on at Yorkgate (NIR) reaches the Operator menu
+          **WHEN** the operator enters a valid ID and PIN and confirms
+          **THEN** the operator is authenticated
+          **AND** the Operator menu is displayed
+          **WHEN** the operator instead presents a valid staff smartcard and enters the PIN
+          **THEN** the ID is pre-populated from the card
+          **AND** the Operator menu is displayed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** a sign-on event is recorded to CloudFare for the operator
+        expected: Sign on succeeds by manual ID+PIN entry and by staff smartcard, reaching the Operator menu, and the sign-on is audited to CloudFare.
+      - title: Sign On — invalid ID or password is rejected
+        refs: [FBD-100383]
+        objective: This test is to confirm the HHD rejects an unrecognised sign-on ID or password with a failure message and returns the operator to the Sign On screen.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the Sign On screen
+          **AND** the HHD is communicating with CloudFare
+          **AND** an unrecognised ID or PIN is to be entered (the seeded Operator credentials are the valid reference)
+          **AND** worked example: an Operator mistyping the PIN at Yorkgate (NIR)
+          **WHEN** the operator enters an unrecognised ID or PIN and confirms
+          **THEN** an invalid credentials message is displayed
+          **AND** the operator is not signed on
+          **AND** the operator is returned to the Sign On screen to retry
+        expected: Unrecognised credentials are rejected, the operator is not signed on, and the HHD returns to the Sign On screen for a retry.
+      - title: Sign On — device locks after the configured failed attempts
+        refs: [FBD-100383]
+        objective: This test is to confirm the HHD locks after the configured number of consecutive failed sign-on attempts and remains locked until unlocked.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the Sign On screen
+          **AND** the failed-attempt lockout threshold is configured via TMS (use the configured value, e.g. 3)
+          **AND** worked example: an Operator making repeated failed attempts at Yorkgate (NIR)
+          **WHEN** the operator enters incorrect credentials up to the configured number of times
+          **THEN** the HHD locks on the configured attempt
+          **AND** a Device Locked screen is displayed
+          **WHEN** a further sign-on is attempted on the locked device
+          **THEN** the device remains locked
+        expected: After the TMS-configured number of failed attempts the HHD locks, shows the Device Locked screen, and stays locked against further attempts.
+      - title: Sign On — Communication Locked when CloudFare comms are lost
+        refs: [FBD-100359]
+        objective: This test is to confirm an HHD that has lost CloudFare communication beyond the configured period enters Communication Locked and blocks sign-on.
+        steps: |-
+          **GIVEN** the HHD has lost communication with CloudFare for longer than the configured period
+          **AND** the seeded Operator ID and PIN are available to attempt sign-on
+          **AND** worked example: an Operator attempting sign-on on an HHD out of coverage
+          **WHEN** the operator attempts to sign on
+          **THEN** the Communication Locked screen is displayed
+          **AND** sign-on is blocked
+        expected: Once comms are lost beyond the configured period the HHD enters Communication Locked and sign-on is blocked.
+      - title: Sign On — duty number entry
+        refs: [FBD-100383]
+        objective: This test is to confirm the operator is prompted for a duty number during sign-on and the entered duty number is associated with the shift.
+        steps: |-
+          **GIVEN** the HHD is at the Sign On screen and the operator has entered valid credentials
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator entering duty number 0428 at Yorkgate (NIR)
+          **WHEN** the operator enters the duty number and confirms
+          **THEN** the duty number is accepted
+          **AND** the shift is associated with the entered duty number
+        expected: The operator enters a duty number during sign-on and the shift is recorded against that duty number.
+      - title: Sign On — Message and Word & Colour of the Day
+        refs: [FBD-100383]
+        objective: This test is to confirm the Message of the Day and the Word & Colour of the Day are each presented during sign-on, with an Unavailable fallback that still allows sign-on to continue.
+        steps: |-
+          **GIVEN** the HHD is signed off at the Sign On screen
+          **AND** the seeded Operator ID and PIN are available to sign on
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator signing on at Yorkgate (NIR)
+          **WHEN** the Message of the Day is available during sign-on
+          **THEN** it is presented for the operator to confirm
+          **WHEN** the Message of the Day cannot be retrieved
+          **THEN** the Message of the Day Unavailable state is shown
+          **AND** sign-on continues
+          **WHEN** the Word & Colour of the Day is available
+          **THEN** it is presented for the operator to confirm
+          **WHEN** the Word & Colour of the Day cannot be retrieved
+          **THEN** the Word & Colour Unavailable state is shown
+          **AND** sign-on continues
+        expected: The Message of the Day and Word & Colour of the Day are shown during sign-on, each with an Unavailable fallback that still lets sign-on continue.
+      - title: Sign On — correct topology data is presented for the signed-on location
+        refs: [FBD-100383]
+        objective: This test is to confirm the HHD presents the topology data (routes, stops and products) for the operator's signed-on operator location.
+        steps: |-
+          **GIVEN** the HHD is signed off at the Sign On screen
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator signed on at Yorkgate (NIR) is presented NIR topology
+          **WHEN** the operator signs on at their location
+          **THEN** the topology data for that location is presented
+          **AND** the products available match that operator location
+        expected: On sign-on the HHD presents the topology and product set for the signed-on operator location. Data variations — NIR station topology / Glider (Metro) topology — run per mode configuration.
+      - title: Sign On — route or service selection
+        refs: [FBD-100296]
+        objective: This test is to confirm the operator selects a route or service at sign-on and the selection governs the fares and topology offered for the shift.
+        steps: |-
+          **GIVEN** the HHD is at sign-on with a valid operator authenticated
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator selecting the G1 Glider route (Metro) at sign-on
+          **WHEN** the operator selects the route or service for the shift
+          **THEN** the selected route or service is confirmed
+          **AND** the fares and topology for that route are offered
+        expected: The operator selects a route/service at sign-on and the shift uses that route's fares and topology. Data variations — Glider route (Metro) / NIR station service — run per mode configuration.
+      - title: Sign Off — Operator sign off
+        refs: [FBD-100383]
+        objective: This test is to confirm an operator can sign off, returning the HHD to the idle screen with the sign-off audited.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator signing off from the Operator menu at Yorkgate (NIR)
+          **WHEN** the operator signs off
+          **THEN** the HHD returns to the idle Sign On screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** a sign-off event is recorded to CloudFare for the operator
+        expected: Sign off returns the HHD to the idle Sign On screen and audits the sign-off to CloudFare. Run for each role — Operator, Supervisor, Technician.
+      - title: Sign Off — automatic sign off after inactivity
+        refs: [FBD-100383]
+        objective: This test is to confirm the HHD automatically signs the operator off after the configured period of inactivity.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** the inactivity auto-sign-off period is configured (use the configured value)
+          **AND** worked example: an Operator signed on then left with no interaction
+          **WHEN** the configured inactivity period elapses with no interaction
+          **THEN** the operator is automatically signed off
+          **AND** the HHD returns to the idle Sign On screen
+        expected: After the configured inactivity period the operator is automatically signed off and the HHD returns to idle.
+      - title: Sign Off — forced sign off when the HHD is docked
+        refs: [FBD-100383]
+        objective: This test is to confirm docking a signed-on HHD forces a sign-off, including when docked mid-transaction.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD during a shift
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: an Operator docks the HHD, then repeats while completing a paper-ticket sale
+          **WHEN** the operator docks the HHD while idle
+          **THEN** the operator is forced-signed-off
+          **WHEN** the operator docks the HHD while completing a transaction
+          **THEN** the in-progress transaction is not completed
+          **AND** the operator is forced-signed-off
+        expected: Docking the HHD forces a sign-off; when docked mid-transaction the in-progress transaction does not complete and the operator is still forced off.
+      - title: Session — 15-minute staff-list heartbeat call-in
+        refs: [FBD-100266]
+        objective: This test is to confirm the HHD performs the 15-minute staff-list refresh call-in that acts as its heartbeat, regardless of signed-on state.
+        steps: |-
+          **GIVEN** an HHD that is powered on and communicating with CloudFare
+          **AND** worked example: an HHD left signed off and undocked for over 15 minutes
+          **WHEN** the fixed 15-minute staff-list refresh check is due
+          **THEN** the HHD calls in to CloudFare with a staff-list request
+          **AND** the call-in occurs whether or not the device is signed on
+          **WHEN** the CloudFare Comms Monitor is checked
+          **THEN** the device Last Communication time is updated by the staff-list call-in
+        expected: The HHD calls in every 15 minutes via the staff-list refresh even when signed off, and CloudFare updates the device Last Communication time.
+      - title: Break-Mode Sign On — HHD resumes the same mode after an operator break
+        refs: [FBD-100651, CR78]
+        objective: This test is to confirm that after an operator break (driver break or enforced driver break) the HHD resumes the same operating mode it was in before the break.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD in a known mode
+          **AND** worked example: an Operator in Glider Inspection Mode takes a driver break, then an enforced driver break (Glider TOO live; NIR TOTO inspection is future scope, FBD-100690)
+          **WHEN** the operator returns from a driver break and signs back on
+          **THEN** the HHD resumes the same mode it was in before the break
+          **WHEN** the operator returns from an enforced driver break and signs back on
+          **THEN** the HHD resumes the same mode it was in before the break
+        expected: After both a driver break and an enforced driver break the HHD resumes the pre-break mode. Data variations — Inspection Mode / Validation Mode.
+
+  # =====================================================================================
+  - path: [Functional, Operator]
+    cases:
+      - title: Operator Menu — navigation and available options
+        refs: [FBD-100342]
+        objective: This test is to confirm the Operator menu presents the options available to the Operator role and lets the operator navigate between them.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: an Operator on the Operator menu at Yorkgate (NIR)
+          **WHEN** the operator navigates the Operator menu
+          **THEN** the options available to the Operator role are displayed
+          **AND** the operator can move between the menu functions
+        expected: The Operator menu shows the Operator-role options and supports navigation between them.
+      - title: Operator Menu — role scope excludes Supervisor and Technician functions
+        refs: [FBD-100342]
+        objective: This test is to confirm the Operator role cannot access Supervisor-only or Technician-only functions from the Operator menu.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: an Operator looking for Set Home Location and TID/TK options
+          **WHEN** the operator views the Operator menu
+          **THEN** Supervisor-only functions are not available to the Operator
+          **AND** Technician-only functions are not available to the Operator
+        expected: Supervisor-only and Technician-only functions are not offered to the Operator role.
+      - title: Operator Menu — view totals for the current journey and duty
+        refs: [FBD-100276]
+        objective: This test is to confirm the operator can view running totals for the current journey and for the current duty.
+        steps: |-
+          **GIVEN** an Operator is signed on and has completed some sales in the shift
+          **AND** worked example: an Operator who has sold three paper tickets on the G1 Glider route (Metro)
+          **WHEN** the operator selects View Totals for the current journey
+          **THEN** the totals for the current journey are displayed
+          **WHEN** the operator selects View Totals for the current duty
+          **THEN** the totals for the current duty are displayed
+        expected: The operator can view current-journey totals and current-duty totals from the Operator menu.
+      - title: Operator — print a mini-statement
+        refs: [FBD-100276]
+        objective: This test is to confirm the operator can print a mini-statement of the duty's activity.
+        steps: |-
+          **GIVEN** an Operator is signed on with duty activity to report
+          **AND** worked example: an Operator printing a mini-statement after a morning duty at Yorkgate (NIR)
+          **WHEN** the operator selects the mini-statement option
+          **THEN** a mini-statement receipt is printed
+          **AND** it summarises the duty's totals
+        expected: The operator prints a mini-statement receipt summarising the duty's totals (printed to the Mini-Statement layout — NIR Layout 20 / Glider Format 15).
+      - title: Operator — manage sale favourites (add, modify, delete)
+        refs: [FBD-100260]
+        objective: This test is to confirm the operator can add, modify and delete favourite products from the Operator menu.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: an Operator managing a favourite for the Adult Single product
+          **WHEN** the operator adds a product as a favourite
+          **THEN** the favourite is available on the favourites list
+          **WHEN** the operator modifies the favourite
+          **THEN** the change is saved to the favourite
+          **WHEN** the operator deletes the favourite
+          **THEN** the favourite is removed from the favourites list
+        expected: The operator can add, modify and delete a favourite product and the favourites list reflects each change.
+      - title: Operator — take an operator break and resume in the same mode
+        refs: [FBD-100651, CR78]
+        objective: This test is to confirm the operator can start an operator break and, on resuming, the HHD returns to the mode it was in before the break.
+        steps: |-
+          **GIVEN** an Operator is signed on in a known mode
+          **AND** worked example: an Operator in Glider Validation Mode starting an operator break (Glider TOO live; NIR TOTO inspection is future scope, FBD-100690)
+          **WHEN** the operator starts an operator break
+          **THEN** the HHD enters the break state
+          **WHEN** the operator resumes from the break
+          **THEN** the HHD returns to the pre-break mode
+        expected: The operator can start a break and resume into the same pre-break mode. Data variations — Inspection Mode / Validation Mode.
+      - title: Operator — view device status
+        refs: [FBD-100266]
+        objective: This test is to confirm the operator can view the HHD device status information from the Operator menu.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: an Operator checking status before starting a Glider (Metro) shift
+          **WHEN** the operator selects the Status option
+          **THEN** the device status information is displayed
+        expected: The operator can view the HHD's device status from the Operator menu.
+      - title: Operator — issue a penalty fare warning
+        refs: [FBD-100716]
+        objective: This test is to confirm an operator can issue a penalty fare warning and a penalty warning ticket is printed.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: an Operator issuing a penalty warning during a Glider (Metro) inspection (Glider TOO live; NIR TOTO future, FBD-100690)
+          **WHEN** the operator issues a penalty fare warning
+          **THEN** the penalty fare warning is issued
+          **AND** a penalty fare warning ticket is printed
+        expected: The operator issues a penalty fare warning and the penalty warning ticket is printed.
+      - title: Operator — pair the printer
+        refs: [FBD-100383]
+        objective: This test is to confirm the operator can pair the HHD to its printer from the Operator menu.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** an available HHD printer is in range to be paired
+          **AND** worked example: an Operator pairing the printer at the start of a Glider (Metro) shift
+          **WHEN** the operator selects Pair Printer and completes pairing
+          **THEN** the HHD reports the printer as paired
+          **AND** a test print can be produced
+        expected: The operator pairs the HHD to its printer and confirms the pairing with a test print.
+
+  # =====================================================================================
+  - path: [Functional, Supervisor]
+    cases:
+      - title: Sign On — Supervisor sign on (manual and smartcard)
+        refs: [FBD-100383]
+        objective: This test is to confirm a Supervisor can sign on either by manual ID and PIN entry or by presenting a valid Supervisor smartcard, reaching the Supervisor menu.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the Sign On screen
+          **AND** the HHD is communicating with CloudFare
+          **AND** the seeded Supervisor ID and PIN, and a valid Supervisor smartcard, are available
+          **AND** worked example: a Supervisor signing on at Yorkgate (NIR) reaches the Supervisor menu
+          **WHEN** the supervisor enters a valid ID and PIN and confirms
+          **THEN** the Supervisor menu is displayed
+          **WHEN** the supervisor instead presents a valid Supervisor smartcard and enters the PIN
+          **THEN** the Supervisor menu is displayed
+        expected: Sign on succeeds for a Supervisor by manual entry and by smartcard, reaching the Supervisor menu.
+      - title: Supervisor — act as Operator (sign on, sign off, end duty)
+        refs: [FBD-100383]
+        objective: This test is to confirm a Supervisor can act as an Operator to sign on, sign off, and end an operator's duty.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to the HHD
+          **AND** worked example: a Supervisor covering duty 0428 at Yorkgate (NIR)
+          **WHEN** the supervisor chooses to act as an Operator and signs on
+          **THEN** the operator session begins under the supervisor acting as operator
+          **WHEN** the supervisor signs off the acting-operator session
+          **THEN** the operator session is signed off
+          **WHEN** the supervisor ends the operator's duty
+          **THEN** the operator's duty is ended
+        expected: A Supervisor can act as Operator to sign on, sign off, and end the operator's duty.
+      - title: Supervisor — authorise an operator break (ID entry and card)
+        refs: [FBD-100383]
+        objective: This test is to confirm a Supervisor can authorise an operator break either by entering their ID or by presenting their card.
+        steps: |-
+          **GIVEN** an operator break requires supervisor authorisation on the HHD
+          **AND** the seeded Supervisor ID and PIN, and a valid Supervisor card, are available
+          **AND** worked example: a Supervisor authorising a break on the G1 Glider route (Metro)
+          **WHEN** the supervisor authorises the break by entering their ID and PIN
+          **THEN** the operator break is authorised
+          **WHEN** the supervisor instead authorises the break by presenting their card
+          **THEN** the operator break is authorised
+        expected: A Supervisor can authorise an operator break by ID+PIN entry or by presenting their card.
+      - title: Sign On — Supervisor fails to sign on to a PIN-locked HHD
+        refs: [FBD-100383]
+        objective: This test is to confirm a Supervisor cannot sign on to an HHD that is PIN-locked and is shown the appropriate failure.
+        steps: |-
+          **GIVEN** the HHD is PIN-locked
+          **AND** the seeded Supervisor credentials are available
+          **AND** worked example: a Supervisor attempting to sign on to a locked HHD at Yorkgate (NIR)
+          **WHEN** the supervisor attempts to sign on to the PIN-locked HHD
+          **THEN** the sign-on is refused
+          **AND** the device remains locked
+        expected: A Supervisor sign-on to a PIN-locked HHD is refused and the device stays locked.
+      - title: Supervisor — view and print previous waybills
+        refs: [FBD-100373]
+        objective: This test is to confirm a Supervisor can view and print previous waybills, up to the 50 most recent.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to the HHD with previous waybills recorded
+          **AND** worked example: a Supervisor reviewing the last shift's waybills at Yorkgate (NIR)
+          **WHEN** the supervisor opens View Waybills
+          **THEN** up to the 50 most recent waybills are listed
+          **WHEN** the supervisor prints a listed waybill
+          **THEN** the selected waybill is printed
+        expected: A Supervisor can view up to the 50 most recent waybills and print a selected one.
+      - title: Supervisor — print software versions
+        refs: [FBD-100320]
+        objective: This test is to confirm a Supervisor can print the HHD software version information.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to the HHD
+          **AND** worked example: a Supervisor printing versions during a Glider (Metro) shift check
+          **WHEN** the supervisor selects the versioning print option
+          **THEN** a versions ticket is printed
+          **AND** it lists the HHD software version information
+        expected: A Supervisor can print a versions ticket listing the HHD software versions.
+      - title: Supervisor — pair with a different payment device
+        refs: [FBD-100320]
+        objective: This test is to confirm a Supervisor can pair the HHD with a different Miura M020 payment device and the allocated TID/TK is retained after the swap.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to an HHD paired to a Miura M020 over Bluetooth
+          **AND** the HHD holds TID/TK allocated by serial in the "HHD Retailing" terminal group
+          **AND** worked example: a Supervisor swapping to a replacement M020 mid-shift
+          **WHEN** the supervisor pairs the HHD with a different M020 payment device
+          **THEN** the new payment device is paired over Bluetooth
+          **AND** the HHD retains its allocated TID/TK unchanged after the swap
+        expected: A Supervisor can pair a different M020 and the HHD keeps its allocated TID/TK, so transactions stay auditable by TID/TK.
+      - title: Supervisor Menu — navigation and role scope
+        refs: [FBD-100342]
+        objective: This test is to confirm the Supervisor menu presents the Supervisor-role functions and supports navigation between them.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to the HHD
+          **AND** worked example: a Supervisor on the Supervisor menu at Yorkgate (NIR)
+          **WHEN** the supervisor navigates the Supervisor menu
+          **THEN** the Supervisor-role functions are displayed
+          **AND** the supervisor can move between the menu functions
+        expected: The Supervisor menu shows the Supervisor-role functions and supports navigation between them.
+      - title: Sign Off — Supervisor sign off
+        refs: [FBD-100383]
+        objective: This test is to confirm a Supervisor can sign off, returning the HHD to the idle screen with the sign-off audited.
+        steps: |-
+          **GIVEN** a Supervisor is signed on to the HHD
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: a Supervisor signing off from the Supervisor menu at Yorkgate (NIR)
+          **WHEN** the supervisor signs off
+          **THEN** the HHD returns to the idle Sign On screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** a sign-off event is recorded to CloudFare for the supervisor
+        expected: A Supervisor sign off returns the HHD to idle and audits the sign-off to CloudFare.
+
+  # =====================================================================================
+  - path: [Functional, Technician]
+    cases:
+      - title: Sign On — Technician sign on (manual and smartcard)
+        refs: [FBD-100383]
+        objective: This test is to confirm a Technician can sign on either by manual ID and PIN entry or by presenting a valid Technician smartcard, reaching the Technician menu.
+        steps: |-
+          **GIVEN** the HHD is signed off and showing the Sign On screen
+          **AND** the HHD is communicating with CloudFare
+          **AND** the seeded Technician ID and PIN, and a valid Technician smartcard, are available
+          **AND** worked example: a Technician signing on at Yorkgate (NIR) reaches the Technician menu
+          **WHEN** the technician enters a valid ID and PIN and confirms
+          **THEN** the Technician menu is displayed
+          **WHEN** the technician instead presents a valid Technician smartcard and enters the PIN
+          **THEN** the Technician menu is displayed
+        expected: Sign on succeeds for a Technician by manual entry and by smartcard, reaching the Technician menu.
+      - title: Technician — set the device home location
+        refs: [FBD-100383]
+        objective: This test is to confirm a Technician can set the HHD's device home location and the device thereafter reports under that operator.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD
+          **AND** worked example: setting the home location to "Glider HHD/PV/TVM Devices" (FBD-100383 snapshot — verify live)
+          **WHEN** the technician sets the device home location
+          **THEN** the home location is saved to the HHD
+          **AND** the HHD reports under the corresponding operator
+        expected: A Technician sets the HHD's home location and the device reports under the correct operator.
+      - title: Technician — set the Terminal ID and Transaction Key
+        refs: [FBD-100320]
+        objective: This test is to confirm a Technician can apply the payment Terminal ID and Transaction Key allocated to the HHD by serial in the "HHD Retailing" terminal group.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD
+          **AND** TID/TK have been pre-configured on TMS for this HHD serial in the "HHD Retailing" group
+          **AND** worked example: a Technician applying TID/TK after pairing the M020 (FBD-100320)
+          **WHEN** the technician applies the Terminal ID and Transaction Key
+          **THEN** the HHD holds the allocated TID/TK
+          **AND** the TID/TK come from TMS config by serial rather than manual keying
+        expected: A Technician applies the TMS-allocated TID/TK (keyed by serial in the HHD Retailing group), performed after payment-device pairing.
+      - title: Technician — pair with the payment device
+        refs: [FBD-100320]
+        objective: This test is to confirm a Technician can pair the HHD with its Miura M020 payment device over Bluetooth.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD with an M020 available to pair
+          **AND** worked example: a Technician commissioning an HHD before its first shift
+          **WHEN** the technician pairs the HHD with the M020 over Bluetooth
+          **THEN** the M020 is reported as paired
+          **AND** the HHD can then be configured with its TID/TK
+        expected: A Technician pairs the HHD with its M020 over Bluetooth, enabling TID/TK configuration afterwards.
+      - title: Technician — connect the printer (MAC entered or scanned)
+        refs: [FBD-100320]
+        objective: This test is to confirm a Technician can connect the HHD printer by entering the printer MAC address manually or by scanning it with the barcode reader.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD with an HHD printer available
+          **AND** worked example: a Technician connecting a printer during commissioning
+          **WHEN** the technician connects the printer by entering the MAC address manually
+          **THEN** the printer is connected
+          **WHEN** the technician connects the printer by scanning the MAC address with the barcode reader
+          **THEN** the printer is connected
+        expected: A Technician can connect the HHD printer either by manually entering the MAC address or by scanning it with the barcode reader.
+      - title: Technician Menu — navigation and role scope
+        refs: [FBD-100342]
+        objective: This test is to confirm the Technician menu presents the Technician-role functions and supports navigation between them.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD
+          **AND** worked example: a Technician on the Technician menu at Yorkgate (NIR)
+          **WHEN** the technician navigates the Technician menu
+          **THEN** the Technician-role functions are displayed
+          **AND** the technician can move between the menu functions
+        expected: The Technician menu shows the Technician-role functions and supports navigation between them.
+      - title: Sign Off — Technician sign off
+        refs: [FBD-100383]
+        objective: This test is to confirm a Technician can sign off, returning the HHD to the idle screen with the sign-off audited.
+        steps: |-
+          **GIVEN** a Technician is signed on to the HHD
+          **AND** the HHD is communicating with CloudFare
+          **AND** worked example: a Technician signing off after commissioning at Yorkgate (NIR)
+          **WHEN** the technician signs off
+          **THEN** the HHD returns to the idle Sign On screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** a sign-off event is recorded to CloudFare for the technician
+        expected: A Technician sign off returns the HHD to idle and audits the sign-off to CloudFare.
+
+  # =====================================================================================
+  - path: [Functional, Ticket Formats & Waybill]
+    cases:
+      - title: Ticket Format — travel-ticket layouts print to the approved format
+        refs: [FBD-100363]
+        objective: This test is to confirm each configured paper travel-ticket prints to its approved layout with the correct fare, product and journey detail.
+        steps: |-
+          **GIVEN** an Operator is signed on and sells a paper travel ticket
+          **AND** worked example: selling an Adult Single and inspecting the printed ticket (NIR Ticket Layout 1)
+          **WHEN** the operator prints the travel ticket
+          **THEN** the ticket prints to the approved layout for that product
+          **AND** the fare, product and journey detail are correct on the ticket
+        expected: Each configured travel ticket prints to its approved layout with correct fare/product/journey detail. Data variations — NIR Layouts 1 (Single/Day Return), 2 (Weekly/Monthly/Warrant Return), 3 (Three Day Select), 4 (iLink Single), 10/11 (Family & Friends), 13 (Family Day); Glider Formats 1 (Adult Single), 2 (Adult Day), 3/4 (Family & Friends), 5/6 (Family Day), 7 (Summer Bus Rambler), 9 (yLink Single).
+      - title: Ticket Format — Cross-Border ticket format (NIR)
+        refs: [FBD-100363]
+        objective: This test is to confirm the NIR Cross-Border ticket prints to its dedicated layout, including the cross-border journey detail.
+        steps: |-
+          **GIVEN** an Operator is signed on in NIR (rail) mode and sells a Cross-Border ticket
+          **AND** worked example: an Adult Cross-Border single printed on NIR (Ticket Layout 6); Cross-Border is NIR only
+          **WHEN** the operator prints the Cross-Border ticket
+          **THEN** the ticket prints to the Cross-Border layout
+          **AND** the cross-border journey detail is correct on the ticket
+        expected: The NIR Cross-Border ticket prints to Layout 6 with correct cross-border journey detail. This is a NIR-only format (run on the NIR configuration only).
+      - title: Ticket Format — concession, free and half-fare smartpass ticket formats
+        refs: [FBD-100363]
+        objective: This test is to confirm concession, free and half-fare smartpass tickets print to their approved layouts, including the card-expiry variant.
+        steps: |-
+          **GIVEN** an Operator is signed on and issues a smartpass-discounted ticket
+          **AND** worked example: a Half-Fare Smartpass Single printed on Glider (Format 8a), with the expiry variant (Format 8b)
+          **WHEN** the operator prints the discounted ticket
+          **THEN** the ticket prints to the approved layout for that concession
+          **AND** the card-expiry variant prints its expiry detail when the card is expiring
+        expected: Concession/free/half-fare smartpass tickets print to their approved layouts including the expiry variant. Data variations — NIR Layouts 7a/7b (Half fare, yLink, 24+), 8a/8b (Free Concession Pass); Glider Formats 8a/8b (Half-Fare Smartpass), 10a/10b (Free Smartpass).
+      - title: Ticket Format — smartcard top-up receipt formats
+        refs: [FBD-100363]
+        objective: This test is to confirm smartcard top-up receipts print to the approved layout for each product topped up.
+        steps: |-
+          **GIVEN** an Operator is signed on and completes a smartcard top-up
+          **AND** worked example: a DayLink top-up receipt printed on Glider (Format 13)
+          **WHEN** the operator prints the top-up receipt
+          **THEN** the receipt prints to the approved layout for that top-up product
+          **AND** the topped-up value and product are correct on the receipt
+        expected: Top-up receipts print to their approved layouts with correct value/product. Data variations — Glider Formats 13 (DayLink), 13A (Period Pass), 13B (Multi-Journey), 13C (Top-up Expiry); NIR Layout 12 (iLink Top-Up).
+      - title: Ticket Format — annul or cancel ticket (Format 16) and Non-Issue
+        refs: [FBD-100373, FBD-100363]
+        objective: This test is to confirm an annulled or cancelled transaction prints the annul/cancel format and that a non-issue prints its layout.
+        steps: |-
+          **GIVEN** an Operator has issued a transaction that is then annulled or cancelled
+          **AND** worked example: annulling a Period Pass top-up prints the HHD Annul/Cancelled ticket (Glider Format 16)
+          **WHEN** the operator annuls or cancels the transaction
+          **THEN** the annul/cancel ticket prints to Format 16
+          **WHEN** a transaction is not issued
+          **THEN** the Non-Issue layout is printed
+        expected: Annulled/cancelled transactions print the Format 16 annul/cancel ticket and non-issues print the Non-Issue layout. Data variations — Format 16 for Paper Ticket, Period Pass Top-Up, Multi-Journey Top-Up, DayLink Top-Up; NIR Layout 16 Non-Issue.
+      - title: Ticket Format — faulty smartpass or smartcard receipt
+        refs: [FBD-100363]
+        objective: This test is to confirm a faulty smartpass or smartcard prints its dedicated receipt.
+        steps: |-
+          **GIVEN** an Operator presents a faulty smartpass or smartcard during a transaction
+          **AND** worked example: a faulty Half-Fare Smartpass printed on NIR (Ticket Layout 18) / Glider Faulty Smartcard Receipt
+          **WHEN** the HHD prints the faulty-card outcome
+          **THEN** the faulty smartpass or smartcard receipt is printed
+        expected: A faulty smartpass/smartcard prints its dedicated receipt (NIR Layout 18 / Glider Faulty Smartcard Receipt).
+      - title: Ticket Format — travel receipt and print-test ticket
+        refs: [FBD-100363]
+        objective: This test is to confirm the travel receipt prints to its layout and that a print-test ticket can be produced.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD
+          **AND** worked example: printing a travel receipt (NIR Ticket Layout 17) then a print-test ticket (Layout 15)
+          **WHEN** the operator prints a travel receipt
+          **THEN** the travel receipt prints to its approved layout
+          **WHEN** the operator prints a test ticket
+          **THEN** the print-test ticket is produced
+        expected: The travel receipt prints to Layout 17 and a print-test ticket (Layout 15) can be produced.
+      - title: Ticket Format — penalty fare warning ticket
+        refs: [FBD-100716, FBD-100363]
+        objective: This test is to confirm the penalty fare warning ticket prints with the correct information when issued.
+        steps: |-
+          **GIVEN** an Operator or Supervisor issues a penalty fare warning
+          **AND** worked example: a penalty warning issued during a Glider (Metro) smartcard inspection (Glider TOO live; NIR TOTO future, FBD-100690)
+          **WHEN** the penalty fare warning is issued
+          **THEN** the penalty fare warning ticket is printed
+          **AND** the penalty warning detail is correct on the ticket
+        expected: The penalty fare warning ticket prints with the correct penalty detail when issued by an Operator or Supervisor.
+      - title: Waybill — Operator Waybill prints the duty's transactions
+        refs: [FBD-100373]
+        objective: This test is to confirm the Operator Waybill prints to its layout and reflects the transactions completed in the duty.
+        steps: |-
+          **GIVEN** an Operator has completed a mix of transactions during the duty
+          **AND** worked example: a duty with paper-ticket sales, a warrant sale and a basket sale at Yorkgate (NIR)
+          **WHEN** the operator prints the waybill
+          **THEN** the waybill prints to the Operator Waybill layout
+          **AND** it lists the transactions completed in the duty
+        expected: The Operator Waybill prints to its layout (NIR Layout 19 / Glider HHD Waybill) and lists the duty's transactions. Data variations — individual paper ticket, warrant-paid ticket, basket, smartcard-discounted ticket.
+      - title: Waybill — end-of-shift waybill with no transactions
+        refs: [FBD-100373]
+        objective: This test is to confirm a waybill can be printed for a duty in which no transactions were completed.
+        steps: |-
+          **GIVEN** an Operator ends a shift having completed no transactions
+          **AND** worked example: an Operator printing the waybill after an empty duty on the G1 Glider route (Metro)
+          **WHEN** the operator prints the end-of-shift waybill
+          **THEN** the waybill prints
+          **AND** it shows that no transactions were completed in the duty
+        expected: An end-of-shift waybill prints even with no transactions and shows a nil-transaction duty.
+      - title: Waybill — annulment lines are included
+        refs: [FBD-100373]
+        objective: This test is to confirm annulled transactions appear on the waybill as annulment lines.
+        steps: |-
+          **GIVEN** an Operator has annulled transactions during the duty
+          **AND** worked example: a duty containing a paper-ticket annulment and a top-up annulment
+          **WHEN** the operator prints the waybill
+          **THEN** the waybill includes the annulment lines for the duty
+        expected: The waybill includes annulment lines for the duty. Data variations — paper-ticket annulments, top-up annulments, discount-ticket annulments.
+      - title: Waybill — validation, inspection and barcode activity are included
+        refs: [FBD-100373, FBD-100651]
+        objective: This test is to confirm smartcard validations, smartcard inspections and barcode redemptions/inspections appear on the waybill.
+        steps: |-
+          **GIVEN** an Operator has performed validations, inspections and barcode activity during the duty
+          **AND** worked example: a Glider (Metro) duty with multiple smartcard validations and inspections plus barcode redemptions
+          **WHEN** the operator prints the waybill
+          **THEN** the waybill lists the smartcard validations for the duty
+          **AND** the waybill lists the smartcard inspections for the duty
+          **AND** the waybill lists the barcode redemptions and inspections for the duty
+        expected: The waybill lists the duty's smartcard validations, smartcard inspections, and barcode redemptions/inspections. Data variations — multiple validations, multiple inspections, multiple barcode redemptions, multiple barcode inspections.

@@ -1,0 +1,69 @@
+# PV — future-release coverage from TIBU-28030 "[Translink] Glider Tap On Only" hierarchy.
+# Epics: TIBU-22305 (Glider Tap On Only for PV) + TIBU-28120 (PV Maintenance Fixes). These add
+# forward-looking behaviour/regression the old suite + run data couldn't show. Defect/story ids in Refs.
+suite_id: 30255
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [10]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / ABT (Glider)
+    cases:
+      - title: cEMV — tap audit content (JourneyTap, stop/stage, direction, payment method)
+        objective: This test is to confirm a successful Glider TOO cEMV tap audits the correct content to the back office.
+        refs: "TIBU-22332, TIBU-30476, TIBU-28856, TIBU-28645"
+        steps: |
+          **Given** a Glider PV with cEMV on a Tap On Only route
+          **WHEN** a successful cEMV tap is made
+          **THEN** the tap is audited as a "JourneyTap" in CloudFare
+          **AND** the audit records both the stop id and the stage id
+          **AND** the tap direction is audited correctly as IN
+          **AND** the payment method is audited correctly for the Glider TOO transaction
+        expected: A cEMV TOO tap audits as a JourneyTap with both stop id and stage id, the correct direction (IN, not OUT), and the correct payment method.
+      - title: cEMV — EMV result screens and transaction generation
+        objective: This test is to confirm the EMV success, failure and passback screens behave correctly and that failed taps still generate a transaction.
+        refs: "TIBU-25700, TIBU-25702, TIBU-25704, TIBU-25705"
+        steps: |
+          **Given** a Glider PV with cEMV
+          **WHEN** a cEMV tap succeeds or fails
+          **THEN** the correct EMV success or failure screen is shown
+          **AND** the EMV result screen times out after the configured period rather than persisting
+          **WHEN** a smartcard is presented while an EMV success or failure screen is shown
+          **THEN** the smartcard tap is accepted
+          **WHEN** an EMV tap fails
+          **THEN** a transaction is still generated for the failed tap
+          **WHEN** a card is re-presented for EMV passback
+          **THEN** the correct EMV passback screen is shown
+        expected: EMV success/failure/passback screens are correct and time out (don't persist); smartcards tap on those screens; failed EMV taps still generate a transaction.
+
+  - path: Non-Functional / PV
+    cases:
+      - title: PV — stability and recovery
+        objective: This test is to confirm the PV stays responsive and recovers from failure conditions without manual intervention.
+        refs: "TIBU-25842, TIBU-26302, TIBU-28453, TIBU-28770, TIBU-29165, TIBU-29602"
+        steps: |
+          **Given** a PV in service
+          **WHEN** the device fails to boot
+          **THEN** the recovery mechanism restarts it to a working state
+          **WHEN** the device would otherwise freeze on the white startup screen
+          **THEN** it recovers to service
+          **WHEN** the PV runs over an extended period
+          **THEN** the transaction service stays responsive
+          **AND** the PV continues to download and apply new distributions
+          **AND** deployments via TMS succeed
+        expected: The PV recovers from a failed boot / white-screen freeze; the transaction service stays responsive; it keeps downloading distributions and accepting TMS deployments.
+      - title: PV — asset and version reporting
+        objective: This test is to confirm the PV reports its software, PCA and FEIG versions and identifiers to the back office and on the version page.
+        refs: "TIBU-24260, TIBU-26053, TIBU-25548, TIBU-26054"
+        steps: |
+          **Given** a PV connected to the back office
+          **WHEN** the software version page is viewed
+          **THEN** the Application version is displayed
+          **AND** the PCA application version is displayed
+          **WHEN** the PV reports to CloudFare
+          **THEN** the SIM ID is sent to CloudFare
+          **AND** the SIM ID is visible in Asset Manager
+          **AND** the FEIG Device ID is displayed in Asset Manager associated assets
+        expected: The version page shows the Application and PCA versions; the SIM ID and FEIG Device ID are reported to CloudFare / Asset Manager.

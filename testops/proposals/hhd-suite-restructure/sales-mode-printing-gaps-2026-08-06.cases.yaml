@@ -1,0 +1,183 @@
+# HHD — Sales Mode: Printing (Ticket, Receipt, Waybill, Mini Statement, Barcode) — MISSING-row gap fill
+# Source: knowledge/flows/translink-hhd-sales-mode-printing.md (Paths table), 2026-08-06.
+# Authors ONLY the rows whose "Covered by" column was the literal string MISSING. Rows already
+# holding a case id, GAP, FRAGMENTED, or STALE note are untouched (see the flow-map file itself).
+# Grounded strictly in that file's Screen states / Notes sections — no invented screen names or
+# button labels. NOT pushed. New-suite-only, per repo convention (suite 30285).
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  # =====================================================================================
+  - path: [Functional, Sales - Paper Tickets, Ticket Issue]
+    cases:
+      # Row 2
+      - title: "Ticket Printing — a print failure routes to Annulment"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed ticket print lets the operator annul the transaction from
+          the Print Failed screen.
+        steps: |
+          **GIVEN** the HHD shows Print Failed after a ticket print attempt
+          **WHEN** the operator taps 'Annul Transaction'
+          **THEN** the HHD goes to the Annulment flow
+        expected: "Tapping 'Annul Transaction' on Print Failed after a ticket print failure takes the HHD to the Annulment flow."
+
+      # Row 3
+      - title: "No-Header Ticket Printing — a print failure lets the operator retry"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed No-Header ticket print lets the operator retry printing.
+        steps: |
+          **GIVEN** the HHD shows Printing Failed - Card after a No-Header ticket print attempt
+          **WHEN** the operator taps 'Retry'
+          **THEN** the HHD returns to Printing Ticket - No Header
+        expected: "Tapping 'Retry' on Printing Failed - Card after a No-Header print failure returns to the No-Header print screen."
+
+      # Row 4
+      - title: "No-Header Ticket Printing — a print failure can be cancelled to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling a failed No-Header ticket print returns to the Sales screen.
+        steps: |
+          **GIVEN** the HHD shows Printing Failed - Card after a No-Header ticket print attempt
+          **WHEN** the operator taps 'Cancel'
+          **THEN** the HHD returns to the Sales screen
+        expected: "Tapping 'Cancel' on Printing Failed - Card after a No-Header print failure returns to the Sales screen."
+
+      # Row 6
+      - title: "Card Ticket Printing — a print failure routes to Annulment"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed card ticket print requires the operator to annul the
+          transaction from Print Failed - Card.
+        steps: |
+          **GIVEN** the HHD shows Print Failed - Card after a card ticket print attempt
+          **WHEN** the operator annuls the transaction
+          **THEN** the HHD goes to the Annulment flow
+        expected: "A failed card ticket print at Print Failed - Card leads into the Annulment flow when the operator annuls."
+
+  # =====================================================================================
+  - path: [Functional, Card Payment (M020)]
+    cases:
+      # Row 8
+      - title: "Card Payment Receipt — declining the receipt returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm declining the 'Print Receipt?' prompt after a card payment returns
+          to the Sales screen or the previous flow.
+        steps: |
+          **GIVEN** the HHD shows the 'Print Receipt?' prompt after a card payment
+          **WHEN** the operator selects 'No'
+          **THEN** the HHD returns to the Sales screen or the previous flow
+        expected: "Selecting 'No' at 'Print Receipt?' returns to the Sales screen or the previous flow."
+
+      # Row 14
+      - title: "Card Payment Print Failure — continuing without printing returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm continuing without printing after a card payment receipt print
+          failure returns to the Sales screen.
+        steps: |
+          **GIVEN** the HHD shows Print Failed Card Payment after a receipt print attempt
+          **WHEN** the operator taps 'Continue Without Printing'
+          **THEN** the HHD returns to the Sales screen
+        expected: "Tapping 'Continue Without Printing' on Print Failed Card Payment returns to the Sales screen."
+
+  # =====================================================================================
+  - path: [Functional, Ticket Formats & Waybill]
+    cases:
+      # Row 10
+      - title: "Waybill Printing (menu access) — a print failure shows Printing Failed"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed waybill print accessed via a menu shows the Printing
+          Failed screen.
+        steps: |
+          **GIVEN** the HHD shows Printing Waybill, accessed from a menu
+          **WHEN** the waybill print fails
+          **THEN** the HHD shows Printing Failed
+        expected: "A failed waybill print accessed via a menu shows the Printing Failed screen."
+
+      # Row 11
+      - title: "Waybill Printing — a print failure lets the operator retry"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed waybill print lets the operator retry from Print Failed.
+        steps: |
+          **GIVEN** the HHD shows Print Failed after a waybill print attempt
+          **WHEN** the operator taps 'Retry'
+          **THEN** the HHD returns to Printing Waybill
+        expected: "Tapping 'Retry' on Print Failed after a waybill print failure returns to Printing Waybill."
+
+      # Row 12
+      - title: "Waybill Printing — continuing without printing exits the print-failure flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the outcome of continuing without printing from a failed waybill
+          print.
+        steps: |
+          **GIVEN** the HHD shows Print Failed after a waybill print attempt
+          **WHEN** the operator taps 'Continue Without Printing'
+          **THEN** **GAP** — the destination (Login flow vs Sales screen) is ambiguous; the source
+          transcription does not disambiguate whether this is the same Print Failed (7.2) node as the
+          receipt-printing context or a distinct node sharing the same title — confirm before running
+        expected: "GAP: destination after 'Continue Without Printing' on this Print Failed screen is unconfirmed — see case body."
+
+  # =====================================================================================
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      # Row 15
+      - title: "Mini Statement Printing — a print failure lets the operator retry"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed mini statement print lets the operator retry printing.
+        steps: |
+          **GIVEN** the HHD shows Printing Failed - Card after a Print Mini Statement attempt
+          **WHEN** the operator taps 'Retry'
+          **THEN** the HHD returns to Print Mini Statement
+        expected: "Tapping 'Retry' on Printing Failed - Card after a mini statement print failure returns to Print Mini Statement."
+
+      # Row 16
+      - title: "Mini Statement Printing — a print failure can be cancelled"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling a failed mini statement print returns to the Mini
+          Statement screen.
+        steps: |
+          **GIVEN** the HHD shows Printing Failed - Card after a Print Mini Statement attempt
+          **WHEN** the operator taps 'Cancel'
+          **THEN** the HHD returns to the Mini Statement screen
+        expected: "Tapping 'Cancel' on Printing Failed - Card after a mini statement print failure returns to the Mini Statement screen."
+
+  # =====================================================================================
+  - path: [Functional, Multi-Use Barcodes]
+    cases:
+      # Row 17
+      - title: "Barcode Ticket Printing — a successful print confirms transaction complete"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm confirming a successfully printed barcode ticket shows Transaction
+          complete.
+        steps: |
+          **GIVEN** a barcode ticket print is in progress
+          **WHEN** the operator confirms the ticket has printed successfully
+          **THEN** the HHD shows Transaction complete
+        expected: "Confirming a successful barcode ticket print shows the Transaction complete screen."
+
+      # Row 18
+      - title: "Barcode Ticket Printing — a failed print confirmation triggers a reprint"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm indicating a barcode ticket did not print returns to the Printing
+          Ticket screen for a reprint.
+        steps: |
+          **GIVEN** a barcode ticket print is in progress
+          **WHEN** the operator indicates the ticket has not printed
+          **THEN** the HHD returns to the Printing Ticket screen
+          **AND** only one reprint attempt is permitted
+        expected: "Indicating a barcode ticket has not printed returns to Printing Ticket for one reprint attempt."

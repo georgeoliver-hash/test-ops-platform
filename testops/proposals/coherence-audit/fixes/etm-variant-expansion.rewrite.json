@@ -1,0 +1,169 @@
+{
+  "_comment": "ETM variant-expansion companion, 2026-07-24: the 10 cases whose 'Data variations:' line did NOT need a genuine per-variant split (equivalence-class Adult/Child, a single mode note, an already-separately-covered product, or a leftover cross-reference) still get the banned label/text removed so no case reads as an unaddressed checklist. Plus 1 retirement (superseded duplicate). See etm-variant-expansion.changelog.md for the family-by-family rationale.",
+  "cases": [
+    {
+      "id": 4100551,
+      "preface": "This test is to confirm annulling the last issued ticket, the unconfirmed-annul timeout, and refusal where annulment is not permitted.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a Driver on route 72b (IN) has just issued an Adult single ticket",
+      "steps": [
+        {
+          "content": "**WHEN** you annul the last issued ticket and confirm, then issue another and start an annul but let it time out unconfirmed",
+          "expected": "**THEN** the confirmed annulment voids the last ticket and records it in CloudFare\n**AND** the unconfirmed annul times out leaving that ticket valid"
+        },
+        {
+          "content": "**WHEN** you attempt to annul a ticket whose boarding stage has changed, or an MJ-validated, pass-validated or concession-pass transaction",
+          "expected": "**THEN** the annulment is refused with the reason shown"
+        }
+      ],
+      "expected": "The last ticket annuls; an unconfirmed annul times out leaving the ticket valid; annulment is refused with a reason for boarding-stage-changed, MJ-validated, pass-validated and concession-pass cases. Basket-transaction annulment is covered by its own case (Basket Mode — annul a basketed transaction).\n\n[Automatable: Partial · Cross-check: CloudFare]"
+    },
+    {
+      "id": 4100556,
+      "preface": "This test is to confirm a Driver can issue an Open (excess) ticket for a valid amount and that an invalid amount is rejected.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen",
+      "steps": [
+        {
+          "content": "**WHEN** you open the Open Tickets flow, key a valid excess amount and issue",
+          "expected": "**THEN** the Open excess ticket issues for the valid amount\n**AND** the Open excess ticket prints for the valid amount"
+        },
+        {
+          "content": "**WHEN** you repeat, keying an invalid excess amount",
+          "expected": "**THEN** the invalid amount is rejected without issuing a ticket"
+        }
+      ],
+      "expected": "Open/excess tickets issue for a valid amount and reject invalid amounts.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+    },
+    {
+      "id": 4100560,
+      "preface": "This test is to confirm the ETM indicates when a promo product is not currently available and cannot be issued.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a promo product is configured as not currently available (e.g. Bus Rambler out of season)\n**AND** a Driver is signed on to route 72b (IN) at the Promo Menu",
+      "steps": [
+        {
+          "content": "**WHEN** you select the unavailable promo product",
+          "expected": "**THEN** the ETM flags the promo product as not available\n**AND** the promo product cannot be issued"
+        }
+      ],
+      "expected": "An unavailable promo product is flagged not available and cannot be issued.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+    },
+    {
+      "id": 4100567,
+      "preface": "This test is to confirm smartcard validation and the passback rules for same versus different direction and within versus outside the transfer period.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a Driver is signed on to Metro route 10A at the FLU screen\n**AND** a seeded valid smartcard product is available for the route",
+      "steps": [
+        {
+          "content": "**WHEN** you present the card to validate",
+          "expected": "**THEN** the first present validates with the success indication"
+        },
+        {
+          "content": "**WHEN** you re-present it inside the transfer period in the same direction, then again in the opposite direction, then again outside the transfer period",
+          "expected": "**THEN** the same-direction re-present inside the period is handled as passback\n**AND** the opposite-direction and outside-period re-presents follow the direction and transfer rules"
+        }
+      ],
+      "expected": "A valid card validates with passback within the transfer period; direction and outside-transfer rules apply. Metro and Ulsterbus Multi-Journey zone/boarding-stage specifics are covered by their own dedicated cases.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]"
+    },
+    {
+      "id": 4100570,
+      "action": "remove"
+    },
+    {
+      "id": 4100572,
+      "preface": "This test is to confirm a successful smartcard top-up with auto-validation, the maximum-journey cap, and removal of expired journeys.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a customer presents a topp-able smartcard and the Driver selects Top-Up on route 72b (IN)",
+      "steps": [
+        {
+          "content": "**WHEN** you top up the card and take payment",
+          "expected": "**THEN** the top-up succeeds with a receipt\n**AND** the card auto-validates"
+        },
+        {
+          "content": "**WHEN** you top up a Multi-Journey card at its journey limit",
+          "expected": "**THEN** the Multi-Journey balance caps at 50 journeys"
+        },
+        {
+          "content": "**WHEN** you top up a card carrying expired journeys, then check the receipt and open the CloudFare activity log",
+          "expected": "**THEN** the expired journeys are removed on top-up"
+        }
+      ],
+      "expected": "Top-up succeeds (receipt plus auto-validate); MJ caps at 50 journeys; expired journeys are removed on top-up (DayLink / iLink / Travelcard periods); recorded in CloudFare, MERIT and SmartTrack.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]"
+    },
+    {
+      "id": 4100576,
+      "preface": "This test is to confirm a smartcard top-up can be annulled and recorded.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a Driver on route 72b (IN) has just topped up a smartcard",
+      "steps": [
+        {
+          "content": "**WHEN** you annul the top-up and confirm",
+          "expected": "**THEN** the top-up is annulled on the ETM"
+        },
+        {
+          "content": "**WHEN** you open the CloudFare activity log",
+          "expected": "**THEN** the annulment is recorded in the CloudFare activity log\n**AND** the annulment flows to MERIT and SmartTrack"
+        }
+      ],
+      "expected": "A smartcard top-up can be annulled and is recorded in CloudFare, MERIT and SmartTrack.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]"
+    },
+    {
+      "id": 4100580,
+      "preface": "This test is to confirm an Ulsterbus Multi-Journey card validates with a valid boarding stage and rejects an invalid one.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) in Ulsterbus mode\n**AND** an Ulsterbus Multi-Journey card is presented",
+      "steps": [
+        {
+          "content": "**WHEN** you present the card with a valid boarding stage set",
+          "expected": "**THEN** the valid-boarding-stage present validates\n**AND** a journey is deducted"
+        },
+        {
+          "content": "**WHEN** you present the card with an invalid boarding stage",
+          "expected": "**THEN** the invalid-boarding-stage present is rejected with the reason"
+        },
+        {
+          "content": "**WHEN** you open the CloudFare activity log",
+          "expected": "**THEN** both presents are recorded in the CloudFare activity log\n**AND** both presents flow to MERIT and SmartTrack"
+        }
+      ],
+      "expected": "Ulsterbus MJ validates on a valid boarding stage and rejects an invalid one; recorded in CloudFare, MERIT and SmartTrack.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]"
+    },
+    {
+      "id": 4100586,
+      "preface": "This test is to confirm ABT boarding within a Metro ABT zone (Tap On Only – Flat Fare); the customer taps once to board and the ETM calculates the alighting stop — there is no customer alighting tap on this device.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** ABT is enabled in a Metro ABT zone (route ABT Type = \"Tap On Only (Flat Fare)\") and a Driver is signed on to Metro route 10A\n**AND** a seeded contactless card is available",
+      "steps": [
+        {
+          "content": "**WHEN** the customer taps once for boarding on the current Metro route",
+          "expected": "**THEN** the Metro ABT zone records the boarding tap\n**AND** the alighting stop is ETM-calculated as the last stop on the route within the configured Metro Network Zone (no customer alighting tap)"
+        },
+        {
+          "content": "**WHEN** you open the CloudFare activity log",
+          "expected": "**THEN** the tap is recorded with the boarding stop\n**AND** it is recorded with the ETM-calculated alighting stop"
+        }
+      ],
+      "expected": "The Metro ABT zone records boarding-only, alighting-only and both; recorded in CloudFare and MERIT.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+    },
+    {
+      "id": 4100587,
+      "preface": "This test is to confirm ABT boarding and driver-selected alighting within Ulsterbus ABT zones (Tap On Only – Driver Initiated); the customer taps once to board and states their alighting stage, and the Driver selects it on the FLU screen — there is no customer alighting tap on this device.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** ABT is enabled in an Ulsterbus ABT zone (route ABT Type = \"Tap On Only (Driver Initiated)\") and a Driver is signed on to Ulsterbus route 72b (IN)\n**AND** a seeded contactless card is available",
+      "steps": [
+        {
+          "content": "**WHEN** the customer taps once for boarding, states their alighting stage, and the Driver selects that alighting stage on the FLU screen",
+          "expected": "**THEN** the Ulsterbus ABT zone records the boarding tap\n**AND** it records the driver-selected alighting stage (not ETM-calculated)"
+        },
+        {
+          "content": "**WHEN** you open the CloudFare activity log",
+          "expected": "**THEN** the tap is recorded with the boarding stop\n**AND** it is recorded with the driver-selected alighting stage"
+        }
+      ],
+      "expected": "The Ulsterbus ABT zone records boarding-only, alighting-only and both; recorded in CloudFare and MERIT.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+    },
+    {
+      "id": 4100655,
+      "preface": "This test is to confirm the ETM validates the supported MIFARE card types.\n\nDesign reference (Overflow): https://overflow.io/s/NDLGF6NF/",
+      "preconds": "**GIVEN** the seeded test Driver is signed on to route 10A (IN)\n**AND** a MIFARE Classic 1K card and a MIFARE Classic EV1 card are to hand",
+      "steps": [
+        {
+          "content": "**WHEN** you present the MIFARE Classic 1K card, then the MIFARE Classic EV1 card",
+          "expected": "**THEN** the ETM reads and validates each card per its type\n**AND** the validation is recorded in the back office (CloudFare, MERIT and SmartTrack)"
+        }
+      ],
+      "expected": "The ETM validates the supported MIFARE card types (Classic 1K, Classic EV1) against their 8-digit PSN range, and the validations are recorded in the back office.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]"
+    }
+  ]
+}

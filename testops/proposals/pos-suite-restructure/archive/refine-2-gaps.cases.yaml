@@ -1,0 +1,154 @@
+# Refinement wave 2 — coverage gaps (ADD), from annotation-coverage.md. Shared unless noted.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Numerical Input"]
+    cases:
+      - title: "Numerical Input — group ticket"
+        objective: "This test is to confirm the operator can issue a group ticket by entering a passenger count, up to the maximum of 100, for group-eligible products."
+        steps: |
+          **GIVEN** the operator has selected a group-eligible product with boarding/alighting set
+          **WHEN** the operator enters a passenger count (or uses + / -) up to 100 and confirms
+          **THEN** a single group ticket is printed
+          **AND** one back-office transaction is recorded with a sub-element per passenger
+          **WHEN** the operator selects a non-group-eligible product or an invalid count
+          **THEN** an error banner is shown
+        expected: "A group ticket issues for up to 100 passengers as one printed ticket and one multi-passenger transaction; non-eligible products/counts are rejected. Group eligibility is configured in Cloudfare."
+      - title: "Numerical Input — calculate change"
+        objective: "This test is to confirm the operator can calculate change for a cash payment, and that the option is unavailable in the invalid cases."
+        steps: |
+          **GIVEN** the operator is taking a cash payment
+          **WHEN** the operator enters the amount tendered and selects Calculate Change
+          **THEN** the change is calculated
+          **AND** the change is shown
+          **WHEN** too many digits are entered, or the amount is less than the ticket value, or the previous transaction had no value
+          **THEN** the Calculate Change option is unavailable
+        expected: "Change is calculated for a valid tendered amount; the option is hidden for too-many-digits / under-value / no-value cases."
+
+  - path: ["Functional", "Basket & Payment", "Basket"]
+    cases:
+      - title: "Basket — maximum of 9 tickets"
+        objective: "This test is to confirm the basket holds at most 9 tickets, with Add More disabled at the limit and re-enabled after a delete."
+        steps: |
+          **GIVEN** the operator is adding tickets to the basket
+          **WHEN** the basket reaches 9 tickets
+          **THEN** the Add More button becomes unavailable
+          **WHEN** the operator deletes a ticket from the basket
+          **THEN** the Add More button becomes available again
+        expected: "The basket caps at 9 tickets; Add More disables at the cap and re-enables after a delete."
+      - title: "Basket — entitlement passes cannot be basketed"
+        objective: "This test is to confirm that smartcard pass fares (Senior, War Pensioner, Blind, yLink, 24+, Half-Fare, etc.) cannot be added to a basket, as they require per-transaction validation."
+        steps: |
+          **GIVEN** the operator has built a fare using a smartcard entitlement pass
+          **WHEN** the operator attempts to add it to the basket
+          **THEN** the fare cannot be basketed
+          **AND** it must be validated and paid as an individual transaction
+        expected: "Entitlement-pass fares cannot be added to a basket; they require per-transaction validation."
+      - title: "Basket — bus basket is single-route"
+        objective: "This test is to confirm a bus basket cannot mix tickets from two different routes, but can hold tickets with two different boarding stages on the same route."
+        steps: |
+          **GIVEN** an operator is building a bus basket on a route
+          **WHEN** the operator tries to add a ticket from a different route
+          **THEN** it is not allowed
+          **WHEN** the operator adds tickets with two different boarding stages on the same route
+          **THEN** both are accepted
+        expected: "A bus basket is limited to one route; multiple boarding stages on that route are allowed."
+
+  - path: ["Functional", "Top Up & Validation", "Top Up"]
+    cases:
+      - title: "Top Up — expired Multi-Journey clears existing journeys"
+        objective: "This test is to confirm that topping up an expired Multi-Journey card removes the existing journeys and prints a journey-removal receipt."
+        steps: |
+          **GIVEN** the operator presents an expired Multi-Journey card
+          **WHEN** the operator adds journeys (tops it up) and the top-up succeeds
+          **THEN** all existing journeys are removed
+          **AND** a journey-removal receipt is printed
+        expected: "Topping up an expired Multi-Journey clears prior journeys and prints a journey-removal receipt."
+
+  - path: ["Non-Functional", "Power & Audio"]
+    cases:
+      - title: "Power — interruption duration determines resume state"
+        match: "Power — recovery after interruption during a shift"
+        refs: ["TIBU-29752"]
+        objective: "This test is to confirm the POS resumes to the correct state after a power interruption, depending on how long power was lost relative to the Auto Sign Off time."
+        steps: |
+          **GIVEN** an operator is signed on during a shift
+          **WHEN** power is interrupted briefly and restored
+          **THEN** the POS returns to the screen the operator was on
+          **WHEN** power is lost for less than the Auto Sign Off time
+          **THEN** on restart the POS goes to the Operator Break screen
+          **WHEN** power is lost for longer than the Auto Sign Off time
+          **THEN** on restart the POS goes to the Idle screen with no waybill printed
+        expected: "Resume state depends on outage length: brief → prior screen; < Auto Sign Off → Operator Break; > Auto Sign Off → Idle, no waybill. A pre-boot charge check protects state-saving (regression: TIBU-29752)."
+      - title: "Sign Off / Suspend — inactivity timers"
+        objective: "This test is to confirm the configurable inactivity behaviour: FLU timeout signs off; Idle timeout suspends; suspend duration auto-reboots."
+        steps: |
+          **GIVEN** the device is configured with Auto Sign Off, Auto Suspend and Suspend Duration periods
+          **WHEN** the device is inactive on a FLU screen for the Auto Sign Off period
+          **THEN** the POS reverts to the Idle screen with no waybill (break mode skipped)
+          **WHEN** the device is then inactive on Idle for the Auto Suspend period
+          **THEN** the POS turns the screen off and enters suspend
+          **WHEN** the Suspend Duration elapses (or a key is pressed in suspend)
+          **THEN** the POS reboots and returns to the Idle screen
+        expected: "FLU inactivity → Idle (no waybill, no break); Idle inactivity → suspend; suspend duration/keypress → reboot to Idle. All periods configurable."
+      - title: "Audio — tones for success, error and timeout"
+        match: "Audio — tones play for key actions"
+        objective: "This test is to confirm the POS plays the correct audio tones for success, error, timeout and a card left on the reader."
+        steps: |
+          **GIVEN** the device audio is enabled
+          **WHEN** a top-up / card issue / ticket issue succeeds
+          **THEN** the success tone plays
+          **WHEN** any failure occurs
+          **THEN** the error tone plays
+          **WHEN** a screen times out
+          **THEN** the timeout tone plays
+          **WHEN** a smartcard is left on the reader
+          **THEN** a frequent beep plays
+        expected: "Success, error, timeout and card-left-on-reader each play their correct tone."
+
+  - path: ["Non-Functional", "Printer"]
+    cases:
+      - title: "Printer — paper low notification"
+        refs: ["TIBU-26995"]
+        objective: "This test is to confirm the POS shows a temporary paper-low notification when the printer paper is low."
+        steps: |
+          **GIVEN** the printer paper level is low
+          **WHEN** the operator is using the POS
+          **THEN** a temporary paper-low notification is shown (about 3 seconds)
+        expected: "A low paper level shows a temporary (~3s) notification (regression: TIBU-26995)."
+      - title: "Printer — print-failure events are sent"
+        objective: "This test is to confirm the POS sends an event when a print fails, when a partial print occurs due to power loss, and when a ticket resumes printing after power loss."
+        steps: |
+          **GIVEN** the printer encounters a fault (no paper, hardware/software error, or power loss mid-print)
+          **WHEN** a print fails, partially prints due to power loss, or resumes after power loss
+          **THEN** the POS sends the corresponding event
+        expected: "Print-fail, partial-print-on-power-loss and resume-after-power-loss each send an event."
+
+  - path: ["Functional", "Barcode Scanning"]
+    cases:
+      - title: "Barcode — validate a ticket by barcode"
+        match: "Barcode — the POS scans a barcode"
+        objective: "This test is to confirm the operator can scan a ticket barcode to validate it, with the correct information shown per barcode type."
+        steps: |
+          **GIVEN** the operator accesses Barcode Reference via the Operator Menu
+          **WHEN** the operator scans a ticket barcode
+          **THEN** the ticket validation screen shows the information for that barcode type
+          **AND** any Notes on that barcode type are shown
+          **AND** pressing any key (or a 3s timeout) returns to the FLU screen
+        expected: "Scanning a ticket barcode shows the type-appropriate validation info (incl. Notes) for the operator's visual check, then returns to FLU."
+      - title: "Barcode — offline validations stored until reconnect"
+        objective: "This test is to confirm barcodes validated while offline are stored and synced when connection to CloudFare/Corethree is re-established."
+        steps: |
+          **GIVEN** the POS is offline (no CloudFare/Corethree connection)
+          **WHEN** the operator validates barcodes
+          **THEN** the offline validations are stored in a list
+          **WHEN** connection to CloudFare/Corethree is re-established
+          **THEN** the stored validations are synced
+        expected: "Offline barcode validations are queued and synced on reconnect to CloudFare/Corethree."

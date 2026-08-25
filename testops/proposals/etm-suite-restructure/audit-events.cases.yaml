@@ -1,0 +1,111 @@
+# ETM — back-office audit-event assertions for transactional cases the gap-check found lacking one.
+# Keyed on LIVE titles (no `match:`) so --update hits the current cases without resurrecting any
+# consolidation-renamed originals. Bodies reproduced from source + one AND-line each. Routing
+# (confirmed 2026-06-09): barcode/ticket validation & sale -> CloudFare + MERIT; smartcard validation
+# -> CloudFare + MERIT + SmartTrack. Re-push enrichment after this (it rewrites Expected).
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Barcode Scanning
+    cases:
+      - title: Barcode — online validation (pass and fail)
+        objective: This test is to confirm barcode online validation passes for a valid ticket and is rejected with the correct reason when it fails.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and barcode scanning is available
+          **WHEN** a valid barcode ticket is scanned and validated online
+          **THEN** the ticket is accepted with the correct validity detail shown
+          **AND** the validation is recorded in the back office (CloudFare and MERIT)
+          **WHEN** a barcode fails online validation
+          **THEN** the transaction is cancelled with the failure reason shown
+        expected: Valid barcodes validate online with the validity detail; failures cancel with the reason — decryption failed, not valid, already used, wrong date, expired, exceeds offline limit, invalid product, visual inspection not passed. Printed copy and mobile phone.
+      - title: Barcode — offline validation
+        objective: This test is to confirm barcode offline validation succeeds and is rejected when over the offline limit or invalid.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/barcode-scanning/12_2_1 - Barcode - Offline Check.png
+        steps: |
+          **Given** the ETM is validating a barcode offline
+          **WHEN** a valid barcode is scanned within the offline validation limit
+          **THEN** the ticket is accepted offline
+          **AND** the offline validation is recorded for upload to the back office (CloudFare and MERIT)
+          **WHEN** the barcode is over the offline validation limit or invalid
+          **THEN** the barcode is rejected with the reason shown
+        expected: Offline validation accepts within the limit and rejects when over the offline limit or invalid.
+      - title: Barcode — multiple-use validation
+        objective: This test is to confirm multiple-use barcode validation, including confirming multiple use and the failure reasons.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and barcode scanning is available
+          **WHEN** a multiple-use barcode is scanned and multiple use is confirmed
+          **THEN** the multiple-use ticket is validated
+          **AND** the validation is recorded in the back office (CloudFare and MERIT)
+          **WHEN** validation fails
+          **THEN** the failure reason is shown (passback, incorrect zone, wrong start/end date, or wrong travel method)
+        expected: Multiple-use barcodes validate with confirmation; failures show passback / incorrect zone / wrong dates / wrong travel method. Covers printed copy and mobile phone.
+      - title: Barcode — mLink scan validation
+        objective: This test is to confirm mLink barcode validation succeeds and rejects an expired mLink barcode.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and barcode scanning is available
+          **WHEN** a valid mLink barcode is scanned
+          **THEN** the mLink barcode is validated
+          **AND** the validation is recorded in the back office (CloudFare and MERIT)
+          **WHEN** an expired mLink barcode is scanned
+          **THEN** the mLink barcode is rejected as expired
+        expected: mLink barcodes validate when valid and reject when expired.
+      - title: Barcode — reference entry via Driver Menu
+        objective: This test is to confirm a Driver can enter a barcode reference manually for single and multiple use, with invalid references rejected.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/barcode-scanning/12_0_0 - Barcode Reference.png
+        steps: |
+          **Given** a Driver has opened the barcode reference entry from the Driver Menu
+          **WHEN** the Driver enters a valid single-use or multiple-use barcode reference
+          **THEN** the reference is accepted and validated
+          **AND** the validation is recorded in the back office (CloudFare and MERIT)
+          **WHEN** the Driver enters an invalid reference
+          **THEN** the reference is rejected as invalid
+        expected: Manual barcode reference entry (single and multiple use) validates valid references and rejects invalid ones.
+      - title: Barcode — printed tickets and print error
+        objective: This test is to confirm a barcode-bearing ticket can be printed and that a print error during a barcode ticket is handled.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver issues a ticket that carries a barcode
+          **WHEN** the ticket is printed
+          **THEN** the ticket prints with its barcode
+          **AND** the ticket sale is recorded in the back office (CloudFare and MERIT)
+          **WHEN** a print error occurs
+          **THEN** the barcode-ticket print error is handled
+        expected: Tickets print with their barcode; a print error during a barcode ticket is handled. Legacy barcodes are also supported.
+
+  - path: Functional / Basket Mode
+    cases:
+      - title: Basket Mode — build a multi-item basket and pay
+        objective: This test is to confirm a Driver can enter basket mode, add multiple items, confirm and take a single payment with the mandatory receipt printed.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/basket-mode/02_7 _ Main Screen - FLU - Multiple Items - Basket Mode Selected.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver presses R6 to enter basket mode with a product/alighting stage selected
+          **THEN** the selected product is added to the basket and basket mode is active
+          **WHEN** the Driver adds further items, confirms the basket and takes payment
+          **THEN** all basket items are issued in one transaction
+          **AND** the sale is recorded in the back office (CloudFare and MERIT)
+          **AND** a receipt is printed automatically where mandatory
+        expected: Basket mode issues multiple items in one paid transaction; the selected product is auto-added on entry; a mandatory receipt prints automatically.
+
+  - path: Non-Functional / System and Performance
+    cases:
+      - title: MIFARE card type validation on the ETM
+        objective: This test is to confirm the ETM validates the supported MIFARE card types.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** a MIFARE Classic 1K or MIFARE Classic EV1 card is presented
+          **THEN** the ETM reads and validates the card per its type
+          **AND** the validation is recorded in the back office (CloudFare, MERIT and SmartTrack)
+        expected: The ETM validates the supported MIFARE card types (Classic 1K, Classic EV1) on the ETM.

@@ -1,0 +1,9 @@
+[
+  {
+    "id": 4103568,
+    "refs": "FBD-100359, TIBU-24428",
+    "action": "reword",
+    "citations": ["FBD-100359", "TIBU-24428"],
+    "change_note": "REFS-ONLY: TIBU-24428 (PrimaryCommsChannelFailed event spamming, ethernet/cellular flip-flopping) was fixed so the PV stays on ethernet and does NOT fail over to cellular (per the old-suite regression cases C4069405/C4091894's own expected result) — the same Ethernet-only, no-failover model this case already asserts. Added as a Ref for traceability. NOTE: this is asserted alongside gap-register Q23 (an unresolved conflict between this model and REQ-2746.0's old 'Secondary Communication Failover Method' cases) — this Ref addition does not resolve Q23, it only records that TIBU-24428's own fix target is consistent with the Ethernet-only model."
+  }
+]

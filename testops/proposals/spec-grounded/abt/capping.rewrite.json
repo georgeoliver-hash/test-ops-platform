@@ -1,0 +1,1420 @@
+[
+  {
+    "id": 4102757,
+    "title": "Metro cap — same-fare alighting correction holds the cap",
+    "preface": "This test is to confirm that an alighting-stop correction to an equal-fare Metro stage leaves the Metro daily cap in place, with no auto-charge or refund at settlement.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap: 10A (IN) Casement Park → City Hall 09:00 charged £2.30, then 10A (IN) Slievegallion Drive → Falls Park 12:00 charged £1.70 to complete the cap, day total £4.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to another Metro stage of equal £2.30 single fare\n**AND** you run the overnight end-of-operating-day settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the £4.00 Metro cap is still applied to the day\n**AND** the corrected 12:00 tap still shows £1.70\n**AND** the day total is still £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100389 para 219-221",
+      "FBD-100662 para 264",
+      "FBD-100662 para 233"
+    ],
+    "change_note": "Tightened title; preface made behavioural; dropped the 'Passenger Portal to verify' clause; marked the Metro cap/single values UNCONFIRMED (tracker, not FBD) and added the CR122 UNCONFIRMED marker as the correction mechanism is an unverified proposal. Renamed 'auto-settlement' to 'auto-charge' (spec wording, FBD-100662 para 691).",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102758,
+    "title": "Metro cap — correction outside the Metro zone removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a Metro tap's alighting to a stop outside the Metro zone removes the Metro cap and collects the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has two Metro-zone taps that settled at the cap: 10A (IN) Casement Park → City Hall 09:00 £2.30, then 10A (IN) Slievegallion Drive → Falls Park 12:00 £1.70, day total £4.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a stop outside the Metro Network Zone at a higher single fare (**GAP** — the tracker does not name a confirmed out-of-zone stop/fare for a 10A/10b Metro tap; confirm the exact route/stop/fare in the portal before running)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Metro cap is no longer applied\n**AND** the corrected tap is charged its higher single fare\n**AND** the day total rises above £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264",
+      "FBD-100229 para 149 (cap applies only within the configured zone)"
+    ],
+    "change_note": "Tightened title; removed the invented '£5.10 ref.70' out-of-zone value (not confirmed for this route) and replaced with a GAP to confirm the stop/fare; marked cap values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running.",
+      "No confirmed out-of-Metro-zone stop/fare for a 10A/10b tap in the tracker — needs checking on the live portal."
+    ]
+  },
+  {
+    "id": 4102759,
+    "title": "Metro cap — correction into the Metro zone applies the cap and refunds the difference",
+    "preface": "This test is to confirm that correcting an out-of-zone tap's alighting into the Metro zone brings the day under the £4.00 cap and refunds the overcharge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has one Metro tap 10A (IN) Casement Park → City Hall 09:00 (£2.30) and one tap that alighted outside the Metro zone at 12:00 charged its higher single fare, day total above £4.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the out-of-zone tap's alighting to a stop inside the Metro Network Zone (a £2.30 Metro stage)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the difference to the account"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** both taps are under the £4.00 Metro cap\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap values UNCONFIRMED; added CR122 marker; generalised 'Ulsterbus tap' to 'out-of-zone tap' since the meaningful condition is zone membership.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102760,
+    "title": "Metro cap — correcting a settled free (capped) tap keeps it at £0.00",
+    "preface": "This test is to confirm that correcting the alighting stop on a settled, capped (£0.00) Metro tap does not recalculate it to a full fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap with three taps: Casement Park → City Hall 09:00 £2.30, Slievegallion Drive → Falls Park 12:00 £1.70, and Falls Park → City Hall 15:00 £0.00 (capped), day total £4.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the settled £0.00 15:00 tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 15:00 tap is still charged £0.00\n**AND** it is not recalculated to the full £2.30\n**AND** it remains marked settled"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100389 para 219-221",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running.",
+      "That a settled capped tap is NOT recalculated on correction is an implementation guard not stated in any FBD (FBD-100334 V0.01 is an unfilled stub) — confirm expected behaviour."
+    ]
+  },
+  {
+    "id": 4102761,
+    "title": "Metro cap — correcting a settled partially-capped tap keeps it at £1.70",
+    "preface": "This test is to confirm that correcting the alighting stop on a settled, partially-capped Metro tap preserves its reduced fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap: Casement Park → City Hall 09:00 £2.30, then Slievegallion Drive → Falls Park 12:00 reduced to £1.70 to complete the cap, day total £4.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the settled £1.70 12:00 tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 12:00 tap is still charged £1.70\n**AND** it is not recalculated to the full £2.30\n**AND** it remains marked settled"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100389 para 219-221",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running.",
+      "Preservation of a settled reduced fare on correction is an implementation guard not in any FBD — confirm."
+    ]
+  },
+  {
+    "id": 4102762,
+    "title": "Metro cap — a correction never pushes the day over the cap",
+    "preface": "This test is to confirm that an alighting correction on a capped Metro tap cannot charge the card beyond the daily cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap (Casement Park → City Hall £2.30, Slievegallion Drive → Falls Park £1.70, Falls Park → City Hall £0.00)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on one of the capped taps to another Metro stage\n**AND** you run the overnight settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the day total charged on the card does not exceed £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102763,
+    "title": "Metro cap — a corrected capped tap stays settled and free",
+    "preface": "This test is to confirm that a settled capped Metro tap keeps its settled status and £0.00 charge after an alighting correction.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap, with the 15:00 Falls Park → City Hall tap charged £0.00 (capped)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the £0.00 capped tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is still marked settled\n**AND** it is still charged £0.00 under the cap"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; collapsed a duplicate THEN ('cap retained on that tap' + 'charged £0.00') into one; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102764,
+    "title": "Metro cap — correcting the first full-fare tap leaves its charge unchanged",
+    "preface": "This test is to confirm that correcting the first (non-capped) Metro tap to an equal-fare stage does not disturb its full fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap, with the first tap 10A (IN) Casement Park → City Hall 09:00 charged the full £2.30\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the first 09:00 tap to another Metro stage of equal fare\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the first tap is still charged £2.30\n**AND** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102765,
+    "title": "Metro cap — correcting an unsettled capped tap re-evaluates and stays free",
+    "preface": "This test is to confirm that an unsettled capped Metro tap re-evaluates to £0.00 when its alighting is corrected before settlement.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has made three Metro taps that reach the cap but end-of-day settlement has NOT yet run: Casement Park → City Hall 09:00, Slievegallion Drive → Falls Park 12:00, Falls Park → City Hall 15:00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the third (would-be-free) 15:00 tap to another Metro stage\n**AND** you run the overnight settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 15:00 tap is charged £0.00\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 694",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102766,
+    "title": "Metro cap — a declined journey is not treated as a settled capped tap",
+    "preface": "This test is to confirm that a declined Metro journey is not treated as a settled capped tap and produces no cap charge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has one Metro journey that was declined at the reader (e.g. the card in a deny-listed state, Declined Reason 2), shown in Journey History as declined\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you attempt to correct the alighting stop on the declined journey\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the journey is still handled as declined\n**AND** it is not treated as a settled capped journey\n**AND** no cap charge is produced for it"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100658 (DeclinedReason enum; 2 = On Deny List)",
+      "FBD-100662 para 243",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Removed white-box preface language ('the correction guard keys off settled status'); made behavioural; grounded 'declined' to Declined Reason 2; marked CR122.",
+    "gaps": [
+      "Whether a declined (no-fare) journey is even correctable via CR122 is not specified — the case tests an internal guard not described in any FBD; confirm expected behaviour.",
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running."
+    ]
+  },
+  {
+    "id": 4102767,
+    "title": "Metro cap — re-running settlement after a correction does not re-charge the capped tap",
+    "preface": "This test is to confirm that a further settlement run after a correction leaves an already-settled capped Metro tap untouched.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** the card has settled a Metro day at the cap and one £0.00 capped tap has already had its alighting stop corrected\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** you run the end-of-day settlement process again",
+        "expected": "**THEN** no additional charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the corrected capped tap is still charged £0.00\n**AND** the day total stays £4.00\n**AND** the tap remains marked settled"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 137",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked values UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Metro routes are Tap On Only (Flat Fare) with the alighting auto-set to the last stop in the Metro Network Zone (FBD-100658); whether CR122 alighting-stop adjustment is even offered for flat-fare Metro taps is not specified — confirm before running.",
+      "Settlement idempotency (re-running settlement raises no new charge) is not stated in any FBD — confirm expected behaviour."
+    ]
+  },
+  {
+    "id": 4102768,
+    "title": "Zonal cap — higher-fare correction within the zone holds the cap",
+    "preface": "This test is to confirm that raising a tap to a higher fare still within the same iLink zone leaves the zone cap unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card has reached the cap on 105a (IN) Zone 2 taps: Dundrod → Beechdene Drive 09:00 £4.50, Tullyrusk Road → Beechdene Drive 12:00 £4.50, a third Zone 2 tap 15:00 £2.00 to complete the £11.00 cap\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage still within Zone 2 (e.g. → Park Gates)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is still applied at £11.00\n**AND** the day total stays £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100340 para 278",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked iLink cap value UNCONFIRMED (tracker); added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102769,
+    "title": "Zonal cap — higher-fare correction outside the zone removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a tap to a stage outside the iLink zone removes the zone cap and collects the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the cap is reached on 105a (IN) Zone 2 taps (Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.00)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage outside Zone 2 (e.g. into Zone 3)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference, unless a higher zone cap is itself reached"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is no longer applied\n**AND** the corrected tap is charged its higher fare\n**AND** the day total rises above £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 322 (board/alight not both in zone → not capped)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; removed the invented '£5.90 Zone 3' fare (not confirmed); marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "No confirmed Zone 3 fare for the corrected 10b tap in the tracker — confirm the stop/fare on the live portal."
+    ]
+  },
+  {
+    "id": 4102770,
+    "title": "Zonal cap — lower-fare correction within the zone, day still above cap, holds",
+    "preface": "This test is to confirm that lowering a tap within the iLink zone, while the uncapped aggregate stays above cap, leaves the cap in place.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the cap is reached on 105a (IN) Zone 2 taps whose uncapped aggregate is well above £11.00 (Dundrod → Beechdene Drive £4.50 ×2 plus a third £4.50 Zone 2 tap = £13.50 uncapped)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a lower-fare Zone 2 stage, keeping the uncapped aggregate above £11.00\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-refund is raised\n**AND** no auto-charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is still applied\n**AND** the day total is unchanged at £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102771,
+    "title": "Zonal cap — lower-fare correction drops the day below cap and refunds",
+    "preface": "This test is to confirm that lowering a tap so the uncapped aggregate falls below the iLink zone cap removes the cap and refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the cap is reached on 105a (IN) Zone 2 taps whose uncapped aggregate only just exceeds it: Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.90 (uncapped £11.90, capped to £11.00)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one £4.50 tap's alighting to a lower Zone 2 fare (£2.30) so the uncapped aggregate drops to £9.70\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £1.30 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is no longer applied\n**AND** the day total reduces to the new aggregate £9.70"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102772,
+    "title": "Zonal cap — Zone 4 correction within the highest band holds the cap",
+    "preface": "This test is to confirm that a higher-fare correction that stays within the highest iLink band keeps the £19.00 Zone 4 cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 4 cap is £19.00 (the highest band) — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the cap is reached on 100b (IN) Zone 4 taps: Ardstraw Road → Londonderry (Transfer) at 09:00, 12:00 and 15:00, £6.90 each (ref.85), uncapped £20.70 capped to £19.00\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage still within the £19.00 band (e.g. Castlederg → Londonderry (Transfer), ref 1.05, £9.40)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 4 cap is still applied\n**AND** the account stays at £19.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13 (Zone 4 is the outermost iLink band)",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102773,
+    "title": "Zonal cap — correction into a capped zone audits a free tap under the zonal cap",
+    "preface": "This test is to confirm that correcting a tap into a zone whose cap is reached audits a £0.00 tap under the zonal cap, not the reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps (£4.50 + £4.50 + £2.00) — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card also has one 10b (IN) tap that alighted at a Zone 1 stop and was charged under the Zone 1 cap (confirm in the portal that this tap is assigned to Zone 1)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct that Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap\n**AND** it is not charged the reference fare"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays at the £11.00 cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 337 (reference-fare capping group)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; removed the tracker aside about 10b Metro codes from the step; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Zonal-cap-takes-precedence-over-reference-cap ordering is implied by the capping-group model but not stated explicitly — confirm precedence rule."
+    ]
+  },
+  {
+    "id": 4102774,
+    "title": "Zonal cap — a correction into a capped zone does not increase the account total",
+    "preface": "This test is to confirm that a zonal correction at the cap leaves the aggregated account total unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps and the aggregated account total for the day is £11.00 — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the aggregated account total for the day has not increased above £11.00\n**AND** the corrected tap is audited at £0.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102775,
+    "title": "Zonal cap — a corrected tap reports under the zonal cap, not a reference cap",
+    "preface": "This test is to confirm that a corrected tap reports under the zonal cap rather than a reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited at £0.00 because the Zone 2 cap was reached\n**AND** it is not charged the reference fare"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100662 para 337",
+      "FBD-100662 para 339 (Saving Type shows the capping rule/group)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker. Near-duplicate of 4102773/4102774 — flagged for possible consolidation.",
+    "gaps": [
+      "4102773/4102774/4102775 are three near-identical 'zonal cap beats reference cap' assertions on the same setup — candidate for consolidation into one case with a data-variations note."
+    ]
+  },
+  {
+    "id": 4102776,
+    "title": "Zonal cap — correcting into a zone below cap charges toward the zonal cap",
+    "preface": "This test is to confirm that correcting into a zone whose cap is not yet reached charges toward the zonal cap, not the reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 and only one Zone 2 journey has been made (105a (IN) Dundrod → Beechdene Drive, £4.50), so the cap is not yet reached — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is charged toward the Zone 2 cap and never above £11.00\n**AND** it is not charged under the reference cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 337",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102777,
+    "title": "Reference cap — a journey with no zonal cap still uses the reference cap",
+    "preface": "This test is to confirm that reference-fare capping still governs where no zonal cap applies.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is not enabled for these journeys, so the reference cap governs the day\n**AND** the ref.60 cap of £7.20 is reached on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00 to complete the cap — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct a ref.60 tap's alighting to another ref.60 stage (e.g. Greys Farm → Armagh Bus Centre)\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the ref.60 cap\n**AND** the £7.20 reference cap still governs the day"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337 (same reference fare → same capping group)",
+      "FBD-100662 para 265 (Ulsterbus daily cap on reference fares)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; removed 'after the fix' white-box phrasing; marked ref cap value UNCONFIRMED; added CR122 marker. (Section was 'Zonal Cap' but the case is a reference-cap case — noted for re-section.)",
+    "gaps": [
+      "Case sits in the 'Zonal Cap' section but tests the reference cap — consider moving to 'Reference Fare Cap'."
+    ]
+  },
+  {
+    "id": 4102778,
+    "title": "Zonal cap — correcting to another stop in the same zone keeps the cap",
+    "preface": "This test is to confirm that correcting to another stop within the same iLink zone leaves the zonal cap in place.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 1 cap of £6.00 is reached on Zone 1 taps (confirm a Zone 1 route/stop pair in the portal) — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to another Zone 1 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap\n**AND** the day's Zone 1 total stays at the £6.00 cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; removed the tracker aside about 10b Zone 1 stops carrying Metro codes; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "The tracker flags that some 10b Zone 1 stops also carry Metro codes and would cap at Metro £4.00 — the Zone 1 route/stop pair must be confirmed so the case exercises the Zone 1 (not Metro) cap."
+    ]
+  },
+  {
+    "id": 4102779,
+    "title": "Zonal cap — re-running settlement after a correction adds no charge",
+    "preface": "This test is to confirm that a repeat settlement after a zonal correction keeps the cap and raises no charge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is reached and a Zone 1 tap has already been corrected to a Zone 2 stop and settled — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** you run the end-of-day settlement process again",
+        "expected": "**THEN** no additional charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is still audited at £0.00 with the Zone 2 cap applied"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 para 12-13",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "Settlement idempotency is not stated in any FBD — confirm expected behaviour."
+    ]
+  },
+  {
+    "id": 4102780,
+    "title": "Zonal cap — the cap applies after a correction regardless of transport mode",
+    "preface": "This test is to confirm that the iLink zonal cap (Transport Mode = All) governs a corrected tap across mixed transport modes.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is reached across mixed transport modes (the iLink zone cap is Transport Mode = All) — **UNCONFIRMED** — iLink zone cap values (£6 Z1 / £11 Z2 / £19 Z4) are from the UB-TOO tracker, not an FBD; confirm fares source (gap Q14).\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap\n**AND** the reference cap is not applied regardless of transport mode"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100229 (rail vs bus capping is by transport-mode setting, not zone)",
+      "FBD-100340 para 149",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; added CR122 marker.",
+    "gaps": [
+      "'Transport Mode = All' on the iLink cap rule needs confirming in the live cap configuration."
+    ]
+  },
+  {
+    "id": 4102781,
+    "title": "Reference cap — correction to a higher ref removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting one tap to a higher reference fare breaks the same-ref cap and collects the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** the ref.60 cap of £7.20 is reached on two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00, day total £7.20 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a higher reference-fare stop (e.g. Dungannon Bus Station → Armagh Bus Centre, ref.70, £5.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference above the former £7.20 cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied, as the taps no longer share a ref\n**AND** both taps are charged their uncapped fares (£4.50 and £5.10)"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337 (same reference fare → same capping group)",
+      "FBD-100662 para 265",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked ref cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102782,
+    "title": "Reference cap — correction to a lower ref below the cap removes it and refunds",
+    "preface": "This test is to confirm that lowering one tap so the aggregate falls below the cap removes the reference cap and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** two ref.60 taps are capped at £7.20: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre £4.50 at 09:00 and £2.70 at 12:00 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 09:00 tap's alighting to a lower fare on a different ref (e.g. a ref.20 £2.30 stage) so the uncapped aggregate falls to £6.80\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £0.40 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied\n**AND** the charge is the lower aggregate £6.80"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337",
+      "FBD-100662 para 265",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102783,
+    "title": "Reference cap — correction to a lower ref still above the cap charges the extra",
+    "preface": "This test is to confirm that lowering one tap to a different ref, with the aggregate still above the cap, removes the cap and charges the extra.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** two ref.60 taps are capped at £7.20 (uncapped £4.50 + £4.50 = £9.00): 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:00 and Greys Farm → Armagh Bus Centre at 12:00 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a lower fare on a different ref (e.g. ref.55, £4.00, Greys Farm → Allens Corner (Dark Lane)), leaving the aggregate at £8.50\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the £1.30 above the former £7.20 cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied\n**AND** the charge is the uncapped aggregate £8.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337",
+      "FBD-100662 para 265",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102784,
+    "title": "Uncapped tap — single tap raised to a higher fare charges the difference",
+    "preface": "This test is to confirm that correcting a single uncapped tap to a higher fare collects the additional balance.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Grange Brigde at 09:00, ref.10, £1.90 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the tap's alighting to a higher-fare stop (e.g. Greys Farm → Armagh Bus Centre, ref.60, £4.50)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the £2.60 additional balance"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the amended alighting stop is charged at the higher fare £4.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 183 (single tap, not capped)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102785,
+    "title": "Uncapped tap — single tap lowered refunds the difference",
+    "preface": "This test is to confirm that correcting a single uncapped tap to a lower fare refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Armagh Bus Centre at 09:00, ref.60, £4.50 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the tap's alighting to a lower-fare stop (e.g. Greys Farm → Grange Brigde, ref.10, £1.90)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £2.60 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the amended alighting stop is charged at the lower fare £1.90"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100389 para 183",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102786,
+    "title": "Reference cap — aligning two different-ref taps to the same ref applies the cap and refunds",
+    "preface": "This test is to confirm that correcting two different-ref taps onto the same reference fare brings the reference cap into play and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled\n**AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Armagh Bus Centre (ref.60, £4.50) and Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00), charged £8.50 in total — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the ref.55 tap's alighting so both taps share ref.60 (e.g. → Armagh Bus Centre, £4.50)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £1.30 above the cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the ref.60 cap is now applied\n**AND** the total is the capped £7.20"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337 (same reference fare → same capping group)",
+      "FBD-100662 para 265",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked fare/cap values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102787,
+    "title": "Reference cap — lowering the higher-ref tap to match applies the lower cap and refunds",
+    "preface": "This test is to confirm that correcting the higher-ref tap down to match the other applies the lower reference cap and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled\n**AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00) and Greys Farm → Armagh Bus Centre (ref.60, £4.50), charged £8.50 in total — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the higher-fare ref.60 tap down to match the other's ref.55 (e.g. → Allens Corner (Dark Lane), £4.00)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £2.10 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the lower ref.55 cap is now applied\n**AND** the total is the ref.55 cap of £6.40"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100662 para 337",
+      "FBD-100662 para 265",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked fare/cap values UNCONFIRMED (ref.55 £6.40 from tracker); added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102788,
+    "title": "Town service cap — correction within the town zone holds the cap",
+    "preface": "This test is to confirm that an alighting correction within the town-service zone leaves the town-service cap unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode) — **UNCONFIRMED** — the Bangor town-service cap value (£2.50) and the 203b fares are from the UB-TOO tracker, not FBD-100340 (which uses a £1.00 example cap); confirm fares source (gap Q14).\n**AND** the cap is reached on 203b (IN) Bangor TS taps, both boarding and alighting inside the Bangor town-service zone: Groomsport Roundabout → Gransha Road Roundabout 09:00 (£2.30) and Carolhill/ Dixon Rd → Kilcooley 12:00 (£2.90), capped to £2.50\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to another stop within the Bangor TS zone (e.g. Groomsport Roundabout → Kilcooley, £3.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is still applied\n**AND** the day total stays £2.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100340 para 149 (cap applies when boarding+alighting both in the town zone)",
+      "FBD-100340 para 278",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED (tracker, not FBD-100340's £1.00 example); added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102789,
+    "title": "Town service cap — correction outside the town to a higher fare removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a tap's alighting outside the town zone removes the town-service cap and charges the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps (Groomsport Roundabout → Gransha Road Roundabout £2.30 and Carolhill/ Dixon Rd → Kilcooley £2.90, capped to £2.50) — **UNCONFIRMED** — the Bangor town-service cap value (£2.50) and the 203b fares are from the UB-TOO tracker, not FBD-100340 (which uses a £1.00 example cap); confirm fares source (gap Q14).\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stop outside the Bangor TS zone (e.g. Groomsport Roundabout → City Hall, ref.70, £5.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is no longer applied, as the alighting is now out of zone\n**AND** the corrected tap is charged the higher fare £5.10\n**AND** the day total rises above £2.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100340 para 322 (board in / alight out → not capped)",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap/fare values UNCONFIRMED; added CR122 marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102790,
+    "title": "Town service cap — correction outside the town to a lower fare removes the cap and refunds",
+    "preface": "This test is to confirm that correcting a tap's alighting outside the town zone to a lower fare removes the town-service cap and refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps — **UNCONFIRMED** — the Bangor town-service cap value (£2.50) and the 203b fares are from the UB-TOO tracker, not FBD-100340 (which uses a £1.00 example cap); confirm fares source (gap Q14).\n**AND** a stop just outside the Bangor TS zone at a single fare below £2.50 (**GAP** — the tracker's listed 203b out-of-zone pairs are all £4.50+; no confirmed sub-£2.50 out-of-zone stop exists — confirm on the live portal before running)\n**AND** **UNCONFIRMED** — the portal alighting-stop adjustment (CR122) is a proposal whose full UX is still to be determined and is not verified on the live test system (FBD-100662 para 691, 693, 271); confirm it is implemented before running.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to that lower-fare stop outside the town area\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is no longer applied\n**AND** the corrected tap is charged the lower fare"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "FBD-100662 para 694",
+      "FBD-100698 (RouteType=1 RoutePointToPointFares – Ulsterbus alighting-stop changes)",
+      "FBD-100340 para 322",
+      "FBD-100662 para 264"
+    ],
+    "change_note": "Tightened title; marked cap value UNCONFIRMED; kept the existing GAP that no confirmed sub-£2.50 out-of-zone stop exists; added CR122 marker.",
+    "gaps": [
+      "No confirmed 203b out-of-zone stop below £2.50 — the scenario may be unrunnable as written; confirm a suitable stop or drop the case."
+    ]
+  },
+  {
+    "id": 4102869,
+    "title": "Capping config — configure a daily capping rule",
+    "preface": "This test is to confirm that an administrator can configure a daily capping rule that caps a customer's charges within an operating day.",
+    "preconds": "**GIVEN** an administrator is signed in to the ABT capping-rule configuration in the Operator Portal\n**AND** the End of the Operating Day is configured (operating day 04:00:00–03:59:59)",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator configures a daily capping rule (Base Amount or Base Product mechanism)\n**AND** a customer makes transactions within a single operating day",
+        "expected": "**THEN** the customer's charges are capped at the configured daily cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 313-315 (two capping-rule creation mechanisms)",
+      "FBD-100389 para 137 (daily cap over the 04:00–03:59 operating day)",
+      "FBD-100340 para 149"
+    ],
+    "change_note": "Grounded the operating-day definition (04:00–03:59) to FBD-100389; named the two rule-creation mechanisms per FBD-100662; generalised the invented screen wording.",
+    "gaps": []
+  },
+  {
+    "id": 4102870,
+    "title": "Capping config — configure weekly and monthly capping rules",
+    "preface": "This test is to confirm that an administrator can configure weekly and monthly capping rules.",
+    "preconds": "**GIVEN** an administrator is signed in to the ABT capping-rule configuration in the Operator Portal\n**AND** the operating week is configured",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator configures a weekly or monthly capping rule",
+        "expected": "**THEN** the rule is created\n**AND** it caps charges over the configured period"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 265 (Ulsterbus Daily/Weekly/Monthly caps)",
+      "FBD-100662 para 356-357 (UB Weekly Cap product/rule)",
+      "FBD-100340 para 149 (daily/weekly/monthly caps per zone)"
+    ],
+    "change_note": "Grounded weekly/monthly caps to FBD-100662/FBD-100340; generalised screen wording.",
+    "gaps": [
+      "The operating-week start day is not stated in the specs read — confirm the configured week boundary."
+    ]
+  },
+  {
+    "id": 4102871,
+    "title": "Capping config — configure a transfer capping rule",
+    "preface": "This test is to confirm that an administrator can configure a transfer capping rule.",
+    "preconds": "**GIVEN** an administrator is signed in to the ABT capping-rule configuration in the Operator Portal",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator configures a transfer cap",
+        "expected": "**THEN** the transfer cap is created\n**AND** it is applied to qualifying transfers"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100651 (Glider transfer logic: a qualifying transfer is charged £0.00 — there is no separate 'transfer cap' concept in the capping specs)"
+    ],
+    "change_note": "Removed the invented 'Transfer Caps tab' screen reference; flagged that a 'transfer cap' as a capping-rule type is not described in the capping specs — transfers are handled as zero-charge journeys (FBD-100651), not as a cap.",
+    "gaps": [
+      "**GAP** — a 'transfer capping rule' / 'Transfer Caps tab' is not described in FBD-100334/100340/100389/100651/100662. Transfers produce a zero charge (FBD-100651 CR123), which is not the same as a cap. Confirm whether a transfer-cap rule type actually exists in the portal before running."
+    ],
+    "status": "RESOLVED 2026-07-21 — superseded by proposals/coherence-audit/fixes/abt-transfer-cap.rewrite.json (actioned per George's decision to test the real £0.00-transfer behaviour instead of the invented cap). This entry is left as-is for history; do not re-apply it. See capping.gaps.md and capping.changelog.md for the resolution note."
+  },
+  {
+    "id": 4102872,
+    "title": "Capping config — add, edit and view a price cap",
+    "preface": "This test is to confirm that an operator can add, edit and view daily and weekly price caps.",
+    "preconds": "**GIVEN** an operator is signed in to the ABT price-capping configuration in the Operator Portal",
+    "steps": [
+      {
+        "content": "**WHEN** the operator adds, edits or views a daily or weekly price cap",
+        "expected": "**THEN** the price cap is saved\n**AND** it is shown with its configured values"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 313-315",
+      "FBD-100340 para 149 (caps set up in the Operator Portal)"
+    ],
+    "change_note": "Generalised the 'Price Capping page' screen name (not in specs); kept the add/edit/view CRUD behaviour.",
+    "gaps": [
+      "Exact screen name ('Price Capping page') is not in the specs — confirm the live UI label."
+    ]
+  },
+  {
+    "id": 4102873,
+    "title": "Capping config — deactivate and archive a capping rule",
+    "preface": "This test is to confirm that an operator can deactivate an active capping rule and archive an inactive one.",
+    "preconds": "**GIVEN** an operator has selected a capping rule in the ABT price-capping configuration",
+    "steps": [
+      {
+        "content": "**WHEN** the operator deactivates an active rule or archives an inactive rule",
+        "expected": "**THEN** the rule's status is updated accordingly"
+      }
+    ],
+    "action": "reword",
+    "citations": [],
+    "change_note": "Kept behaviour but could not ground the deactivate/archive lifecycle in the specs read; generalised screen wording.",
+    "gaps": [
+      "**GAP** — the deactivate/archive rule lifecycle is not described in the capping specs read — confirm the states and transitions in the live portal."
+    ]
+  },
+  {
+    "id": 4102874,
+    "title": "Capping config — Price Rule information icon",
+    "preface": "This test is to confirm that the price-rule information icon displays guidance for the page.",
+    "preconds": "**GIVEN** an operator is signed in on the ABT price-rule configuration page",
+    "steps": [
+      {
+        "content": "**WHEN** the operator selects the information icon",
+        "expected": "**THEN** the price-rule guidance is displayed"
+      }
+    ],
+    "action": "reword",
+    "citations": [],
+    "change_note": "UI-only case; behaviour retained but not grounded in specs.",
+    "gaps": [
+      "**GAP** — the information-icon content/behaviour is a UI detail not described in any FBD — confirm against the live portal or a UX spec."
+    ]
+  },
+  {
+    "id": 4102875,
+    "title": "Capping config — a new rule's created date-time is correct (not an hour ahead)",
+    "preface": "This test is to confirm that a newly created capping rule records the correct created date-time and is not stored an hour in the future.",
+    "preconds": "**GIVEN** an operator is signed in to the ABT price-capping configuration",
+    "steps": [
+      {
+        "content": "**WHEN** the operator creates a capping rule",
+        "expected": "**THEN** the rule's created date-time matches the actual creation time\n**AND** it is not recorded an hour in the future"
+      }
+    ],
+    "action": "reword",
+    "citations": [],
+    "change_note": "Kept as a regression check for a timezone/BST off-by-one-hour defect; generalised screen wording.",
+    "gaps": [
+      "**GAP** — this is a defect-regression case (created-time stored an hour ahead, likely a BST/UTC bug) with no governing FBD requirement. Link the originating defect in the Refs field and tag @regression; confirm the defect id."
+    ]
+  },
+  {
+    "id": 4102876,
+    "title": "Capping config — add a daily capping group",
+    "preface": "This test is to confirm that an operator can add a daily capping group from the ABT price-rule page.",
+    "preconds": "**GIVEN** an operator has navigated to the ABT Price Rule page",
+    "steps": [
+      {
+        "content": "**WHEN** the operator adds a daily capping group",
+        "expected": "**THEN** the daily capping group is created"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 334-347 (ABT Capping Group product/rule; reference-fare → cap lookup)",
+      "FBD-100662 para 337"
+    ],
+    "change_note": "Grounded the capping-group concept to FBD-100662; retained behaviour.",
+    "gaps": []
+  },
+  {
+    "id": 4102877,
+    "title": "Capping config — add a weekly capping group",
+    "preface": "This test is to confirm that an operator can add a weekly capping group from the ABT price-rule page.",
+    "preconds": "**GIVEN** an operator has navigated to the ABT Price Rule page",
+    "steps": [
+      {
+        "content": "**WHEN** the operator adds a weekly capping group",
+        "expected": "**THEN** the weekly capping group is created"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 356-357 (UB Weekly Cap product/rule)",
+      "FBD-100662 para 334-347"
+    ],
+    "change_note": "Grounded weekly capping group to FBD-100662; retained behaviour.",
+    "gaps": []
+  },
+  {
+    "id": 4103473,
+    "title": "Daily cap — Metro daily cap is reached and applied",
+    "preface": "This test is to confirm that a day of Metro-zone taps reaches and holds the Metro daily cap, with later taps charged £0.00.",
+    "preconds": "**GIVEN** the seeded ABT test card starts a fresh Tap-On-Only operating day (no prior taps since 04:00)\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example taps: 10A (IN) Casement Park → City Hall at ~09:00, 10A (IN) Slievegallion Drive → Falls Park at ~12:00, then a third Metro tap\n**AND** taps closer together than the configured passback window would be suppressed as duplicates (passback window value — **UNCONFIRMED**, configurable; tracker cites ~15 min, gap Q14)",
+    "steps": [
+      {
+        "content": "**WHEN** you make the two Metro-zone taps more than the passback window apart, then a third Metro tap later the same day",
+        "expected": "**THEN** each tap is accepted at the device\n**AND** each tap is recorded against the card"
+      },
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the first tap is charged the full £2.30\n**AND** the second tap is charged £1.70, completing the £4.00 cap\n**AND** the third and any further Metro tap that day is charged £0.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100389 para 137 (daily cap, operating day 04:00–03:59)",
+      "FBD-100389 para 219-221 (aggregate reaches cap; later charge reduced/£0.00)",
+      "FBD-100662 para 264",
+      "FBD-100662 para 233 (Metro flat fare via CloudFare rules)"
+    ],
+    "change_note": "Grounded cap aggregation to FBD-100389; marked Metro cap/single values UNCONFIRMED; changed hard-coded '15 minutes' to 'the configured passback window' with an UNCONFIRMED note (passback is configurable per FBD-100389 assumptions).",
+    "gaps": [
+      "Exact passback/duplicate window value not in the specs (configurable) — confirm the configured value for the test environment."
+    ]
+  },
+  {
+    "id": 4103474,
+    "title": "Daily cap — Ulsterbus reference-fare cap is reached within a band",
+    "preface": "This test is to confirm that same-reference Ulsterbus taps reach and hold the reference-fare daily cap for their band, with later taps charged £0.00.",
+    "preconds": "**GIVEN** the seeded ABT test card starts a fresh Tap-On-Only operating day with zonal capping disabled so the reference cap governs\n**AND** the ref.60 daily cap is £7.20 and the ref.60 single fare is £4.50 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example taps: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (ref.60, £4.50) at ~09:00, again at ~12:00, then a third ref.60 tap\n**AND** taps closer together than the configured passback window would be suppressed as duplicates (passback value — **UNCONFIRMED**, gap Q14)",
+    "steps": [
+      {
+        "content": "**WHEN** you make the two same-ref taps more than the passback window apart, then a third ref.60 tap later that day",
+        "expected": "**THEN** each tap is accepted at the device\n**AND** each tap is recorded against the card"
+      },
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the first tap is charged the full £4.50\n**AND** the second tap is charged £2.70, completing the £7.20 reference cap\n**AND** the third and any further ref.60 tap that day is charged £0.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 265 (Ulsterbus daily cap on reference fares)",
+      "FBD-100662 para 337 (same reference fare → same capping group)",
+      "FBD-100662 para 339 (Saving Type)",
+      "FBD-100389 para 219-221"
+    ],
+    "change_note": "Grounded reference-cap mechanism to FBD-100662 capping groups; marked cap/single values UNCONFIRMED; replaced hard-coded 15 min with the configured passback window.",
+    "gaps": [
+      "Passback window value — confirm for the test environment."
+    ]
+  },
+  {
+    "id": 4103475,
+    "title": "Daily cap — Metro cap and Ulsterbus reference cap both apply on the same day",
+    "preface": "This test is to confirm that the Metro daily cap and an Ulsterbus reference-fare cap are calculated independently on the same card-day.",
+    "preconds": "**GIVEN** the seeded ABT test card starts a fresh operating day\n**AND** the Metro cap is £4.00 (£2.30 single) and the ref.60 cap is £7.20 (£4.50 single) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example taps: Metro 10A (IN) Casement Park → City Hall ×2, plus Ulsterbus 72b (IN) Moygashel Busby Shop → Armagh Bus Centre ×2 (ref.60)",
+    "steps": [
+      {
+        "content": "**WHEN** you make enough Metro-zone taps to reach £4.00 and enough ref.60 taps to reach £7.20 on the same day",
+        "expected": "**THEN** each tap is accepted at the device\n**AND** each tap is recorded against the card"
+      },
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the Metro-zone taps cap at £4.00\n**AND** the Ulsterbus ref.60 taps cap at £7.20\n**AND** the two caps are totalled independently"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 265 (Ulsterbus caps distinct from Metro caps)",
+      "FBD-100662 para 337",
+      "FBD-100389 para 137"
+    ],
+    "change_note": "Grounded cap independence to FBD-100662 para 265; marked values UNCONFIRMED.",
+    "gaps": []
+  },
+  {
+    "id": 4103476,
+    "title": "Daily cap — Metro and Ulsterbus caps evaluate independently when taps are interleaved",
+    "preface": "This test is to confirm that interleaving Metro and Ulsterbus taps does not change either daily cap total.",
+    "preconds": "**GIVEN** the seeded ABT test card starts a fresh operating day\n**AND** the Metro cap is £4.00 and the ref.60 cap is £7.20 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example order: 10A (IN) Casement Park → City Hall, 72b (IN) Moygashel Busby Shop → Armagh, 10A (IN) Slievegallion Drive → Falls Park, 72b (IN) Greys Farm → Armagh",
+    "steps": [
+      {
+        "content": "**WHEN** you make the Metro and ref.60 taps alternately, in that interleaved order",
+        "expected": "**THEN** each tap is accepted at the device\n**AND** each tap is recorded against the card"
+      },
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the Metro-zone taps still cap at £4.00\n**AND** the ref.60 taps still cap at £7.20\n**AND** the interleaved order changes neither cap total"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 265",
+      "FBD-100662 para 337 (grouping is by reference fare, order-independent)",
+      "FBD-100389 para 137"
+    ],
+    "change_note": "Grounded to FBD-100662; marked values UNCONFIRMED. Near-variant of 4103475 — flagged for possible consolidation as a data variation.",
+    "gaps": [
+      "4103475/4103476 differ only by tap ordering — candidate to fold into one case with an 'interleaved vs grouped' data variation."
+    ]
+  },
+  {
+    "id": 4103477,
+    "title": "Daily cap — two reference bands cap independently on the same day",
+    "preface": "This test is to confirm that two Ulsterbus reference bands each cap at their own value without borrowing the other's.",
+    "preconds": "**GIVEN** the seeded ABT test card starts a fresh operating day with zonal capping disabled\n**AND** the ref.60 cap is £7.20 and the ref.61 cap is £8.20 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example taps: ref.60 = 72b (IN) Moygashel Busby Shop → Armagh Bus Centre ×2 (£4.50); ref.61 = 302d (OUT) Stand 7 → Newtownards (Transfer) ×2",
+    "steps": [
+      {
+        "content": "**WHEN** you make enough taps in each band to reach both caps",
+        "expected": "**THEN** each tap is accepted at the device\n**AND** each tap is recorded against the card"
+      },
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the ref.60 band caps at £7.20\n**AND** the ref.61 band caps at £8.20\n**AND** neither band borrows the other band's cap value"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 337 (each reference fare maps to its own capping group)",
+      "FBD-100662 para 340 (cap lookup table keyed by reference fare)",
+      "FBD-100662 para 265"
+    ],
+    "change_note": "Grounded per-band independence to the capping-group lookup (FBD-100662 para 337/340); marked cap values UNCONFIRMED.",
+    "gaps": []
+  },
+  {
+    "id": 4103478,
+    "title": "Daily cap — a single Metro tap is charged in full",
+    "preface": "This test is to confirm that a lone Metro-zone tap is charged its full single fare because the day's aggregate is below the cap.",
+    "preconds": "**GIVEN** the seeded ABT test card makes only one Metro-zone tap on the operating day\n**AND** the Metro cap is £4.00 and the single fare is £2.30 — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example: a single 10A (IN) Casement Park → City Hall tap",
+    "steps": [
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the tap is charged the full £2.30 single fare\n**AND** no Metro daily cap is applied"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100389 para 183 (single tap, not capped)",
+      "FBD-100389 para 137"
+    ],
+    "change_note": "Removed the over-specified claim that 'the cap requires two in-zone taps' (no such rule in the specs — the cap is purely an aggregate). Reworded to: a single tap's fare is below the cap so it is charged in full.",
+    "gaps": [
+      "No FBD states a minimum tap count to trigger a cap — the cap is aggregate-based; a single tap is charged in full simply because its fare is below the cap."
+    ]
+  },
+  {
+    "id": 4103479,
+    "title": "Daily cap — single taps in different reference bands are each charged in full",
+    "preface": "This test is to confirm that one tap per reference band incurs no cap and each is charged its full single fare.",
+    "preconds": "**GIVEN** the seeded ABT test card makes one tap in each of several reference bands, with zonal capping disabled\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example taps on 72b (IN) from Greys Farm: → Grange Brigde (ref.10, £1.90), → Currans Brae (ref.20, £2.30), → Allens Corner Dark Lane (ref.55, £4.00) — **UNCONFIRMED** — fare/cap value from the UB-TOO tracker, not stated in an FBD; confirm fares source (gap Q14).",
+    "steps": [
+      {
+        "content": "**WHEN** the overnight end-of-day settlement runs and you open the card's Journey History",
+        "expected": "**THEN** each tap is charged its full single fare (£1.90, £2.30, £4.00)\n**AND** no reference-fare cap is applied to any band"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 337 (one tap per reference band → no group reaches its cap)",
+      "FBD-100389 para 183"
+    ],
+    "change_note": "Grounded to the capping-group model; marked fare values UNCONFIRMED.",
+    "gaps": []
+  },
+  {
+    "id": 4103590,
+    "title": "Capping timing — a newly configured capping rule activates the next business day",
+    "preface": "This test is to confirm that a newly configured capping rule takes effect no earlier than the next business day.",
+    "preconds": "**GIVEN** you are signed in to CloudFare with a NIR Daily Cap rule newly configured today\n**AND** the seeded card will travel both today and tomorrow\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History",
+    "steps": [
+      {
+        "content": "**WHEN** the card travels on the same day the rule was configured and that day's end-of-day settlement runs",
+        "expected": "**THEN** the new cap is NOT applied to that same day's journeys"
+      },
+      {
+        "content": "**WHEN** the card travels the next business day and that day's settlement runs",
+        "expected": "**THEN** the new cap first applies to the next business day's journeys"
+      }
+    ],
+    "action": "reword",
+    "citations": [],
+    "change_note": "Kept behaviour but could not ground the 'activates next business day' rule in any spec read.",
+    "gaps": [
+      "**GAP** — capping-rule activation timing ('next business day', not same day) is not stated in FBD-100334/100340/100389/100662/100698. Confirm the actual effective-date behaviour before running (may live in FBD-100307 or a config/UX spec)."
+    ]
+  },
+  {
+    "id": 4103591,
+    "title": "Capping timing — taps either side of the 04:00 boundary fall into different cap days",
+    "preface": "This test is to confirm that taps either side of the 04:00 operating-day boundary are counted in different capping days.",
+    "preconds": "**GIVEN** the seeded card taps just before and just after the 04:00 operating-day boundary (operating day = 04:00:00 to 03:59:59)\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History\n**AND** example: a tap at 03:59 and a tap at 04:01",
+    "steps": [
+      {
+        "content": "**WHEN** the journeys are settled and you open the card's Journey History",
+        "expected": "**THEN** the 03:59 tap is counted in the previous operating day's cap\n**AND** the 04:01 tap is counted in the new operating day's cap\n**AND** the two days' caps are totalled separately"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100389 para 137 (operating day 04:00:00 to 03:59:59 is the capping window)"
+    ],
+    "change_note": "Fully grounded to FBD-100389 para 137; no value changes needed.",
+    "gaps": []
+  },
+  {
+    "id": 4103592,
+    "title": "Capping timing — a deny-listed token starts being denied within about a delta cycle",
+    "preface": "This test is to confirm that a token added to the Deny List starts being denied at devices after the next delta file (delta every 15 minutes).",
+    "preconds": "**GIVEN** a card token newly added to the ABT Deny List in CloudFare after the last full-list build\n**AND** the Deny List propagates via 15-minute delta files (full list pulled at least once/day)\n**AND** you have a validator on which to tap the card",
+    "steps": [
+      {
+        "content": "**WHEN** the device pulls the next delta file after the token is added, and the card taps at the validator",
+        "expected": "**THEN** the tap is declined with Declined Reason 2 (On Deny List)\n**AND** the token is being denied within about one delta cycle (~15 minutes) of being added"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 210 (full Deny List ≥ once/day; delta files every 15 minutes)",
+      "FBD-100662 para 243 (Declined Reason 2 = On Deny List)",
+      "FBD-100658 (DeclinedReason enum: 2 = On Deny List)"
+    ],
+    "change_note": "Grounded the 15-minute delta and Declined Reason 2 to FBD-100662; changed the asserted '~30 minutes' to '~one delta cycle (~15 minutes)' since the spec states 15-minute deltas. (Section is 'Capping Timing' but this is a deny-list case — noted for re-section.)",
+    "gaps": [
+      "The original '~30 minutes' was an unsourced worst-case; spec states 15-minute deltas (FBD-100662 para 210). Confirm the device delta-pull cadence if a tighter/looser SLA is required.",
+      "Case belongs under a Deny List / device section rather than 'Capping Timing'."
+    ]
+  },
+  {
+    "id": 4103593,
+    "title": "Capping timing — a re-authorised card is removed from the Deny List",
+    "preface": "This test is to confirm that a denied card that later re-authorises is removed from the Deny List and taps are accepted again.",
+    "preconds": "**GIVEN** the seeded card is on the Deny List from an earlier failed authorisation\n**AND** you are signed in to the ABT Operator Portal to verify the card's status\n**AND** the Deny List propagates removals via 15-minute delta files (FBD-100662 para 210)",
+    "steps": [
+      {
+        "content": "**WHEN** the card's payment is re-authorised online and the removal reaches the device via the next delta",
+        "expected": "**THEN** the card is removed from the Deny List"
+      },
+      {
+        "content": "**WHEN** the card taps again at the validator after removal",
+        "expected": "**THEN** the subsequent tap is accepted"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 210 (delta files carry additions AND removals every 15 minutes)",
+      "FBD-100662 para 267 (add/remove cards from the deny list per the same rules as Metro TOO)"
+    ],
+    "change_note": "Grounded deny-list removal + 15-min delta propagation to FBD-100662; removed the unsourced 'tap-initiated re-authorisation within about 15 minutes' specifics — the trigger and exact timing are not in the specs read.",
+    "gaps": [
+      "**GAP** — the 'tap-initiated re-authorisation' trigger and the specific ~15-minute removal SLA are not described in FBD-100662; the removal mechanism/timing likely lives in FBD-100307 (data flow) — confirm before asserting the trigger and timing.",
+      "Case belongs under a Deny List / device section rather than 'Capping Timing'."
+    ]
+  }
+]

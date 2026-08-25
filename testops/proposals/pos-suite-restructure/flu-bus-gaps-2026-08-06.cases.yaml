@@ -1,0 +1,90 @@
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Ulsterbus", "Fare Look-Up"]
+    cases:
+      - title: "Basket — Basket Full screen auto-returns to Added to Basket"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the FLU/Bank Card Basket Full screen automatically returns to the
+          Added to Basket screen after a 3-second timeout.
+        steps: |
+          **GIVEN** the FLU/Bank Card Basket Full screen is shown
+          **WHEN** the 3-second timeout elapses
+          **THEN** the POS returns to the Added to Basket screen
+        expected: "The Basket Full screen automatically returns to Added to Basket after a 3-second timeout."
+
+      - title: "FLU — toggling to Rail mode and back returns to Main Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm toggling from the bus FLU Main Screen to Rail selected and back
+          returns to the Main Screen.
+        steps: |
+          **GIVEN** the POS is on the bus FLU Main Screen
+          **WHEN** the operator toggles to Rail mode
+          **THEN** the Rail selected screen is shown
+          **AND** toggling again returns to the Main Screen
+        expected: "The Main Screen toggles to Rail selected and back to Main Screen."
+
+      - title: "Day Tours — an associated route reaches the FLU Day Tour Product screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm entering a route number associated with a Day Tours product
+          reaches the FLU Day Tour Product screen listing that Day Tour's products.
+        steps: |
+          **GIVEN** the operator is at Day Tours - empty
+          **WHEN** the operator enters a route number associated with a Day Tours product
+          **THEN** the FLU Day Tour Product screen is shown
+          **AND** the products for the selected Day Tour are listed
+        expected: "An associated route number reaches FLU Day Tour Product with the Day Tour's products listed."
+
+      - title: "Day Tours — a non-associated route number shows the Day Tours Error screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm entering a route number that is not associated with a Day Tours
+          product shows the Day Tours - Error screen.
+        steps: |
+          **GIVEN** the operator is at Day Tours - empty
+          **WHEN** the operator enters a route number that is not associated with a Day Tours product
+          **THEN** the Day Tours - Error screen is shown
+        expected: "A non-associated route number shows Day Tours - Error."
+
+      - title: "Day Tours — a non-associated lettered route via Letters ETM shows the Letters Error screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm entering a lettered route number via Day Tours - Letters ETM that
+          is not associated with a Day Tours product shows the Day Tours - Letters - Error screen.
+        steps: |
+          **GIVEN** the operator is at Day Tours - Letters ETM
+          **WHEN** the operator enters a lettered route number that is not associated with a Day Tours product
+          **THEN** the Day Tours - Letters - Error screen is shown
+        expected: "A non-associated lettered route via Letters ETM shows Day Tours - Letters - Error."
+
+      - title: "Day Tours — Letters ETM entry returns to Day Tours empty"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm opening Day Tours - Letters ETM from Day Tours - empty and
+          returning goes back to Day Tours - empty.
+        steps: |
+          **GIVEN** the operator is at Day Tours - empty
+          **WHEN** the operator opens Day Tours - Letters ETM
+          **THEN** the Day Tours - Letters ETM - empty screen is shown
+          **AND** returning goes back to Day Tours - empty
+        expected: "Day Tours - Letters ETM opens from and returns to Day Tours - empty."
+
+      - title: "Day Tours — selecting a product, seat and date reaches Payment-Tour"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a Day Tours product, entering a seat number and a
+          travel date reaches the Payment-Tour screen for a payment decision.
+        steps: |
+          **GIVEN** the operator is at the FLU Day Tour Product screen with products listed
+          **WHEN** the operator selects a product, enters a seat number and enters a travel date
+          **THEN** the Payment-Tour screen is shown
+          **AND** a payment decision is presented
+        expected: "Completing product, seat and date selection reaches Payment-Tour with a payment decision."

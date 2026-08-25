@@ -1,0 +1,140 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Non-Functional, Resilience]
+    cases:
+      - title: "Multi-Modal Home — a machine fault advances to Adverts after timeout"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a machine fault on the Select transport type screen shows the
+          Machine Not Available message and advances to Adverts after the timeout.
+        steps: |
+          **GIVEN** the Select transport type screen is displayed
+          **AND** the tester knows how to induce a device fault condition
+          **WHEN** a fault occurs in the machine
+          **THEN** the Message - Machine not available screen is displayed
+          **WHEN** 30 seconds pass with no interaction
+          **THEN** the Adverts screen is displayed
+        expected: "A machine fault on Select transport type shows Machine Not Available, which advances to Adverts after 30 seconds."
+
+      - title: "Multi-Modal Home — Select transport type times out to Adverts"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Select transport type screen advances to Adverts after 30
+          seconds of no interaction.
+        steps: |
+          **GIVEN** the Select transport type screen is displayed
+          **WHEN** 30 seconds pass with no interaction
+          **THEN** the Adverts screen is displayed
+        expected: "Select transport type advances to Adverts after 30 seconds of no interaction."
+
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      - title: "Multi-Modal Home — presenting an ABT or top-up card opens Smartcards"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting an ABT card or Top up only card at the Select
+          transport type screen opens the Smartcards flow.
+        steps: |
+          **GIVEN** the Select transport type screen is displayed
+          **WHEN** the customer presents an ABT card or a Top up only card
+          **THEN** **GAP** — the flow diagram shows this opening the Smartcards flow, but a
+          live-capability check on this device found the TVM has no smartcard reader/writer
+          (issue/read is POS/Card-Bureau only); confirm before running
+        expected: "GAP — presenting an ABT/top-up card is diagrammed as opening Smartcards, but the TVM's card-reading capability is unconfirmed; verify on the live system."
+
+      - title: "Multi-Modal Home — a Discount Smartcard routes to transport-type selection for Discount"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting a Discount Smartcard at the Select transport type
+          screen opens the Select transport type for Discount screen and proceeds to Smartcards.
+        steps: |
+          **GIVEN** the Select transport type screen is displayed
+          **WHEN** the customer presents a Discount Smartcard
+          **THEN** **GAP** — the flow diagram shows the "Select transport type for Discount"
+          screen and a route onward to Smartcards, but a live-capability check on this device
+          found the TVM has no smartcard reader/writer (issue/read is POS/Card-Bureau only);
+          confirm before running
+        expected: "GAP — a Discount Smartcard presentation is diagrammed as opening transport-type selection then Smartcards, but the TVM's card-reading capability is unconfirmed; verify on the live system."
+
+      - title: "Multi-Modal Home — a Free Smartpass routes to transport-type selection for Free Smartpass"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting a Free Smartpass at the Select transport type screen
+          opens the Select transport type for Free Smartpass screen and proceeds to Smartcards.
+        steps: |
+          **GIVEN** the Select transport type screen is displayed
+          **WHEN** the customer presents a Free Smartpass
+          **THEN** **GAP** — the flow diagram shows the "Select transport type for Free
+          Smartpass" screen and a route onward to Smartcards, but a live-capability check on this
+          device found the TVM has no smartcard reader/writer (issue/read is POS/Card-Bureau
+          only); confirm before running
+        expected: "GAP — a Free Smartpass presentation is diagrammed as opening transport-type selection then Smartcards, but the TVM's card-reading capability is unconfirmed; verify on the live system."
+
+      - title: "Multi-Modal Home (Bus) — Buy ABT Card opens the Buy ABT Card flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting 'Buy ABT Card' from the Home Screen, Multi modal -
+          Bus opens the Buy ABT Card flow.
+        steps: |
+          **GIVEN** the Home Screen, Multi modal - Bus is displayed
+          **WHEN** the customer selects 'Buy ABT Card'
+          **THEN** **GAP** — the flow diagram shows this opening the Buy ABT Card flow, but a
+          live-capability check on this device found ABT card issue on the TVM is POS/Card-Bureau
+          only; confirm before running
+        expected: "GAP — 'Buy ABT Card' is diagrammed on the Bus multi-modal home, but ABT card issue capability on the TVM is unconfirmed; verify on the live system."
+
+      - title: "Multi-Modal Home (Bus) — the Smartcard button or presenting a card opens Smartcards"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing the Smartcard button or presenting a Smartcard from
+          the Home Screen, Multi modal - Bus opens the Smartcards flow.
+        steps: |
+          **GIVEN** the Home Screen, Multi modal - Bus is displayed
+          **WHEN** the customer presses the Smartcard button or presents a Smartcard
+          **THEN** **GAP** — the flow diagram shows this opening the Smartcards flow, but a
+          live-capability check on this device found the TVM has no smartcard reader/writer
+          (issue/read is POS/Card-Bureau only); confirm before running
+        expected: "GAP — the Smartcard button/card presentation is diagrammed as opening Smartcards from the Bus multi-modal home, but the TVM's smartcard capability is unconfirmed; verify on the live system."
+
+  - path: [Functional, Sales - Tickets, Ticket Issue]
+    cases:
+      - title: "Multi-Modal Home (Bus) — picking a quick ticket opens Choose Ticket Details"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm picking a quick ticket from the Home Screen, Multi modal - Bus
+          opens the Choose Ticket Details flow.
+        steps: |
+          **GIVEN** the Home Screen, Multi modal - Bus is displayed
+          **WHEN** the customer picks a quick ticket
+          **THEN** the Choose Ticket Details flow is opened
+        expected: "Picking a quick ticket from the Bus multi-modal home opens Choose Ticket Details."
+
+      - title: "Multi-Modal Home (Bus) — Buy Tickets opens the Buy Tickets flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing 'Buy Tickets' from the Home Screen, Multi modal - Bus
+          opens the Buy Tickets flow.
+        steps: |
+          **GIVEN** the Home Screen, Multi modal - Bus is displayed
+          **WHEN** the customer presses 'Buy Tickets'
+          **THEN** the Buy Tickets flow is opened
+        expected: "Pressing 'Buy Tickets' from the Bus multi-modal home opens the Buy Tickets flow."
+
+  - path: [Functional, Sales - Tickets, Ticket Collection]
+    cases:
+      - title: "Multi-Modal Home (Bus) — Collect Tickets opens Collect Tickets by Reference"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing 'Collect Tickets' from the Home Screen, Multi modal -
+          Bus opens the Collect Tickets by Reference flow.
+        steps: |
+          **GIVEN** the Home Screen, Multi modal - Bus is displayed
+          **WHEN** the customer presses 'Collect Tickets'
+          **THEN** the Collect Tickets by Reference flow is opened
+        expected: "Pressing 'Collect Tickets' from the Bus multi-modal home opens Collect Tickets by Reference."

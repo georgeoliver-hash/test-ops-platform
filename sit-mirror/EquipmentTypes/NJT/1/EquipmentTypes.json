@@ -1,0 +1,111 @@
+{
+    "ETM": {
+        "EquipmentTypeNames":
+        [
+            "Way200",
+            "Way6",
+            "Way6s"
+        ],
+        "EquipmentGroupName": "Ticket Machine"
+    },
+    "TVM": {
+        "EquipmentTypeNames":
+        [
+            "Astreo",
+            "Galexio",
+            "Retail_Panel",
+            "Retail_Kiosk",
+            "Smart_Kiosk_Wall",
+            "ToDler_Collection_Only",
+            "Retail_ToDler",
+            "Media_Panel"
+        ],
+        "EquipmentGroupName": "Ticket Vending Machine"
+    },
+    "POS": {
+        "EquipmentTypeNames":
+        [
+            "POS_Way6",
+            "POS_Way6s",
+            "Axio_4av",
+            "OPR_av"
+        ],
+        "EquipmentGroupName": "Point of Sale"
+    },
+    "BV": {
+        "EquipmentTypeNames":
+        [
+            "Axio_4c",
+            "Axio_4s",
+            "Axio_4bv",
+            "OPR_bv"
+        ],
+        "EquipmentGroupName": "Bus Validator"
+    },
+    "PV": {
+        "EquipmentTypeNames":
+        [
+            "Axio_4pv"
+        ],
+        "EquipmentGroupName": "Platform Validator"
+    },
+    "GV": {
+        "EquipmentTypeNames":
+        [
+            "Axio_4gv",
+            "OPR_gv"
+        ],
+        "EquipmentGroupName": "Gate Validator"
+    },
+    "HHD": {
+        "EquipmentTypeNames":
+        [
+            "P50",
+            "P80",
+            "Parkeon_T1",
+            "Zebra_TC75",
+            "COne_V2"
+        ],
+        "EquipmentGroupName": "Handheld Device"
+    },
+    "Sub-components": {
+        "EquipmentTypeNames":
+        [
+            "ISAM",
+            "GPRS_Sim",
+            "ETM_Tray",
+            "SCV_Tray",
+            "FEIG_cVend_Plug",
+            "Receipt_Bin",
+            "Coin_Hopper",
+            "Note_Hopper",
+            "Barcode_Reader",
+            "A1000",
+            "FEIG_cVend_Vibbek",
+            "FEIG_cVend_Parkeon",
+            "Miura_M010",
+            "IPP350_Vibbek",
+            "IPP350_RAM",
+            "Bank_Note_Recycler",
+            "Coin_Vault",
+            "IML5_Printer",
+            "EMV_Pin_Pad",
+            "Parkeon_T1_Printer",
+            "Parkeon_T1_Card_Reader",
+            "Payment_Provider_TID",
+            "FEIG_Reader",
+            "Miura_Reader",
+            "Miura_M020",
+            "LE910_Cellular_Modem"
+        ],
+        "EquipmentGroupName": "Sub-components"
+    },
+    "P+R": {
+        "EquipmentTypeNames":
+        [
+            "Axio_4prv"
+        ],
+        "EquipmentGroupName": "P+R Validator"
+    }
+}
+

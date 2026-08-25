@@ -1,0 +1,70 @@
+# ETM Driver Sign On — authoring the 6 missing paths from flow-coverage.md (paths 9,13,14,15,18,22).
+# Grounded strictly in translink-etm-driver-signon.md.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Sign On & Session / Driver
+    cases:
+      - title: Driver Sign On — First Use Safety Check blocking notice
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm answering "No" to the First Use Safety Check on the first sign-on of the day shows a blocking notice that must be continued past before duty selection.
+        steps: |
+          **GIVEN** a Driver is on their first sign-on of the day at the First Use Safety Check screen
+          **WHEN** you answer No (safety check not done)
+          **THEN** the "There Must Be a First Use Safety Check" notice is displayed
+          **WHEN** you select Continue
+          **THEN** the Select Duty screen is displayed
+        expected: "Answering No to the First Use Safety Check shows the blocking notice; Continue proceeds to Select Duty."
+
+      - title: Driver Sign On — scheduled Journey Selection and Manual Override
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm that with scheduling enabled, Enter on Journey Selection accepts the suggested journey straight to Route Summary, and Manual Override instead bypasses scheduling to the manual route-entry screen.
+        steps: |
+          **GIVEN** a Driver has entered a valid duty number with scheduling enabled
+          **WHEN** you press Enter on the Journey Selection screen to accept the suggested journey
+          **THEN** the Route Summary screen is displayed
+          **WHEN** you instead select Manual Override from Journey Selection
+          **THEN** the manual Type Route (With Letters) screen is displayed, bypassing the scheduled suggestion
+        expected: "Accepting the suggested journey from Journey Selection reaches Route Summary directly; Manual Override bypasses scheduling to manual route entry."
+
+      - title: Driver Sign On — route not found retry
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm entering a route that doesn't exist on Type Route (With Letters) shows an error and retries.
+        steps: |
+          **GIVEN** a Driver is on the Type Route (With Letters) screen
+          **WHEN** you enter a route that doesn't exist
+          **THEN** the "Type Route - Incorrect" screen is displayed
+          **WHEN** you press 'C', or the screen times out after 3 seconds
+          **THEN** you return to Type Route (With Letters) to retry
+        expected: "An unrecognised route shows Type Route - Incorrect; 'C' or a 3-second timeout returns to retry."
+
+      - title: Driver Sign On — Route Summary C-key returns to scheduling
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm pressing 'C' on Route Summary returns to the scheduling decision so the driver can re-choose the journey or route.
+        steps: |
+          **GIVEN** a Driver has reached the Route Summary screen
+          **WHEN** you press 'C'
+          **THEN** you return to the scheduling decision to re-choose the journey or route
+        expected: "'C' on Route Summary returns to the scheduling decision, allowing the journey or route to be re-chosen."
+
+      - title: Driver Sign On — Message of the Day and Word & Colour auto-advance
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the Message of the Day and Word and Colour of the Day screens each auto-advance after a 10-second on-screen timeout if no key is pressed.
+        steps: |
+          **GIVEN** the Message of the Day screen is displayed after Route Summary
+          **WHEN** no key is pressed for 10 seconds
+          **THEN** the flow auto-advances to the Word and Colour of the Day check
+          **GIVEN** the Word and Colour of the Day screen is displayed
+          **WHEN** no key is pressed for 10 seconds
+          **THEN** the flow auto-advances to FLU Home
+        expected: "Both the Message of the Day and Word and Colour of the Day screens auto-advance after a 10-second on-screen timeout with no key pressed."

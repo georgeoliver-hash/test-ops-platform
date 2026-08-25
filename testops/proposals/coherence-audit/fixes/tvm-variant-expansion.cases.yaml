@@ -1,0 +1,655 @@
+# TVM variant expansion, 2026-07-24 — George's hard rule: "no test should tell someone to test
+# multiple variants... we should have a test for each." Every case in the suite carrying a trailing
+# "Data variations:" list is expanded here into one separate, individually-executable case per named
+# variant (mirrors the Operator/Passenger portal split done earlier today). Kiosk/Astreo model and
+# route-mode (NIR-Rail/Ulsterbus/Metro/Glider/Ulsterbus) axes are UNCHANGED — those stay covered via
+# TestRail Configurations, per George's explicit carve-out; only in-body data-value variant lists
+# (card scheme, entry method, entitlement/concession type) are split here.
+#
+# SCOPE OF THIS BATCH: the "Payments - EMV & Contactless" section (887780) — the family the task
+# explicitly named (C4103658 no-PIN scheme split, C4103662 contactless-above-limit scheme split,
+# C4103665/4103666/4103667 entry-method + Magnetic Stripe list, and the 2 new Magnetic Stripe cases
+# C4104129/C4104130 checked and confirmed to need a further scheme split). A full suite-wide sweep
+# found 48 more "Data variations" cases across Barcode Redemption, Payments - Cash, Sales - Tickets /
+# Rail & Cross-Border, and Non-Functional — see tvm-variant-expansion.changelog.md for the complete
+# family-by-family breakdown (axis chosen per family, variant counts) proposed as a follow-up batch.
+#
+# Each first/primary variant reuses the original case id via `match:` (retitled with the variant in
+# brackets); remaining variants are new cases in the same section.
+
+suite: "**NEW** TVM Test Suite"
+suite_id: 30284
+
+defaults:
+  template_id: 1
+  custom_devtypes: [1]
+  custom_revstatus: 2
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Payments - EMV & Contactless]
+    cases:
+      # ---- C4103657: Chip & PIN valid card -> scheme split (5) ----
+      - match: "Chip & PIN — a valid card completes payment and prints the ticket"
+        title: "Chip & PIN — a valid card completes payment and prints the ticket (Visa Debit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1488, REQ-1515, REQ-1722, REQ-2583, "old-suite C3546442", "old-suite C1831"]
+        objective: This test is to confirm the TVM completes a Chip & PIN payment with a valid Visa Debit card and prints the ticket.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Visa Debit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Visa Debit Chip & PIN card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — a valid card completes payment and prints the ticket (Visa Credit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1488, REQ-1515, REQ-1722, REQ-2583, "old-suite C3546442", "old-suite C1831"]
+        objective: This test is to confirm the TVM completes a Chip & PIN payment with a valid Visa Credit card and prints the ticket.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Visa Credit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Visa Credit Chip & PIN card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — a valid card completes payment and prints the ticket (Mastercard Debit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1488, REQ-1515, REQ-1722, REQ-2583, "old-suite C3546442", "old-suite C1831"]
+        objective: This test is to confirm the TVM completes a Chip & PIN payment with a valid Mastercard Debit card and prints the ticket.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Mastercard Debit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Mastercard Debit Chip & PIN card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — a valid card completes payment and prints the ticket (Mastercard Credit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1488, REQ-1515, REQ-1722, REQ-2583, "old-suite C3546442", "old-suite C1831"]
+        objective: This test is to confirm the TVM completes a Chip & PIN payment with a valid Mastercard Credit card and prints the ticket.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Mastercard Credit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Mastercard Credit Chip & PIN card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — a valid card completes payment and prints the ticket (non-GBP issued card)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1488, REQ-1515, REQ-1722, REQ-2583, "old-suite C2144092"]
+        objective: This test is to confirm the TVM completes a Chip & PIN payment with a valid non-GBP-issued card and prints the ticket.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid non-GBP-issued Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid non-GBP-issued Chip & PIN card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+
+      # ---- C4103658: Chip & PIN no PIN -> scheme split (2) — named in the task ----
+      - match: "Chip & PIN — a payment with no PIN entered does not complete"
+        title: "Chip & PIN — a payment with no PIN entered does not complete (Visa Debit)"
+        refs: ["gap-register Q30", "old-suite C1831229", "old-suite C3546444", "old-suite C1831399"]
+        objective: This test is to confirm a Chip & PIN payment with a Visa Debit card does not complete when the customer enters no PIN.
+        steps: |-
+          **GIVEN** a TVM is at the Chip & PIN payment screen with a valid Visa Debit card inserted
+          **WHEN** the customer enters no PIN and the pinpad times out
+          **THEN** the payment does not complete
+          **AND** no ticket is issued
+        expected: |-
+          With no PIN entered, a Visa Debit Chip & PIN payment does not complete and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — a payment with no PIN entered does not complete (Mastercard Debit)"
+        refs: ["gap-register Q30", "old-suite C1831229", "old-suite C3546444", "old-suite C1831402"]
+        objective: This test is to confirm a Chip & PIN payment with a Mastercard Debit card does not complete when the customer enters no PIN.
+        steps: |-
+          **GIVEN** a TVM is at the Chip & PIN payment screen with a valid Mastercard Debit card inserted
+          **WHEN** the customer enters no PIN and the pinpad times out
+          **THEN** the payment does not complete
+          **AND** no ticket is issued
+        expected: |-
+          With no PIN entered, a Mastercard Debit Chip & PIN payment does not complete and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103659: Amex/Diners Chip & PIN accepted -> scheme split (3) ----
+      - match: "Chip & PIN — American Express and Diners cards are accepted"
+        title: "Chip & PIN — American Express and Diners cards are accepted (Amex Credit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1722, "old-suite C3546400", "old-suite C1831439"]
+        objective: This test is to confirm the TVM accepts an American Express Credit Chip & PIN card.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid American Express Credit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          An American Express Credit Chip & PIN card is accepted.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — American Express and Diners cards are accepted (Amex Debit)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1722, "old-suite C3546401", "old-suite C1831440"]
+        objective: This test is to confirm the TVM accepts an American Express Debit Chip & PIN card.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid American Express Debit Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          An American Express Debit Chip & PIN card is accepted.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Chip & PIN — American Express and Diners cards are accepted (Diners Club)"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1722, "old-suite C3546402", "old-suite C1831669"]
+        objective: This test is to confirm the TVM accepts a Diners Club Chip & PIN card.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid Diners Club Chip & PIN card is to be used
+          **WHEN** the customer inserts the card and enters the correct PIN
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A Diners Club Chip & PIN card is accepted.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103661: Contactless at/below limit -> scheme split (4) + boundary case (1) ----
+      - match: "Contactless — a tap at or below the contactless limit is approved"
+        title: "Contactless — a tap at or below the contactless limit is approved (Visa Credit)"
+        refs: [REQ-1488, REQ-1489, REQ-1630, REQ-2519, "old-suite C1831356-396", "old-suite C3546403-410"]
+        objective: This test is to confirm the TVM approves a Visa Credit contactless payment at or below the configured contactless limit.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Visa Credit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.00 transaction
+          **THEN** the payment is approved without a PIN
+          **AND** the ticket is printed
+        expected: |-
+          A Visa Credit contactless tap at or below the limit is approved without a PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap at or below the contactless limit is approved (Visa Debit)"
+        refs: [REQ-1488, REQ-1489, REQ-1630, REQ-2519, "old-suite C1831356-396", "old-suite C3546403-410"]
+        objective: This test is to confirm the TVM approves a Visa Debit contactless payment at or below the configured contactless limit.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Visa Debit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.00 transaction
+          **THEN** the payment is approved without a PIN
+          **AND** the ticket is printed
+        expected: |-
+          A Visa Debit contactless tap at or below the limit is approved without a PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap at or below the contactless limit is approved (Mastercard Credit)"
+        refs: [REQ-1488, REQ-1489, REQ-1630, REQ-2519, "old-suite C1831356-396", "old-suite C3546403-410"]
+        objective: This test is to confirm the TVM approves a Mastercard Credit contactless payment at or below the configured contactless limit.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Mastercard Credit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.00 transaction
+          **THEN** the payment is approved without a PIN
+          **AND** the ticket is printed
+        expected: |-
+          A Mastercard Credit contactless tap at or below the limit is approved without a PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap at or below the contactless limit is approved (Mastercard Debit)"
+        refs: [REQ-1488, REQ-1489, REQ-1630, REQ-2519, "old-suite C1831356-396", "old-suite C3546403-410"]
+        objective: This test is to confirm the TVM approves a Mastercard Debit contactless payment at or below the configured contactless limit.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Mastercard Debit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.00 transaction
+          **THEN** the payment is approved without a PIN
+          **AND** the ticket is printed
+        expected: |-
+          A Mastercard Debit contactless tap at or below the limit is approved without a PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap at the legacy £30.00 limit is approved"
+        refs: [REQ-1488, REQ-1489, REQ-1630, REQ-2519, "old-suite C1831356-396", "old-suite C3546403-410"]
+        objective: This test is to confirm the TVM still approves a contactless tap at the legacy £30.00 limit without a PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with a valid contactless card configured against the legacy £30.00 contactless limit
+          **WHEN** the customer taps the card for a £30.00 transaction
+          **THEN** the payment is approved without a PIN
+          **AND** the ticket is printed
+        expected: |-
+          A contactless tap at the legacy £30.00 limit is still approved without a PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103662: Contactless above limit falls back -> scheme split (4) — named in the task ----
+      - match: "Contactless — a tap above the contactless limit falls back to Chip & PIN"
+        title: "Contactless — a tap above the contactless limit falls back to Chip & PIN (Visa Credit)"
+        refs: [REQ-1488, REQ-1489, REQ-2519, "old-suite C1831357", "old-suite C3546404"]
+        objective: This test is to confirm a Visa Credit contactless tap above the configured limit falls back to Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Visa Credit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.01 transaction
+          **THEN** the contactless tap is not approved on its own
+          **AND** the customer is prompted to insert the card and enter a PIN
+        expected: |-
+          A Visa Credit tap above the contactless limit is declined for contactless and falls back to Chip & PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap above the contactless limit falls back to Chip & PIN (Visa Debit)"
+        refs: [REQ-1488, REQ-1489, REQ-2519, "old-suite C1831357", "old-suite C3546404"]
+        objective: This test is to confirm a Visa Debit contactless tap above the configured limit falls back to Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Visa Debit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.01 transaction
+          **THEN** the contactless tap is not approved on its own
+          **AND** the customer is prompted to insert the card and enter a PIN
+        expected: |-
+          A Visa Debit tap above the contactless limit is declined for contactless and falls back to Chip & PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap above the contactless limit falls back to Chip & PIN (Mastercard Credit)"
+        refs: [REQ-1488, REQ-1489, REQ-2519, "old-suite C1831394", "old-suite C1831396"]
+        objective: This test is to confirm a Mastercard Credit contactless tap above the configured limit falls back to Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Mastercard Credit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.01 transaction
+          **THEN** the contactless tap is not approved on its own
+          **AND** the customer is prompted to insert the card and enter a PIN
+        expected: |-
+          A Mastercard Credit tap above the contactless limit is declined for contactless and falls back to Chip & PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a tap above the contactless limit falls back to Chip & PIN (Mastercard Debit)"
+        refs: [REQ-1488, REQ-1489, REQ-2519, "old-suite C1831394", "old-suite C1831396"]
+        objective: This test is to confirm a Mastercard Debit contactless tap above the configured limit falls back to Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)
+          **AND** a valid Mastercard Debit contactless card is to be used
+          **WHEN** the customer taps the card for a £100.01 transaction
+          **THEN** the contactless tap is not approved on its own
+          **AND** the customer is prompted to insert the card and enter a PIN
+        expected: |-
+          A Mastercard Debit tap above the contactless limit is declined for contactless and falls back to Chip & PIN.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103663: Mobile wallet approved -> wallet-type split (3) ----
+      - match: "Contactless — a mobile wallet payment is approved"
+        title: "Contactless — a mobile wallet payment is approved (Apple Pay)"
+        refs: [REQ-1488, REQ-1490, REQ-2519, "old-suite C1831 3xx", "old-suite C3546411-434"]
+        objective: This test is to confirm the TVM approves an Apple Pay mobile wallet contactless payment.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a £30.00 transaction
+          **AND** an Apple Pay Mastercard Credit device is to be used
+          **WHEN** the customer taps the mobile device
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          An Apple Pay mobile wallet payment is approved and the ticket prints.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a mobile wallet payment is approved (Google Pay)"
+        refs: [REQ-1488, REQ-1490, REQ-2519, "old-suite C1831 3xx", "old-suite C3546411-434"]
+        objective: This test is to confirm the TVM approves a Google Pay mobile wallet contactless payment.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a £30.00 transaction
+          **AND** a Google Pay Visa Debit device is to be used
+          **WHEN** the customer taps the mobile device
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A Google Pay mobile wallet payment is approved and the ticket prints.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "Contactless — a mobile wallet payment is approved (Samsung Pay)"
+        refs: [REQ-1488, REQ-1490, REQ-2519, "old-suite C1831 3xx", "old-suite C3546411-434"]
+        objective: This test is to confirm the TVM approves a Samsung Pay mobile wallet contactless payment.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a £30.00 transaction
+          **AND** a Samsung Pay Mastercard Debit device is to be used
+          **WHEN** the customer taps the mobile device
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A Samsung Pay mobile wallet payment is approved and the ticket prints.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103664: Declined card retry/cancel -> reason split (2) ----
+      - match: "EMV — a declined card offers retry or cancel"
+        title: "EMV — a declined card offers retry or cancel (acquirer decline)"
+        refs: [REQ-1409, REQ-1515, REQ-1591, "old-suite C1831361", "old-suite C3546373"]
+        objective: This test is to confirm a card declined by the acquirer offers the customer a retry or cancel option and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM is at the EMV payment screen with a card that will be declined by the acquirer
+          **WHEN** the payment is declined
+          **THEN** the customer is offered retry or cancel
+          **AND** no ticket is issued
+        expected: |-
+          An acquirer-declined card is handled with a retry/cancel prompt and no ticket is issued.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "EMV — a declined card offers retry or cancel (unsupported card issuer/scheme)"
+        refs: [REQ-1409, REQ-1515, REQ-1591, "old-suite C1831364"]
+        objective: This test is to confirm a card of an unsupported issuer/scheme offers the customer a retry or cancel option and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM is at the EMV payment screen with a card of an unsupported issuer/scheme
+          **WHEN** the payment is declined
+          **THEN** the customer is offered retry or cancel
+          **AND** no ticket is issued
+        expected: |-
+          A card of an unsupported issuer/scheme is handled with a retry/cancel prompt and no ticket is issued.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+
+      # ---- C4103665: Cancel at pinpad -> entry-method split (3) ----
+      - match: "EMV — cancelling at the pinpad ends the payment without a ticket"
+        title: "EMV — cancelling at the pinpad ends the payment without a ticket (Chip & PIN)"
+        refs: [REQ-1515, REQ-1591, "old-suite C1831362", "old-suite C3546374"]
+        objective: This test is to confirm cancelling at the pinpad ends a Chip & PIN payment and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a Chip & PIN payment in progress at the pinpad
+          **WHEN** the customer cancels at the pinpad
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          Cancelling at the pinpad ends a Chip & PIN payment and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — cancelling at the pinpad ends the payment without a ticket (Contactless)"
+        refs: [REQ-1515, REQ-1591, "old-suite C1831362", "old-suite C3546374"]
+        objective: This test is to confirm cancelling at the pinpad ends a contactless payment and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a contactless payment in progress at the pinpad
+          **WHEN** the customer cancels at the pinpad
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          Cancelling at the pinpad ends a contactless payment and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — cancelling at the pinpad ends the payment without a ticket (Magnetic Stripe)"
+        refs: [REQ-1515, REQ-1591, "old-suite C1831417"]
+        objective: This test is to confirm cancelling at the pinpad ends a magnetic stripe payment and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a magnetic stripe payment in progress at the pinpad
+          **WHEN** the customer cancels at the pinpad
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          Cancelling at the pinpad ends a magnetic stripe payment and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103666: Payment times out -> entry-method split (3) ----
+      - match: "EMV — a payment that times out is not completed"
+        title: "EMV — a payment that times out is not completed (Chip & PIN)"
+        refs: [REQ-1591]
+        objective: This test is to confirm a Chip & PIN payment that times out is not completed and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a Chip & PIN payment in progress
+          **WHEN** the payment process times out with no card action
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          A timed-out Chip & PIN payment is not completed and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — a payment that times out is not completed (Contactless)"
+        refs: [REQ-1591]
+        objective: This test is to confirm a contactless payment that times out is not completed and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a contactless payment in progress
+          **WHEN** the payment process times out with no card action
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          A timed-out contactless payment is not completed and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — a payment that times out is not completed (Magnetic Stripe)"
+        refs: [REQ-1591, "old-suite C1831418", "old-suite C3546396"]
+        objective: This test is to confirm a magnetic stripe payment that times out is not completed and issues no ticket.
+        steps: |-
+          **GIVEN** a TVM has a magnetic stripe payment in progress
+          **WHEN** the payment process times out with no card action
+          **THEN** the payment is not completed
+          **AND** no ticket is issued
+        expected: |-
+          A timed-out magnetic stripe payment is not completed and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103667: Print failure voids payment -> entry-method split (3) ----
+      - match: "EMV — a print failure voids the card payment"
+        title: "EMV — a print failure voids the card payment (Chip & PIN)"
+        refs: [REQ-1515, REQ-1591, REQ-0847, "old-suite C1831351", "old-suite C1831363", "old-suite C3546375"]
+        objective: This test is to confirm a print failure during a Chip & PIN card sale voids the card payment.
+        steps: |-
+          **GIVEN** a TVM has taken an approved Chip & PIN payment for a ticket
+          **WHEN** the ticket fails to print
+          **THEN** the card payment is voided
+          **AND** no ticket is issued
+        expected: |-
+          A print failure during a Chip & PIN card sale voids the card payment and issues no ticket.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — a print failure voids the card payment (Contactless)"
+        refs: [REQ-1515, REQ-1591, REQ-0847, "old-suite C1831351", "old-suite C1831363", "old-suite C3546375"]
+        objective: This test is to confirm a print failure during a contactless card sale voids the card payment.
+        steps: |-
+          **GIVEN** a TVM has taken an approved contactless payment for a ticket
+          **WHEN** the ticket fails to print
+          **THEN** the card payment is voided
+          **AND** no ticket is issued
+        expected: |-
+          A print failure during a contactless card sale voids the card payment and issues no ticket.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — a print failure voids the card payment (Magnetic Stripe)"
+        refs: [REQ-1515, REQ-1591, REQ-0847, "old-suite C1831419"]
+        objective: This test is to confirm a print failure during a magnetic stripe card sale voids the card payment.
+        steps: |-
+          **GIVEN** a TVM has taken an approved magnetic stripe payment for a ticket
+          **WHEN** the ticket fails to print
+          **THEN** the card payment is voided
+          **AND** no ticket is issued
+        expected: |-
+          A print failure during a magnetic stripe card sale voids the card payment and issues no ticket.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103668: Expired/blocked card rejected -> reason split (2) ----
+      - match: "EMV — an expired or blocked card is rejected"
+        title: "EMV — an expired card is rejected"
+        refs: [REQ-1519, "old-suite C2041433"]
+        objective: This test is to confirm the TVM rejects an expired payment card.
+        steps: |-
+          **GIVEN** a TVM is at the EMV payment screen
+          **WHEN** the customer presents an expired payment card
+          **THEN** the card is rejected
+          **AND** no ticket is issued
+        expected: |-
+          An expired card is rejected and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — a blocked card is rejected"
+        refs: [REQ-1519, "old-suite C2041437"]
+        objective: This test is to confirm the TVM rejects a blocked payment card.
+        steps: |-
+          **GIVEN** a TVM is at the EMV payment screen
+          **WHEN** the customer presents a blocked payment card
+          **THEN** the card is rejected
+          **AND** no ticket is issued
+        expected: |-
+          A blocked card is rejected and no ticket is issued.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4103670: Switching cash to card -> stage split (2) ----
+      - match: "EMV — selecting card after a cash transaction returns any inserted cash and pays by card"
+        title: "EMV — switching to card before cash is inserted pays by card"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1489, REQ-1722, REQ-2583, "old-suite C1831346", "old-suite C3546393"]
+        objective: This test is to confirm the customer can switch to card payment before inserting any cash and complete the sale by card.
+        steps: |-
+          **GIVEN** a TVM has a cash transaction selected with no coins inserted yet
+          **WHEN** the customer switches to pay by card and completes the EMV payment
+          **THEN** the payment is taken by card
+          **AND** the ticket is printed
+        expected: |-
+          Switching to card before any cash is inserted completes payment by card.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+      - title: "EMV — switching to card after cash is inserted returns the cash and pays by card"
+        refs: [REQ-0097, REQ-0295, REQ-0340, REQ-1489, REQ-1722, REQ-2583, "old-suite C1831347", "old-suite C3546394"]
+        objective: This test is to confirm the customer can switch a started cash transaction to card after inserting cash, with the inserted cash returned.
+        steps: |-
+          **GIVEN** a TVM has a cash transaction selected with coins already inserted
+          **WHEN** the customer switches to pay by card
+          **THEN** the inserted cash is returned
+          **WHEN** the customer completes the EMV payment
+          **THEN** the payment is taken by card
+          **AND** the ticket is printed
+        expected: |-
+          Switching a started cash transaction to card after cash is inserted returns the cash and completes payment by card.
+
+          [Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+      # ---- C4104115: Card removed mid-transaction -> entry-method split (2) ----
+      - match: "EMV — a card removed before the transaction completes is handled safely"
+        title: "EMV — a card removed before the transaction completes is handled safely (Chip & PIN)"
+        refs: ["old-suite C3544878"]
+        objective: This test is to confirm the TVM handles a Chip & PIN card physically removed from the insert reader before the transaction completes.
+        steps: |-
+          **GIVEN** a TVM transaction is at the Chip & PIN payment step
+          **WHEN** the customer removes the card from the insert reader before the transaction completes
+          **THEN** the transaction is not completed
+          **AND** no ticket is issued
+        expected: |-
+          Removing a Chip & PIN card mid-transaction leaves the purchase incomplete and issues no ticket.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "EMV — a card removed before the transaction completes is handled safely (Contactless)"
+        refs: ["old-suite C3544882"]
+        objective: This test is to confirm the TVM handles a contactless card physically removed from the tap reader before the transaction completes.
+        steps: |-
+          **GIVEN** a TVM transaction is at the contactless payment step
+          **WHEN** the customer removes the card from the tap reader before the transaction completes
+          **THEN** the transaction is not completed
+          **AND** no ticket is issued
+        expected: |-
+          Removing a contactless card mid-transaction leaves the purchase incomplete and issues no ticket.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+
+      # ---- C4104129: Magnetic Stripe valid card -> scheme split (4) — the 2 new cases, checked ----
+      - match: "Magnetic Stripe — a valid card completes payment and prints the ticket"
+        title: "Magnetic Stripe — a valid card completes payment and prints the ticket (Visa Credit)"
+        refs: [REQ-0340.0, REQ-0340.1, REQ-0340.2, REQ-1515.0, "old-suite C1831413"]
+        objective: This test is to confirm the TVM completes payment and prints the ticket when a valid Visa Credit card is swiped using the magnetic stripe reader.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Visa Credit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Visa Credit magnetic stripe card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Magnetic Stripe — a valid card completes payment and prints the ticket (Visa Debit)"
+        refs: [REQ-0340.0, REQ-0340.1, REQ-0340.2, REQ-1515.0, "old-suite C1831414"]
+        objective: This test is to confirm the TVM completes payment and prints the ticket when a valid Visa Debit card is swiped using the magnetic stripe reader.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Visa Debit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Visa Debit magnetic stripe card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Magnetic Stripe — a valid card completes payment and prints the ticket (Mastercard Credit)"
+        refs: [REQ-0340.0, REQ-0340.1, REQ-0340.2, REQ-1515.0, "old-suite C1831415"]
+        objective: This test is to confirm the TVM completes payment and prints the ticket when a valid Mastercard Credit card is swiped using the magnetic stripe reader.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Mastercard Credit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Mastercard Credit magnetic stripe card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Magnetic Stripe — a valid card completes payment and prints the ticket (Mastercard Debit)"
+        refs: [REQ-0340.0, REQ-0340.1, REQ-0340.2, REQ-1515.0, "old-suite C1831416"]
+        objective: This test is to confirm the TVM completes payment and prints the ticket when a valid Mastercard Debit card is swiped using the magnetic stripe reader.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)
+          **AND** a valid Mastercard Debit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is approved
+          **AND** the ticket is printed
+        expected: |-
+          A valid Mastercard Debit magnetic stripe card is approved and the ticket prints.
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+
+      # ---- C4104130: Magnetic Stripe Amex/Diners declined -> scheme split (3) — checked ----
+      - match: "Magnetic Stripe — American Express and Diners cards are declined"
+        title: "Magnetic Stripe — American Express cards are declined (Credit)"
+        refs: [REQ-0340.0, REQ-0340.1, "old-suite C1831437"]
+        objective: This test is to confirm the TVM declines an American Express Credit card presented via the magnetic stripe reader, unlike its acceptance via Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid American Express Credit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is declined
+          **AND** no ticket is issued
+        expected: |-
+          An American Express Credit magnetic stripe card is declined, in contrast to its Chip & PIN acceptance (see the Chip & PIN Amex Credit case).
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Magnetic Stripe — American Express cards are declined (Debit)"
+        refs: [REQ-0340.0, REQ-0340.1, "old-suite C1831438"]
+        objective: This test is to confirm the TVM declines an American Express Debit card presented via the magnetic stripe reader, unlike its acceptance via Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid American Express Debit magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is declined
+          **AND** no ticket is issued
+        expected: |-
+          An American Express Debit magnetic stripe card is declined, in contrast to its Chip & PIN acceptance (see the Chip & PIN Amex Debit case).
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]
+      - title: "Magnetic Stripe — Diners Club cards are declined"
+        refs: [REQ-0340.0, REQ-0340.1, "old-suite C1831554"]
+        objective: This test is to confirm the TVM declines a Diners Club card presented via the magnetic stripe reader, unlike its acceptance via Chip & PIN.
+        steps: |-
+          **GIVEN** a TVM is at the payment screen for a cash-or-card transaction
+          **AND** a valid Diners Club magnetic stripe card is to be used
+          **WHEN** the customer swipes the card and presses the green ENTER button on the reader
+          **THEN** the payment is declined
+          **AND** no ticket is issued
+        expected: |-
+          A Diners Club magnetic stripe card is declined, in contrast to its Chip & PIN acceptance (see the Chip & PIN Diners Club case).
+
+          [Automatable: Partial — Cross-check: CloudFare / MERIT]

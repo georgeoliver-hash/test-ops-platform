@@ -1,0 +1,904 @@
+# ETM — Sign On & Session + Driver/Supervisor/Technician menus + Non-Functional
+# EXECUTABLE walk-throughs (ETM Suite 30254). Authored 2026-07-17.
+#
+# Rewrites the existing Functional / Sign On & Session (Driver/Supervisor/Technician), the
+# Driver Menu & Options / Supervisor Menu / Technician Menu, and the Non-Functional cases so a
+# tester can follow each start-to-finish — concrete GIVEN setup, ordered real WHEN actions, and
+# THEN lines that say what you observe, WHERE, and to what value. WHAT each case tests is
+# UNCHANGED: every observable check from the current body is preserved, only made concrete,
+# ordered and grouped into a few tight steps (each step's THEN capped at ~3 ANDs). Update-in-place
+# by verbatim title; three weak titles tightened via `match:` (old) + `title:` (new).
+# EXCLUDES the HMI Screen Validation layer (those stay terse) and the ZZ section.
+#
+# Grounding:
+#   - Device flow + screens: knowledge/devices/etm.md; Overflow "Driver Sign On" flow annotations.
+#     Sign-on order: Enter -> Staff ID (4-6 digits) -> PIN (masked '*') -> authorised-user check ->
+#     First Use Safety Check -> Any Defects -> Duty Number -> Route -> Journey -> Route Summary ->
+#     Message of the Day -> Word & Colours of the Day -> FLU. Idle timeout 30s (sign-on) / 60s
+#     (supervisor). MOTD / Word & Colours have a 5-second Unavailable fallback. Failed-PIN lock-out
+#     threshold is TMS/config-driven (never hard-coded). Abandon after Duty entry = End-of-Shift +
+#     Driver Waybill printed.
+#   - Shift board / duty numbers: FBD-100831 (duty = Shift Number; Journey List after duty entry).
+#   - Audit: verified in the device's Activity Log in CloudFare Estate Management (per the existing
+#     Supervisor unlock case). Entries named descriptively (Start of Shift / Sign Off / Unlocked) —
+#     never an invented machine event name (knowledge/devices/etm.md rule).
+#   - Worked route examples (real): Metro 10A (IN) Casement Park -> City Hall; Ulsterbus 72b (IN)
+#     Moygashel Busby Shop -> Armagh Bus Centre (knowledge/ABT/ABT_FARE_REFERENCE.md). Duty/journey
+#     numbers are seeded test-data worked examples (e.g. duty 4021, journey 1030).
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_devtypes: [25]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  # ═══════════════════════════ Sign On & Session / Driver ═══════════════════════════
+  - path: Functional / Sign On & Session / Driver
+    cases:
+      - title: Driver Sign On — Manual, first use
+        objective: This test is to confirm a Driver can sign on to an ETM with a valid ID and PIN through the full first-use flow, and that the shift is audited to CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_2_0 - Sign On Details Entered - First Use Safety Check.png
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen and is communicating with CloudFare
+          **AND** the seeded test Driver's Staff ID (4–6 digits) and PIN are to hand
+          **AND** the Driver will sign on to Metro route 10A (IN) Casement Park → City Hall, seeded duty 4021 / journey 1030
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you press Enter, key in the Staff ID and PIN, confirming each with Enter
+          **THEN** each PIN digit is masked with a '*' as you type it
+          **AND** the ETM authenticates the operator against the authorised user list
+          **AND** the First Use Safety Check screen is displayed
+          **WHEN** you confirm the bus has been safety checked and answer No to the Any Defects prompt
+          **AND** at Duty Number you enter an invalid duty, then the valid duty 4021, confirming with Enter
+          **THEN** the invalid duty is rejected on entry
+          **AND** the valid duty advances to Route Selection
+          **WHEN** you select route 10A by letters or number, with inbound and outbound journeys filtered
+          **AND** you select journey 1030, entering an invalid journey number first, then confirm the Route Summary
+          **THEN** the invalid journey number is rejected
+          **AND** the Message of the Day is displayed, or its Unavailable fallback after the 5-second timeout
+          **WHEN** you confirm the Message of the Day, then confirm the Word and Colours of the Day (or its Unavailable fallback after 5 seconds)
+          **THEN** the FLU screen is displayed for 10A
+          **AND** the start of shift is audited
+          **AND** the running total is recorded
+          **WHEN** you open the shift in CloudFare Estate Management
+          **THEN** a Start of Shift entry identifies the Driver, duty 4021 and vehicle
+          **AND** the shift details and defect record for the shift can be identified
+        expected: The Driver reaches the 10A FLU screen signed on, and the start of shift (with defect record) is auditable in the CloudFare Activity Log.
+      - title: Driver Sign On — Smartcard, first use
+        objective: This test is to confirm a Driver can sign on by presenting a Staff pass, which pre-populates the Staff ID, then proceeds through the first-use flow.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen and is communicating with CloudFare
+          **AND** the seeded test Driver's Staff pass (carrying the Staff ID) and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you present the Staff pass to the reader
+          **THEN** the operator sign-on screen is displayed with the Staff ID pre-populated
+          **AND** the PIN field is highlighted for entry
+          **WHEN** you enter the valid PIN and confirm with Enter, then remove the Staff pass
+          **THEN** the ETM authenticates the operator and displays the First Use Safety Check screen
+          **AND** removing the pass leaves the ETM on the First Use Safety Check screen and sign-on continues as normal
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Start of Shift entry for the Driver is recorded at the time of the sign-on
+        expected: The Staff pass pre-populates the ID; after a valid PIN the Driver proceeds through the first-use flow, and the sign-on is recorded in the CloudFare Activity Log.
+      - title: Driver Sign On — first use with defects recorded
+        objective: This test is to confirm a Driver can record vehicle defects during first-use sign-on and that the defect record is audited to CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is mid first-use sign-on to Metro route 10A (IN), stopped at the Any Defects screen
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Yes to record that the bus has defects and enter the defect detail (e.g. "offside mirror cracked")
+          **THEN** the defect is recorded against the shift
+          **AND** sign-on continues to the Duty Number entry screen
+          **WHEN** you open the shift in CloudFare Estate Management
+          **THEN** the defect record can be identified against the Driver and vehicle
+        expected: The recorded defect is captured against the shift and is visible against the Driver and vehicle in the CloudFare Activity Log.
+      - title: Driver Sign On — subsequent use
+        objective: This test is to confirm subsequent-use sign-on honours the on-board First Use Safety Check state (skipped when already satisfied, presented or overridden per configuration) and reaches FLU.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen and a First Use Safety Check has already been performed for the vehicle today
+          **AND** the seeded test Driver's Staff ID and PIN are to hand, signing on to Metro route 10A (IN), seeded duty 4021 / journey 1030
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign on with the valid ID and PIN
+          **THEN** the ETM authenticates the operator
+          **AND** the First Use Safety Check is skipped when already satisfied on board, or presented/overridden per configuration
+          **WHEN** you complete duty 4021, route 10A and journey 1030 selection
+          **THEN** the FLU screen is displayed
+          **AND** the shift is audited
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Start of Shift entry for the Driver is recorded at the time of the sign-on
+        expected: Subsequent-use sign-on honours the on-board safety-check state, reaches the 10A FLU, and is recorded in the CloudFare Activity Log.
+      - title: Driver Sign On — incorrect PIN locks the device after the configured attempts
+        objective: This test is to confirm the ETM blocks sign-on after the configured number of failed PIN attempts (by manual entry and by Staff pass) and audits the lock-out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_1_5 - Sign On - Device Locked.png
+        steps: |-
+          **GIVEN** the ETM is in idle mode prompting for sign-on
+          **AND** a configurable failed-attempt threshold is set in the TMS (do not assume a value — read it from the TMS)
+          **AND** a valid Staff ID and Staff pass for the seeded Driver are to hand, but the wrong PIN
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you enter the wrong PIN for the valid Staff ID once by manual entry, then once by Staff pass
+          **THEN** the Sign On Failed screen is displayed after each attempt
+          **WHEN** you keep entering the wrong PIN until the failed attempts reach the configured threshold
+          **THEN** the Device Locked screen is displayed
+          **AND** the device is locked against further sign-on
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a lock-out entry for the device is recorded at the time it locked
+        expected: After the configured number of failed PIN attempts (manual or Staff pass) the device shows Device Locked, blocks further sign-on, and the lock-out appears in the CloudFare Activity Log.
+      - title: Driver Sign On — not communicating with CloudFare
+        match: Driver Sign On — communications locked / not communicating with CloudFare
+        objective: This test is to confirm sign-on behaviour when the ETM has not communicated with CloudFare within the configured period.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_0_1 - Communications Locked.png
+        steps: |-
+          **GIVEN** the ETM has not communicated with CloudFare for the configured number of hours
+          **AND** the seeded test Driver's Staff ID and PIN are to hand
+          **WHEN** you view the idle screen
+          **THEN** a bad-comms indicator is displayed and communications are locked
+          **WHEN** you attempt to sign on with the valid ID and PIN
+          **THEN** sign-on proceeds in the not-communicating state per design
+          **AND** the not-communicating condition is made clear to the Driver on screen
+          **WHEN** communications are restored and you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the sign-on and comms-restore entries for the device are recorded
+        expected: A comms-locked ETM signals bad comms, handles sign-on per the not-communicating design, and the entries appear in the CloudFare Activity Log once comms restore.
+      - title: Driver Sign On — abandon
+        objective: This test is to confirm that abandoning sign-on before route selection records no shift, while abandoning after Duty entry records an End-of-Shift and prints a Driver Waybill.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is mid sign-on to Metro route 10A (IN), seeded duty 4021
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** before route selection you press 'P' to reach the Sign Off prompt and confirm the abandon
+          **THEN** sign-on is abandoned and no shift is recorded
+          **WHEN** you sign on again as far as after Duty Number entry (Route Selection onwards), then abandon
+          **THEN** an End-of-Shift record is recorded
+          **AND** a Driver Waybill is printed
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the End-of-Shift entry is recorded for the abandon-after-duty case
+        expected: Abandon before route records no shift; abandon after Duty entry records an End-of-Shift, prints a Driver Waybill, and the End-of-Shift appears in the CloudFare Activity Log.
+      - title: Driver Sign On — idle timeout returns to idle
+        objective: This test is to confirm that with no key press during sign-on the ETM times out to the idle screen after 30 seconds, signing the Driver out if signed in.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is mid sign-on (e.g. stopped at the Duty Number screen)
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you press no key for 30 seconds
+          **THEN** the ETM returns to the Idle screen
+          **AND** if the Driver was signed in they are signed out
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the timeout sign-off entry is recorded for the device
+        expected: A 30-second inactivity timeout returns the ETM to idle, signs out any signed-in Driver, and the sign-off appears in the CloudFare Activity Log.
+      - title: Driver Sign On — correct topology and fares for the route
+        match: Driver Sign On — correct topology and fares data presented for the route
+        objective: This test is to confirm the ETM presents the correct topology and fares data for the signed-on route.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver signs on to Metro route 10A (IN) Casement Park → City Hall, seeded duty 4021 / journey 1030
+          **AND** the configured topology and fares for 10A are known for cross-check
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** sign-on completes and the FLU screen is displayed
+          **THEN** the stages and fares shown on the 10A FLU match the configured topology and fares for that route and mode
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the start-of-shift entry for route 10A is recorded
+        expected: The FLU presents topology and fares matching the 10A configured data, recorded in the CloudFare Activity Log. Run against Metro and Ulsterbus configurations.
+      - title: Driver Sign Off
+        objective: This test is to confirm a Driver can sign off, that the ETM returns to idle, and that the sign-off is audited.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_1_6 - Sign Off.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to Metro route 10A (IN) with the FLU screen displayed
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign the Driver off
+          **THEN** the ETM returns to the Idle screen
+          **AND** the operator sign-off is audited
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Sign Off entry for the Driver is recorded at the time of the action
+        expected: The Driver signs off, the ETM returns to idle, and a Sign Off entry appears for the Driver in the CloudFare Activity Log.
+
+  # ═══════════════════════════ Sign On & Session / Supervisor ═══════════════════════════
+  - path: Functional / Sign On & Session / Supervisor
+    cases:
+      - title: Supervisor Sign On — Manual
+        objective: This test is to confirm a Supervisor can sign on manually with a valid ID and PIN to reach the Supervisor menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen
+          **AND** the seeded test Supervisor's Staff ID and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign on with the valid Supervisor ID and PIN
+          **THEN** the Supervisor menu is displayed
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Supervisor sign-on entry is recorded at the time of the action
+        expected: A valid Supervisor manual sign-on reaches the Supervisor menu and is recorded in the CloudFare Activity Log.
+      - title: Supervisor Sign On — Smartcard
+        objective: This test is to confirm a Supervisor can sign on by presenting a Staff card and entering a valid PIN to reach the Supervisor menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen
+          **AND** the seeded test Supervisor's Staff card and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you present the valid Staff card and enter the valid PIN
+          **THEN** the Supervisor menu is displayed
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Supervisor sign-on entry is recorded at the time of the action
+        expected: A valid Supervisor smartcard sign-on reaches the Supervisor menu and is recorded in the CloudFare Activity Log.
+      - title: Supervisor Sign On — device locks after the configured attempts
+        objective: This test is to confirm the ETM locks against Supervisor sign-on after the configured number of failed PIN attempts and audits the lock-out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is prompting for sign-on with a configured failed-attempt threshold set in the TMS
+          **AND** a valid Supervisor Staff ID with the wrong PIN is to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you enter the wrong PIN for the valid Supervisor ID up to the configured threshold
+          **THEN** the Device Locked screen is displayed
+          **AND** the device is locked against further sign-on
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a lock-out entry for the device is recorded at the time it locked
+        expected: Supervisor sign-on locks after the configured failed-attempt threshold and the lock-out appears in the CloudFare Activity Log.
+      - title: Supervisor — unlock a PIN-locked device
+        objective: This test is to confirm a Supervisor can unlock a PIN-locked device with their Staff card, and that the unlock is auditable in CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** an operator has PIN-locked the device (a Driver reached the failed-attempt threshold)
+          **AND** the seeded test Supervisor's Staff card is to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign in with the Supervisor's Staff card
+          **THEN** the Supervisor menu is displayed
+          **AND** the device is no longer PIN-locked
+          **WHEN** you filter the Activity Log for the device in CloudFare Estate Management
+          **THEN** an Unlocked entry for the device is shown for the time of the action
+        expected: A Supervisor Staff-card sign-in clears the PIN lock, and an Unlocked entry for the device appears in the CloudFare Activity Log.
+      - title: Supervisor Sign Off — manual and idle timeout
+        objective: This test is to confirm a Supervisor can exit Supervisor mode manually, and that a 60-second idle timeout returns to idle, auditing the sign-off in both cases.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the Supervisor menu
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign off manually
+          **THEN** the ETM returns to idle
+          **AND** the sign-off is audited
+          **WHEN** you sign back in and instead press no button for 60 seconds
+          **THEN** the ETM returns to idle mode
+          **AND** the operator sign-off is audited
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Supervisor sign-off entry is recorded for each of the two exits
+        expected: Supervisor mode exits on manual sign-off or after a 60-second idle timeout, and both sign-offs appear in the CloudFare Activity Log.
+
+  # ═══════════════════════════ Sign On & Session / Technician ═══════════════════════════
+  - path: Functional / Sign On & Session / Technician
+    cases:
+      - title: Technician Sign On — Manual
+        objective: This test is to confirm a Technician can sign on manually with a valid ID and PIN to reach the Technician menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen
+          **AND** the seeded test Technician's Staff ID and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign on with the valid Technician ID and PIN
+          **THEN** the Technician menu is displayed
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Technician sign-on entry is recorded at the time of the action
+        expected: A valid Technician manual sign-on reaches the Technician menu and is recorded in the CloudFare Activity Log.
+      - title: Technician Sign On — Smartcard
+        objective: This test is to confirm a Technician can sign on by presenting a Staff card and entering a valid PIN to reach the Technician menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is displaying the idle screen
+          **AND** the seeded test Technician's Staff card and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you present the valid Staff card and enter the valid PIN
+          **THEN** the Technician menu is displayed
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Technician sign-on entry is recorded at the time of the action
+        expected: A valid Technician smartcard sign-on reaches the Technician menu and is recorded in the CloudFare Activity Log.
+      - title: Technician Sign On — device locks after the configured attempts
+        objective: This test is to confirm the ETM locks against Technician sign-on after the configured number of failed PIN attempts and audits the lock-out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is prompting for sign-on with a configured failed-attempt threshold set in the TMS
+          **AND** a valid Technician Staff ID with the wrong PIN is to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you enter the wrong PIN for the valid Technician ID up to the configured threshold
+          **THEN** the Device Locked screen is displayed
+          **AND** the device is locked against further sign-on
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a lock-out entry for the device is recorded at the time it locked
+        expected: Technician sign-on locks after the configured failed-attempt threshold and the lock-out appears in the CloudFare Activity Log.
+
+  # ═══════════════════════════ Driver Menu & Options ═══════════════════════════
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver Menu — access and navigation
+        objective: This test is to confirm a signed-on Driver can open the Driver Menu and navigate it, including via a Staff pass, and back out with 'C' or Go Back.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_0 Driver Menu.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to Metro route 10A (IN) at the FLU screen
+          **WHEN** you open the Driver Menu from the FLU screen, and again by presenting a Staff pass
+          **THEN** the Driver Menu options are displayed each time
+          **WHEN** you press 'C' or Go Back
+          **THEN** the ETM returns to the previous screen
+        expected: A signed-on Driver can open and navigate the Driver Menu (including via Staff pass) and back out with 'C' or Go Back.
+      - title: Driver Break — enter, leave and override
+        objective: This test is to confirm the Driver Break flow, including who may sign in during a break, the configured break duration, and supervisor override.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_7 - Idle Screen - On Break_Black.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to Metro route 10A (IN)
+          **AND** a second operator and the seeded Supervisor Staff card are available
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Driver Break to enter break mode
+          **THEN** the ETM shows the On Break idle screen
+          **AND** only the operator who started the break may sign back in (the second operator is refused)
+          **WHEN** you leave the break by manual sign-in or Staff card, or abort the leave
+          **THEN** the Driver resumes the shift, or the abort returns to the On Break screen
+          **WHEN** you re-enter break and a Supervisor signs in with the Staff card during the break
+          **THEN** the Supervisor overrides the break
+          **WHEN** you re-enter break and let the TMS-configured break time elapse
+          **THEN** the Driver is signed out and others may sign in
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the break enter/leave/override entries are recorded for the shift
+        expected: Driver Break locks sign-in to that operator; leave (manual/smartcard) or abort works; a Supervisor can override; the break auto-ends after the configured time and signs the Driver out; all recorded in the CloudFare Activity Log.
+      - title: Driver options — display settings
+        objective: This test is to confirm a Driver can adjust display brightness and volume from Driver options.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **WHEN** you raise then lower the brightness, and raise then lower the volume
+          **THEN** the display brightness changes on screen accordingly
+          **AND** the volume changes accordingly
+        expected: Brightness and volume adjust up and down from Driver options.
+      - title: Driver Menu — change currency
+        objective: This test is to confirm a Driver can change the sale currency between Pounds and Euros from the menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened the Driver Menu
+          **WHEN** you change the currency to Euros
+          **THEN** the sale currency is set to Euros and prices show in €
+          **WHEN** you change the currency back to Pounds
+          **THEN** the sale currency is set to Pounds and prices show in £
+        expected: The Driver can switch the sale currency between Pounds and Euros from the menu, with prices shown in the selected currency.
+      - title: Inspector — report and smartcard check
+        objective: This test is to confirm an Inspector can present a smartcard for inspection (with invalid-card handling) and produce an Inspector report.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_1 - Inspector - Present Smartcard.png
+        steps: |-
+          **GIVEN** the Inspector option is selected from the Driver Menu
+          **AND** a valid smartcard and an invalid smartcard are to hand
+          **WHEN** you present the valid smartcard for inspection
+          **THEN** the card's inspection detail is displayed
+          **WHEN** you present the invalid smartcard
+          **THEN** the invalid-smartcard error is shown
+          **WHEN** you request an Inspector report
+          **THEN** the Inspector report is produced
+        expected: The Inspector can check a presented smartcard (with invalid-card handling) and produce an Inspector report.
+      - title: Other devices — manage a paired device
+        objective: This test is to confirm the Driver can view status, reboot and view alerts for a paired on-vehicle device.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_9_0 - Driver Menu - BV Devices.png
+        steps: |-
+          **GIVEN** the seeded test Driver has opened the Other Devices option with a paired device present (e.g. a Bus Validator the ETM manages)
+          **WHEN** you view the paired device status and summary
+          **THEN** the device status and summary are displayed
+          **WHEN** you reboot the paired device
+          **THEN** the paired device is rebooted
+          **WHEN** you view the device alerts
+          **THEN** the alerts for the paired device are displayed
+        expected: The Driver can view status and summary, reboot, and view alerts for a paired on-vehicle device.
+      - title: Driver options — duty and journey totals
+        objective: This test is to confirm a Driver can view duty and journey totals.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on with some sales made this shift and has opened Driver options
+          **WHEN** you view the Totals
+          **THEN** the duty totals are displayed
+          **AND** the journey totals are displayed
+        expected: The duty totals and journey totals are displayed for the current shift.
+      - title: Driver options — ticket history and last ticket
+        objective: This test is to confirm a Driver can view ticket history and the last ticket issued, with annulled tickets marked.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_2_0 - Driver Menu - Ticket History.png
+        steps: |-
+          **GIVEN** the seeded test Driver has issued several tickets this shift, including one annulled ticket, and has opened Driver options
+          **WHEN** you view the Ticket History
+          **THEN** the issued tickets are listed and can be scrolled with the up/down arrows
+          **AND** annulled transactions are marked with a cross
+          **WHEN** you select the last ticket issued
+          **THEN** the ticket detail is displayed
+        expected: Ticket history lists the issued tickets (annulled marked with a cross) and the last ticket issued can be viewed in detail.
+      - title: Driver options — messages
+        objective: This test is to confirm a Driver can view messages, with an Unavailable state when none can be retrieved.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **WHEN** you view Messages
+          **THEN** the available messages are displayed
+          **WHEN** you view Messages when none can be retrieved
+          **THEN** the Messages — Unavailable state is shown
+        expected: Messages are shown, or an Unavailable state when none can be retrieved.
+      - title: Driver options — Word and Colour of the Day
+        objective: This test is to confirm a Driver can view the Word and Colour of the Day, with an Unavailable state when it cannot be retrieved.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **WHEN** you view the Word and Colour of the Day
+          **THEN** the configured word and colour are displayed
+          **WHEN** you view it when it cannot be retrieved
+          **THEN** the Unavailable state is shown
+        expected: The Word and Colour of the Day is shown, or an Unavailable state when it cannot be retrieved.
+      - title: Driver options — paper status
+        objective: This test is to confirm a Driver can view the printer paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **WHEN** you view Paper Status
+          **THEN** the current paper status is displayed
+        expected: The current printer paper status is displayed to the Driver.
+      - title: Driver options — soft reboot
+        objective: This test is to confirm a soft reboot restarts the ETM without signing the Driver out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_9_6 - ETM Soft Reboot.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Soft Reboot
+          **THEN** the ETM turns off and on again
+          **AND** it restarts on the Driver on Break screen with the Driver still signed in
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a reboot entry for the device is recorded
+        expected: A soft reboot restarts the ETM and returns to the Driver on Break screen without signing the Driver out, recorded in the CloudFare Activity Log.
+      - title: Driver options — reboot card reader
+        objective: This test is to confirm a Driver can reboot the card reader from Driver options.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Reboot Card Reader
+          **THEN** the card reader is rebooted and re-initialises
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a card-reader reboot entry for the device is recorded
+        expected: The card reader is rebooted from Driver options and the action is recorded in the CloudFare Activity Log.
+      - title: Driver options — report faulty reader
+        objective: This test is to confirm reporting a faulty card reader notifies the back office and shows the faulty-device icon until reboot.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_10_1 - Report Faulty Device_.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you report the card reader as faulty
+          **THEN** a notification is sent to the back office
+          **AND** the faulty-device icon is shown in the header until the ETM is rebooted
+          **WHEN** you report the reader as faulty again while it is already reported
+          **THEN** the already-reported state is shown
+        expected: Reporting a faulty reader notifies the back office and shows the faulty-device icon until reboot; re-reporting shows the already-reported state.
+
+  # ═══════════════════════════ Supervisor Menu ═══════════════════════════
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: Supervisor — historic waybills
+        objective: This test is to confirm a Supervisor can view historic waybills and page between them.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_3_0 Supervisor Menu - Waybills - History.png
+        steps: |-
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu with historic waybills present on the device
+          **WHEN** you open Historic Waybills and select one
+          **THEN** the waybill detail is displayed
+          **AND** the left/right arrows move between waybills
+        expected: A Supervisor can view historic waybills and page between them with the left/right arrows.
+      - title: Supervisor — force communications
+        objective: This test is to confirm a Supervisor can force communications with the back office, refresh, and exit.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_1_0 Supervisor Menu - Force Communications.png
+        steps: |-
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu with the ETM in service
+          **WHEN** you press Force Comms
+          **THEN** the ETM communicates with the back office for downloads and uploads
+          **WHEN** you press Refresh
+          **THEN** the communication information is updated
+          **WHEN** you exit
+          **THEN** the ETM returns to the Supervisor Menu
+        expected: A Supervisor can force comms (download/upload), refresh the comms info, and exit back to the Supervisor Menu.
+      - title: Supervisor — soft reboot
+        objective: This test is to confirm a Supervisor can soft reboot the ETM from the Supervisor Menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Soft Reboot
+          **THEN** the ETM restarts
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a reboot entry for the device is recorded
+        expected: A Supervisor can soft reboot the ETM, and the reboot is recorded in the CloudFare Activity Log.
+      - title: Supervisor — view and print versions
+        objective: This test is to confirm a Supervisor can view and print software versions, configuration data versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_5_0 Supervisor Menu - Versioning.png
+        steps: |-
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu
+          **WHEN** you open Versions and view the software versions, configuration data versions and serial numbers
+          **THEN** the version and serial information is displayed and can be scrolled
+          **WHEN** you print the information
+          **THEN** the version and serial information is printed
+        expected: A Supervisor can view (and scroll) and print the software versions, configuration versions and serial numbers.
+      - title: Supervisor — GPS information
+        objective: This test is to confirm a Supervisor can view GPS information, including the error state.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu
+          **WHEN** you view GPS Information with a GPS fix available
+          **THEN** the current GPS information is displayed
+          **WHEN** you view GPS Information when it cannot be obtained
+          **THEN** the GPS information error state is shown
+        expected: A Supervisor can view current GPS information, with an error state shown when it cannot be obtained.
+
+  # ═══════════════════════════ Technician Menu ═══════════════════════════
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — device settings
+        objective: This test is to confirm a Technician can edit device settings — home location, tray identifier and fleet identifier — and confirm or cancel the change.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_1_0 - Technician - Device Settings.png
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Technician Menu on the Device Settings screen
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you edit the home location, tray identifier or fleet identifier and press Enter to confirm
+          **THEN** the change is saved
+          **AND** the Technician returns to the Technician Menu
+          **WHEN** you edit device settings when the home location is not available
+          **THEN** the home-location-not-available state is shown
+          **WHEN** you edit a value and cancel instead of confirming
+          **THEN** the change is discarded
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a device-settings change entry for the device is recorded
+        expected: A Technician can edit home location / tray / fleet identifiers (confirm saves, cancel discards), an unavailable home location is handled, and the change is recorded in the CloudFare Activity Log.
+      - title: Technician — display settings
+        objective: This test is to confirm a Technician can adjust display brightness and volume and restore defaults.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Technician Menu display settings
+          **WHEN** you adjust brightness with L2/R2 and volume with L4/R4
+          **THEN** the brightness and volume change on the device accordingly
+          **WHEN** you restore defaults
+          **THEN** the display settings return to their defaults
+        expected: A Technician can adjust brightness and volume (L2/R2, L4/R4) and restore the default display settings.
+      - title: Technician — network settings
+        objective: This test is to confirm a Technician can view and edit network settings, including IP addresses, cellular modem and the network routing table.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_4_0 - Technician - Network Settings.png
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Network Settings screen
+          **WHEN** you edit an IP address and confirm
+          **THEN** the IP address is updated
+          **WHEN** you view the cellular modem detail and the network routing table
+          **THEN** the cellular modem detail and routing table are displayed and can be refreshed
+        expected: A Technician can edit IP addresses and view the cellular modem and network routing information, with refresh.
+      - title: Technician — force communications
+        objective: This test is to confirm a Technician can force communications with the back office and refresh.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Force Communications screen
+          **WHEN** you force communications
+          **THEN** the ETM communicates with the back office while the status is identified on screen
+          **WHEN** you refresh
+          **THEN** the communication information is updated
+        expected: A Technician can force comms (with status shown) and refresh the communication information.
+      - title: Technician — soft reboot
+        objective: This test is to confirm a Technician can soft reboot the ETM from the Technician Menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Technician Menu
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Soft Reboot
+          **THEN** the ETM restarts
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a reboot entry for the device is recorded
+        expected: A Technician can soft reboot the ETM, and the reboot is recorded in the CloudFare Activity Log.
+      - title: Technician — decommissioning
+        objective: This test is to confirm a Technician can decommission the ETM, with a warning before it proceeds.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_8_0 - Technician Menu - Decommissioning.png
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Technician Menu
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Decommissioning
+          **THEN** a decommissioning warning is shown before any action
+          **WHEN** you confirm the warning
+          **THEN** the ETM is decommissioned
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a decommissioning entry for the device is recorded
+        expected: Decommissioning warns before proceeding, only decommissions on confirmation, and the action is recorded in the CloudFare Activity Log.
+      - title: Technician — device status
+        objective: This test is to confirm a Technician can view device status, including other devices, GPS, the card reader and paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_3_0 - Technician - Device Status.png
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Device Status screen with a smartcard to hand
+          **WHEN** you view other devices, GPS information, the card reader and paper status
+          **THEN** the corresponding status detail is displayed for each
+          **WHEN** you present the smartcard at the card reader screen
+          **THEN** the card status is displayed
+          **AND** the reader can be rebooted from that screen
+        expected: A Technician can view other-devices / GPS / card-reader / paper status; presenting a card shows its status and the reader can be rebooted there.
+      - title: Technician — view and print versions
+        objective: This test is to confirm a Technician can view and print software versions, configuration data versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Technician is at the Technician Menu
+          **WHEN** you open Versions and view the software versions, configuration versions and serial numbers
+          **THEN** the version and serial information is displayed
+          **WHEN** you print the information
+          **THEN** the version and serial information is printed
+        expected: A Technician can view and print the software versions, configuration versions and serial numbers.
+
+  # ═══════════════════════════ Non-Functional / Power ═══════════════════════════
+  - path: Non-Functional / Power
+    cases:
+      - title: Power interruption — minor versus major outage
+        objective: This test is to confirm the ETM handles a momentary power interruption versus a prolonged one, saving state safely before shutdown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/power-interruption/11_0_0 - Power Interruption.png
+        steps: |-
+          **GIVEN** the ETM is in service with the seeded test Driver signed on to route 10A (IN) at the FLU screen
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you interrupt power momentarily and restore it
+          **THEN** the ETM returns the user to the FLU screen they were originally on
+          **WHEN** you interrupt power for a prolonged period past the backup window
+          **THEN** the ETM saves its state and shuts down once the backup period is reached
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the power interruption entries are recorded for the device
+        expected: A momentary outage restores the previous FLU screen; a prolonged outage saves state and shuts down safely within the backup window; both are recorded in the CloudFare Activity Log.
+      - title: Power loss recovery — within and outside the recovery period
+        objective: This test is to confirm the ETM recovers to the signed-in state after a power loss within the recovery period, and does not after it.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN) and in service
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you lose power and restore it within the recovery period
+          **THEN** the ETM recovers to the signed-in state (10A FLU, same Driver)
+          **WHEN** you lose power and restore it outside the recovery period
+          **THEN** the ETM does not recover the signed-in state and returns to idle
+          **WHEN** you lose power while in break mode and restore it
+          **THEN** the ETM recovers to the break state appropriately
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the power-loss and recovery entries are recorded for the device
+        expected: Recovery to the signed-in state happens within the recovery period only; outside it the ETM returns to idle; break mode recovers appropriately; all recorded in the CloudFare Activity Log.
+      - title: Power — charging state on boot
+        objective: This test is to confirm the ETM shows the charging screen on boot until it has enough charge to safely save state on a future interruption.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/startup/11_2_0 - Charging.png
+        steps: |-
+          **GIVEN** the ETM is booting with low charge
+          **WHEN** you boot it while it does not yet have enough charge to guarantee a safe state-save
+          **THEN** the charging screen is displayed and held until sufficient charge is reached
+        expected: The charging screen holds boot until there is enough charge to safely save state on a power interruption.
+      - title: Power Saving Mode — entering and leaving
+        objective: This test is to confirm the ETM enters and leaves Power Saving Mode correctly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is idle and configured for power saving
+          **WHEN** the conditions to enter Power Saving Mode are met
+          **THEN** the ETM enters Power Saving Mode
+          **WHEN** you wake the ETM
+          **THEN** the ETM leaves Power Saving Mode and returns to its prior state
+        expected: The ETM enters Power Saving Mode when idle conditions are met and leaves it on wake, returning to its prior state.
+      - title: Scheduled Maintenance — suspend and idle
+        objective: This test is to confirm the ETM handles scheduled maintenance, coming out of suspend and returning to idle.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a scheduled maintenance window applies and the ETM is in idle mode
+          **WHEN** the ETM is in idle mode during the maintenance window
+          **THEN** the scheduled maintenance is performed
+          **WHEN** the ETM comes out of suspend
+          **THEN** the ETM resumes to idle ready for service
+        expected: Scheduled maintenance runs in idle mode and the ETM resumes to idle ready for service when coming out of suspend.
+
+  # ═══════════════════════════ Non-Functional / Printer and Paper ═══════════════════════════
+  - path: Non-Functional / Printer and Paper
+    cases:
+      - title: Paper management — low, jam, out and replacement
+        objective: This test is to confirm the ETM warns on low and out-of-paper, handles a jam with reverse feed, and recovers when the roll is replaced.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_2 - Main Screen - FLU - Paper Low.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **WHEN** you print a ticket that takes the paper below the low threshold
+          **THEN** the Paper Low warning is shown for five seconds and returns to FLU Home
+          **WHEN** you cause a paper jam
+          **THEN** the jam is reported with a reverse-paper-feed option
+          **WHEN** you let the paper run out
+          **THEN** the Paper Out condition is shown
+          **WHEN** you replace the paper roll
+          **THEN** printing is restored
+        expected: Paper low warns (5s, after a print), a jam offers reverse feed, paper-out is flagged, and replacing the roll restores printing.
+      - title: Printer — out of service error
+        objective: This test is to confirm the ETM shows an Out of Service error when the printer cannot print.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_3 - Out of Service Error.png
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **WHEN** the printer cannot complete a print and goes out of service
+          **THEN** the Out of Service error is displayed
+        expected: A printer that cannot print shows the Out of Service error.
+      - title: Printer — firmware update download
+        objective: This test is to confirm the ETM can download and apply a printer firmware update.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a printer firmware update is available from the back office
+          **WHEN** the ETM downloads the printer firmware files
+          **THEN** the printer firmware is updated
+        expected: The ETM downloads and applies a printer firmware update.
+
+  # ═══════════════════════════ Non-Functional / Displays, LEDs and Audio ═══════════════════════════
+  - path: Non-Functional / Displays, LEDs and Audio
+    cases:
+      - title: Card reader — LED state indication
+        objective: This test is to confirm the card reader LEDs indicate the correct active and inactive states.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM card reader is active
+          **WHEN** you drive the reader through each of its operating states
+          **THEN** the card reader LEDs indicate the matching state
+          **WHEN** the reader is inactive
+          **THEN** the LEDs show the inactive state
+        expected: The card reader LEDs correctly indicate the active operating states and the inactive state.
+      - title: Audio tones — success and error
+        objective: This test is to confirm the ETM plays the correct audio tone for success and error outcomes.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM has audio enabled
+          **WHEN** a transaction succeeds
+          **THEN** the success tone is played
+          **WHEN** a transaction errors or is declined
+          **THEN** the error tone is played
+        expected: A success tone plays on success and an error tone on error or decline.
+      - title: Passenger Information Display — shows current state
+        objective: This test is to confirm the passenger information display reflects the current transaction and information states.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a customer-facing passenger information display is connected to the ETM
+          **WHEN** the ETM is selling, issuing, validating a smartcard, accepting an ABT tap, or showing information
+          **THEN** the passenger display reflects the matching state
+          **AND** information states such as See Driver, Please Wait, Out of Service and Boarding are shown as applicable
+        expected: The passenger display shows the matching state for selling / issuing / smartcard / ABT, plus See Driver, Please Wait, Out of Service and Boarding as applicable.
+
+  # ═══════════════════════════ Non-Functional / Communications ═══════════════════════════
+  - path: Non-Functional / Communications
+    cases:
+      - title: Force communications — CloudFare initiated
+        objective: This test is to confirm a CloudFare-initiated forced communication is handled by the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is in service and communicating with the back office
+          **WHEN** CloudFare initiates a forced communication to the ETM
+          **THEN** the ETM communicates with the back office for downloads and uploads
+        expected: A CloudFare-initiated forced comms triggers the ETM to exchange data with the back office.
+      - title: Communications — comms lock, interruption and restore
+        objective: This test is to confirm the ETM locks communications after the configured period without comms, handles interruptions, and recovers when comms are restored.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM has not communicated with the back office for the configured period
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the comms-lock threshold is reached
+          **THEN** communications are locked
+          **AND** the lock is indicated to the Driver
+          **WHEN** communications are interrupted mid-exchange
+          **THEN** the interruption is handled without data loss
+          **WHEN** communications are restored
+          **THEN** the comms lock clears and pending data is exchanged
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the comms-lock and restore entries are recorded for the device
+        expected: Comms lock after the configured no-comms period; interruptions are handled without data loss; the lock clears and data flows when comms restore; all recorded in the CloudFare Activity Log.
+      - title: ETM continues working when the BOS connection is lost
+        objective: This test is to confirm the ETM keeps operating and queues data exchange when the back-office connection is lost.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on and the ETM is working
+          **WHEN** the back-office connection is lost
+          **THEN** the ETM continues to operate and queues data to send to the back office
+          **WHEN** the connection returns
+          **THEN** data due to download from the back office is retrieved
+        expected: The ETM keeps working with the BOS connection lost, queuing uploads, and catches up downloads when the connection returns.
+      - title: Download configuration files from the back office
+        objective: This test is to confirm the ETM downloads configuration files for immediate and future activation, and rejects corrupt files.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the back office has configuration files for the ETM
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the ETM downloads a configuration file for immediate activation
+          **THEN** the configuration is applied
+          **WHEN** the ETM downloads a configuration with a future activation date
+          **THEN** the configuration is stored and activated on the future date
+          **WHEN** the ETM downloads a corrupt configuration file
+          **THEN** the corrupt file is rejected
+          **AND** the current configuration is retained
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the configuration-download entries are recorded for the device
+        expected: Config downloads apply immediately or on a future activation date; corrupt files are rejected without disrupting the live config; all recorded in the CloudFare Activity Log.
+      - title: Software distribution and fare-mode transition
+        objective: This test is to confirm the ETM transitions from the current to a future fare mode following a software/configuration distribution.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the back office has distributed a future fare mode to the ETM
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the activation point is reached
+          **THEN** the ETM transitions from the current fare mode to the future fare mode
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the fare-mode transition entry is recorded for the device
+        expected: The ETM transitions current-to-future fare mode at the distributed activation point, recorded in the CloudFare Activity Log.
+      - title: Upload audit files and data to the back office
+        objective: This test is to confirm the ETM uploads audit files and operational data to the back office.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM has audit files and operational data to send
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the ETM communicates with the back office
+          **THEN** the audit files are uploaded
+          **AND** the operational data is uploaded
+        expected: The ETM uploads its audit files and operational data to the back office.
+
+  # ═══════════════════════════ Non-Functional / System and Performance ═══════════════════════════
+  - path: Non-Functional / System and Performance
+    cases:
+      - title: Time change — GMT and BST transitions
+        objective: This test is to confirm the ETM applies the GMT-to-BST and BST-to-GMT clock changes correctly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM clock is approaching a daylight-saving transition
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the GMT-to-BST change occurs
+          **THEN** the ETM clock advances correctly
+          **AND** fares and records use the new time
+          **WHEN** the BST-to-GMT change occurs
+          **THEN** the ETM clock falls back correctly
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the time-change entries are recorded for the device
+        expected: The ETM applies GMT-to-BST and BST-to-GMT transitions correctly for the clock and time-stamped records, recorded in the CloudFare Activity Log.
+      - title: Status bar — cellular network status
+        objective: This test is to confirm the status bar reflects the cellular network status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM uses a cellular connection
+          **WHEN** the cellular network status changes
+          **THEN** the status bar reflects the current cellular status
+        expected: The status bar shows the current cellular network status as it changes.
+      - title: Auto Sign-Off — Driver signed off on the configured condition
+        match: Auto sign-off
+        objective: This test is to confirm the ETM automatically signs the Driver off under the configured auto sign-off conditions and audits it.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** the configured auto sign-off condition is met
+          **THEN** the Driver is automatically signed off
+          **AND** the sign-off is audited
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** an auto sign-off entry for the Driver is recorded
+        expected: The ETM auto-signs-off the Driver under the configured conditions and the sign-off appears in the CloudFare Activity Log.
+      - title: MIFARE card type validation on the ETM
+        objective: This test is to confirm the ETM validates the supported MIFARE card types.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **AND** a MIFARE Classic 1K card and a MIFARE Classic EV1 card are to hand
+          **WHEN** you present the MIFARE Classic 1K card, then the MIFARE Classic EV1 card
+          **THEN** the ETM reads and validates each card per its type
+          **AND** the validation is recorded in the back office (CloudFare, MERIT and SmartTrack)
+        expected: The ETM validates the supported MIFARE card types (Classic 1K, Classic EV1), and the validations are recorded in the back office.
+      - title: Smartcard and EMV transaction timings
+        objective: This test is to confirm smartcard presentation and validation timing, noting EMV hardware timings need a defined performance measure.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is in service
+          **WHEN** you present a smartcard for validation
+          **THEN** the presentation and validation complete within the acceptable timing
+          **WHEN** you assess the EMV hardware and transaction timing
+          **THEN** the timing is recorded against the defined performance measure
+        expected: "Smartcard presentation and validation meets the timing target. NOTE: EMV hardware/transaction timing is currently observational and needs a defined performance measure before it is objectively pass/fail (old C2448294 flagged \"potentially untestable\")."
+      - title: Interface with other on-vehicle third-party equipment
+        objective: This test is to confirm the ETM interfaces correctly with other on-vehicle third-party equipment.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the ETM is installed alongside other on-vehicle third-party equipment
+          **WHEN** the ETM interacts with that equipment
+          **THEN** the interface behaves as specified without disrupting ETM operation
+        expected: The ETM interfaces with other on-vehicle third-party equipment without disrupting ETM operation.

@@ -1,0 +1,210 @@
+# Per-product cases, CORRECTED from the old-suite-audit cross-tab (was over-built per mode).
+# Shared products (tested under NIR + Ulsterbus) = one case each under Functional / Tickets.
+# Mode-only products stay under their mode (prefix dropped — the section conveys the mode).
+# Selling mechanism differs by mode (rail FLU = stations; bus FLU = route/stages) — covered by the
+# per-mode Fare Look-Up cases; these product cases assert the product/fare itself.
+#
+# GEORGE TO BIN (move to Delete) — the duplicated per-mode copies of shared products:
+#   NIR (Rail)/Tickets:  NIR — Single, NIR — Day Return, NIR — iLink Single, NIR — Warrant Return,
+#                        NIR — Family & Friends Day, NIR — Dependents Pass
+#   Ulsterbus/Tickets:   Ulsterbus — Single, Ulsterbus — Day Return, Ulsterbus — iLink Single,
+#                        Ulsterbus — Warrant Return, Ulsterbus — Family & Friends Day
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  # ---------------------------------------------------------------- SHARED ticket products (NIR + Ulsterbus)
+  - path: ["Functional", "Tickets"]
+    cases:
+      - title: "Single ticket"
+        objective: "This test is to confirm the operator can sell a Single ticket (in either operating mode, via that mode's fare look-up) for any passenger type and payment method."
+        steps: |
+          **GIVEN** an operator is signed on
+          **WHEN** the operator builds a Single ticket via the mode's fare look-up and takes payment
+          **THEN** the Single ticket is issued at the correct price
+          **AND** a receipt is printed
+        expected: "A Single ticket issues at the correct price in NIR and Ulsterbus. Data variations: passenger type (Adult/Child/concession), payment (cash/card/warrant)."
+      - title: "Day Return ticket"
+        objective: "This test is to confirm the operator can sell a Day Return ticket in either operating mode."
+        steps: |
+          **GIVEN** an operator is signed on
+          **WHEN** the operator builds a Day Return ticket via the mode's fare look-up and takes payment
+          **THEN** the Day Return ticket is issued at the correct price
+          **AND** a receipt is printed
+        expected: "A Day Return issues at the correct price in NIR and Ulsterbus (passenger/payment data variations)."
+      - title: "iLink Single"
+        objective: "This test is to confirm the operator can sell an iLink Single fare against a presented iLink smartcard in either operating mode."
+        steps: |
+          **GIVEN** an operator is signed on
+          **WHEN** the operator sells an iLink Single fare against a presented iLink smartcard
+          **THEN** the iLink Single is issued/recorded against the card
+          **AND** a receipt is printed
+        expected: "An iLink Single is sold against the iLink smartcard in NIR and Ulsterbus (zone/passenger data variations)."
+      - title: "Warrant Return"
+        objective: "This test is to confirm the operator can sell a Warrant Return against a warrant payment in either operating mode."
+        steps: |
+          **GIVEN** an operator is signed on
+          **WHEN** the operator builds a Warrant Return and completes the warrant payment
+          **THEN** the Warrant Return ticket is issued
+          **AND** a receipt is printed
+        expected: "A Warrant Return issues against a warrant payment in NIR and Ulsterbus."
+      - title: "Family & Friends Day ticket"
+        objective: "This test is to confirm the operator can sell a Family & Friends Day ticket in either operating mode."
+        steps: |
+          **GIVEN** an operator is signed on
+          **WHEN** the operator builds a Family & Friends Day ticket and takes payment
+          **THEN** the Family & Friends Day ticket is issued
+          **AND** a receipt is printed
+        expected: "A Family & Friends Day ticket issues correctly in NIR and Ulsterbus (payment data variations)."
+
+  # ---------------------------------------------------------------- NIR-only ticket products
+  - path: ["NIR (Rail)", "Tickets"]
+    cases:
+      - title: "1/3 Off Day Return"
+        match: "NIR — 1/3 Off Day Return"
+        objective: "This test is to confirm the operator can sell an NIR 1/3 Off Day Return ticket with the discount applied."
+        steps: |
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **WHEN** the operator builds a 1/3 Off Day Return ticket and takes payment
+          **THEN** the ticket is issued with the 1/3 discount applied
+          **AND** a receipt is printed
+        expected: "A 1/3 Off Day Return issues with the discount applied (passenger/payment data variations)."
+      - title: "3 Day Select"
+        match: "NIR — 3 Day Select"
+        objective: "This test is to confirm the operator can sell an NIR 3 Day Select ticket with the chosen days."
+        steps: |
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **WHEN** the operator builds a 3 Day Select ticket, chooses the days and takes payment
+          **THEN** the 3 Day Select ticket is issued for the chosen days
+          **AND** a receipt is printed
+        expected: "A 3 Day Select issues for the chosen days (passenger/payment data variations)."
+      - title: "Weekly Season"
+        match: "NIR — Weekly Season"
+        objective: "This test is to confirm the operator can sell an NIR Weekly Season ticket with the correct validity dates."
+        steps: |
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **WHEN** the operator builds a Weekly Season ticket and takes payment
+          **THEN** the Weekly Season ticket is issued with the correct From/To dates
+          **AND** a receipt is printed
+        expected: "A Weekly Season issues with correct validity dates (passenger/payment data variations)."
+      - title: "Monthly Season"
+        match: "NIR — Monthly Season"
+        refs: ["TIBU-19299"]
+        objective: "This test is to confirm the operator can sell an NIR Monthly Season ticket with the correct expiry (To) date."
+        steps: |
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **WHEN** the operator builds a Monthly Season ticket and takes payment
+          **THEN** the Monthly Season ticket is issued with the correct From/To dates
+          **AND** a receipt is printed
+        expected: "A Monthly Season issues with the correct 'To'/expiry date (regression: TIBU-19299; passenger/payment data variations)."
+
+  # ---------------------------------------------------------------- Ulsterbus-only ticket products
+  - path: ["Ulsterbus", "Tickets"]
+    cases:
+      - title: "Bus Rambler"
+        match: "Ulsterbus — Bus Rambler"
+        objective: "This test is to confirm the operator can sell an Ulsterbus Bus Rambler ticket."
+        steps: |
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **WHEN** the operator builds a Bus Rambler ticket and takes payment
+          **THEN** the Bus Rambler ticket is issued
+          **AND** a receipt is printed
+        expected: "A Bus Rambler issues correctly (passenger/payment data variations)."
+      - title: "Month Return"
+        match: "Ulsterbus — Month Return"
+        objective: "This test is to confirm the operator can sell an Ulsterbus Month Return ticket with correct validity."
+        steps: |
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **WHEN** the operator builds a Month Return ticket and takes payment
+          **THEN** the Month Return ticket is issued with the correct validity dates
+          **AND** a receipt is printed
+        expected: "A Month Return issues with correct validity (passenger/payment data variations)."
+      - title: "Jobseeker Single"
+        match: "Ulsterbus — Jobseeker Single"
+        objective: "This test is to confirm the operator can sell an Ulsterbus Jobseeker Single ticket at the concession price."
+        steps: |
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **WHEN** the operator builds a Jobseeker Single ticket and takes payment
+          **THEN** the Jobseeker Single ticket is issued at the correct concession price
+          **AND** a receipt is printed
+        expected: "A Jobseeker Single issues at the correct concession price."
+      - title: "Rail Substitution Service"
+        match: "Ulsterbus — Rail Substitution Service"
+        objective: "This test is to confirm the operator can process an Ulsterbus Rail Substitution Service fare."
+        steps: |
+          **GIVEN** an operator is signed on in Ulsterbus mode running a rail substitution service
+          **WHEN** the operator processes a Rail Substitution Service fare and takes payment
+          **THEN** the fare is issued under the rail substitution service
+          **AND** a receipt is printed
+        expected: "A Rail Substitution Service fare is processed and printed."
+
+  # ---------------------------------------------------------------- Metro tickets (smartcard-led)
+  - path: ["Metro", "Tickets"]
+    cases:
+      - title: "Metro — sell a ticket"
+        objective: "This test is to confirm the operator can sell a Metro ticket (Metro is largely smartcard-led; see Metro Top Up / Issue Card for Travelcard & Multi-Journey)."
+        steps: |
+          **GIVEN** an operator is signed on in Metro mode
+          **WHEN** the operator builds a Metro ticket and takes payment
+          **THEN** the Metro ticket is issued at the correct price
+          **AND** a receipt is printed
+        expected: "A Metro ticket issues at the correct price (product/passenger/payment data variations)."
+
+  # ---------------------------------------------------------------- shared fare smartcards (cross-mode)
+  - path: ["Functional", "Smartcards"]
+    cases:
+      - title: "Smartcard — Half Fare"
+        refs: ["TIBU-24795"]
+        objective: "This test is to confirm a Half Fare smartcard is recognised and applies the half-fare entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a Half Fare smartcard
+          **THEN** the card is recognised
+          **AND** the half-fare entitlement is applied to the fare
+        expected: "A Half Fare smartcard is recognised and applies the half-fare price (regression: TIBU-24795; payment data variations)."
+      - title: "Smartcard — Youth"
+        objective: "This test is to confirm a Youth smartcard is recognised and applies the youth entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a Youth smartcard
+          **THEN** the card is recognised
+          **AND** the youth entitlement is applied
+        expected: "A Youth smartcard applies the youth entitlement."
+      - title: "Smartcard — yLink"
+        objective: "This test is to confirm a yLink smartcard is recognised and applies its entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a yLink smartcard
+          **THEN** the card is recognised
+          **AND** the yLink entitlement is applied
+        expected: "A yLink smartcard applies its entitlement."
+      - title: "Smartcard — 24+"
+        objective: "This test is to confirm a 24+ smartcard is recognised and applies its entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a 24+ smartcard
+          **THEN** the card is recognised
+          **AND** the 24+ entitlement is applied
+        expected: "A 24+ smartcard applies its entitlement."
+      - title: "Smartcard — Concession"
+        objective: "This test is to confirm a Concession smartcard is recognised and applies the concession entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a Concession smartcard
+          **THEN** the card is recognised
+          **AND** the concession entitlement is applied
+        expected: "A Concession smartcard applies the concession entitlement."
+      - title: "Smartcard — Dependents Pass"
+        objective: "This test is to confirm a Dependents Pass smartcard is recognised and applies its entitlement at sale."
+        steps: |
+          **GIVEN** an operator is selling a fare
+          **WHEN** the operator presents a Dependents Pass smartcard
+          **THEN** the card is recognised
+          **AND** the dependents-pass entitlement is applied
+        expected: "A Dependents Pass smartcard applies its entitlement."

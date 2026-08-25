@@ -1,0 +1,76 @@
+# PV — additions wave 3: grounded against the PV Overflow annotations (knowledge/flows/PVoverflow_data.json
+# -> pv-flow-annotations.md, pages: Platform Validator, Platform Validator-Barcode, Technician Menu -
+# Platform Validator). Captures PV-specific behaviours the UX states explicitly. Two existing cases are
+# re-pushed with --update to enrich them (Force Communications summary fields; cEMV decline reasons).
+suite_id: 30255
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [10]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Barcodes
+    cases:
+      - title: Barcode — early-morning expiry displays the previous day
+        objective: This test is to confirm a barcode whose expiry time falls between 00:00 and 04:00 shows the previous day as the expiry date on the validation success screen.
+        steps: |
+          **Given** the PV is showing the Present SmartCard or Barcode screen
+          **WHEN** a valid barcode with an expiry time between 00:00 and 04:00 is presented
+          **THEN** the barcode is validated
+          **AND** the validation success screen displays the previous day as the expiry date
+          **AND** the validation is recorded in the back office (CloudFare and MERIT)
+        expected: A barcode expiring between 00:00 and 04:00 validates and the success screen shows the previous day as the expiry date.
+
+  - path: Functional / Rail-specific
+    cases:
+      - title: Rail — ABT tap success shows the Northern Ireland travel line
+        objective: This test is to confirm a successful ABT tap on a Rail/NIR PV displays the additional Northern Ireland travel line on the success screen.
+        steps: |
+          **Given** a Rail/NIR PV has ABT enabled and is showing the Present screen
+          **WHEN** a valid contactless card is tapped and accepted
+          **THEN** the ABT tap success screen is shown
+          **AND** the success screen displays the additional line "Northern Ireland Travel Only"
+        expected: On a Rail/NIR PV, a successful ABT tap shows the success screen with the additional "Northern Ireland Travel Only" line.
+
+  - path: Functional / Commissioning
+    cases:
+      - title: PV commissioning — uncommissioned until location programmed
+        objective: This test is to confirm an uncommissioned PV shows unprogrammed status-bar values until a technician signs in with comms and programs the location details.
+        steps: |
+          **Given** an uncommissioned PV with an unprogrammed Plinth-ID
+          **WHEN** the device starts up before any location is programmed
+          **THEN** the status bar shows no programmed Device ID, Sub Location or Location values
+          **WHEN** the PV has comms and a technician signs in and programs the location details
+          **THEN** the status bar displays the programmed Device ID, Sub Location and Location
+        expected: An uncommissioned PV shows unprogrammed status-bar values; once a technician signs in (with comms) and programs the location, the Device ID, Sub Location and Location are displayed.
+
+  # ---- edits to existing cases (re-push with --update) ----
+
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician Menu — force communications
+        objective: This test is to confirm a technician can force communications with the back office and that the Force Communications page summarises the comms status.
+        steps: |
+          **Given** a technician is in the Technician Menu
+          **WHEN** the technician opens the Force Communications page
+          **THEN** the page summarises the comms status — pending audit-record count, last successful audit send, last manifest download attempt, last successful manifest download, pending software/configuration file count
+          **WHEN** the technician presses Call Now
+          **THEN** the PV checks the back-office manifest and attempts to send any pending audit records
+          **WHEN** the technician presses Refresh
+          **THEN** the displayed values update to the most recent information
+        expected: The Force Communications page summarises pending audit count, last successful audit send, last manifest attempt, last successful manifest download and pending file count; Call Now triggers a manifest check and audit send; Refresh updates the displayed values.
+
+  - path: Functional / ABT (Glider)
+    cases:
+      - title: cEMV — decline reasons and route-type enablement
+        objective: This test is to confirm cEMV decline reasons and that taps enable per route type and are disabled where they should be.
+        steps: |
+          **Given** a Glider PV with cEMV
+          **WHEN** a card fails Offline Data Authentication, is an unsupported scheme (e.g. AMEX), is expired, has an invalid BIN, fails the AID check, is a card clash, is on the deny or negative list, or is not read successfully
+          **THEN** the Please Try Again outcome is shown with the corresponding decline reason
+          **WHEN** the route is "Tap On Only (Flat Fare)" or "Tap On Tap Off"
+          **THEN** cEMV taps are enabled for that route type
+          **WHEN** no valid fare is found, the boarding location is outside the configured area, or cEMV is disabled in the Technician Menu
+          **THEN** cEMV taps are disabled
+        expected: cEMV declines on ODA fail / unsupported scheme (AMEX) / expired / invalid BIN / AID fail / card clash / deny or negative list / unread, showing Please Try Again with the reason; enables for Tap-On-Only and Tap-On-Tap-Off route types; disables on no-fare / out-of-area / Technician-Menu-disable.

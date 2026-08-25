@@ -1,0 +1,623 @@
+# HHD — Sales (Paper Tickets) + Top-Ups + Penalty Warning & Fares
+# **NEW** HHD Test Suite (30285). NEW consolidated coverage authored per
+# proposals/hhd-suite-restructure/structure.md + old-suite-audit.md and docs/gherkin-standard.md.
+#
+# CONSOLIDATION MODEL (structure.md "Mode decision"; old-suite-audit.md §4 cross-tab):
+#   - HHD runs in two operating modes: NIR-Rail and Glider (bus / Metro network, incl. Metro &
+#     Ulsterbus product sets). Modes are TestRail Run Configurations, NOT section copies. The old
+#     suite authored the whole tree TWICE (NIR || Glider) and a third time (HHD Master) — that
+#     triple copy is the multiplier this file removes. Shared behaviour is authored ONCE with a
+#     "Data variations: ... mode {NIR-Rail, Glider}" line; only PROVEN divergences get a mode leaf.
+#   - MODE LEAVES here (the only two in scope): "Cross-Border Tickets" is NIR-Rail only (old suite
+#     section 844-849, NIR-only); "Metro & Ulsterbus Products" is Glider only (Town Service /
+#     Multi-Journey / Metro product family — Glider R1.1 tree only).
+#   - Passenger type (Adult/Child/concession/yLink/24+/staff), product, and payment method
+#     (cash / warrant / cEMV card via M020) are DATA VARIATIONS of one behaviour, folded into
+#     "Data variations:" lines — never multiplied into separate cases. This collapses the old
+#     per-passenger / per-product / per-payment explosion (Ticket Sales, Top Ups, Penalty Fares).
+#   - Concrete worked examples are grounded in real routes/stops/products/fares (Glider G1; Metro
+#     10A Casement Park -> City Hall £2.30; Ulsterbus 72b ref.60 £4.50; NIR Belfast Lanyon Place ->
+#     Portadown; Cross-Border Newry -> Dundalk; Ballymena Town Service Harryville -> Ballee P&R;
+#     Metro Multi-Journey 10-journey £20) or cited to the fares export (FBD-100336 / FBD-100450)
+#     where an exact fare is not in a source, rather than fabricated.
+#   - Card payment mechanics (M020 pairing / PRN / TID-TK) are their OWN section (Card Payment) and
+#     are out of scope here; card is referenced only as a payment method data-variation of a sale.
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]          # HHD
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Ticket Issue  (SHARED, all modes: NIR-Rail + Glider)
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Ticket Issue]
+    cases:
+      - title: Ticket Issue — a selected product is issued and printed
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm an Operator can select a product, take payment, and issue a printed paper ticket.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD at the ticket-sales screen
+          **AND** an example Glider Adult Single on route G1 boarding City Hall, priced per the fares export (FBD-100336)
+          **WHEN** the Operator selects the product and takes payment
+          **THEN** a paper ticket is printed for the selected product
+          **AND** the fare charged matches the fares export
+          Data variations: mode {NIR-Rail, Glider}; passenger {Adult, Child}; payment {cash, warrant, cEMV card}
+        expected: The chosen product is issued and a paper ticket printed at the fares-export price, in either mode and for any payment method.
+      - title: Ticket Issue — Adult single ticket
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm an Operator can issue an Adult single ticket at the Adult fare for the selected stages.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD showing the Adult product range
+          **AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30 (fares export FBD-100336)
+          **WHEN** the Operator issues the Adult single and takes payment
+          **THEN** an Adult single ticket is printed for the selected stages
+          **AND** the fare charged equals the fares-export Adult single fare
+          Data variations: mode {NIR-Rail, Glider}; payment {cash, warrant, cEMV card}
+        expected: An Adult single is issued for the selected stages at the Adult fare, in either mode.
+      - title: Ticket Issue — Child single ticket
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm an Operator can issue a Child single ticket at the Child fare.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD showing the Child product range
+          **AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per the fares export
+          **WHEN** the Operator issues the Child single and takes payment
+          **THEN** a Child single ticket is printed for the selected stages
+          **AND** the fare charged equals the fares-export Child single fare
+          Data variations: mode {NIR-Rail, Glider}; payment {cash, warrant, cEMV card}
+        expected: A Child single is issued at the Child fare, in either mode.
+      - title: Ticket Issue — default passenger and ticket type on entry
+        refs: [FBD-100336]
+        objective: This test is to confirm the ticket-sales screen opens with the configured default passenger type and ticket type selected.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD
+          **WHEN** the Operator opens the ticket-sales screen
+          **THEN** the configured default passenger type is pre-selected
+          **AND** the configured default ticket type is pre-selected
+        expected: The ticket-sales screen defaults to the configured passenger and ticket type without manual selection.
+      - title: Ticket Issue — boarding and alighting stage selection
+        refs: [FBD-100207, FBD-100336]
+        objective: This test is to confirm the Operator can set the boarding and alighting stages and the fare reflects the selection.
+        steps: |-
+          **GIVEN** an Operator on the ticket-sales screen with a single product selected
+          **AND** an example boarding stage nearer the alighting stage than the device home stage
+          **WHEN** the Operator selects the boarding and alighting stages
+          **THEN** the ticket is priced for the selected stages
+          **AND** the printed ticket shows the selected boarding and alighting stages
+          Data variations: stage selection {menu, manual character entry}
+        expected: The selected boarding and alighting stages drive the fare and print on the ticket, via menu or manual character entry.
+      - title: Ticket Issue — cash payment giving change
+        refs: [FBD-100336]
+        objective: This test is to confirm a cash sale that requires change issues the ticket and accounts for the change due.
+        steps: |-
+          **GIVEN** an Operator issuing a Metro Adult Single at £2.30
+          **AND** an example cash tender greater than the fare
+          **WHEN** the Operator completes the sale with cash exceeding the fare
+          **THEN** the ticket is printed for the product
+          **AND** the change due is calculated and shown to the Operator
+        expected: A cash overpayment issues the ticket and reports the change due.
+      - title: Ticket Issue — warrant payment
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can issue a ticket paid by warrant.
+        steps: |-
+          **GIVEN** an Operator on the ticket-sales screen with a product selected
+          **WHEN** the Operator completes the sale with warrant as the payment method
+          **THEN** the ticket is printed for the product
+          **AND** the payment method recorded against the sale is warrant
+        expected: A ticket is issued against a warrant payment and recorded with the warrant payment method.
+      - title: Ticket Issue — each issued ticket carries a unique ticket number
+        refs: [FBD-100336]
+        objective: This test is to confirm every issued ticket is stamped with a unique, sequential ticket number.
+        steps: |-
+          **GIVEN** an Operator who has issued one ticket
+          **WHEN** the Operator issues a further ticket
+          **THEN** the further ticket carries a unique ticket number
+          **AND** the number follows sequentially from the previous ticket
+        expected: Issued tickets carry unique, sequential ticket numbers.
+      - title: Ticket Issue — advance ticket
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can issue an advance ticket dated for future travel.
+        steps: |-
+          **GIVEN** an Operator on the ticket-sales screen showing the advance product
+          **AND** an example advance ticket for a future travel date
+          **WHEN** the Operator issues the advance ticket and takes payment
+          **THEN** an advance ticket is printed carrying the future travel date
+          Data variations: mode {NIR-Rail, Glider}; passenger {Adult, Child}
+        expected: An advance ticket is issued printed with its future travel date.
+      - title: Ticket Issue — period product (Weekly / Monthly)
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can issue a period product printed with its validity window.
+        steps: |-
+          **GIVEN** an Operator on the ticket-sales screen showing period products
+          **AND** an example Student Monthly period product priced per the fares export
+          **WHEN** the Operator issues the period product and takes payment
+          **THEN** a period ticket is printed
+          **AND** the printed validity window matches the period product
+          Data variations: product {Weekly, Monthly, Student Monthly}; passenger {Adult, Child}
+        expected: A period product is issued printed with the correct validity window at the fares-export price.
+      - title: Ticket Issue — Bus Rambler ticket
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can issue a Bus Rambler ticket at the fares-export price.
+        steps: |-
+          **GIVEN** an Operator on the ticket-sales screen showing the Bus Rambler product within its availability
+          **AND** an example Adult Bus Rambler priced per the fares export
+          **WHEN** the Operator issues the Bus Rambler ticket and takes payment
+          **THEN** a Bus Rambler ticket is printed
+          **AND** the fare charged equals the fares-export Bus Rambler fare
+          Data variations: passenger {Adult, Child}; payment {cash, cEMV card}
+        expected: A Bus Rambler ticket is issued at its fares-export price for Adult or Child.
+      - title: Ticket Issue — 3 Day Select ticket (NIR-Rail)
+        refs: [FBD-100450, FBD-100167]
+        objective: This test is to confirm an HHD in NIR-Rail mode issues a rail 3 Day Select ticket valid on selected dates.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing the 3 Day Select product
+          **AND** an example Adult 3 Day Select between Belfast Lanyon Place and Portadown priced per the NIR fares export (FBD-100450)
+          **WHEN** the Operator issues the 3 Day Select ticket and takes payment
+          **THEN** a 3 Day Select ticket is printed
+          **AND** the printed validity reflects the 3 Day Select date rule
+          Data variations: passenger {Adult, Child}
+        expected: A rail 3 Day Select ticket is issued with its selectable-date validity in NIR-Rail mode.
+      - title: Ticket Issue — issued ticket carries a barcode when the ticket type is barcode-enabled
+        refs: [FBD-100167, FBD-100318]
+        objective: This test is to confirm a printed paper ticket carries a barcode at the end of the ticket when the ticket type has barcode printing enabled.
+        steps: |-
+          **GIVEN** an Operator issuing a product whose ticket type has barcode printing enabled in CloudFare
+          **AND** an example Metro Adult Single from 10A (IN) Casement Park to City Hall
+          **WHEN** the Operator completes the sale
+          **THEN** a barcode is printed at the end of the paper ticket
+        expected: A ticket for a barcode-enabled ticket type prints a barcode at the end of the ticket (FBD-100167 printing rule).
+      - title: Ticket Issue — a single ticket for multiple passengers carries no barcode
+        refs: [FBD-100167]
+        objective: This test is to confirm no barcode is printed when one ticket is issued covering multiple passengers.
+        steps: |-
+          **GIVEN** an Operator issuing one ticket that covers multiple passengers
+          **AND** an example group ticket covering several passengers on one ticket
+          **WHEN** the Operator completes the sale
+          **THEN** no barcode is printed on the multi-passenger ticket
+        expected: A single ticket covering multiple passengers is printed without a barcode.
+      - title: Ticket Issue — the sale posts an audit record to the back office
+        refs: [FBD-100341]
+        objective: This test is to confirm a completed sale posts a conformant transaction record to the back office.
+        steps: |-
+          **GIVEN** an Operator who has completed a Metro Adult Single sale at £2.30
+          **WHEN** the sale transaction is sent to the back office
+          **THEN** the record shows the sold product with its fare
+          **AND** the record is visible in CloudFare
+          **AND** the record is carried through to MERIT
+        expected: A completed sale posts a transaction carrying the product and fare, visible in CloudFare and carried to MERIT (FBD-100341 apportionment).
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Basket  (SHARED, all modes)
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Basket]
+    cases:
+      - title: Basket — a single product is added to the basket
+        refs: [FBD-100336]
+        objective: This test is to confirm adding a product to the basket increases the basket quantity and running total.
+        steps: |-
+          **GIVEN** an Operator with an empty basket
+          **AND** an example Metro Adult Single at £2.30
+          **WHEN** the Operator adds the product to the basket
+          **THEN** the basket quantity increases by one
+          **AND** the basket total increases by the product fare
+        expected: Adding a product raises the basket quantity by one and the total by the product fare.
+      - title: Basket — tickets with different alighting stages form separate lines
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm the same product with a different alighting stage is held as a separate basket line at its own fare.
+        steps: |-
+          **GIVEN** an Operator with a Metro Adult Single (Casement Park to City Hall) in the basket
+          **WHEN** the Operator adds an Adult Single with a different alighting stage
+          **THEN** a separate basket line is created for the different-stage ticket
+          **AND** its fare reflects the different alighting stage
+        expected: The same product with a different stage forms its own basket line priced for that stage.
+      - title: Basket — a basket ticket is amended before purchase
+        refs: [FBD-100207, FBD-100336]
+        objective: This test is to confirm a ticket in the basket can be amended before purchase and the basket total updates.
+        steps: |-
+          **GIVEN** an Operator with a single ticket in the basket
+          **AND** an example ticket whose alighting stage is amended to one farther away
+          **WHEN** the Operator amends the basket ticket before purchasing
+          **THEN** the amended ticket fare is recalculated
+          **AND** the basket total updates accordingly
+        expected: Amending a basket ticket before purchase recalculates its fare and the basket total.
+      - title: Basket — a basket line is deleted
+        refs: [FBD-100336]
+        objective: This test is to confirm deleting a basket line removes it and reduces the basket total.
+        steps: |-
+          **GIVEN** an Operator with two or more lines in the basket
+          **WHEN** the Operator deletes one line
+          **THEN** that line is removed from the basket
+          **AND** the basket total drops by that line's value
+        expected: Deleting a basket line removes it and reduces the total by its value.
+      - title: Basket — the basket is cleared
+        refs: [FBD-100336]
+        objective: This test is to confirm clearing the basket empties it and returns the Operator to product selection.
+        steps: |-
+          **GIVEN** an Operator with one or more products in the basket
+          **WHEN** the Operator clears the basket
+          **THEN** the basket is empty
+          **AND** the Operator is returned to product selection
+        expected: Clearing the basket empties it and returns to product selection.
+      - title: Basket — a completed basket sale prints all tickets in one transaction
+        refs: [FBD-100336]
+        objective: This test is to confirm a completed basket sale prints every basket ticket in a single paid transaction.
+        steps: |-
+          **GIVEN** an Operator with several products in the basket
+          **WHEN** the Operator completes the basket sale with a single payment
+          **THEN** a ticket is printed for every basket line
+          **AND** the tickets are numbered sequentially
+        expected: A basket sale prints all tickets in one transaction with sequential numbering.
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Group Ticket Sales  (SHARED, all modes)
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Group Ticket Sales]
+    cases:
+      - title: Group Ticket Sales — a group of the same product is issued
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can issue a group of the same product as a group ticket sale.
+        steps: |-
+          **GIVEN** an Operator on the group ticket-sales screen
+          **AND** an example group of Adult Singles for one boarding and alighting stage
+          **WHEN** the Operator issues the group and takes payment
+          **THEN** the group of tickets is issued for the selected product
+          **AND** the fare charged is the sum of the group members
+        expected: A group of the same product is issued as a group sale charged at the summed fare.
+      - title: Group Ticket Sales — a group is built and amended in the basket
+        refs: [FBD-100336]
+        objective: This test is to confirm a group ticket sale can be added to, edited and cleared in the basket before purchase.
+        steps: |-
+          **GIVEN** an Operator building a group ticket sale in the basket
+          **WHEN** the Operator adds, edits and removes group lines
+          **THEN** the basket reflects each change
+          **AND** the basket total updates after each change
+        expected: A group ticket sale can be added to, edited and cleared in the basket with the total kept in step.
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Visual Inspection  (SHARED, all modes)
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Visual Inspection]
+    cases:
+      - title: Visual Inspection — a paper ticket is visually inspected
+        refs: [FBD-100336]
+        objective: This test is to confirm an Operator can visually inspect a previously issued paper ticket on the HHD.
+        steps: |-
+          **GIVEN** an Operator on the HHD paper-ticket inspection screen
+          **AND** an example previously issued Adult Single paper ticket
+          **WHEN** the Operator inspects the ticket details
+          **THEN** the product, stages and validity of the ticket are displayed for inspection
+        expected: A paper ticket's product, stages and validity are shown for visual inspection.
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Cross-Border Tickets   …/ NIR-Rail ONLY LEAF
+  #  Old suite: NIR / Ticket Sales / Cross Border Tickets (844-849) — NIR-only.
+  #  Distinctive: dual currency (GBP/Euro) + ROI boarding/alighting stages + Layout 6.
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Cross-Border Tickets]
+    cases:
+      - title: Cross-Border — single with an ROI alighting stage
+        refs: [FBD-100450, FBD-100207]
+        objective: This test is to confirm an HHD in NIR-Rail mode issues a cross-border ticket to an ROI alighting stage.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing cross-border stations
+          **AND** an example Cross-Border Adult Single from Newry to an ROI alighting stage at Dundalk, priced per the NIR fares export (FBD-100450)
+          **WHEN** the Operator selects the ROI alighting stage and takes payment
+          **THEN** a cross-border ticket is printed to the ROI alighting stage
+          **AND** the fare charged equals the NIR fares-export cross-border fare
+          Data variations: payment {card GBP, cash Euro, warrant Euro}
+        expected: A cross-border ticket to an ROI alighting stage is issued at the fares-export fare, priced in the payment currency.
+      - title: Cross-Border — single from an ROI boarding stage
+        refs: [FBD-100450, FBD-100207]
+        objective: This test is to confirm an HHD in NIR-Rail mode issues a cross-border ticket from an ROI boarding stage.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing cross-border stations
+          **AND** an example Cross-Border Adult Single from an ROI boarding stage at Dundalk to Newry, priced per the NIR fares export
+          **WHEN** the Operator selects the ROI boarding stage and takes payment
+          **THEN** a cross-border ticket is printed from the ROI boarding stage
+          **AND** the fare charged equals the NIR fares-export cross-border fare
+          Data variations: payment {card GBP, cash Euro, warrant Euro}
+        expected: A cross-border ticket from an ROI boarding stage is issued at the fares-export fare, priced in the payment currency.
+      - title: Cross-Border — cash tendered in Euro is accepted and change given
+        refs: [FBD-100450]
+        objective: This test is to confirm a cross-border ticket paid in Euro cash is issued and any change is calculated in the tendered currency.
+        steps: |-
+          **GIVEN** an Operator issuing a Cross-Border Adult Single from Newry to Dundalk
+          **AND** an example Euro cash tender greater than the fare
+          **WHEN** the Operator completes the sale with Euro cash exceeding the fare
+          **THEN** the cross-border ticket is printed
+          **AND** the change due is calculated in Euro
+        expected: A cross-border sale accepts Euro cash and returns change in Euro.
+      - title: Cross-Border — ticket prints on the cross-border layout
+        refs: [FBD-100450, FBD-100167]
+        objective: This test is to confirm a cross-border ticket prints using the cross-border ticket layout.
+        steps: |-
+          **GIVEN** an Operator issuing a Cross-Border Adult Single from Newry to Dundalk
+          **WHEN** the ticket is printed
+          **THEN** the ticket prints on the cross-border ticket layout (Layout 6)
+          **AND** the printed layout shows the from and to cross-border stations
+        expected: A cross-border ticket prints on the cross-border layout showing the from/to stations.
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Sales — Paper Tickets / Metro & Ulsterbus Products   …/ GLIDER ONLY LEAF
+  #  Old suite: Glider R1.1 product family (Metro / Ulsterbus Multi-Journey, Town Service).
+  #  These are the Glider-mode product catalogue; the smartcard top-up side is in Top-Ups below.
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Sales - Paper Tickets, Metro & Ulsterbus Products]
+    cases:
+      - title: Metro Products — a Metro product ticket is issued
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm an HHD in Glider mode issues a Metro-network product at the fares-export price.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in Glider mode showing the Metro product range
+          **AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30 (fares export FBD-100336)
+          **WHEN** the Operator issues the Metro product and takes payment
+          **THEN** a ticket is printed for the Metro product
+          **AND** the fare charged equals the fares-export price for that product
+          Data variations: product {Metro Single, Metro Day, Metro Evening}; passenger {Adult, Child}
+        expected: A Metro-network product is issued at its fares-export price when the HHD is in Glider mode.
+      - title: Ulsterbus Products — an Ulsterbus product ticket is issued
+        refs: [FBD-100336, FBD-100207]
+        objective: This test is to confirm an HHD in Glider mode issues an Ulsterbus product at the fares-export price.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in Glider mode showing the Ulsterbus product range
+          **AND** an example Ulsterbus Adult Single, 72b Moygashel Busby Shop to Armagh Bus Centre, ref.60 £4.50 (fares export FBD-100336)
+          **WHEN** the Operator issues the Ulsterbus product and takes payment
+          **THEN** a ticket is printed for the Ulsterbus product
+          **AND** the fare charged equals the fares-export price for that product
+          Data variations: product {Ulsterbus Single, Day Return}; passenger {Adult, Child}
+        expected: An Ulsterbus product is issued at its fares-export price when the HHD is in Glider mode.
+      - title: Ulsterbus Town Service — a Town Service ticket is limited to the boarding town
+        refs: [FBD-100340, FBD-100207]
+        objective: This test is to confirm an Ulsterbus Town Service ticket is priced to the furthest stop within the boarding town's zone area.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in Glider mode on an Ulsterbus town-service route
+          **AND** an example Town Service ticket boarding at Harryville Shops in the Ballymena zone area (FBD-100340)
+          **WHEN** the Operator issues the Town Service ticket
+          **THEN** the ticket alighting stage is the furthest stop within the Ballymena zone area (Ballee Park & Ride)
+          **AND** the fare is priced within the boarding town
+        expected: A Town Service ticket is limited to the furthest stop in the boarding town's zone area and priced within that town (FBD-100340).
+      - title: Ulsterbus Town Service — boarding outside the town-service zone is rejected
+        refs: [FBD-100340]
+        objective: This test is to confirm a Town Service ticket cannot be issued when the boarding stop is outside the Ulsterbus Town Services zone.
+        steps: |-
+          **GIVEN** an Operator signed on to an HHD in Glider mode on a long-distance route
+          **AND** an example boarding stop at Pipe Road, outside the Ulsterbus Town Services zone (FBD-100340)
+          **WHEN** the Operator attempts to issue a Town Service ticket from that stop
+          **THEN** the Town Service ticket is not issued
+          **AND** the stop is indicated as invalid for the Town Service product
+        expected: A Town Service ticket is refused when the boarding stop is outside the Town Services zone (FBD-100340 invalid edge).
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Top-Ups  (SHARED, all modes — product set differs by mode via Run Config)
+  #  Old suite: NIR / Top Ups + Glider R1.1 / Top Ups (identical flows, per-product explosion).
+  #  Products folded to a Data-variations line; distinct FLOWS get their own case.
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Top-Ups]
+    cases:
+      - title: Top-Up — a smartcard top-up completes and prints a receipt
+        refs: [FBD-100261]
+        objective: This test is to confirm an Operator can top up a smartcard product, take payment, and print a top-up receipt.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD at the top-up screen
+          **AND** an example Adult iLink smartcard presented, topped up by cash
+          **WHEN** the Operator completes the top-up and takes payment
+          **THEN** the top-up value is written to the smartcard
+          **AND** a top-up receipt is printed
+          Data variations: product {iLink, Metro Multi-Journey, Ulsterbus Multi-Journey, Daylink, Metro Travelcard, BVP, Period}; passenger {Adult, Child}; payment {cash, cEMV card}
+        expected: A smartcard top-up writes the value to the card and prints a receipt, across products, passenger types and payment methods.
+      - title: Top-Up — Multi-Journey top-up adds the selected journeys
+        refs: [FBD-100261]
+        objective: This test is to confirm a Multi-Journey top-up adds the selected number of journeys at the fares-export price.
+        steps: |-
+          **GIVEN** an Operator at the top-up screen with a Multi-Journey smartcard presented
+          **AND** an example Metro Multi-Journey 10-journey top-up at £20 (FBD-100261)
+          **WHEN** the Operator selects the journey amount and takes payment
+          **THEN** the selected journeys are added to the smartcard
+          **AND** the fare charged equals the fares-export price for that journey amount
+          Data variations: product {Metro Multi-Journey, Ulsterbus Multi-Journey}; passenger {Adult, Child}
+        expected: A Multi-Journey top-up adds the selected journeys at the fares-export price.
+      - title: Top-Up — a Multi-Journey top-up exceeding the 45-journey maximum is prevented
+        refs: [FBD-100261]
+        objective: This test is to confirm a Multi-Journey top-up that would exceed the 45-journey maximum is prevented.
+        steps: |-
+          **GIVEN** an Operator topping up a Multi-Journey smartcard already close to the maximum
+          **AND** an example top-up that would take the card beyond 45 journeys
+          **WHEN** the Operator attempts the top-up
+          **THEN** the top-up is prevented
+          **AND** the Operator is told the maximum journeys would be exceeded
+        expected: A Multi-Journey top-up beyond the 45-journey maximum is prevented with a maximum-exceeded message.
+      - title: Top-Up — expired journeys are removed before an amount-entered top-up
+        refs: [FBD-100261]
+        objective: This test is to confirm expired journeys are removed from a Multi-Journey smartcard before a new top-up is applied.
+        steps: |-
+          **GIVEN** an Operator topping up a Multi-Journey smartcard that holds expired journeys
+          **WHEN** the Operator applies a new top-up
+          **THEN** the expired journeys are removed from the card
+          **AND** the new top-up journeys are the only journeys remaining
+          Data variations: amount selection {amount entered, quick selection}
+        expected: Expired journeys are stripped before the new top-up so only the fresh journeys remain.
+      - title: Top-Up — an expired smartcard is topped up and reactivated
+        refs: [FBD-100261]
+        objective: This test is to confirm an expired smartcard product can be topped up and returned to a valid state.
+        steps: |-
+          **GIVEN** an Operator at the top-up screen with an expired smartcard presented
+          **AND** an example expired Adult iLink smartcard
+          **WHEN** the Operator completes a top-up
+          **THEN** the smartcard is returned to a valid state
+          **AND** a top-up receipt is printed
+          Data variations: product {iLink, BVP, Metro Travelcard, Daylink}; passenger {Adult, Child}
+        expected: An expired smartcard is reactivated by a top-up and a receipt printed.
+      - title: Top-Up — the Operator enters the exact amount owed manually
+        refs: [FBD-100261]
+        objective: This test is to confirm an Operator can complete a top-up by manually entering the exact cash amount owed.
+        steps: |-
+          **GIVEN** an Operator at the cash top-up payment screen
+          **WHEN** the Operator manually enters the exact amount owed
+          **THEN** the top-up completes with no change due
+          **AND** a top-up receipt is printed
+        expected: A manually entered exact-cash amount completes the top-up with no change due.
+      - title: Top-Up — a quick-select cash amount over the amount owed gives change
+        refs: [FBD-100261]
+        objective: This test is to confirm a quick-select cash amount greater than the amount owed completes the top-up and accounts for change.
+        steps: |-
+          **GIVEN** an Operator at the cash top-up payment screen
+          **AND** an example quick-select amount greater than the amount owed
+          **WHEN** the Operator selects the over-amount quick payment
+          **THEN** the top-up completes
+          **AND** the change due is calculated and shown to the Operator
+        expected: A quick-select cash overpayment completes the top-up and reports the change due.
+      - title: Top-Up — the Operator starts a top-up and cancels it
+        refs: [FBD-100261]
+        objective: This test is to confirm an Operator can cancel a top-up in progress with no value written to the smartcard.
+        steps: |-
+          **GIVEN** an Operator who has started a top-up transaction
+          **WHEN** the Operator cancels the top-up before payment
+          **THEN** no value is written to the smartcard
+          **AND** the Operator is returned to the top-up screen
+        expected: A cancelled top-up writes nothing to the card and returns to the top-up screen.
+      - title: Top-Up — presenting a different card when completing the top-up is rejected
+        refs: [FBD-100261]
+        objective: This test is to confirm a top-up is rejected if a different smartcard is presented when completing the transaction.
+        steps: |-
+          **GIVEN** an Operator completing a top-up started against one smartcard
+          **WHEN** a different smartcard is presented to complete the top-up
+          **THEN** the top-up is rejected
+          **AND** no value is written to either smartcard
+        expected: Presenting a different card at completion rejects the top-up and writes no value.
+      - title: Top-Up — a non-Translink smartcard is rejected
+        refs: [FBD-100261]
+        objective: This test is to confirm the HHD rejects a top-up when a non-Translink smartcard is presented.
+        steps: |-
+          **GIVEN** an Operator at the top-up screen
+          **WHEN** a non-Translink smartcard is presented
+          **THEN** the card is rejected as not a Translink smartcard
+          **AND** no top-up is offered
+        expected: A non-Translink smartcard is rejected and no top-up is offered.
+      - title: Top-Up — an unsuccessful top-up print is retried
+        refs: [FBD-100261]
+        objective: This test is to confirm an Operator can retry printing a top-up receipt after the print fails.
+        steps: |-
+          **GIVEN** an Operator whose top-up completed but the receipt print failed
+          **AND** an example top-up paid by exact cash
+          **WHEN** the Operator retries the receipt print
+          **THEN** the top-up receipt is printed
+          **AND** the top-up value on the smartcard is unchanged
+        expected: A failed top-up receipt print can be retried without altering the topped-up value.
+      - title: Top-Up — an unsuccessful top-up print is annulled and cash refunded
+        refs: [FBD-100261, FBD-100373]
+        objective: This test is to confirm an Operator can annul a top-up whose receipt print failed, reversing the value and returning the cash.
+        steps: |-
+          **GIVEN** an Operator whose top-up completed but the receipt print failed
+          **AND** an example top-up where cash was paid over the amount owed
+          **WHEN** the Operator annuls the unsuccessful top-up
+          **THEN** the topped-up value is reversed on the smartcard
+          **AND** the cash paid is returned to the customer
+        expected: An unsuccessful top-up print can be annulled, reversing the smartcard value and returning the cash.
+      - title: Top-Up — a mini-statement after a top-up shows the updated balance
+        refs: [FBD-100261]
+        objective: This test is to confirm a smartcard mini-statement printed after a top-up reflects the updated balance.
+        steps: |-
+          **GIVEN** an Operator with a smartcard just successfully topped up
+          **WHEN** the Operator prints a mini-statement
+          **THEN** a mini-statement receipt is printed for the smartcard
+          **AND** the printed balance reflects the top-up
+          Data variations: product {Multi-Journey journeys, Period expiry, Daylink days}
+        expected: A mini-statement after a top-up prints the updated balance for the smartcard product.
+      - title: Top-Up — a completed top-up posts an audit record to the back office
+        refs: [FBD-100341, FBD-100261]
+        objective: This test is to confirm a completed top-up posts a conformant transaction record to the back office.
+        steps: |-
+          **GIVEN** an Operator who has completed a Metro Multi-Journey 10-journey top-up at £20
+          **WHEN** the top-up transaction is sent to the back office
+          **THEN** the record shows the topped-up product with its value
+          **AND** the record is visible in CloudFare
+          **AND** the record is carried through to MERIT
+        expected: A completed top-up posts a transaction carrying the product and value, visible in CloudFare and carried to MERIT.
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Penalty Warning & Fares  (SHARED, all modes)
+  #  Old suite: NIR + Glider Penalty Warning/Fares (per-passenger explosion) + CR78 auditing +
+  #  Chipside Penalty Fares App whitelist. Passenger types folded to a Data-variations line.
+  # ═══════════════════════════════════════════════════════════════════
+  - path: [Functional, Penalty Warning & Fares]
+    cases:
+      - title: Penalty Warning — a penalty warning is issued and printed
+        refs: [FBD-100716]
+        objective: This test is to confirm an Operator can issue a penalty warning and a penalty warning ticket is printed.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD
+          **AND** an example passenger travelling without a valid ticket
+          **WHEN** the Operator issues a penalty warning
+          **THEN** a penalty warning ticket is printed
+          **AND** the ticket shows the penalty warning details
+          Data variations: mode {NIR-Rail, Glider}
+        expected: A penalty warning is issued and a penalty warning ticket printed with the warning details.
+      - title: Penalty Warning — a penalty warning is issued during a smartcard inspection
+        refs: [FBD-100716, FBD-100651]
+        objective: This test is to confirm an Operator can issue a penalty warning off the back of a smartcard inspection.
+        steps: |-
+          **GIVEN** an Operator inspecting a smartcard that is invalid for travel
+          **WHEN** the Operator issues a penalty warning from the inspection result
+          **THEN** a penalty warning ticket is printed
+          **AND** the ticket references the inspected smartcard
+        expected: A penalty warning is issued from a smartcard inspection and printed referencing the inspected card.
+      - title: Penalty Fare — a penalty fare is issued from the operator menu
+        refs: [FBD-100716]
+        objective: This test is to confirm an Operator can issue a penalty fare from the operator menu and a penalty fare ticket is printed.
+        steps: |-
+          **GIVEN** an Operator signed on to the HHD at the operator menu
+          **WHEN** the Operator issues a penalty fare
+          **THEN** a penalty fare ticket is printed
+          **AND** the ticket shows the penalty fare amount
+          Data variations: mode {NIR-Rail, Glider}
+        expected: A penalty fare is issued from the operator menu and printed with the penalty fare amount.
+      - title: Penalty Fare — a penalty fare is issued for an invalid or expired smartcard
+        refs: [FBD-100716, FBD-100651]
+        objective: This test is to confirm an Operator can issue a penalty fare when an inspected smartcard is invalid or expired.
+        steps: |-
+          **GIVEN** an Operator inspecting a smartcard on the HHD
+          **AND** an example Adult smartcard that is expired or invalid for travel
+          **WHEN** the Operator issues a penalty fare against the inspection
+          **THEN** a penalty fare ticket is printed
+          **AND** the ticket references the invalid smartcard
+          Data variations: passenger {Adult, Child, Free, yLink, 24+, Staff/Spouse/Dependents/Retired/External}
+        expected: A penalty fare is issued and printed for an invalid or expired smartcard, across passenger types.
+      - title: Penalty Fare — the penalty ticket prints correct details for Operator and Supervisor
+        refs: [FBD-100716]
+        objective: This test is to confirm the penalty ticket prints the correct issuing-role details whether issued by an Operator or a Supervisor.
+        steps: |-
+          **GIVEN** an Operator issuing a penalty during a smartcard inspection
+          **WHEN** the penalty ticket is printed
+          **THEN** the ticket shows the correct issuing-role details
+          Data variations: role {Operator, Supervisor}
+        expected: The penalty ticket prints the correct issuing-role details for an Operator or a Supervisor.
+      - title: Penalty Fare — only a whitelisted operator can issue a penalty fare
+        refs: [FBD-100716]
+        objective: This test is to confirm a penalty fare can only be issued by an operator on the penalty-fare whitelist.
+        steps: |-
+          **GIVEN** the HHD is signed on by an operator who is not on the penalty-fare whitelist
+          **WHEN** the operator attempts to issue a penalty fare
+          **THEN** the penalty fare is not available to that operator
+          **AND** a whitelisted operator can issue the penalty fare
+        expected: Penalty fare issue is restricted to whitelisted operators; a non-whitelisted operator cannot issue one.
+      - title: Penalty Fare — issuing a penalty fare posts an audit event to the back office
+        refs: [FBD-100716, FBD-100341]
+        objective: This test is to confirm issuing a penalty fare posts a conformant penalty audit event to the back office.
+        steps: |-
+          **GIVEN** an Operator who has issued a penalty fare on the HHD
+          **WHEN** the penalty transaction is sent to the back office
+          **THEN** a penalty fare audit event is recorded with the client shift id
+          **AND** the event is visible in CloudFare
+          **AND** the event is carried through to MERIT
+        expected: A penalty fare issue posts a penalty audit event carrying the shift id, visible in CloudFare and carried to MERIT.
+      - title: Penalty Warning & Fares — a waybill reflects issued penalties
+        refs: [FBD-100716]
+        objective: This test is to confirm a printed waybill accounts for penalty warnings and penalty fares issued during the shift.
+        steps: |-
+          **GIVEN** an Operator who has issued penalty warnings and penalty fares during the shift
+          **WHEN** the Operator prints a waybill
+          **THEN** the waybill lists the issued penalty warnings
+          **AND** the waybill lists the issued penalty fares
+        expected: A waybill accounts for the penalty warnings and penalty fares issued during the shift.

@@ -1,0 +1,44 @@
+# GV consolidation-COMPLETENESS audit, 2026-07-23 — genuine live-suite additions.
+# Target: **NEW** GV Test Suite (30286), project 42. Read-only source suite = 14973.
+#
+# Finding: the HMI Screens section (887837) carries 4 of the old suite's 6 distinct Barcode Error
+# Screens (old suite "Screens > Validator Screens Project 3 > Validator Screens for Barcodes",
+# cases 3496707-3496721). Two screens were dropped in consolidation with no live case and no mention
+# in the pending-integration scaffolding either — genuinely missing, not a deliberate needs-spec
+# hold-back (this cluster is spec-grounded, FBD-100167, same as the 4 sibling screens already live).
+# See gv-consolidation-completeness.changelog.md for the full family-by-family audit.
+
+suite: "**NEW** GV Test Suite"
+suite_id: 30286
+
+defaults:
+  template_id: 1
+  custom_devtypes: [15]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  - path: [Non-Functional, HMI Screens]
+    cases:
+      - title: Barcode Error Screen — Barcode Not Valid At The Current Time
+        refs: [FBD-100167]
+        objective: This test is to confirm the GV shows the Barcode Not Valid At The Current Time screen for a barcode presented outside its valid time.
+        steps: |-
+          **GIVEN** a GV presented with a barcode for a product that is not valid at the current time
+          **WHEN** the barcode is presented
+          **THEN** the screen matches the approved Barcode Not Valid At The Current Time design
+        expected: |-
+          The GV shows the approved Barcode Not Valid At The Current Time screen.
+
+          [Automatable: No]
+      - title: Barcode Error Screen — Barcode Not Valid On This Service
+        refs: [FBD-100167]
+        objective: This test is to confirm the GV shows the Barcode Not Valid On This Service screen for a barcode that is not a valid Rail barcode.
+        steps: |-
+          **GIVEN** a GV presented with a barcode that is not a valid Rail barcode for this service
+          **WHEN** the barcode is presented
+          **THEN** the screen matches the approved Barcode Not Valid On This Service design
+        expected: |-
+          The GV shows the approved Barcode Not Valid On This Service screen.
+
+          [Automatable: No]

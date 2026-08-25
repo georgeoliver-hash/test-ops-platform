@@ -1,0 +1,1023 @@
+# ETM variant expansion, 2026-07-24 — George's hard rule: "no test should tell someone to test
+# multiple variants... we should have a test for each." Every case found carrying a "Data
+# variations: X, Y, Z" list of card/smartcard/product/entitlement-type names is expanded into one
+# separate, individually-executable case per named variant. The first-listed variant reuses the
+# original case id (retitled via `match`); the rest are new cases in the same section. Genuine
+# operating-mode-only notes (Metro/Ulsterbus mode) and generic Adult/Child equivalence-class
+# mentions are NOT split (see etm-variant-expansion.changelog.md for the full rationale per family;
+# those cases are handled by the companion etm-variant-expansion.rewrite.json instead — tidy the
+# text, no new case). Target: **NEW** ETM-Acceptance Suite (30254), project 42.
+
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  # ------------------------------------------------------------------ #
+  # Family: Driver Sign On — first use with defects recorded (Manual / Smartcard)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Sign On & Session / Driver
+    cases:
+      - title: Driver Sign On — first use with defects recorded (Manual)
+        match: Driver Sign On — first use with defects recorded
+        refs: ["old-suite C2481159"]
+        objective: This test is to confirm a Driver can record vehicle defects during first-use sign-on (Manual entry) and that the defect record is audited to CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is mid first-use sign-on to Metro route 10A (IN) via Manual ID/PIN entry, stopped at the Any Defects screen
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Yes to record that the bus has defects and enter the defect detail (e.g. "offside mirror cracked")
+          **THEN** the defect is recorded against the shift
+          **AND** sign-on continues to the Duty Number entry screen
+          **WHEN** you open the shift in CloudFare Estate Management
+          **THEN** the defect record can be identified against the Driver and vehicle
+        expected: |-
+          The recorded defect is captured against the shift and is visible against the Driver and vehicle in the CloudFare Activity Log.
+
+          [Automatable: Yes · Cross-check: CloudFare]
+      - title: Driver Sign On — first use with defects recorded (Smartcard)
+        refs: ["old-suite C2481159"]
+        objective: This test is to confirm a Driver can record vehicle defects during first-use sign-on (Smartcard sign-on) and that the defect record is audited to CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** the seeded test Driver is mid first-use sign-on to Metro route 10A (IN) via Smartcard presentation, stopped at the Any Defects screen
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you select Yes to record that the bus has defects and enter the defect detail (e.g. "offside mirror cracked")
+          **THEN** the defect is recorded against the shift
+          **AND** sign-on continues to the Duty Number entry screen
+          **WHEN** you open the shift in CloudFare Estate Management
+          **THEN** the defect record can be identified against the Driver and vehicle
+        expected: |-
+          The recorded defect is captured against the shift and is visible against the Driver and vehicle in the CloudFare Activity Log.
+
+          [Automatable: Yes · Cross-check: CloudFare]
+
+  # ------------------------------------------------------------------ #
+  # Family: Ticket Issue — issue a single ticket (8 named products)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Ticket Issue
+    cases:
+      - title: Ticket Issue — issue a single ticket (Metro Single)
+        match: Ticket Issue — issue a single ticket
+        objective: This test is to confirm a Metro Single ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Moygashel Busby Shop to Armagh Bus Centre Metro Single is £4.50 (ref.60)
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Metro Single ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (Day Return)
+        objective: This test is to confirm a Day Return ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Day Return ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Day Return ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (Month Return)
+        objective: This test is to confirm a Month Return ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Month Return ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Month Return ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (iLink Single)
+        objective: This test is to confirm an iLink Single ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult iLink Single ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed iLink Single ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (Gateway)
+        objective: This test is to confirm a Gateway ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Gateway ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Gateway ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (Jobseeker)
+        objective: This test is to confirm a Jobseeker ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Jobseeker ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Jobseeker ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (Warrant Return)
+        objective: This test is to confirm a Warrant Return ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult Warrant Return ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed Warrant Return ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Ticket Issue — issue a single ticket (ME Rugby Day)
+        objective: This test is to confirm an ME Rugby Day ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** an Adult ME Rugby Day ticket is available at its configured fare
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT and SmartTrack
+        expected: A ticket builds, pays and issues with a printed ME Rugby Day ticket; when change is due a change receipt prints; recorded in CloudFare, MERIT and SmartTrack.
+
+      # ---- Family: Ticket Issue — Easibus stage selection (8 named options) ---- #
+      - title: Ticket Issue — Easibus stage selection (Red)
+        match: Ticket Issue — Easibus stage selection
+        objective: This test is to confirm a ticket can be issued using the Easibus Red stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/02_0_5 _ Easibus.png
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Red stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Red stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Red stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Orange)
+        objective: This test is to confirm a ticket can be issued using the Easibus Orange stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Orange stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Orange stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Orange stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Yellow)
+        objective: This test is to confirm a ticket can be issued using the Easibus Yellow stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Yellow stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Yellow stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Yellow stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Green)
+        objective: This test is to confirm a ticket can be issued using the Easibus Green stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Green stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Green stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Green stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (White)
+        objective: This test is to confirm a ticket can be issued using the Easibus White stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus White stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus White stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus White stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Buggy)
+        objective: This test is to confirm a ticket can be issued using the Easibus Buggy stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Buggy stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Buggy stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Buggy stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Wheelchair)
+        objective: This test is to confirm a ticket can be issued using the Easibus Wheelchair stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Wheelchair stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Wheelchair stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Wheelchair stage, recorded in CloudFare and MERIT.
+      - title: Ticket Issue — Easibus stage selection (Other)
+        objective: This test is to confirm a ticket can be issued using the Easibus Other stage selection.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen with Easibus stage selection available
+          **WHEN** you choose the Easibus Other stage, take payment and issue the ticket
+          **THEN** a ticket issues against the Easibus Other stage
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A ticket issues against the Easibus Other stage, recorded in CloudFare and MERIT.
+
+  # ------------------------------------------------------------------ #
+  # Family: Promo Menu — issue a promo product (7 named products)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Ticket Issue / Promo Menu
+    cases:
+      - title: Promo Menu — issue a promo product (Bus Rambler)
+        match: Promo Menu — issue a promo product
+        objective: This test is to confirm issuing a Bus Rambler Promo Menu product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Bus Rambler, take payment and issue
+          **THEN** the Bus Rambler product issues
+          **AND** the Bus Rambler product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Bus Rambler Promo Menu product issues and prints; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (Metro Day)
+        objective: This test is to confirm issuing a Metro Day Promo Menu product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Metro Day, take payment and issue
+          **THEN** the Metro Day product issues
+          **AND** the Metro Day product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Metro Day Promo Menu product issues and prints; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (Metro Evening)
+        objective: This test is to confirm issuing a Metro Evening Promo Menu product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Metro Evening, take payment and issue
+          **THEN** the Metro Evening product issues
+          **AND** the Metro Evening product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Metro Evening Promo Menu product issues and prints; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (Metro Family Day, additional child)
+        objective: This test is to confirm issuing a Metro Family Day Promo Menu product, including adding an additional child to the family product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Metro Family Day, add an additional child, take payment and issue
+          **THEN** the Metro Family Day product issues, including the additional child
+          **AND** the Metro Family Day product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Metro Family Day Promo Menu product issues and prints, including an additional child; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (Family & Friends Day, additional child)
+        objective: This test is to confirm issuing a Family & Friends Day Promo Menu product, including adding an additional child to the family product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Family & Friends Day, add an additional child, take payment and issue
+          **THEN** the Family & Friends Day product issues, including the additional child
+          **AND** the Family & Friends Day product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Family & Friends Day Promo Menu product issues and prints, including an additional child; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (Park & Ride)
+        objective: This test is to confirm issuing a Park & Ride Promo Menu product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select Park & Ride, take payment and issue
+          **THEN** the Park & Ride product issues
+          **AND** the Park & Ride product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: A Park & Ride Promo Menu product issues and prints; recorded in CloudFare and MERIT.
+      - title: Promo Menu — issue a promo product (ME Rugby Day)
+        objective: This test is to confirm issuing an ME Rugby Day Promo Menu product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) at the FLU screen with the Promo Menu configured
+          **WHEN** you open the Promo Menu, select ME Rugby Day, take payment and issue
+          **THEN** the ME Rugby Day product issues
+          **AND** the ME Rugby Day product prints
+          **WHEN** you check the printout and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: An ME Rugby Day Promo Menu product issues and prints; recorded in CloudFare and MERIT.
+
+  # ------------------------------------------------------------------ #
+  # Family: Smartcard — invalid card presented (5 named decline reasons)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Validation
+    cases:
+      - title: Smartcard — invalid card presented (wrong zone, Metro)
+        match: Smartcard — invalid card presented
+        objective: This test is to confirm the ETM rejects a smartcard presented in the wrong Metro zone, with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/05_0_0 - Hotlisted Error.png
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded smartcard valid only for a different Metro zone is available
+          **WHEN** you present the wrong-zone card
+          **THEN** the ETM rejects the card
+          **AND** the ETM shows "wrong zone" on screen
+        expected: A wrong-zone smartcard is rejected with the reason shown, recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — invalid card presented (invalid boarding stage, Ulsterbus)
+        objective: This test is to confirm the ETM rejects a smartcard presented with an invalid Ulsterbus boarding stage, with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) at the FLU screen
+          **AND** a seeded smartcard with an invalid boarding stage for the route is available
+          **WHEN** you present the invalid-boarding-stage card
+          **THEN** the ETM rejects the card
+          **AND** the ETM shows "invalid boarding stage" on screen
+        expected: A smartcard with an invalid boarding stage is rejected with the reason shown, recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — invalid card presented (outside time band)
+        objective: This test is to confirm the ETM rejects a smartcard presented outside its valid time band, with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded smartcard valid only within a specific time band is available, presented outside it
+          **WHEN** you present the outside-time-band card
+          **THEN** the ETM rejects the card
+          **AND** the ETM shows "outside time band" on screen
+        expected: A smartcard presented outside its time band is rejected with the reason shown, recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — invalid card presented (expired)
+        objective: This test is to confirm the ETM rejects an expired smartcard, with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded expired smartcard is available
+          **WHEN** you present the expired card
+          **THEN** the ETM rejects the card
+          **AND** the ETM shows "expired" on screen
+        expected: An expired smartcard is rejected with the reason shown, recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — invalid card presented (hotlisted)
+        objective: This test is to confirm the ETM rejects a hotlisted smartcard, with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded hotlisted smartcard is available
+          **WHEN** you present the hotlisted card
+          **THEN** the ETM rejects the card
+          **AND** the ETM shows "hotlisted" on screen
+        expected: A hotlisted smartcard is rejected with the reason shown, recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: Smartcard — inter-device top-up then validate on ETM (5 named source devices)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Top-Up
+    cases:
+      - title: Smartcard — inter-device top-up then validate on ETM (from POS TGX150)
+        match: Smartcard — inter-device top-up then validate on ETM
+        objective: This test is to confirm a card topped up on a POS (TGX150) validates correctly on the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a smartcard has been topped up on a POS (TGX150) and has synced to the back office
+          **AND** a Driver is signed on to Metro route 10A at the FLU screen
+          **WHEN** you present the card on the ETM to validate
+          **THEN** the card validates on the ETM with the topped-up product recognised
+          **WHEN** you open the CloudFare activity log
+          **THEN** the validation appears in the CloudFare activity log
+          **AND** the validation flows to MERIT and SmartTrack
+        expected: A card topped up on a POS (TGX150) validates on the ETM; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — inter-device top-up then validate on ETM (from POS WAY6)
+        objective: This test is to confirm a card topped up on a POS (WAY6) validates correctly on the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a smartcard has been topped up on a POS (WAY6) and has synced to the back office
+          **AND** a Driver is signed on to Metro route 10A at the FLU screen
+          **WHEN** you present the card on the ETM to validate
+          **THEN** the card validates on the ETM with the topped-up product recognised
+          **WHEN** you open the CloudFare activity log
+          **THEN** the validation appears in the CloudFare activity log
+          **AND** the validation flows to MERIT and SmartTrack
+        expected: A card topped up on a POS (WAY6) validates on the ETM; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — inter-device top-up then validate on ETM (from HHD)
+        objective: This test is to confirm a card topped up on an HHD validates correctly on the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a smartcard has been topped up on an HHD and has synced to the back office
+          **AND** a Driver is signed on to Metro route 10A at the FLU screen
+          **WHEN** you present the card on the ETM to validate
+          **THEN** the card validates on the ETM with the topped-up product recognised
+          **WHEN** you open the CloudFare activity log
+          **THEN** the validation appears in the CloudFare activity log
+          **AND** the validation flows to MERIT and SmartTrack
+        expected: A card topped up on an HHD validates on the ETM; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — inter-device top-up then validate on ETM (from PV)
+        objective: This test is to confirm a card topped up on a PV validates correctly on the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a smartcard has been topped up on a PV and has synced to the back office
+          **AND** a Driver is signed on to Metro route 10A at the FLU screen
+          **WHEN** you present the card on the ETM to validate
+          **THEN** the card validates on the ETM with the topped-up product recognised
+          **WHEN** you open the CloudFare activity log
+          **THEN** the validation appears in the CloudFare activity log
+          **AND** the validation flows to MERIT and SmartTrack
+        expected: A card topped up on a PV validates on the ETM; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Smartcard — inter-device top-up then validate on ETM (from another ETM)
+        objective: This test is to confirm a card topped up on another ETM validates correctly on this ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a smartcard has been topped up on another ETM and has synced to the back office
+          **AND** a Driver is signed on to Metro route 10A at the FLU screen
+          **WHEN** you present the card on the ETM to validate
+          **THEN** the card validates on the ETM with the topped-up product recognised
+          **WHEN** you open the CloudFare activity log
+          **THEN** the validation appears in the CloudFare activity log
+          **AND** the validation flows to MERIT and SmartTrack
+        expected: A card topped up on another ETM validates on this ETM; recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: Metro Multi-Journey — zone validation (3 named zones)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Multi-Journey
+    cases:
+      - title: Metro Multi-Journey — zone validation (City)
+        match: Metro Multi-Journey — zone validation
+        objective: This test is to confirm a Metro Multi-Journey City-zone card validates within its zone and rejects a wrong-zone presentation.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A in Metro mode
+          **AND** a Metro Multi-Journey City-zone card is presented
+          **WHEN** you present the card at a stop within the City zone
+          **THEN** the in-zone present validates
+          **AND** a journey is deducted
+          **WHEN** you present the card at a stop outside the City zone
+          **THEN** the out-of-zone present is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents are recorded in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: Metro MJ City-zone validates within zone and rejects wrong zone; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Metro Multi-Journey — zone validation (Inner)
+        objective: This test is to confirm a Metro Multi-Journey Inner-zone card validates within its zone and rejects a wrong-zone presentation.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A in Metro mode
+          **AND** a Metro Multi-Journey Inner-zone card is presented
+          **WHEN** you present the card at a stop within the Inner zone
+          **THEN** the in-zone present validates
+          **AND** a journey is deducted
+          **WHEN** you present the card at a stop outside the Inner zone
+          **THEN** the out-of-zone present is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents are recorded in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: Metro MJ Inner-zone validates within zone and rejects wrong zone; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Metro Multi-Journey — zone validation (Extended)
+        objective: This test is to confirm a Metro Multi-Journey Extended-zone card validates within its zone and rejects a wrong-zone presentation.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to Metro route 10A in Metro mode
+          **AND** a Metro Multi-Journey Extended-zone card is presented
+          **WHEN** you present the card at a stop within the Extended zone
+          **THEN** the in-zone present validates
+          **AND** a journey is deducted
+          **WHEN** you present the card at a stop outside the Extended zone
+          **THEN** the out-of-zone present is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents are recorded in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: Metro MJ Extended-zone validates within zone and rejects wrong zone; recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: Half-Fare SmartPass — validation (5 named eligibility sub-types)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Concessionary
+    cases:
+      - title: Half-Fare SmartPass — validation (DLA)
+        match: Half-Fare SmartPass — validation
+        objective: This test is to confirm a DLA Half-Fare SmartPass validates a half-fare journey when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded DLA Half-Fare SmartPass is available valid and invalid
+          **WHEN** you present the valid pass for a £4.50 fare, then present the invalid pass
+          **THEN** the valid DLA Half-Fare SmartPass validates a half-fare journey
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A DLA Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Half-Fare SmartPass — validation (Partially Sighted)
+        objective: This test is to confirm a Partially Sighted Half-Fare SmartPass validates a half-fare journey when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded Partially Sighted Half-Fare SmartPass is available valid and invalid
+          **WHEN** you present the valid pass for a £4.50 fare, then present the invalid pass
+          **THEN** the valid Partially Sighted Half-Fare SmartPass validates a half-fare journey
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A Partially Sighted Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Half-Fare SmartPass — validation (Learning Disability)
+        objective: This test is to confirm a Learning Disability Half-Fare SmartPass validates a half-fare journey when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded Learning Disability Half-Fare SmartPass is available valid and invalid
+          **WHEN** you present the valid pass for a £4.50 fare, then present the invalid pass
+          **THEN** the valid Learning Disability Half-Fare SmartPass validates a half-fare journey
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A Learning Disability Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Half-Fare SmartPass — validation (No Driving Licence)
+        objective: This test is to confirm a No Driving Licence Half-Fare SmartPass validates a half-fare journey when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded No Driving Licence Half-Fare SmartPass is available valid and invalid
+          **WHEN** you present the valid pass for a £4.50 fare, then present the invalid pass
+          **THEN** the valid No Driving Licence Half-Fare SmartPass validates a half-fare journey
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A No Driving Licence Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Half-Fare SmartPass — validation (PIPS)
+        objective: This test is to confirm a PIPS Half-Fare SmartPass validates a half-fare journey when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded PIPS Half-Fare SmartPass is available valid and invalid
+          **WHEN** you present the valid pass for a £4.50 fare, then present the invalid pass
+          **THEN** the valid PIPS Half-Fare SmartPass validates a half-fare journey
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A PIPS Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: EA Bus / EA Rail SmartPass — validation (Pupil / Further Education each)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Education
+    cases:
+      - title: EA Bus SmartPass — validation (Pupil)
+        match: EA Bus SmartPass — validation
+        objective: This test is to confirm an EA Bus Pupil SmartPass validates within its valid times, is rejected outside them, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded EA Bus Pupil SmartPass is available for in-time and out-of-time presentation
+          **WHEN** you present the pass within its valid times, then present it outside its valid times
+          **THEN** the pass validates within its valid times
+          **AND** the pass is rejected outside its valid times with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An EA Bus Pupil SmartPass validates within its valid times and rejects outside them; recorded in CloudFare, MERIT and SmartTrack.
+      - title: EA Bus SmartPass — validation (Further Education)
+        objective: This test is to confirm an EA Bus Further Education SmartPass validates within its valid times, is rejected outside them, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 72b (IN)
+          **AND** a seeded EA Bus Further Education SmartPass is available for in-time and out-of-time presentation
+          **WHEN** you present the pass within its valid times, then present it outside its valid times
+          **THEN** the pass validates within its valid times
+          **AND** the pass is rejected outside its valid times with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An EA Bus Further Education SmartPass validates within its valid times and rejects outside them; recorded in CloudFare, MERIT and SmartTrack.
+      - title: EA Rail SmartPass — validation (Pupil)
+        match: EA Rail SmartPass — validation
+        objective: This test is to confirm an EA Rail Pupil SmartPass validates within its valid times, is rejected outside them, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on a rail-substitution service on route 72b (IN)
+          **AND** a seeded EA Rail Pupil SmartPass is available for in-time and out-of-time presentation
+          **WHEN** you present the pass within its valid times, then present it outside its valid times
+          **THEN** the pass validates within its valid times
+          **AND** the pass is rejected outside its valid times with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An EA Rail Pupil SmartPass validates within its valid times and rejects outside them; recorded in CloudFare, MERIT and SmartTrack.
+      - title: EA Rail SmartPass — validation (Further Education)
+        objective: This test is to confirm an EA Rail Further Education SmartPass validates within its valid times, is rejected outside them, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on a rail-substitution service on route 72b (IN)
+          **AND** a seeded EA Rail Further Education SmartPass is available for in-time and out-of-time presentation
+          **WHEN** you present the pass within its valid times, then present it outside its valid times
+          **THEN** the pass validates within its valid times
+          **AND** the pass is rejected outside its valid times with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An EA Rail Further Education SmartPass validates within its valid times and rejects outside them; recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: Belfast Visitor Pass (1/2/3-day) + iLink (Zones 1-4, NW)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Smartcards / Commercial
+    cases:
+      - title: Belfast Visitor Pass — validation (1-day)
+        match: Belfast Visitor Pass — validation
+        objective: This test is to confirm a 1-day Belfast Visitor Pass validates within its zone and validity when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Metro route 10A
+          **AND** a seeded 1-day Belfast Visitor Pass is available valid and invalid
+          **WHEN** you present the valid pass within its zone and validity, then present it out of zone, expired or hotlisted
+          **THEN** the valid pass validates within zone and validity
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A 1-day Belfast Visitor Pass validates within zone and validity and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Belfast Visitor Pass — validation (2-day)
+        objective: This test is to confirm a 2-day Belfast Visitor Pass validates within its zone and validity when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Metro route 10A
+          **AND** a seeded 2-day Belfast Visitor Pass is available valid and invalid
+          **WHEN** you present the valid pass within its zone and validity, then present it out of zone, expired or hotlisted
+          **THEN** the valid pass validates within zone and validity
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A 2-day Belfast Visitor Pass validates within zone and validity and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: Belfast Visitor Pass — validation (3-day)
+        objective: This test is to confirm a 3-day Belfast Visitor Pass validates within its zone and validity when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Metro route 10A
+          **AND** a seeded 3-day Belfast Visitor Pass is available valid and invalid
+          **WHEN** you present the valid pass within its zone and validity, then present it out of zone, expired or hotlisted
+          **THEN** the valid pass validates within zone and validity
+          **AND** the invalid pass is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: A 3-day Belfast Visitor Pass validates within zone and validity and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: iLink — validation (Zone 1)
+        match: iLink — validation
+        objective: This test is to confirm an iLink Zone 1 smartcard validates within its zone when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 105a (IN) in iLink Zone 1
+          **AND** a seeded iLink Zone 1 card is available valid and invalid
+          **WHEN** you present the valid card within its zone, then present it out of zone, expired or hotlisted
+          **THEN** the valid iLink Zone 1 card validates within its zone
+          **AND** the invalid card is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An iLink Zone 1 card validates within its zone and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: iLink — validation (Zone 2)
+        objective: This test is to confirm an iLink Zone 2 smartcard validates within its zone when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 105a (IN) in iLink Zone 2
+          **AND** a seeded iLink Zone 2 card is available valid and invalid
+          **WHEN** you present the valid card within its zone, then present it out of zone, expired or hotlisted
+          **THEN** the valid iLink Zone 2 card validates within its zone
+          **AND** the invalid card is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An iLink Zone 2 card validates within its zone and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: iLink — validation (Zone 3)
+        objective: This test is to confirm an iLink Zone 3 smartcard validates within its zone when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 105a (IN) in iLink Zone 3
+          **AND** a seeded iLink Zone 3 card is available valid and invalid
+          **WHEN** you present the valid card within its zone, then present it out of zone, expired or hotlisted
+          **THEN** the valid iLink Zone 3 card validates within its zone
+          **AND** the invalid card is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An iLink Zone 3 card validates within its zone and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: iLink — validation (Zone 4)
+        objective: This test is to confirm an iLink Zone 4 smartcard validates within its zone when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 105a (IN) in iLink Zone 4
+          **AND** a seeded iLink Zone 4 card is available valid and invalid
+          **WHEN** you present the valid card within its zone, then present it out of zone, expired or hotlisted
+          **THEN** the valid iLink Zone 4 card validates within its zone
+          **AND** the invalid card is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An iLink Zone 4 card validates within its zone and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+      - title: iLink — validation (NW)
+        objective: This test is to confirm an iLink NW-zone smartcard validates within its zone when valid, is rejected with the reason when invalid, and is recorded in the back office.
+        steps: |-
+          **GIVEN** the ETM is signed on and in service on Ulsterbus route 105a (IN) in the iLink NW zone
+          **AND** a seeded iLink NW card is available valid and invalid
+          **WHEN** you present the valid card within its zone, then present it out of zone, expired or hotlisted
+          **THEN** the valid iLink NW card validates within its zone
+          **AND** the invalid card is rejected with the reason
+          **WHEN** you open the CloudFare activity log
+          **THEN** both presents appear in the CloudFare activity log
+          **AND** both presents flow to MERIT and SmartTrack
+        expected: An iLink NW card validates within its zone and rejects out-of-zone, expired or hotlisted; recorded in CloudFare, MERIT and SmartTrack.
+
+  # ------------------------------------------------------------------ #
+  # Family: ABT — successful tap (5 card schemes + 3 mobile wallets) + invalid taps (2 decline reasons)
+  # ------------------------------------------------------------------ #
+  - path: Functional / ABT
+    cases:
+      - title: ABT — successful tap and passback (Visa Debit)
+        match: ABT — successful tap, passback and mobile wallet
+        refs: ["old-suite C2478848", "old-suite C2478849", "old-suite C2478846", "old-suite C2478847", "old-suite C2478850"]
+        objective: This test is to confirm a successful ABT tap and second-tap passback with a Visa Debit contactless EMV card.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded Visa Debit contactless card is available
+          **WHEN** you tap the Visa Debit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time
+          **THEN** the second tap enters passback
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: A valid Visa Debit ABT tap is accepted (success tone, "Success"); a second tap enters passback; recorded in CloudFare and MERIT.
+      - title: ABT — successful tap and passback (Visa Credit)
+        objective: This test is to confirm a successful ABT tap and second-tap passback with a Visa Credit contactless EMV card.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded Visa Credit contactless card is available
+          **WHEN** you tap the Visa Credit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time
+          **THEN** the second tap enters passback
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: A valid Visa Credit ABT tap is accepted (success tone, "Success"); a second tap enters passback; recorded in CloudFare and MERIT.
+      - title: ABT — successful tap and passback (Mastercard Debit)
+        objective: This test is to confirm a successful ABT tap and second-tap passback with a Mastercard Debit contactless EMV card.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded Mastercard Debit contactless card is available
+          **WHEN** you tap the Mastercard Debit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time
+          **THEN** the second tap enters passback
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: A valid Mastercard Debit ABT tap is accepted (success tone, "Success"); a second tap enters passback; recorded in CloudFare and MERIT.
+      - title: ABT — successful tap and passback (Mastercard Credit)
+        objective: This test is to confirm a successful ABT tap and second-tap passback with a Mastercard Credit contactless EMV card.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded Mastercard Credit contactless card is available
+          **WHEN** you tap the Mastercard Credit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time
+          **THEN** the second tap enters passback
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: A valid Mastercard Credit ABT tap is accepted (success tone, "Success"); a second tap enters passback; recorded in CloudFare and MERIT.
+      - title: ABT — successful tap and passback (Maestro Debit)
+        objective: This test is to confirm a successful ABT tap and second-tap passback with a Maestro Debit contactless EMV card.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** a seeded Maestro Debit contactless card is available
+          **WHEN** you tap the Maestro Debit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time
+          **THEN** the second tap enters passback
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: A valid Maestro Debit ABT tap is accepted (success tone, "Success"); a second tap enters passback; recorded in CloudFare and MERIT.
+      - title: ABT — mobile wallet tap accepted (Apple Pay)
+        objective: This test is to confirm an ABT tap using Apple Pay (phone and watch) is accepted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** Apple Pay is set up on a seeded phone and watch
+          **WHEN** you tap Apple Pay on the phone, then on the watch, and open the CloudFare activity log
+          **THEN** both Apple Pay taps (phone and watch) are accepted with the success tone
+          **AND** both are recorded in CloudFare and flow to MERIT
+        expected: Apple Pay taps (phone and watch) are accepted; recorded in CloudFare and MERIT.
+      - title: ABT — mobile wallet tap accepted (Google Pay)
+        objective: This test is to confirm an ABT tap using Google Pay (phone and watch) is accepted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** Google Pay is set up on a seeded phone and watch
+          **WHEN** you tap Google Pay on the phone, then on the watch, and open the CloudFare activity log
+          **THEN** both Google Pay taps (phone and watch) are accepted with the success tone
+          **AND** both are recorded in CloudFare and flow to MERIT
+        expected: Google Pay taps (phone and watch) are accepted; recorded in CloudFare and MERIT.
+      - title: ABT — mobile wallet tap accepted (Samsung Pay)
+        objective: This test is to confirm an ABT tap using Samsung Pay (phone and watch) is accepted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** ABT taps are enabled and a Driver is signed on to Metro route 10A at the FLU screen
+          **AND** Samsung Pay is set up on a seeded phone and watch
+          **WHEN** you tap Samsung Pay on the phone, then on the watch, and open the CloudFare activity log
+          **THEN** both Samsung Pay taps (phone and watch) are accepted with the success tone
+          **AND** both are recorded in CloudFare and flow to MERIT
+        expected: Samsung Pay taps (phone and watch) are accepted; recorded in CloudFare and MERIT.
+      - title: ABT — invalid tap recorded in back office (Deny List decline)
+        match: ABT — invalid taps recorded in back office
+        refs: ["old-suite C2433859", "old-suite C2543145"]
+        objective: This test is to confirm an ABT tap declined by the Deny List is recorded in the back office under ABT with the decline reason.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** an invalid ABT tap (Deny List decline) has occurred on the ETM on Metro route 10A
+          **WHEN** you open the CloudFare device-activity log under ABT
+          **THEN** the invalid ABT tap appears under ABT
+          **AND** the decline reason "Deny List" is shown against the tap
+        expected: A Deny List-declined ABT tap appears in the back office under ABT with the decline reason.
+      - title: ABT — invalid tap recorded in back office (BIN List decline)
+        refs: ["old-suite C2433859", "old-suite C2543145"]
+        objective: This test is to confirm an ABT tap declined by the BIN List is recorded in the back office under ABT with the decline reason.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** an invalid ABT tap (BIN List decline) has occurred on the ETM on Metro route 10A
+          **WHEN** you open the CloudFare device-activity log under ABT
+          **THEN** the invalid ABT tap appears under ABT
+          **AND** the decline reason "BIN List" is shown against the tap
+        expected: A BIN List-declined ABT tap appears in the back office under ABT with the decline reason.
+
+  # ------------------------------------------------------------------ #
+  # Family: Barcode — online validation (medium x2 positive, 8 named failure reasons)
+  # + Barcode — multiple-use validation (medium x2)
+  # ------------------------------------------------------------------ #
+  - path: Functional / Barcode Scanning
+    cases:
+      - title: Barcode — online validation succeeds (printed copy)
+        match: Barcode — online validation (pass and fail)
+        objective: This test is to confirm a valid printed-copy barcode validates online with the validity detail.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded valid barcode is available as a printed copy
+          **WHEN** you scan the valid printed-copy barcode
+          **THEN** the barcode validates online, showing the green result with the validity detail
+          **WHEN** you open the CloudFare activity log
+          **THEN** the BarcodeUsage zero-fare transaction for the pass appears in CloudFare and MERIT
+        expected: A valid printed-copy barcode validates online with the validity detail; the pass posts a BarcodeUsage zero-fare transaction to CloudFare and MERIT.
+      - title: Barcode — online validation succeeds (mobile phone)
+        objective: This test is to confirm a valid mobile-phone barcode validates online with the validity detail.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded valid barcode is available on a mobile phone
+          **WHEN** you scan the valid mobile-phone barcode
+          **THEN** the barcode validates online, showing the green result with the validity detail
+          **WHEN** you open the CloudFare activity log
+          **THEN** the BarcodeUsage zero-fare transaction for the pass appears in CloudFare and MERIT
+        expected: A valid mobile-phone barcode validates online with the validity detail; the pass posts a BarcodeUsage zero-fare transaction to CloudFare and MERIT.
+      - title: Barcode — online validation fails (decryption failed)
+        objective: This test is to confirm a barcode that fails decryption is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded barcode that fails decryption is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "decryption failed" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: A barcode that fails decryption is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (not valid)
+        objective: This test is to confirm a barcode marked not valid is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded not-valid barcode is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "not valid" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: A not-valid barcode is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (already used)
+        objective: This test is to confirm a barcode already used is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded already-used barcode is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "already used" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: An already-used barcode is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (wrong date)
+        objective: This test is to confirm a barcode for the wrong date is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded wrong-date barcode is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "wrong date" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: A wrong-date barcode is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (expired)
+        objective: This test is to confirm an expired barcode is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded expired barcode is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "expired" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: An expired barcode is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (exceeds offline limit)
+        objective: This test is to confirm a barcode exceeding the offline limit is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded barcode exceeding the offline limit is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "exceeds offline limit" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: A barcode exceeding the offline limit is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (invalid product)
+        objective: This test is to confirm a barcode for an invalid product is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded invalid-product barcode is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "invalid product" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: An invalid-product barcode is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — online validation fails (visual inspection not passed)
+        objective: This test is to confirm a barcode failing visual inspection is rejected online with the reason shown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available online
+          **AND** a seeded barcode that has not passed visual inspection is available
+          **WHEN** you scan the barcode
+          **THEN** the barcode is cancelled with "visual inspection not passed" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the failed attempt appears in CloudFare
+        expected: A barcode failing visual inspection is cancelled with the reason shown, recorded in CloudFare.
+      - title: Barcode — multiple-use validation (printed copy)
+        match: Barcode — multiple-use validation
+        objective: This test is to confirm a valid printed-copy multiple-use barcode validates with confirmation and its failure reasons.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available
+          **AND** a seeded valid multiple-use barcode is available as a printed copy, plus failure-reason printed-copy barcodes
+          **WHEN** you scan the valid printed-copy barcode and confirm multiple use
+          **THEN** the barcode validates with the confirmation
+          **WHEN** you scan the printed-copy barcodes for each failure reason
+          **THEN** failures show passback, incorrect zone, wrong dates or wrong travel method
+          **WHEN** you open the CloudFare activity log
+          **THEN** the pass posts a BarcodeUsage zero-fare transaction to CloudFare
+        expected: A valid printed-copy multiple-use barcode validates with confirmation; failures show passback / incorrect zone / wrong dates / wrong travel method; the pass posts a BarcodeUsage transaction to CloudFare and MERIT.
+      - title: Barcode — multiple-use validation (mobile phone)
+        objective: This test is to confirm a valid mobile-phone multiple-use barcode validates with confirmation and its failure reasons.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |-
+          **GIVEN** a Driver is signed on to route 72b (IN) and barcode scanning is available
+          **AND** a seeded valid multiple-use barcode is available on a mobile phone, plus failure-reason mobile-phone barcodes
+          **WHEN** you scan the valid mobile-phone barcode and confirm multiple use
+          **THEN** the barcode validates with the confirmation
+          **WHEN** you scan the mobile-phone barcodes for each failure reason
+          **THEN** failures show passback, incorrect zone, wrong dates or wrong travel method
+          **WHEN** you open the CloudFare activity log
+          **THEN** the pass posts a BarcodeUsage zero-fare transaction to CloudFare
+        expected: A valid mobile-phone multiple-use barcode validates with confirmation; failures show passback / incorrect zone / wrong dates / wrong travel method; the pass posts a BarcodeUsage transaction to CloudFare and MERIT.

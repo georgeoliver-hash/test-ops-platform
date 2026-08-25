@@ -1,0 +1,268 @@
+[
+  {
+    "id": 4101079,
+    "title": "ABT — Deny and BIN list updates",
+    "preface": "This test is to confirm the PV downloads and applies delta and full Deny/BIN list updates, retries on failure, validates against them, and copes with a full-size list.",
+    "preconds": "**GIVEN** a Glider PV with cEMV and back-office comms is showing the Present screen\n**AND** the back office can publish delta and full Deny/BIN list updates\n**AND** you have a card on the Deny/BIN list and can verify the CloudFare activity log\n**AND** a full-size Deny list (~200,000 entries) can be staged for download",
+    "steps": [
+      {
+        "content": "**WHEN** delta and full Deny/BIN list updates are published",
+        "expected": "**THEN** the PV downloads and applies them, taking the full lists at end of day and deltas on schedule"
+      },
+      {
+        "content": "**WHEN** a list download is forced to fail",
+        "expected": "**THEN** the PV retries the download and application"
+      },
+      {
+        "content": "**WHEN** you present a Deny/BIN-listed card, then re-present it after it is removed from the list",
+        "expected": "**THEN** the listed card is rejected\n**AND** the removed card is accepted"
+      },
+      {
+        "content": "**WHEN** a full-size (~200,000-entry) Deny list is downloaded and applied",
+        "expected": "**THEN** the download and application complete without an unhandled exception\n**AND** the PV's transaction service remains responsive throughout (pins TIBU-31287)"
+      }
+    ],
+    "refs": "TIBU-26320, TIBU-25745, TIBU-31287",
+    "action": "reword",
+    "citations": ["TIBU-31287"],
+    "change_note": "EDIT (PV release-coverage audit, TL Validators v5.0.0/5.0.1/5.0.3): folded TIBU-31287 (200,000-entry Deny list download causes 'PollSocket: Send failed' exception) in as a scale/edge-case step and Ref, per the fold-a-regression-into-the-owning-case rule — this case already owns Deny/BIN list download behaviour.",
+    "gaps": []
+  },
+  {
+    "id": 4101001,
+    "title": "cEMV — tap enablement by route, location and fare",
+    "preface": "This test is to confirm cEMV taps are enabled only where the route attribute, location and fare checks all permit.",
+    "preconds": "**GIVEN** a Glider PV uses route-attribute, location and fare checks to enable cEMV\n**AND** you can place the PV in a context where all three checks pass, and one where a check fails\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** the PV is in a context where the route attribute, location and fare checks all pass",
+        "expected": "**THEN** cEMV taps are enabled\n**AND** a tap is accepted"
+      },
+      {
+        "content": "**WHEN** any of the route, location or fare checks fail",
+        "expected": "**THEN** cEMV taps are disabled in that context and no cEMV tap is taken"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted tap",
+        "expected": "**THEN** the tap appears in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** the Glider Tap On Only Zone TMS parameter is configured correctly and matches the device's boarding location",
+        "expected": "**THEN** cEMV taps enable for the Glider Metro route (regression check — previously failed to enable despite correct configuration, pins TIBU-31722)"
+      }
+    ],
+    "refs": "TIBU-31722",
+    "action": "reword",
+    "citations": ["TIBU-31722"],
+    "change_note": "EDIT: folded TIBU-31722 (ABT Glider Metro not enabling even with ABT Tap Zone configured correctly) in as a regression step and Ref — this case already owns route/location/fare-based cEMV enablement.",
+    "gaps": []
+  },
+  {
+    "id": 4101080,
+    "title": "FEIG — reader software management",
+    "preface": "This test is to confirm the FEIG reader software and OS can be deployed and viewed via CloudFare TMS, and that known deployment/manifest defects stay fixed.",
+    "preconds": "**GIVEN** a Glider PV with a FEIG reader is connected to CloudFare TMS\n**AND** newer Transparent, PCA and FEIG OS versions are staged for deployment",
+    "steps": [
+      {
+        "content": "**WHEN** you deploy the FEIG software over the air via TMS",
+        "expected": "**THEN** only the newest Transparent, PCA and FEIG OS versions are deployed to the reader"
+      },
+      {
+        "content": "**WHEN** the technician views the FEIG software versions on the PV",
+        "expected": "**THEN** the current FEIG software versions are displayed"
+      },
+      {
+        "content": "**WHEN** the FEIG software update is deployed via TMS",
+        "expected": "**THEN** the update completes without the PV application watchdog interrupting it mid-update (pins TIBU-32037)\n**AND** the deployment does not stall waiting on a manifest download that never starts (pins TIBU-26048)"
+      },
+      {
+        "content": "**WHEN** the FEIG update has completed",
+        "expected": "**THEN** the reader still detects and reads EMV cards (pins TIBU-26522)\n**AND** cEMV taps remain enabled (pins TIBU-25691)"
+      },
+      {
+        "content": "**WHEN** the PV's FEIG manifest polling is inspected in the device log",
+        "expected": "**THEN** it requests a manifest at a sensible interval (approximately every 15 minutes), not continuously every second (pins TIBU-25446; migrated from old-suite C4091897)"
+      }
+    ],
+    "refs": "TIBU-25446, TIBU-25691, TIBU-26048, TIBU-26522, TIBU-32037",
+    "action": "reword",
+    "citations": ["TIBU-25446", "TIBU-25691", "TIBU-26048", "TIBU-26522", "TIBU-32037", "old-suite C4091897, C4091905, C4091910"],
+    "change_note": "EDIT: folded five FEIG-update defects in as regression steps and Refs — all own the same behaviour (FEIG reader software management via TMS) this case already covers. Cross-checked against old suite 10047 first (per George's instruction): C4091897/C4091905/C4091910 exist there with real content, used to ground the wording instead of inventing.",
+    "gaps": []
+  },
+  {
+    "id": 4101095,
+    "title": "PV — asset and version reporting",
+    "preface": "This test is to confirm the PV reports its software, PCA and FEIG versions and identifiers to the back office and on the version page, without duplication.",
+    "preconds": "**GIVEN** a PV connected to the back office\n**AND** you can view the software version page and inspect CloudFare Asset Manager",
+    "steps": [
+      {
+        "content": "**WHEN** you view the software version page",
+        "expected": "**THEN** the Application version is displayed\n**AND** the PCA application version is displayed"
+      },
+      {
+        "content": "**WHEN** the PV reports to CloudFare",
+        "expected": "**THEN** the SIM ID is sent to CloudFare and visible in Asset Manager\n**AND** the FEIG Device ID is displayed in Asset Manager associated assets"
+      },
+      {
+        "content": "**WHEN** the FEIG versions are viewed in CloudFare Asset Manager for the device",
+        "expected": "**THEN** only one set of FEIG versions is shown, not duplicated (pins TIBU-26531)"
+      }
+    ],
+    "refs": "TIBU-24260, TIBU-26053, TIBU-25548, TIBU-26054, TIBU-26531",
+    "action": "reword",
+    "citations": ["TIBU-26531"],
+    "change_note": "EDIT: folded TIBU-26531 (duplicate FEIG versions shown in Asset Manager) in as a step and Ref — this case already owns Asset Manager version reporting.",
+    "gaps": []
+  },
+  {
+    "id": 4101094,
+    "title": "PV — stability and recovery",
+    "preface": "This test is to confirm the PV stays responsive and recovers from failure conditions without manual intervention.",
+    "preconds": "**GIVEN** a PV in service connected to CloudFare TMS\n**AND** you can force a failed boot and a white-startup-screen or black-screen freeze, and run the PV over an extended period",
+    "steps": [
+      {
+        "content": "**WHEN** the device fails to boot",
+        "expected": "**THEN** the recovery mechanism restarts it to a working state"
+      },
+      {
+        "content": "**WHEN** the device would otherwise freeze on the white startup screen, or go black-screen mid-update after a reboot",
+        "expected": "**THEN** it recovers to service without manual intervention (pins TIBU-25842 and TIBU-28240)"
+      },
+      {
+        "content": "**WHEN** the PV runs over an extended period",
+        "expected": "**THEN** the transaction service stays responsive\n**AND** the PV continues to download and apply new distributions\n**AND** deployments via TMS succeed"
+      }
+    ],
+    "refs": "TIBU-25842, TIBU-26302, TIBU-28453, TIBU-28770, TIBU-29165, TIBU-29602, TIBU-28240",
+    "action": "reword",
+    "citations": ["TIBU-28240"],
+    "change_note": "EDIT: broadened the boot-freeze step to include TIBU-28240 (black-screen freeze after reboot during an automatic update) — same behavioural class (recovers from a frozen boot without manual intervention) already owned by this case, so folded rather than duplicated.",
+    "gaps": []
+  },
+  {
+    "id": 4101082,
+    "title": "PV to BOS — MERIT heartbeat",
+    "preface": "This test is to confirm the PV sends a MERIT heartbeat transaction periodically and whenever it enters an in-service state.",
+    "preconds": "**GIVEN** a PV is in service with comms available\n**AND** you can verify heartbeats in CloudFare / MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** the configured 24-hour period elapses",
+        "expected": "**THEN** a MERIT heartbeat transaction is sent to the back office"
+      },
+      {
+        "content": "**WHEN** the PV enters an in-service state by any means — an automatic or manual reboot (including a CloudFare remote reboot), a technician signing out, or returning from a temporary automatic out-of-service state",
+        "expected": "**THEN** a MERIT heartbeat transaction is sent, not only after a technician sign-out (pins TIBU-28386)"
+      }
+    ],
+    "refs": "TIBU-28386",
+    "action": "reword",
+    "citations": ["TIBU-28386"],
+    "change_note": "EDIT: broadened the second step's trigger from 'technician signs out' only to the full set of in-service-entry triggers per TIBU-28386's description (auto/manual/remote reboot, sign-out, return from temporary auto-OOS) — same heartbeat behaviour this case already owns.",
+    "gaps": []
+  },
+  {
+    "id": 4101088,
+    "title": "cEMV — decline reasons and route-type enablement",
+    "preface": "This test is to confirm cEMV decline reasons show Please Try Again, that taps enable per route type and are disabled where they should be, and that a passback re-tap is handled distinctly from a decline.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have cards for each decline condition (ODA fail, unsupported scheme e.g. AMEX, expired, invalid BIN, AID fail, card clash, deny/negative list, unreadable)\n**AND** a card can be re-presented within the configured ABT Passback window\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present a card that hits one of those decline conditions",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with the corresponding decline reason"
+      },
+      {
+        "content": "**WHEN** the route is \"Tap On Only (Flat Fare)\" or \"Tap On Tap Off\"",
+        "expected": "**THEN** cEMV taps are enabled for that route type"
+      },
+      {
+        "content": "**WHEN** no valid fare is found, the boarding location is outside the configured area, or cEMV is disabled in the Technician Menu",
+        "expected": "**THEN** cEMV taps are disabled"
+      },
+      {
+        "content": "**WHEN** a card is re-presented within the configured ABT Passback window",
+        "expected": "**THEN** the PV shows the Passback outcome, not a decline error\n**AND** no second fare is taken for the re-presented card (pins TIBU-22322)"
+      }
+    ],
+    "refs": "TIBU-22322",
+    "action": "reword",
+    "citations": ["TIBU-22322"],
+    "change_note": "EDIT: folded in the ABT Passback decline scenario from TIBU-22322 (screen 1.6.6, declined reason 20, configured 'ABT Passback' TMS window) — this scenario was in the foundational v5.0.0 story but not distinctly asserted in either this case or C4100999; added here since this case already models the family of ABT decline outcomes. Decline-reason numeric codes are not hard-coded (implementation detail); the observable Please-Try-Again vs Passback outcome distinction is what's asserted.",
+    "gaps": []
+  },
+  {
+    "id": 4101016,
+    "title": "Technician Menu — network settings",
+    "preface": "This test is to confirm a technician can view and edit the PV network settings, that the Network Interfaces screen displays reliably, and that a removed SIM is correctly reported.",
+    "preconds": "**GIVEN** a technician is signed in to the Technician Menu\n**AND** the PV network interface shows its static IP (192.168.3.10 on the test rig)\n**AND** the PV has both an Ethernet and a Cellular interface",
+    "steps": [
+      {
+        "content": "**WHEN** you open the Network Interfaces page, edit a network setting and confirm",
+        "expected": "**THEN** the network settings are updated to the new values"
+      },
+      {
+        "content": "**WHEN** Network Settings is opened on the Technician Menu",
+        "expected": "**THEN** the Network Interfaces screen displays\n**AND** it shows both the Ethernet and Cellular interfaces (pins TIBU-26303; migrated from old-suite C4091908)"
+      },
+      {
+        "content": "**WHEN** the cellular SIM is physically removed from the PV",
+        "expected": "**THEN** the Cellular interface updates to show disconnected\n**AND** it does not continue to be shown as connected (pins TIBU-29191)"
+      }
+    ],
+    "refs": "TIBU-26303, TIBU-29191",
+    "action": "reword",
+    "citations": ["TIBU-26303", "TIBU-29191", "old-suite C4091908"],
+    "change_note": "EDIT: folded TIBU-26303 (Network Interface screen missing/blank) in with content grounded on old-suite C4091908 (real GIVEN/WHEN/THEN found in suite 10047, not invented). Folded TIBU-29191 (SIM shows 'connected' when physically removed) in as a status-reporting assertion only — NOT as a comms-failover assertion; see gap-register Q23 for the unresolved REQ-2746.0-vs-FBD-100359 comms-failover conflict this surfaced, which this edit deliberately does not take a side on.",
+    "gaps": ["gap-register.md Q23 (comms failover conflict, informational — does not block this edit, which only asserts SIM-removed status reporting)"]
+  },
+  {
+    "id": 4101006,
+    "title": "Barcode — multi-use validation",
+    "preface": "This test is to confirm a multi-use barcode validates and tracks its remaining uses, for HHD- and TVM-produced barcodes, with the correct audible beep pattern per product.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid multi-use barcode is presented for each product/fare type",
+        "expected": "**THEN** the audible validation beep pattern is correct per product (pins TIBU-27324; migrated from old-suite C4091912): Adult (Local/XB) — single; Child (Local/XB) — double; Student XB — double; Half Fare — double; yLink — double; 24+ — double; Senior/Concession (all types, Local/XB) — double; PRV-A — single; PRV-C — double; Unemployed — single"
+      }
+    ],
+    "refs": "TIBU-27324",
+    "action": "reword",
+    "citations": ["TIBU-27324", "old-suite C4091912"],
+    "change_note": "EDIT: folded TIBU-27324 (wrong audible beep pattern for MUB validation by product type) in as a data-variation step, with the exact expected beep-per-product table migrated verbatim from old-suite C4091912 (found via the old-suite cross-check) rather than invented.",
+    "gaps": []
+  },
+  {
+    "id": 4102428,
+    "refs": "TIBU-25444",
+    "action": "reword",
+    "citations": ["TIBU-25444"],
+    "change_note": "REFS-ONLY: this case (early-morning barcode expiry shows the previous day) already exactly matches TIBU-25444 (barcode expiry date shown incorrectly on PV, NIR) — added the defect as a Ref for traceability; no content change needed, the case already models the correct fixed behaviour."
+  },
+  {
+    "id": 4103563,
+    "refs": "FBD-100720, TIBU-28805",
+    "action": "reword",
+    "citations": ["FBD-100720", "TIBU-28805"],
+    "change_note": "REFS-ONLY: this case ('a non-enrolled token is rejected with no audit event') already exactly matches TIBU-28805 (EMV taps declined for not being on the Pilot List incorrectly creating audits) — added the defect as a Ref alongside the existing FBD-100720; no content change needed."
+  },
+  {
+    "id": 4101019,
+    "refs": "TIBU-26048, TIBU-32037",
+    "action": "reword",
+    "citations": ["TIBU-26048", "TIBU-32037"],
+    "change_note": "REFS-ONLY: this case (PV/FEIG software updates via CloudFare TMS) is the general home for TIBU-26048 and TIBU-32037; the detailed regression steps for both are placed on the more specific C4101080 (FEIG — reader software management) to avoid duplicating content, but the Ref is added here too for traceability from this case's title."
+  }
+]

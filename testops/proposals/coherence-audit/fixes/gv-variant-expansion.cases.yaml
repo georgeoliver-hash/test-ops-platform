@@ -1,0 +1,256 @@
+# GV suite (30286) — variant expansion, 2026-07-24.
+# George's hard rule: "no test should tell someone to test multiple variants... we should have a
+# test for each." Every case in the live suite carrying a "Data variations:" line is expanded here
+# into one separate, individually-executable case per listed variant. The first/primary variant
+# reuses the original case id (matched by its old title, renamed) so it doesn't duplicate; the
+# remaining variants are new cases in the same section.
+#
+# Families found by a full-suite sweep of `custom_expected` for "Data variation" (4 hits; C4104024
+# Maestro-declined checked and confirmed NOT a variant list — a single negative case, no change):
+#   1. C4104011 ABT Tap card scheme            -> Visa Debit / Visa Credit / Mastercard Debit / Mastercard Credit (4)
+#   2. C4104018 ABT Tap declined-reason sweep  -> NO new cases: 4 of its 5 listed reasons (1 Expired,
+#      2 Deny List, 3 Declined, 15 BIN List) already have their OWN dedicated cases (C4104014/17/15/16)
+#      elsewhere in this same section -- per the rubric ("already exercised by an existing case ->
+#      do not add a test"), duplicating them here would be redundant, not completeness. Only
+#      Declined Reason 20 (Passback) has no dedicated case, so C4104018 is re-scoped to be that case.
+#   3. C4104028 Barcode product                -> Adult / Child / 3-Day Select / 1-3 Off Day Return /
+#      24+ / Ylink / Concession / Half Fare / Day Tracker / Unemployed Day Return (10)
+#   4. C4104046 Barcode 3-Day Select date logic -> Start / an Additional Date / End (3)
+#
+# Grounding: card scheme + Declined Reason 20 from FBD-100690 (Declined Reason enum) + FBD-100658
+# (ABT Audit Spec); barcode product list + Scheme ID 5720/format 01/mode RAIL 0002 and the 3-Day
+# Select date rule from FBD-100167 (already cited on the pre-expansion cases; no new source needed
+# -- the product list and date rule were already spec-grounded on the single case, this only splits
+# the execution unit, does not add new facts).
+
+suite: "**NEW** GV Test Suite"
+suite_id: 30286
+
+defaults:
+  template_id: 1
+  custom_devtypes: [15]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  # ================================================================================================
+  - path: [Functional, ABT cEMV Taps]
+    cases:
+      # ---- Family 1: card scheme (C4104011 reused as Visa Debit; 3 new) ----
+      - match: ABT Tap — a valid contactless card tap succeeds and the gate opens
+        title: ABT Tap — a valid contactless card tap succeeds and the gate opens (Visa Debit)
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a route whose ABT Type is "Tap On Tap Off"
+          **AND** its home location is within the configured "Northern Ireland Zone"
+          **AND** the "ABT Tap Product Name" product (Product ID 6000) is configured
+          **AND** a valid, in-date Visa Debit card is presented to the reader
+          **WHEN** the passenger taps the card on the GV
+          **THEN** the success screen is displayed
+          **AND** the success beep sounds
+          **AND** the gate opens
+        expected: A valid Visa Debit cEMV tap is accepted, the success screen and beep are given, and the gate opens.
+      - title: ABT Tap — a valid contactless card tap succeeds and the gate opens (Visa Credit)
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a route whose ABT Type is "Tap On Tap Off"
+          **AND** its home location is within the configured "Northern Ireland Zone"
+          **AND** the "ABT Tap Product Name" product (Product ID 6000) is configured
+          **AND** a valid, in-date Visa Credit card is presented to the reader
+          **WHEN** the passenger taps the card on the GV
+          **THEN** the success screen is displayed
+          **AND** the success beep sounds
+          **AND** the gate opens
+        expected: A valid Visa Credit cEMV tap is accepted, the success screen and beep are given, and the gate opens.
+      - title: ABT Tap — a valid contactless card tap succeeds and the gate opens (Mastercard Debit)
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a route whose ABT Type is "Tap On Tap Off"
+          **AND** its home location is within the configured "Northern Ireland Zone"
+          **AND** the "ABT Tap Product Name" product (Product ID 6000) is configured
+          **AND** a valid, in-date Mastercard Debit card is presented to the reader
+          **WHEN** the passenger taps the card on the GV
+          **THEN** the success screen is displayed
+          **AND** the success beep sounds
+          **AND** the gate opens
+        expected: A valid Mastercard Debit cEMV tap is accepted, the success screen and beep are given, and the gate opens.
+      - title: ABT Tap — a valid contactless card tap succeeds and the gate opens (Mastercard Credit)
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a route whose ABT Type is "Tap On Tap Off"
+          **AND** its home location is within the configured "Northern Ireland Zone"
+          **AND** the "ABT Tap Product Name" product (Product ID 6000) is configured
+          **AND** a valid, in-date Mastercard Credit card is presented to the reader
+          **WHEN** the passenger taps the card on the GV
+          **THEN** the success screen is displayed
+          **AND** the success beep sounds
+          **AND** the gate opens
+        expected: A valid Mastercard Credit cEMV tap is accepted, the success screen and beep are given, and the gate opens.
+
+      # ---- Family 2: C4104018 re-scoped to the one reason with no dedicated case (Passback, 20) ----
+      # No new cases: reasons 1/2/3/15 already have their own cases (C4104014/17/15/16) in this section.
+      - match: ABT Tap — every declined check still posts an audit record
+        title: ABT Tap — a re-tap within the passback window is declined with Declined Reason 20
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a repeat tap within the configured passback window is declined and audited with Declined Reason 20.
+        steps: |-
+          **GIVEN** an NIR GV head is in service at a rail station gate
+          **AND** a contactless card is re-tapped within the TMS-configured passback time of its prior accepted tap
+          **WHEN** the passenger re-taps the card within the passback window
+          **THEN** the invalid-tap screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 20
+        expected: A card re-tapped within the configured passback window is declined, the gate stays closed, and the tap is audited with Declined Reason 20 (Passback).
+
+  # ================================================================================================
+  - path: [Functional, Multi-Use Barcode Validation]
+    cases:
+      # ---- Family 3: barcode product (C4104028 reused as Adult; 9 new) ----
+      - match: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens
+        title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Adult)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for an Adult product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Adult multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Child)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a Child product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Child multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (3-Day Select)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a 3-Day Select product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid 3-Day Select multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (1-3 Off Day Return)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a 1-3 Off Day Return product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid 1-3 Off Day Return multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (24+)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a 24+ product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid 24+ multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Ylink)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a Ylink product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Ylink multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Concession)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a Concession product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Concession multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Half Fare)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a Half Fare product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Half Fare multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Day Tracker)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for a Day Tracker product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Day Tracker multi-use barcode is accepted with a green tick and audio, and the gate opens.
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens (Unemployed Day Return)
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for an Unemployed Day Return product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid Unemployed Day Return multi-use barcode is accepted with a green tick and audio, and the gate opens.
+
+      # ---- Family 4: 3-Day Select date logic (C4104046 reused as Start date; 2 new) ----
+      - match: Barcode — a 3-Day Select ticket is valid on its start, additional and end dates
+        title: Barcode — a 3-Day Select ticket is valid on its start date
+        refs: [FBD-100167]
+        objective: This test is to confirm a 3-Day Select barcode validates on its start date.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a 3-Day Select barcode whose current date equals its Start date is presented
+          **WHEN** the passenger presents the 3-Day Select barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A 3-Day Select barcode is valid when the current date equals its Start date.
+      - title: Barcode — a 3-Day Select ticket is valid on an additional date within its validity
+        refs: [FBD-100167]
+        objective: This test is to confirm a 3-Day Select barcode validates on an Additional-Dates offset date.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a 3-Day Select barcode whose current date equals one of its Additional Dates offset from its Start date is presented
+          **WHEN** the passenger presents the 3-Day Select barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A 3-Day Select barcode is valid when the current date equals an Additional-Dates offset date.
+      - title: Barcode — a 3-Day Select ticket is valid on its end date
+        refs: [FBD-100167]
+        objective: This test is to confirm a 3-Day Select barcode validates on its end date.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a 3-Day Select barcode whose current date equals its End date is presented
+          **WHEN** the passenger presents the 3-Day Select barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A 3-Day Select barcode is valid when the current date equals its End date.

@@ -1,0 +1,1029 @@
+# ABT functional area — BOS & ABT Suite (30279)
+# Hand-authored from the UB-TOO tracker (CR122 + TODEV) + ABT_FARE_REFERENCE.md,
+# in house style: feature-first sections, concise titles, intent-level Gherkin
+# (no raw data tables), defects carried in Refs. Run in both Operator & Passenger
+# portals (stated as a precondition, not duplicated cases).
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ───────────────────────── Tap Correction ─────────────────────────
+  - path: [ABT, Functional, Tap Correction, Metro Daily Cap]
+    cases:
+      - title: Same-fare correction holds the Metro cap
+        refs: [CR122]
+        objective: This test is to confirm that a same-fare alighting correction leaves the Metro daily cap in place.
+        steps: |-
+          **GIVEN** a Metro day has reached the £4.00 daily cap
+          **AND** the scenario is run in both the Operator and Passenger portals
+          **WHEN** an alighting stop is corrected to another Metro stage of equal fare
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the Metro cap still applies
+          **AND** the day total stays £4.00
+          **AND** no auto-settlement or refund is raised
+        expected: The Metro daily cap still applies; the day total remains £4.00 with no auto-settlement or refund.
+      - title: Correction outside the Metro zone removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap to a stop outside the Metro zone removes the cap and collects the higher fare.
+        steps: |-
+          **GIVEN** two Metro-zone taps that would settle under the £4.00 cap
+          **WHEN** one tap's alighting is corrected to a stop outside the Metro zone at a higher fare
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the Metro cap is removed
+          **AND** the corrected tap is charged its higher fare
+          **AND** an auto-settlement collects the difference, taking the day above £4.00
+        expected: Metro cap removed; the corrected tap is charged the higher fare and the difference is auto-settled.
+      - title: Correction into the Metro zone applies the cap and refunds the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap into the Metro zone brings the day under the cap and refunds the overcharge.
+        steps: |-
+          **GIVEN** one Metro tap and one Ulsterbus tap outside the Metro zone
+          **WHEN** the Ulsterbus tap's alighting is corrected to a stop inside the Metro zone
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** both taps fall under the £4.00 Metro cap
+          **AND** the day total is £4.00
+          **AND** an auto-refund returns the difference to the account
+        expected: Both taps fall under the £4.00 Metro cap; the overcharge is auto-refunded.
+      - title: Correcting a settled free (capped) tap keeps it at £0.00
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the stop on a settled capped Metro tap does not recalculate its fare.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap, with the third tap charged £0.00
+          **WHEN** the alighting stop on the settled £0.00 tap is corrected
+          **THEN** that tap is still charged £0.00
+          **AND** is not recalculated to the full £2.30
+          **AND** the day total stays £4.00 and the tap remains settled
+        expected: The capped tap stays at £0.00; the day total remains £4.00.
+      - title: Correcting a settled partially-capped tap keeps it at £1.70
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the stop on a settled partially-capped tap preserves its reduced fare.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap, with the second tap reduced to £1.70 to complete the cap
+          **WHEN** the alighting stop on the settled £1.70 tap is corrected
+          **THEN** that tap is still charged £1.70
+          **AND** is not recalculated to the full £2.30
+          **AND** the day total stays £4.00 and the tap remains settled
+        expected: The partially-capped tap stays at £1.70; the day total remains £4.00.
+      - title: A correction never pushes the day total over the Metro cap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a stop correction on a capped tap cannot overcharge the card beyond the daily cap.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap
+          **WHEN** the alighting stop on a capped tap is corrected
+          **THEN** the day total charged on the card does not exceed £4.00
+        expected: The day total charged never exceeds the £4.00 Metro cap after a correction.
+      - title: A corrected capped tap stays settled and free
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a settled capped tap keeps its settled status and £0.00 charge after a correction.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap with a £0.00 capped tap
+          **WHEN** the alighting stop on the capped tap is corrected
+          **THEN** the tap is still shown as settled with the cap retained
+          **AND** it is still charged £0.00 and the day total stays £4.00
+        expected: The capped tap remains settled and free; the day total stays £4.00.
+      - title: Correcting the first full-fare tap leaves its charge unchanged
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the first (non-capped) Metro tap does not disturb its full fare.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap, with the first tap charged the full £2.30
+          **WHEN** the alighting stop on the first tap is corrected
+          **THEN** the first tap is still charged £2.30
+          **AND** the day total stays £4.00
+        expected: The first tap stays at £2.30; the day total remains £4.00.
+      - title: Correcting an unsettled capped tap re-evaluates and stays free
+        refs: [TODEV-24096]
+        objective: This test is to confirm that an unsettled capped tap re-evaluates correctly to £0.00 when corrected before settlement.
+        steps: |-
+          **GIVEN** three Metro taps where the cap is already reached, before settlement
+          **WHEN** the alighting stop on the capped tap is corrected
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is charged £0.00
+          **AND** the day total is £4.00
+        expected: The unsettled capped tap re-evaluates to £0.00; the day total is £4.00.
+      - title: A declined journey is not treated as a settled capped tap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that the correction guard keys off settled status only, not declined journeys.
+        steps: |-
+          **GIVEN** a declined Metro journey
+          **WHEN** the alighting stop on the declined journey is corrected
+          **THEN** the journey is handled as declined, not as a settled capped journey
+          **AND** no settled-cap charge is produced for it
+        expected: The declined journey is handled as declined; no settled-cap charge is produced.
+      - title: Re-running settlement after a correction does not re-charge the capped tap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a further settlement run after a correction leaves an already-settled capped tap untouched.
+        steps: |-
+          **GIVEN** a Metro day settled at the £4.00 cap with a corrected £0.00 capped tap
+          **WHEN** the EndOfDay settlement process runs again
+          **THEN** the capped tap is still charged £0.00 with no additional charge
+          **AND** the day total stays £4.00 and the tap remains settled
+        expected: A repeat settlement raises no fresh charge; the capped tap stays £0.00 and the day total stays £4.00.
+
+  - path: [ABT, Functional, Tap Correction, Zonal Cap]
+    cases:
+      - title: Higher-fare correction within the zone holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that raising a tap to a higher fare still within the zone leaves the zone cap unchanged.
+        steps: |-
+          **GIVEN** an iLink zone day has reached its zone cap
+          **AND** the scenario is run in both the Operator and Passenger portals
+          **WHEN** one tap is corrected to a higher-fare stage still within the same zone
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the zone cap still applies at its correct value
+          **AND** no auto-settlement or refund is raised
+        expected: The zone cap holds; the total is unchanged with no settlement or refund.
+      - title: Higher-fare correction outside the zone removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap to a stage outside the zone removes the zone cap and collects the higher fare.
+        steps: |-
+          **GIVEN** an iLink zone day has reached its zone cap
+          **WHEN** one tap is corrected to a higher-fare stage outside the zone
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the zone cap is removed
+          **AND** the corrected tap is charged its higher fare
+          **AND** an auto-settlement collects the difference, or a higher zone cap applies if reached
+        expected: Zone cap removed; the higher fare is charged and the difference is auto-settled.
+      - title: Lower-fare correction within the zone keeps the day above cap and holds
+        refs: [CR122]
+        objective: This test is to confirm that lowering a tap within the zone, while the day stays above cap, leaves the cap in place.
+        steps: |-
+          **GIVEN** an iLink zone day has reached its zone cap
+          **WHEN** one tap is corrected to a lower-fare stage still within the zone, keeping the day above the cap
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the zone cap still applies
+          **AND** the day total is unchanged
+          **AND** no auto-refund or settlement is raised
+        expected: The zone cap holds; the day total is unchanged with no refund.
+      - title: Lower-fare correction drops the day below cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that lowering a tap so the day falls below the zone cap removes the cap and refunds the difference.
+        steps: |-
+          **GIVEN** an iLink zone day has reached its zone cap
+          **WHEN** one tap is corrected to a lower fare so the day total drops below the cap
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the zone cap is removed
+          **AND** the charge reduces to the new total
+          **AND** an auto-refund returns the difference
+        expected: Zone cap removed; the charge reduces and the difference is auto-refunded.
+      - title: Zone 4 correction within the highest band holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that a higher-fare correction outside Zone 4 but within the highest band keeps the Zone 4 cap.
+        steps: |-
+          **GIVEN** an iLink Zone 4 day has reached the £19.00 cap (the highest band)
+          **WHEN** one tap is corrected to a higher-fare stage outside Zone 4 but still within the £19.00 band
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the Zone 4 cap still applies
+          **AND** the account stays at £19.00
+          **AND** no auto-settlement is raised
+        expected: The Zone 4 cap holds at £19.00; no settlement is raised.
+      - title: Correction into a capped zone audits a free tap under the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting a tap into a zone whose cap is reached audits a £0.00 tap under the zonal cap, not the reference cap.
+        steps: |-
+          **GIVEN** the iLink Zone 2 cap of £11.00 is already reached
+          **AND** a tap is charged and assigned to the Zone 1 cap
+          **WHEN** that tap's alighting is corrected to a Zone 2 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap
+          **AND** it is not charged the reference fare and the day total stays at the £11.00 cap
+        expected: The corrected tap is free under the Zone 2 cap; no reference-fare charge is made.
+      - title: A correction into a capped zone does not increase the account total
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a zonal correction at the cap leaves the aggregated account total unchanged.
+        steps: |-
+          **GIVEN** the iLink Zone 2 cap of £11.00 is already reached
+          **AND** the aggregated account total for the day is noted
+          **WHEN** a Zone 1 tap is corrected to a Zone 2 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the aggregated account total for the day has not increased
+          **AND** the corrected tap is audited at £0.00
+        expected: The account total is unchanged; the corrected tap is audited at £0.00.
+      - title: The cap shown after a correction is the zonal cap, not a reference cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a corrected tap reports under the zonal cap rather than a reference cap.
+        steps: |-
+          **GIVEN** the iLink Zone 2 cap of £11.00 is already reached
+          **WHEN** a Zone 1 tap is corrected to a Zone 2 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is audited at £0.00 because the Zone 2 cap was reached
+          **AND** it is not charged the reference fare
+        expected: The corrected tap reports under the Zone 2 cap; no reference fare is applied.
+      - title: Correcting into a zone below cap charges toward the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting into a zone whose cap is not yet reached charges toward the zonal cap, not the reference cap.
+        steps: |-
+          **GIVEN** one Zone 2 journey has been made and the £11.00 Zone 2 cap is not yet reached
+          **WHEN** a Zone 1 tap is corrected to a Zone 2 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is charged toward the Zone 2 cap and never above £11.00
+          **AND** it is not charged under the reference cap
+        expected: The corrected tap charges toward the Zone 2 cap, never exceeding £11.00, with no reference charge.
+      - title: A journey with no zonal cap still uses the reference cap correctly
+        refs: [TODEV-24348]
+        objective: This test is to confirm that reference capping still governs where no zonal cap applies after the fix.
+        steps: |-
+          **GIVEN** no zonal cap applies to the day and the ref.60 cap of £7.20 is reached
+          **AND** zonal capping is not enabled for these journeys
+          **WHEN** a ref.60 tap's alighting is corrected to another ref.60 stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is audited as a £0.00 free tap under the ref.60 cap
+          **AND** the £7.20 reference cap still governs the day
+        expected: With no zonal cap, the reference cap still governs; the corrected tap is free under £7.20.
+      - title: Correcting to another stop in the same zone keeps the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting to another stop within the same zone leaves the zonal cap in place.
+        steps: |-
+          **GIVEN** the iLink Zone 1 cap of £6.00 is reached
+          **WHEN** a tap's alighting is corrected to another Zone 1 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is audited as a £0.00 free tap
+          **AND** the day's Zone 1 total stays at the £6.00 cap
+        expected: The corrected tap is free; the Zone 1 total stays at £6.00.
+      - title: Re-running settlement after a zonal correction adds no charge
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a repeat settlement after a zonal correction keeps the cap and raises no charge.
+        steps: |-
+          **GIVEN** a Zone 1 tap has been corrected to a Zone 2 stop with the Zone 2 cap reached
+          **WHEN** the EndOfDay settlement process runs again
+          **THEN** the corrected tap is still audited at £0.00 with the Zone 2 cap applied
+          **AND** no additional charge is made to the account
+        expected: A repeat settlement keeps the corrected tap at £0.00 with no further charge.
+      - title: The zonal cap applies after a correction regardless of transport mode
+        refs: [TODEV-24348]
+        objective: This test is to confirm that the iLink zonal cap (Transport Mode All) governs a corrected tap across mixed modes.
+        steps: |-
+          **GIVEN** the iLink Zone 2 cap of £11.00 is reached across mixed transport modes
+          **WHEN** a Zone 1 tap is corrected to a Zone 2 stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap
+          **AND** the reference cap is not applied regardless of transport mode
+        expected: The zonal cap governs across modes; the corrected tap is free with no reference charge.
+
+  - path: [ABT, Functional, Tap Correction, Reference Fare Cap]
+    cases:
+      - title: Correction to a higher ref removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting one tap to a higher reference fare breaks the same-ref cap and collects the difference.
+        steps: |-
+          **GIVEN** two same-ref taps that would settle under the ref daily cap
+          **AND** zonal capping is disabled so the reference cap governs
+          **WHEN** one tap's alighting is corrected to a higher reference-fare stop
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the reference cap is removed and both taps are charged their uncapped fares
+          **AND** an auto-settlement collects the difference above the former cap
+        expected: Reference cap removed; both taps charged uncapped and the difference is auto-settled.
+      - title: Correction to a lower ref below the cap removes it and refunds
+        refs: [CR122]
+        objective: This test is to confirm that lowering one tap so the aggregate falls below the cap removes the reference cap and refunds.
+        steps: |-
+          **GIVEN** two same-ref taps capped at the reference daily cap
+          **AND** zonal capping is disabled so the reference cap governs
+          **WHEN** one tap's alighting is corrected to a lower fare so the uncapped aggregate falls below the cap
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the reference cap is removed
+          **AND** the charge is the lower aggregate
+          **AND** an auto-refund returns the difference
+        expected: Reference cap removed; the charge drops to the lower aggregate and the difference is refunded.
+      - title: Correction to a lower ref still above the cap charges the extra
+        refs: [CR122]
+        objective: This test is to confirm that lowering one tap to a different ref, with the aggregate still above the cap, removes the cap and charges the extra.
+        steps: |-
+          **GIVEN** two same-ref taps capped at the reference daily cap
+          **AND** zonal capping is disabled so the reference cap governs
+          **WHEN** one tap's alighting is corrected to a lower fare on a different ref, leaving the aggregate above the cap
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the reference cap is removed
+          **AND** the charge is the uncapped aggregate
+          **AND** an auto-settlement collects the amount above the former cap
+        expected: Reference cap removed; the uncapped aggregate is charged and the extra is auto-settled.
+
+  - path: [ABT, Functional, Tap Correction, Uncapped & Single Taps]
+    cases:
+      - title: Single uncapped tap raised to a higher fare charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a single uncapped tap to a higher fare collects the additional balance.
+        steps: |-
+          **GIVEN** a single uncapped tap to which no cap applies
+          **WHEN** the tap's alighting is corrected to a higher-fare stop
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the journey shows the amended alighting stop charged at the higher fare
+          **AND** an auto-settlement collects the additional balance
+        expected: The corrected tap is charged the higher fare and the difference is auto-settled.
+      - title: Single uncapped tap lowered refunds the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a single uncapped tap to a lower fare refunds the difference.
+        steps: |-
+          **GIVEN** a single uncapped tap to which no cap applies
+          **WHEN** the tap's alighting is corrected to a lower-fare stop
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the journey shows the amended alighting stop charged at the lower fare
+          **AND** an auto-refund returns the difference
+        expected: The corrected tap is charged the lower fare and the difference is refunded.
+      - title: Aligning two different-ref taps to the same ref applies the cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting two different-ref taps onto the same ref brings the reference cap into play and refunds.
+        steps: |-
+          **GIVEN** two taps on different reference fares, so no cap applies at settlement
+          **AND** zonal capping is disabled
+          **WHEN** one tap is corrected so both taps share the same reference fare
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the reference cap now applies
+          **AND** the total is the capped amount
+          **AND** an auto-refund returns the difference above the cap
+        expected: The shared-ref cap applies; the total is capped and the difference is refunded.
+      - title: Lowering the higher-ref tap to match applies the lower cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting the higher-ref tap down to match the other applies the lower reference cap and refunds.
+        steps: |-
+          **GIVEN** two taps on different reference fares, so no cap applies at settlement
+          **AND** zonal capping is disabled
+          **WHEN** the higher-fare tap is corrected down to match the other tap's reference fare
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the lower reference cap now applies
+          **AND** the total is that cap
+          **AND** an auto-refund returns the difference
+        expected: The lower reference cap applies; the total is capped and the difference is refunded.
+
+  - path: [ABT, Functional, Tap Correction, Town Service Cap]
+    cases:
+      - title: Correction within the town service zone holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that an alighting correction within the town service zone leaves the town service cap unchanged.
+        steps: |-
+          **GIVEN** a Bangor town service day has reached the £2.50 cap (Bus mode)
+          **AND** the scenario is run in both the Operator and Passenger portals
+          **WHEN** one tap's alighting is corrected to another stop within the town service zone
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the town service cap still applies
+          **AND** the total stays £2.50
+          **AND** no auto-settlement or refund is raised
+        expected: The £2.50 town service cap holds; no settlement or refund is raised.
+      - title: Correction outside the town to a higher fare removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap outside the town area to a higher fare removes the town service cap and charges the difference.
+        steps: |-
+          **GIVEN** a Bangor town service day has reached the £2.50 cap
+          **WHEN** one tap's alighting is corrected to a higher-fare stop outside the town area
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the town service cap is removed
+          **AND** the corrected tap is charged the higher fare
+          **AND** an auto-settlement collects the difference
+        expected: Town service cap removed; the higher fare is charged and the difference is auto-settled.
+      - title: Correction outside the town to a lower fare removes the cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap outside the town area to a lower fare removes the town service cap and refunds the difference.
+        steps: |-
+          **GIVEN** a Bangor town service day has reached the £2.50 cap
+          **AND** a stop outside the town area exists at a fare below £2.50
+          **WHEN** one tap's alighting is corrected to that lower-fare stop outside the town area
+          **AND** the overnight EndOfDay settlement runs
+          **THEN** the town service cap is removed
+          **AND** the corrected tap is charged the lower fare
+          **AND** an auto-refund returns the difference
+        expected: Town service cap removed; the lower fare is charged and the difference is refunded.
+
+  # ───────────────────── Annulment & Re-tap ─────────────────────
+  - path: [ABT, Functional, Annulment & Re-tap]
+    cases:
+      - title: Re-tap at the same stage after annulment is the first good tap (Metro)
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap at the same boarding stage after an annulment is charged as the first good tap of the day.
+        steps: |-
+          **GIVEN** a Metro tap has been annulled before settlement
+          **WHEN** the passenger re-taps at the same boarding stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the re-tap is charged as the first good tap at full fare
+          **AND** the annulled tap is charged £0.00
+        expected: The re-tap is the first good tap at full fare; the annulled tap is £0.00.
+      - title: Full Metro day reaches the daily cap after an annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a full Metro day caps correctly at £4.00 following an annulment and re-tap.
+        steps: |-
+          **GIVEN** a Metro tap has been annulled and re-tapped at the same stage
+          **WHEN** the passenger completes further Metro taps to reach the cap
+          **AND** the EndOfDay settlement runs
+          **THEN** the day caps at £4.00 with the third tap charged £0.00
+          **AND** the annulled tap is charged £0.00
+        expected: The day caps at £4.00; the annulled tap is £0.00.
+      - title: Re-tap at the same stage after annulment is the first ref fare tap (Ulsterbus)
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an Ulsterbus re-tap at the same stage after annulment counts as the first reference-fare tap.
+        steps: |-
+          **GIVEN** an Ulsterbus ref.60 tap has been annulled before settlement
+          **WHEN** the passenger re-taps at the same boarding stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the re-tap is charged as the first ref.60 tap at full fare
+          **AND** the annulled tap is charged £0.00
+        expected: The re-tap is the first ref.60 tap at full fare; the annulled tap is £0.00.
+      - title: Ulsterbus reference fare cap applies on the correct tap after annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that the Ulsterbus reference cap is reached on the correct taps after an annulment and re-tap.
+        steps: |-
+          **GIVEN** an Ulsterbus ref.60 tap has been annulled and re-tapped
+          **WHEN** further ref.60 taps are made to reach the cap
+          **AND** the EndOfDay settlement runs
+          **THEN** the ref.60 cap of £7.20 is reached with later taps charged £0.00
+          **AND** the day total for ref.60 equals £7.20
+        expected: The ref.60 day caps at £7.20; the annulled tap is excluded.
+      - title: Re-tap after annulment in the ref.61 band caps at the ref.61 value
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap after annulment is capped in its own reference band, not an adjacent band.
+        steps: |-
+          **GIVEN** an Ulsterbus ref.61 tap has been annulled before settlement
+          **WHEN** the passenger re-taps in the ref.61 band and reaches the cap
+          **AND** the EndOfDay settlement runs
+          **THEN** the ref.61 daily cap of £8.20 is applied, not the adjacent ref.60 cap of £7.20
+          **AND** the day total for ref.61 equals £8.20
+        expected: The day caps at the ref.61 value of £8.20, not the adjacent ref.60 £7.20.
+      - title: Annulment in the ref.60 band does not borrow the higher ref.61 cap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a ref.60 day after an annulment still caps at its own band value.
+        steps: |-
+          **GIVEN** an Ulsterbus ref.60 tap has been annulled and re-tapped
+          **WHEN** further ref.60 taps reach the cap
+          **AND** the EndOfDay settlement runs
+          **THEN** the ref.60 daily cap of £7.20 is applied, not the adjacent ref.61 cap of £8.20
+          **AND** the day total for ref.60 equals £7.20
+        expected: The day caps at the ref.60 value of £7.20, not the adjacent ref.61 £8.20.
+      - title: Genuine duplicate without annulment is still rejected as £0.00
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a second same-stage tap without a preceding annulment is still treated as a duplicate.
+        steps: |-
+          **GIVEN** a Metro tap with no annulment
+          **WHEN** a second tap is made at the same boarding stage within the duplicate window
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged full fare
+          **AND** the second tap is rejected as a duplicate and charged £0.00
+        expected: The genuine duplicate is rejected at £0.00; the first tap is charged in full.
+      - title: Re-tap at a different stage after annulment is a normal first tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a re-tap at a different boarding stage after annulment is treated as a normal first tap.
+        steps: |-
+          **GIVEN** a Metro tap has been annulled before settlement
+          **WHEN** the passenger re-taps at a different boarding stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the re-tap is charged as the first good tap at full fare
+          **AND** the annulled tap is charged £0.00
+        expected: The different-stage re-tap is a normal first tap; the annulled tap is £0.00.
+      - title: Annulling the re-tap as well leaves a later tap as the first good tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that two annulments in a row do not leave a phantom successful tap in the count.
+        steps: |-
+          **GIVEN** a Metro tap and its re-tap have both been annulled
+          **WHEN** the passenger makes a third tap at the same stage
+          **AND** the EndOfDay settlement runs
+          **THEN** both annulled taps are charged £0.00
+          **AND** the third tap is the first good tap at full fare
+        expected: Both annulled taps are £0.00; the third tap is the first good tap.
+      - title: Annulment processed in the same settlement run as the re-tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that the fix holds when a cancellation and re-tap settle together in one run.
+        steps: |-
+          **GIVEN** a Metro tap is annulled and re-tapped at the same stage with no settlement between them
+          **WHEN** the EndOfDay settlement runs once
+          **THEN** the annulled tap is charged £0.00
+          **AND** the re-tap is the first good tap at full fare
+        expected: With a single settlement run, the annulled tap is £0.00 and the re-tap is the first good tap.
+      - title: Annulment with no re-tap leaves no chargeable journey
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an annulled tap on its own generates no charge.
+        steps: |-
+          **GIVEN** a single Metro tap
+          **WHEN** the tap is annulled
+          **AND** the EndOfDay settlement runs
+          **THEN** the annulled tap is charged £0.00
+          **AND** the day total is £0.00
+        expected: The annulled tap is £0.00; nothing is charged for the day.
+      - title: Annulling a capped tap does not corrupt the day total
+        refs: [TODEV-23967]
+        objective: This test is to confirm that annulling a capped (free) tap leaves the day's cap total intact.
+        steps: |-
+          **GIVEN** a Metro day at the £4.00 cap with a £0.00 capped last tap
+          **WHEN** the capped tap is annulled before settlement
+          **AND** the EndOfDay settlement runs
+          **THEN** the annulled capped tap is charged £0.00
+          **AND** the day total stays £4.00
+        expected: Annulling the capped tap leaves the day total at £4.00.
+      - title: Annulling the first capped-day tap then re-tapping restores correct totals
+        refs: [TODEV-23967]
+        objective: This test is to confirm that removing a tap that contributed to the cap and re-tapping restores the correct day total.
+        steps: |-
+          **GIVEN** a Metro day approaching the cap
+          **WHEN** the first tap is annulled and a later re-tap is made
+          **AND** the EndOfDay settlement runs
+          **THEN** the annulled tap is charged £0.00
+          **AND** the day total is preserved at £4.00
+        expected: The annulled tap is £0.00; the day total is preserved at £4.00.
+      - title: Annulment on one card does not affect a similar tap on another card
+        refs: [TODEV-23967]
+        objective: This test is to confirm that a same-stage tap on a different card is treated independently of another card's annulment.
+        steps: |-
+          **GIVEN** one card has an annulled tap at a stage and time
+          **WHEN** a different card taps at the same stage and time
+          **AND** the EndOfDay settlement runs
+          **THEN** the other card's tap is charged as a normal first tap
+          **AND** it is not treated as a duplicate
+        expected: The other card's tap is a normal first tap, unaffected by the annulment.
+      - title: Ulsterbus re-tap with a different alighting and fare after annulment
+        refs: [TODEV-23967]
+        objective: This test is to confirm that an Ulsterbus re-tap from the same stage with a different alighting and fare is the first good tap.
+        steps: |-
+          **GIVEN** an Ulsterbus tap has been annulled before settlement
+          **WHEN** the passenger re-taps from the same stage to a different alighting stage and fare
+          **AND** the EndOfDay settlement runs
+          **THEN** the re-tap is charged its new fare as the first good tap
+          **AND** the annulled tap is charged £0.00
+        expected: The re-tap is charged its new fare as the first good tap; the annulled tap is £0.00.
+      - title: Re-tap at the same stage without an annulment is a genuine duplicate
+        refs: [TODEV-23967]
+        objective: This test is to confirm that duplicate detection keys off annulment status, not merely a later tap existing.
+        steps: |-
+          **GIVEN** a Metro tap that was not annulled
+          **WHEN** a second tap is made at the same boarding stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged full fare
+          **AND** the second tap is rejected as a duplicate at £0.00
+        expected: Without an annulment, the second same-stage tap is a duplicate at £0.00.
+      - title: Multiple annulment and re-tap cycles in one day cap correctly
+        refs: [TODEV-23967]
+        objective: This test is to confirm that several annulment and re-tap cycles in a day still cap correctly.
+        steps: |-
+          **GIVEN** two separate annul-and-re-tap cycles earlier in the day
+          **WHEN** the passenger makes a further normal tap
+          **AND** the EndOfDay settlement runs
+          **THEN** all annulled taps are charged £0.00
+          **AND** the good taps cap the day at £4.00
+        expected: All annulled taps are £0.00; the good taps cap the day at £4.00.
+      - title: Annulment on a previous day does not affect the new day's first tap
+        refs: [TODEV-23967]
+        objective: This test is to confirm that capping windows are per day and a prior-day annulment does not bleed forward.
+        steps: |-
+          **GIVEN** a tap was annulled two days ago
+          **WHEN** the passenger makes the first tap of a new day
+          **AND** the EndOfDay settlement runs
+          **THEN** the new day's tap is charged as a normal first tap
+          **AND** it is not treated as a duplicate
+        expected: The new day's first tap is charged normally, unaffected by the prior-day annulment.
+      - title: A valid tap rejected as duplicate is retained when the first tap is cancelled
+        refs: [TODEV-24259]
+        objective: This test is to confirm that a duplicate-flagged tap becomes the valid journey when the original tap is cancelled.
+        steps: |-
+          **GIVEN** a Metro tap and a same-stage tap flagged as a duplicate in the portal
+          **WHEN** the first tap is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is shown cancelled with the "**" indicator
+          **AND** the previously-duplicate tap becomes the valid first tap charged full fare and remains in Journey History
+        expected: The duplicate tap is rehabilitated as the valid first tap and stays in Journey History.
+      - title: Several same-stage taps then cancelling the first promotes the next valid tap
+        refs: [TODEV-24259]
+        objective: This test is to confirm that after several same-stage duplicates, cancelling the first promotes the next tap to the valid journey.
+        steps: |-
+          **GIVEN** a first tap and three same-stage duplicate taps
+          **WHEN** the first tap is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** the cancelled tap shows the "**" indicator
+          **AND** the next tap becomes the valid first tap at full fare
+          **AND** the remaining taps stay duplicates at £0.00
+        expected: The next tap is promoted to the valid first tap; the rest stay duplicates at £0.00.
+      - title: No valid journey is left missing after the annulment
+        refs: [TODEV-24259]
+        objective: This test is to confirm that exactly one valid journey remains after an annulment, with none missing from Journey History.
+        steps: |-
+          **GIVEN** a Metro tap and a same-stage duplicate tap
+          **WHEN** the first tap is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** exactly one valid journey is shown, charged full fare, for the surviving tap
+          **AND** no valid journey is missing from Journey History
+        expected: One valid journey remains; none is missing from Journey History.
+      - title: Annulment processed before the second tap makes it a normal first journey
+        refs: [TODEV-24259]
+        objective: This test is to confirm that when the cancellation completes before the next tap, that tap is a normal first journey.
+        steps: |-
+          **GIVEN** a Metro tap that is cancelled before any further tap
+          **WHEN** the passenger makes a second tap at the same stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the cancelled tap shows the "**" indicator
+          **AND** the second tap is the valid first tap at full fare
+        expected: The second tap is a normal first journey; the cancelled tap shows the indicator.
+      - title: Cancelling the rehabilitated tap promotes the next tap in turn
+        refs: [TODEV-24259]
+        objective: This test is to confirm that cancelling a rehabilitated tap promotes the following tap to the valid journey.
+        steps: |-
+          **GIVEN** a first tap with two same-stage duplicate taps, with the first tap already cancelled
+          **WHEN** the rehabilitated (second) tap is then cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** the first two taps show the "**" indicator
+          **AND** the third tap becomes the valid first tap at full fare
+        expected: Cancelling the rehabilitated tap promotes the third tap to the valid journey.
+      - title: Cancelling a tap with no following tap leaves nothing missing
+        refs: [TODEV-24259]
+        objective: This test is to confirm that cancelling a lone tap leaves no missing journey and no charge.
+        steps: |-
+          **GIVEN** a single Metro tap
+          **WHEN** the tap is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** the tap shows the "**" indicator and no other journey is shown
+          **AND** the day total is £0.00
+        expected: The lone cancelled tap shows the indicator; nothing else is shown and the day total is £0.00.
+      - title: A second tap from a different stage is unaffected by the annulment
+        refs: [TODEV-24259]
+        objective: This test is to confirm that a different-stage tap, never a duplicate, is unaffected by cancelling the first tap.
+        steps: |-
+          **GIVEN** a Metro tap and a valid different-stage tap
+          **WHEN** the first tap is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap shows the "**" indicator
+          **AND** the different-stage tap remains the valid first tap at full fare
+        expected: The different-stage tap is unaffected and remains the valid first tap.
+
+  # ───────────────────── Duplicate Detection ─────────────────────
+  - path: [ABT, Functional, Duplicate Detection]
+    cases:
+      - title: Second tap after a same-stage retail transaction is flagged duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a second tap remains a duplicate even after an intervening same-stage retail transaction.
+        steps: |-
+          **GIVEN** a Metro tap followed by a same-stage retail transaction
+          **WHEN** a second same-stage tap is made within the duplicate window
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged full fare
+          **AND** the second is flagged a duplicate at £0.00
+          **AND** the duplicate is recorded against the original tap
+        expected: The second tap is a duplicate at £0.00 despite the intervening retail transaction.
+      - title: Later taps including an out-of-order timestamp are flagged duplicates
+        refs: [TODEV-24258]
+        objective: This test is to confirm that later same-stage taps, including one timestamped before the original, are flagged as duplicates.
+        steps: |-
+          **GIVEN** a Metro tap and a same-stage retail transaction
+          **WHEN** two further same-stage taps are made, one timestamped before the original
+          **AND** the EndOfDay settlement runs
+          **THEN** both later taps are flagged duplicates at £0.00
+          **AND** both are recorded against the original tap
+        expected: Both later taps are duplicates at £0.00, recorded against the original.
+      - title: Multiple interleaved retail transactions never reset the duplicate reference
+        refs: [TODEV-24258]
+        objective: This test is to confirm that every same-stage tap after the first is a duplicate of the original regardless of interleaved retail transactions.
+        steps: |-
+          **GIVEN** a Metro tap and several interleaved same-stage retail transactions
+          **WHEN** further same-stage taps are made
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged full fare and every later same-stage tap is a duplicate at £0.00
+          **AND** each duplicate is recorded against the original tap
+        expected: All later same-stage taps are duplicates at £0.00 against the original, despite the retail transactions.
+      - title: A retail transaction from a different stage still allows the duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that the previously-working different-stage retail path still flags the later tap as a duplicate.
+        steps: |-
+          **GIVEN** a Metro tap and a retail transaction from a different stage
+          **WHEN** a second same-stage tap is made
+          **AND** the EndOfDay settlement runs
+          **THEN** the second tap is flagged a duplicate at £0.00
+          **AND** it is recorded against the original tap
+        expected: The second tap is a duplicate at £0.00, recorded against the original.
+      - title: A same-stage tap outside the duplicate window is not a duplicate
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a same-stage tap beyond the 15-minute window is a genuine new tap.
+        steps: |-
+          **GIVEN** a Metro tap and a same-stage retail transaction
+          **WHEN** a second same-stage tap is made more than 15 minutes after the original
+          **AND** the EndOfDay settlement runs
+          **THEN** the second tap is not flagged as a duplicate
+          **AND** it is charged as the second tap of the day
+        expected: Beyond 15 minutes the tap is a genuine second tap, not a duplicate.
+      - title: The retail transaction itself is never flagged a duplicate of a tap
+        refs: [TODEV-24258]
+        objective: This test is to confirm that a retail transaction is recorded correctly and is not cross-flagged as a duplicate of a TOO tap.
+        steps: |-
+          **GIVEN** a Metro tap
+          **WHEN** a same-stage retail transaction is made
+          **AND** the EndOfDay settlement runs
+          **THEN** the retail transaction is recorded correctly and charged its amount
+          **AND** it is not flagged as a duplicate
+        expected: The retail transaction is recorded and charged correctly, never flagged as a duplicate.
+      - title: A later tap from a different boarding stage is a genuine new tap
+        refs: [TODEV-24258]
+        objective: This test is to confirm that duplicate detection is per boarding stage, so a different-stage tap charges normally.
+        steps: |-
+          **GIVEN** a Metro tap and a same-stage retail transaction
+          **WHEN** a second tap is made from a different boarding stage
+          **AND** the EndOfDay settlement runs
+          **THEN** the second tap is not flagged as a duplicate
+          **AND** it is charged as the second tap of the day
+        expected: The different-stage tap is a genuine second tap, charged normally.
+
+  # ───────────────────── Journey History ─────────────────────
+  - path: [ABT, Functional, Journey History]
+    cases:
+      - title: A cancelled journey remains visible in Journey History
+        refs: [TODEV-24061]
+        objective: This test is to confirm that a cancelled journey is retained and shown in Journey History after cancellation.
+        steps: |-
+          **GIVEN** a Metro tap that has been cancelled
+          **WHEN** the EndOfDay settlement runs
+          **THEN** Journey History shows a single journey for that tap
+          **AND** it is marked as cancelled with the "**" indicator
+        expected: The cancelled journey stays visible in Journey History with the "**" indicator.
+      - title: A cancelled journey with a £0.00 fare is still visible
+        refs: [TODEV-24061]
+        objective: This test is to confirm that a cancelled journey charged £0.00 does not vanish from Journey History.
+        steps: |-
+          **GIVEN** a capped Metro tap charged £0.00 that is then cancelled
+          **WHEN** the EndOfDay settlement runs
+          **THEN** Journey History shows the £0.00 journey
+          **AND** it is marked as cancelled with the "**" indicator
+        expected: The £0.00 cancelled journey remains visible with the "**" indicator.
+      - title: Editing the alighting stop on a cancelled tap keeps the journey visible
+        refs: [TODEV-24061]
+        objective: This test is to confirm that correcting the stop on a cancelled tap leaves it visible and still cancelled.
+        steps: |-
+          **GIVEN** a cancelled Metro tap
+          **WHEN** its alighting stop is corrected
+          **AND** the EndOfDay settlement runs
+          **THEN** Journey History shows a single journey with the corrected stop
+          **AND** it is still marked as cancelled with the "**" indicator
+        expected: After the stop edit the cancelled journey stays visible and still cancelled.
+      - title: A zero-fare correction on a cancelled tap leaves a single visible row
+        refs: [TODEV-24061]
+        objective: This test is to confirm that a correction that zeroes a cancelled tap's fare does not hide or duplicate the row.
+        steps: |-
+          **GIVEN** a cancelled Metro tap
+          **WHEN** its alighting stop is corrected so the fare shows £0.00
+          **AND** the EndOfDay settlement runs
+          **THEN** Journey History still shows a single cancelled journey for that tap
+          **AND** exactly one journey row exists for it
+        expected: A single cancelled row remains; the £0.00 correction does not hide or duplicate it.
+      - title: Editing the stop on a non-cancelled journey still works
+        refs: [TODEV-24061]
+        objective: This test is to confirm that the retention fix does not affect normal corrections on non-cancelled journeys.
+        steps: |-
+          **GIVEN** a normal (non-cancelled) Metro journey
+          **WHEN** its alighting stop is corrected
+          **AND** the EndOfDay settlement runs
+          **THEN** Journey History shows the journey with the corrected stop charged its fare
+          **AND** it is not marked as cancelled
+        expected: A non-cancelled journey corrects normally and is not marked cancelled.
+      - title: A cancelled journey stays cancelled after a stop correction and further settlement
+        refs: [TODEV-24061]
+        objective: This test is to confirm that a stop edit does not flip a cancelled journey back to active across settlements.
+        steps: |-
+          **GIVEN** a cancelled Metro tap whose alighting stop has been corrected
+          **WHEN** a further EndOfDay settlement runs
+          **THEN** the journey is still marked as cancelled
+          **AND** it remains visible in Journey History with the "**" indicator
+        expected: The journey stays cancelled and visible after the correction and further settlement.
+      - title: Cancelling one journey does not affect other visible journeys
+        refs: [TODEV-24061]
+        objective: This test is to confirm that cancelling one journey leaves other journeys of the day unaffected.
+        steps: |-
+          **GIVEN** two Metro journeys on the same day
+          **WHEN** one journey is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** Journey History shows the cancelled journey marked cancelled
+          **AND** the other journey is shown as not cancelled
+        expected: Only the cancelled journey is marked; the other is unaffected.
+      - title: Cancelling a charged journey produces a refund and retains the record
+        refs: [TODEV-24061]
+        objective: This test is to confirm that cancelling a settled charged journey refunds it and keeps the record in Journey History.
+        steps: |-
+          **GIVEN** a settled Metro journey charged £2.30
+          **WHEN** the journey is cancelled
+          **AND** the EndOfDay settlement runs
+          **THEN** a refund of £2.30 is made for the journey
+          **AND** Journey History shows a single cancelled journey for it
+        expected: The journey is refunded £2.30 and retained as a single cancelled record.
+      - title: Editing the stop on a cancelled tap after settlement keeps the record
+        refs: [TODEV-24061]
+        objective: This test is to confirm that correcting a cancelled tap after its refund keeps a single record and raises no further refund.
+        steps: |-
+          **GIVEN** a settled Metro journey that was cancelled and refunded £2.30
+          **WHEN** its alighting stop is corrected
+          **AND** the EndOfDay settlement runs
+          **THEN** Journey History shows a single cancelled journey with the corrected stop
+          **AND** no additional refund is made
+        expected: A single cancelled record remains after the correction; no extra refund is raised.
+      - title: A cancelled transfer journey remains visible
+        refs: [TODEV-24061]
+        objective: This test is to confirm that a cancelled transfer leg charged £0.00 stays visible in Journey History.
+        steps: |-
+          **GIVEN** a Metro transfer leg charged £0.00 with a non-zero initial fare, then cancelled
+          **WHEN** the EndOfDay settlement runs
+          **THEN** Journey History shows a single cancelled transfer journey
+          **AND** it is marked as cancelled with the "**" indicator
+        expected: The cancelled transfer leg remains visible with the "**" indicator.
+      - title: A settled TOO journey shows its onward stops, not "No options"
+        refs: [TODEV-24397]
+        objective: This test is to confirm that the Update Stop dropdown is populated for a settled TOO journey.
+        steps: |-
+          **GIVEN** a settled TOO journey on route 72b boarding from Greys Farm
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the dropdown is populated with the 14 onward fare-bearing stops
+          **AND** it does not show "No options" and excludes the zero-fare stop
+        expected: The dropdown lists the 14 onward fare-bearing stops, not "No options".
+      - title: A settled TOO journey from another stage shows its onward stops
+        refs: [TODEV-24397]
+        objective: This test is to confirm that the Update Stop dropdown is populated for a settled TOO journey from a different boarding stage.
+        steps: |-
+          **GIVEN** a settled TOO journey on route 72b boarding from Moygashel Busby Shop
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the dropdown is populated with the 15 onward fare-bearing stops
+          **AND** it does not show "No options" and excludes the zero-fare stop
+        expected: The dropdown lists the 15 onward fare-bearing stops, not "No options".
+      - title: Both settled ref.60 taps from the same stage populate the dropdown
+        refs: [TODEV-24397]
+        objective: This test is to confirm that two settled ref.60 taps from the same boarding stage each populate the Update Stop dropdown.
+        steps: |-
+          **GIVEN** two settled TOO ref.60 taps on route 72b from the same boarding stage
+          **WHEN** the user opens the Update Stop list for each tap
+          **THEN** each dropdown is populated with the onward stops
+          **AND** neither shows "No options"
+        expected: Both taps' dropdowns are populated; neither shows "No options".
+      - title: Re-opening the Update Stop modal always populates the dropdown
+        refs: [TODEV-24397]
+        objective: This test is to confirm that the Update Stop dropdown populates on every open, not intermittently.
+        steps: |-
+          **GIVEN** a settled TOO journey on route 72b
+          **WHEN** the user opens, closes and re-opens the Update Stop modal several times
+          **THEN** the dropdown shows the onward stops on every open
+          **AND** it never shows "No options"
+        expected: The dropdown populates on every open and never shows "No options".
+      - title: '"No options" is correct when the boarding stage is the last stop'
+        refs: [TODEV-24397]
+        objective: This test is to confirm that an empty Update Stop list is correct only when there are no onward fare-bearing stops.
+        steps: |-
+          **GIVEN** a settled TOO journey boarding from the last stop on the route
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the dropdown shows "No options"
+          **AND** this is expected because there are no onward stops with a fare
+        expected: '"No options" is the correct, expected result from the last stop on the route.'
+      - title: The correct operator returns stops; a mismatched operator returns none
+        refs: [TODEV-24397]
+        objective: This test is to confirm that the Update Stop list populates for the journey's correct operator and is empty only on operator mismatch.
+        steps: |-
+          **GIVEN** a settled TOO journey on route 72b from Greys Farm
+          **WHEN** the Update Stop list is opened using the journey's correct operator
+          **THEN** the dropdown is populated with the onward stops and does not show "No options"
+          **AND** using a mismatched operator id returns no stops as user error
+        expected: The correct operator returns the stops; a mismatched operator returns none (user error).
+
+  # ───────────────────── Update Stop List ─────────────────────
+  - path: [ABT, Functional, Update Stop List]
+    cases:
+      - title: Only stops with a fare greater than zero are shown
+        refs: [TODEV-24300]
+        objective: This test is to confirm that the Update Stop list shows only alighting stops with a positive fare.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 boarding from Newbuildings Primary School
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** every stop shown has a fare greater than zero
+          **AND** no stop with a blank, zero or negative fare is shown
+        expected: Only positive-fare stops are listed; blank, zero or negative-fare stops are hidden.
+      - title: Zero-fare transfer stops are not shown
+        refs: [TODEV-24300]
+        objective: This test is to confirm that zero-fare (transfer) stops are excluded from the Update Stop list.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 from a stage with several zero-fare transfer stops
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the zero-fare transfer stops are not shown in the list
+        expected: Zero-fare transfer stops are excluded from the list.
+      - title: Valid stops with a positive fare are still shown
+        refs: [TODEV-24300]
+        objective: This test is to confirm that valid positive-fare stops continue to appear in the Update Stop list.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 from a stage with positive-fare onward stops
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the onward stops with a positive reference fare are shown
+        expected: Positive-fare onward stops are shown in the list.
+      - title: Selecting a valid positive-fare stop updates the journey
+        refs: [TODEV-24300]
+        objective: This test is to confirm that selecting a positive-fare stop updates the journey's alighting stage and recalculates the fare.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 with the Update Stop list open
+          **WHEN** the user selects a positive-fare stop and confirms the change
+          **THEN** the journey's alighting stage is updated to the selected stop
+          **AND** the journey fare is recalculated for that stop
+        expected: The journey's alighting stage updates and the fare recalculates for the selected stop.
+      - title: A zero-fare stop is hidden but the smallest positive-fare stop is shown
+        refs: [TODEV-24300]
+        objective: This test is to confirm that the filter is fare greater than zero, hiding zero-fare stops while showing the smallest positive fare.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 with a zero-fare stop and a smallest positive-fare stop
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the zero-fare stop is not shown
+          **AND** the smallest positive-fare stop is shown
+        expected: The zero-fare stop is hidden; the smallest positive-fare stop is shown.
+      - title: A £0.00 capped journey stays visible and editable
+        refs: [TODEV-24300]
+        objective: This test is to confirm that a journey charged £0.00 by the daily cap remains visible and its Update Stop list still filters correctly.
+        steps: |-
+          **GIVEN** a journey charged £0.00 because the daily cap was reached
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the journey is still shown in Journey History
+          **AND** is editable
+          **AND** the Update Stop list still shows only stops with a fare greater than zero
+        expected: The £0.00 capped journey stays visible and editable; the list still filters to positive fares.
+      - title: A cancelled £0.00 journey stays visible and editable
+        refs: [TODEV-24300]
+        objective: This test is to confirm that a cancelled £0.00 journey remains visible and its Update Stop list still filters correctly.
+        steps: |-
+          **GIVEN** a cancelled journey charged £0.00
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the journey is still shown with the cancelled indicator
+          **AND** is editable
+          **AND** the Update Stop list still shows only stops with a fare greater than zero
+        expected: The cancelled £0.00 journey stays visible and editable; the list still filters to positive fares.
+      - title: A transfer journey charged £0.00 stays displayed
+        refs: [TODEV-24300]
+        objective: This test is to confirm that a transfer journey charged £0.00 remains displayed and editable in Journey History.
+        steps: |-
+          **GIVEN** a journey accepted as a transfer and charged £0.00
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the journey is still shown with the transfer icon
+          **AND** is editable
+          **AND** the Update Stop list still shows only stops with a fare greater than zero
+        expected: The £0.00 transfer journey stays displayed with the transfer icon; the list filters to positive fares.
+      - title: A stop with a negative fare is not shown
+        refs: [TODEV-24300]
+        objective: This test is to confirm that the filter uses fare greater than zero, excluding negative-fare anomalies.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 with a stop carrying a negative fare
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** no stop with a negative fare is shown
+        expected: Negative-fare stops are excluded from the list.
+      - title: Transfer stops with a positive fare still appear
+        refs: [TODEV-24300]
+        objective: This test is to confirm that the filter excludes only non-positive fares, so positive-fare transfer stops still appear.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 with positive-fare transfer stops
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the positive-fare transfer stops still appear in the list
+        expected: Positive-fare transfer stops still appear; only non-positive fares are filtered.
+      - title: TVM-only stops with a positive fare still appear
+        refs: [TODEV-24300]
+        objective: This test is to confirm that TVM-only stops with a positive fare still appear, as excluding them is out of scope for this fix.
+        steps: |-
+          **GIVEN** a TOO journey on route 273 with TVM-only stops carrying a positive fare
+          **WHEN** the user opens the Update Stop list for the journey's alighting stage
+          **THEN** the positive-fare TVM-only stops still appear in the list
+          **AND** their exclusion is a known limitation tracked separately
+        expected: Positive-fare TVM-only stops still appear; excluding them is a tracked known limitation.
+
+  # ───────────────────── Debt Recovery ─────────────────────
+  - path: [ABT, Functional, Debt Recovery]
+    cases:
+      - title: A recoverable debt is recovered and the card returns to Active
+        refs: [TODEV-24990]
+        objective: This test is to confirm that a recoverable debt is settled and the linked cards return to Active in the Operator Portal.
+        steps: |-
+          **GIVEN** a card with a recoverable debt linked to a second card
+          **WHEN** the debt recovery process runs
+          **THEN** both cards show status "Active" in the Operator Portal
+          **AND** each card shows its expected number of authorisation requests
+        expected: The debt is recovered; both cards return to Active with the expected authorisation requests.
+      - title: An unrecoverable debt leaves the cards Blocked
+        refs: [TODEV-24990]
+        objective: This test is to confirm that an unrecoverable debt leaves the linked cards Blocked in the Operator Portal.
+        steps: |-
+          **GIVEN** a card with an unrecoverable debt linked to a second card
+          **WHEN** the debt recovery process runs
+          **THEN** both cards show status "Blocked" in the Operator Portal
+          **AND** each card shows its expected number of authorisation requests
+        expected: The debt is not recovered; both cards stay Blocked with the expected authorisation requests.
+      - title: Visa MIT recovery clears a recoverable issuer-liability debt
+        refs: [TODEV-24990]
+        objective: This test is to confirm that scheduled Visa MIT recovery clears a recoverable issuer-liability debt.
+        steps: |-
+          **GIVEN** a Visa account with an EndOfDay auth failure and a recoverable issuer-liability debt
+          **WHEN** the scheduled MIT recovery cycles run and recover the debt
+          **THEN** the Visa account is no longer blocked in the Operator Portal
+          **AND** it is removed from the Deny List
+        expected: Visa MIT recovery clears the debt; the account is unblocked and off the Deny List.
+      - title: A successful recovery removes the card from the Deny List
+        refs: [TODEV-24990]
+        objective: This test is to confirm that a successful debt recovery removes the card from the Deny List and returns it to Active.
+        steps: |-
+          **GIVEN** a card on the Deny List with a recoverable debt
+          **WHEN** the debt recovery process runs and recovers the debt
+          **THEN** the card is removed from the Deny List
+          **AND** its status is "Active"
+        expected: The recovered card is removed from the Deny List and set to Active.
+      - title: The recovered account is visible in the Operator Portal with the correct status
+        refs: [TODEV-24990]
+        objective: This test is to confirm that a recovered account is visible on the Customers page with the correct status.
+        steps: |-
+          **GIVEN** a completed debt recovery for a card with a masked PAN
+          **WHEN** an operator views the Customers page in the Operator Portal
+          **THEN** the account record for that masked PAN is shown
+          **AND** its status is "ACCEPTED"
+        expected: The recovered account is visible on the Customers page with status "ACCEPTED".
+      - title: Recovery behaviour is observable in the Operator Portal, logging verified by dev tests
+        refs: [TODEV-24990]
+        objective: This test is to confirm that manual QA covers the observable recovery behaviour while the open-payment-bs logging is verified by automated dev tests.
+        steps: |-
+          **GIVEN** manual QA has no access to the open-payment-bs logs
+          **WHEN** the recovery behaviour is checked in the Operator Portal
+          **THEN** the recovery outcome is confirmed by the portal's observable status changes
+          **AND** the new log entries are confirmed by the automated dev tests, not this manual pack
+        expected: Manual QA confirms recovery via the portal; logging is covered by the automated dev tests.

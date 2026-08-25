@@ -1,0 +1,224 @@
+# Basket & Payment — reformatted (short titles, split When/Then, sweep refs folded). Shared.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Basket & Payment", "Basket"]
+    cases:
+      - title: "Basket — add & review"
+        match: "Basket — add fares and open the basket to review them"
+        refs: ["TIBU-21777", "TIBU-24364"]
+        objective: "This test is to confirm the operator can add fares to the basket and open it to review the items, total and controls."
+        steps: |
+          **GIVEN** an operator is signed on and has built one or more fares
+          **WHEN** the operator adds them to the basket and opens the basket
+          **THEN** the basket lists the items with the correct total
+          **AND** the expected basket buttons are present
+        expected: "Items are added and the basket shows the items, correct total and controls (regression: TIBU-21777, TIBU-24364)."
+      - title: "Basket — clear basket"
+        match: "Basket — Clear Basket empties the basket"
+        refs: ["TIBU-24368"]
+        objective: "This test is to confirm the Clear Basket button removes all items from the basket."
+        steps: |
+          **GIVEN** the basket contains one or more items
+          **WHEN** the operator presses Clear Basket
+          **THEN** the basket is emptied
+        expected: "Clear Basket removes all items (regression: TIBU-24368)."
+      - title: "Basket — checkout total"
+        match: "Basket — the checkout total matches the items in the basket"
+        refs: ["TIBU-24098", "TIBU-24860"]
+        objective: "This test is to confirm the basket checkout total equals the items, and 'add more' is unavailable once the basket can't accept more."
+        steps: |
+          **GIVEN** the basket contains multiple items
+          **WHEN** the operator proceeds to checkout
+          **THEN** the checkout total equals the sum of the items
+          **AND** 'add more to basket' is unavailable when the basket cannot accept more
+        expected: "Checkout total is correct and 'add more' is disabled when appropriate (regression: TIBU-24098, TIBU-24860)."
+
+  - path: ["Functional", "Basket & Payment", "Cash Payment"]
+    cases:
+      - title: "Cash — pay a basket"
+        match: "Cash Payment — pay a basket by cash and continue to subsequent baskets"
+        refs: ["TIBU-19336", "TIBU-7379"]
+        objective: "This test is to confirm a basket can be paid by cash and that subsequent baskets (incl. different routes) also complete without freezing."
+        steps: |
+          **GIVEN** the basket has one or more items
+          **WHEN** the operator takes cash payment and completes the transaction
+          **THEN** the transaction completes
+          **AND** the basket is issued
+          **WHEN** the operator builds and cash-pays a further basket on a different route
+          **THEN** that transaction also completes without the device freezing
+        expected: "Cash payment completes for a basket and subsequent baskets/routes without freezing (regression: TIBU-19336, TIBU-7379)."
+      - title: "Cash — EOS total net"
+        match: "Cash Payment — the End of Shift cash total is net, not gross"
+        refs: ["TIBU-29484", "TIBU-30634"]
+        objective: "This test is to confirm the End of Shift cash total is net (accounting for annulments), not gross."
+        steps: |
+          **GIVEN** an operator has taken cash sales and at least one annulment during the shift
+          **WHEN** the End of Shift cash total is produced
+          **THEN** the total is the net amount, accounting for annulments
+        expected: "The EOS cash total is net of annulments and the annulment total is correct (regression: TIBU-29484, TIBU-30634)."
+
+  - path: ["Functional", "Basket & Payment", "Card Payment"]
+    cases:
+      - title: "Card — pay a basket"
+        match: "Card Payment — pay a basket by bank card"
+        refs: ["TIBU-24777", "TIBU-24834"]
+        objective: "This test is to confirm a basket can be paid by bank card, with the Bank Card option offered and the payment device working."
+        steps: |
+          **GIVEN** the basket has one or more items
+          **WHEN** the operator selects Bank Card payment and completes payment on the device
+          **THEN** the Bank Card option is offered for eligible items
+          **AND** the payment completes and the basket is issued
+        expected: "Bank Card payment is offered and completes via the payment device (regression: TIBU-24777, TIBU-24834)."
+      - title: "Card — Back from payment"
+        match: "Card Payment — Back from the payment screen returns to the basket/fare"
+        refs: ["TIBU-24876"]
+        objective: "This test is to confirm pressing Back on the payment screen returns the operator with state intact."
+        steps: |
+          **GIVEN** the operator is on the payment screen for a single ticket
+          **WHEN** the operator presses Back
+          **THEN** the operator is returned to the basket/fare with its state intact
+        expected: "Back from the payment screen returns cleanly with state intact (regression: TIBU-24876)."
+
+  - path: ["Functional", "Basket & Payment", "Annulment"]
+    cases:
+      - title: "Annulment — annul last transaction"
+        match: "Annulment — annul the last transaction during the current shift"
+        refs: ["TIBU-19352", "TIBU-24878"]
+        objective: "This test is to confirm the operator can annul the last transaction, and the annul option is only enabled when there is one to annul."
+        steps: |
+          **GIVEN** the operator has issued a ticket this shift
+          **WHEN** the operator annuls the last transaction
+          **THEN** the transaction is annulled
+          **AND** when there is nothing to annul the 'No ticket to Annul' option is greyed out
+        expected: "The last transaction annuls, and the control is disabled when there is nothing to annul (regression: TIBU-19352, TIBU-24878)."
+      - title: "Annulment — newly issued smartcard"
+        match: "Annulment — annul a newly issued smartcard"
+        refs: ["TIBU-24334", "TIBU-23949", "TIBU-26760"]
+        objective: "This test is to confirm a newly issued smartcard can be annulled with the correct outcome and receipt."
+        steps: |
+          **GIVEN** the operator has just issued a new smartcard
+          **WHEN** the operator annuls that smartcard issue
+          **THEN** the issue is annulled successfully
+          **AND** the annulment is recorded
+          **AND** its receipt prints
+        expected: "A newly issued smartcard annuls with the correct outcome and printed ticket (regression: TIBU-24334, TIBU-23949, TIBU-26760)."
+      - title: "Annulment — multi-journey top-up"
+        match: "Annulment — annul a multi-journey / top-up transaction"
+        refs: ["TIBU-25072", "TIBU-25100"]
+        objective: "This test is to confirm multi-journey card top-ups can be annulled with the correct journey counts."
+        steps: |
+          **GIVEN** the operator has topped up a multi-journey smartcard
+          **WHEN** the operator annuls the top-up
+          **THEN** the top-up is annulled
+          **AND** the journeys on the card are corrected
+        expected: "Multi-journey top-ups annul with accurate journey counts (regression: TIBU-25072, TIBU-25100)."
+      - title: "Annulment — Belfast Visitor Pass"
+        refs: ["TIBU-21443"]
+        objective: "This test is to confirm a newly issued Adult Belfast Visitors Pass can be annulled."
+        steps: |
+          **GIVEN** the operator has just issued an Adult Belfast Visitors Pass
+          **WHEN** the operator annuls the issue
+          **THEN** the Belfast Visitors Pass issue is annulled successfully
+        expected: "A new Adult Belfast Visitors Pass can be annulled (regression: TIBU-21443)."
+      - title: "Annulment — re-present different card"
+        refs: ["TIBU-25073"]
+        objective: "This test is to confirm that re-presenting a different card during the Annul Last Transaction flow is handled without leaving the device stuck."
+        steps: |
+          **GIVEN** the operator is annulling the last transaction
+          **WHEN** a different card is presented during the annul flow
+          **THEN** the mismatch is handled gracefully
+          **AND** the device is not left stuck
+        expected: "Presenting a different card during annul is handled gracefully with no stuck state (regression: TIBU-25073)."
+      - title: "Annulment — receipt content"
+        match: "Annulment — the annulment receipt prints the correct information"
+        refs: ["TIBU-23932", "TIBU-25888", "TIBU-25889", "TIBU-25402", "TIBU-25404", "TIBU-25800", "TIBU-25116"]
+        objective: "This test is to confirm annulment receipts print the correct title, card type, journeys, cancellation details and identifiers."
+        steps: |
+          **GIVEN** the operator has annulled a transaction
+          **WHEN** the annulment receipt prints
+          **THEN** it shows the correct title, card type and journey/cancellation information
+          **AND** the card type text is not cut short
+          **AND** the Tray ID is present
+        expected: "Annulment receipts show correct, complete information (title, card type, journeys, cancellations, Tray ID) (regression: TIBU-23932, TIBU-25888, TIBU-25889, TIBU-25402, TIBU-25404, TIBU-25800, TIBU-25116)."
+      - title: "Annulment — during paper jam"
+        match: "Annulment — annulment is possible during a printer paper jam"
+        refs: ["TIBU-19311", "TIBU-20980"]
+        objective: "This test is to confirm the Annul Transaction control responds on the Paper Jam screen."
+        steps: |
+          **GIVEN** the printer is in a paper-jam state after a transaction
+          **WHEN** the operator presses Annul Transaction on the Paper Jam screen
+          **THEN** the annul control responds
+          **AND** the transaction is annulled
+        expected: "The Annul Transaction button works from the Paper Jam screen (regression: TIBU-19311, TIBU-20980)."
+
+  - path: ["Functional", "Basket & Payment", "Receipts & Printing"]
+    cases:
+      - title: "Receipts — printed per transaction"
+        match: "Receipts — a receipt is printed for every issuing transaction"
+        refs: ["TIBU-21135", "TIBU-21176", "TIBU-23016", "TIBU-21266"]
+        objective: "This test is to confirm issuing transactions (tickets, card issues, top-ups) each print a receipt."
+        steps: |
+          **GIVEN** an operator completes an issuing transaction (ticket, card issue or top-up)
+          **WHEN** the transaction completes
+          **THEN** a receipt is printed
+        expected: "Every issuing transaction prints its receipt (regression: TIBU-21135, TIBU-21176, TIBU-23016, TIBU-21266)."
+      - title: "Receipts — no duplicates"
+        match: "Receipts — exactly one receipt is printed (no duplicates)"
+        refs: ["TIBU-22548", "TIBU-22557"]
+        objective: "This test is to confirm a transaction prints exactly one receipt, not duplicates."
+        steps: |
+          **GIVEN** an operator completes a transaction that prints a receipt
+          **WHEN** the receipt prints
+          **THEN** exactly one receipt is produced
+        expected: "Transactions print a single receipt, never duplicates (regression: TIBU-22548, TIBU-22557)."
+      - title: "Receipts — template & fonts"
+        match: "Receipts — the correct template and fonts are used, and missing templates are handled"
+        refs: ["TIBU-23835", "TIBU-24890", "TIBU-23096", "TIBU-16109", "TIBU-24848"]
+        objective: "This test is to confirm printouts use the correct template, fonts and current logo (incl. rail template naming), and a missing template is handled gracefully."
+        steps: |
+          **GIVEN** an operator prints a ticket/receipt
+          **WHEN** the printout is produced
+          **THEN** it uses the correct template, fonts and current Translink logo
+          **AND** rail ticket templates follow the revised naming
+          **AND** a missing template is handled gracefully with no crash
+        expected: "Printouts use the right template/fonts/logo/naming, and a missing template is handled gracefully (regression: TIBU-23835, TIBU-24890, TIBU-23096, TIBU-16109, TIBU-24848)."
+      - title: "Receipts — mini statement"
+        match: "Receipts — mini statement prints the correct content including expiry"
+        refs: ["TIBU-20759", "TIBU-21581", "TIBU-23989", "TIBU-21178", "TIBU-21463"]
+        objective: "This test is to confirm the mini statement prints correct content, including a real expiry date and adequate length, including for expired multi-journey cards."
+        steps: |
+          **GIVEN** the operator prints a mini statement for a smartcard
+          **WHEN** the mini statement prints
+          **THEN** it shows the correct information including the actual expiry date
+          **AND** the printout is long enough to contain all content
+          **AND** an expired multi-journey card still prints its receipt
+        expected: "Mini statements print correct content with a real expiry, adequate length, incl. expired MJ cards (regression: TIBU-20759, TIBU-21581, TIBU-23989, TIBU-21178, TIBU-21463)."
+      - title: "Receipts — day summary"
+        match: "Receipts — the day summary print includes card transaction details"
+        refs: ["TIBU-24800"]
+        objective: "This test is to confirm the day summary printout includes details of card transactions."
+        steps: |
+          **GIVEN** card transactions have occurred during the day
+          **WHEN** the operator prints the day summary
+          **THEN** the printout includes the card transaction details
+        expected: "The day summary print includes card transaction details (regression: TIBU-24800)."
+
+  - path: ["Functional", "Numerical Input"]
+    cases:
+      - title: "Numerical Input — keypad entry"
+        match: "Numerical Input — the keypad enters numbers correctly for amounts and selections"
+        refs: ["TIBU-21771"]
+        objective: "This test is to confirm the numeric keypad correctly enters digits for amounts and selections, including correction with the C key."
+        steps: |
+          **GIVEN** the operator is on a screen requiring numeric entry
+          **WHEN** the operator enters digits and corrects with the C key
+          **THEN** the entered value reflects the key presses
+        expected: "Numeric entry reflects the key presses and can be corrected (regression: TIBU-21771)."

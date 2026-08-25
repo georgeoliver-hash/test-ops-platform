@@ -1,0 +1,25 @@
+suite: NJT - SystemTestOps
+suite_id: 30295
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [1]
+sections:
+  - path: ["Fare Register", "Special User Functionality", "Supervisor Mode", "System Status"]
+    cases:
+      - title: "System Status — Printer error shows Paper Jam"
+        objective: "This test is to confirm the System Status screen distinguishes a Paper Jam printer fault from other printer error sub-states."
+        steps: |
+          **GIVEN** the System Status screen is active
+            **AND** the printer has a Paper Jam fault
+          **WHEN** the operator views the Printer status row
+          **THEN** the Printer status shows the Error state with the "Paper Jam" detail
+        expected: "The Printer row shows Error with Paper Jam specifically named, distinct from Paper low and Paper out. (Source: NJT_FRFRP_FS002 p.84)"
+      - title: "System Status — Printer error shows Paper Out"
+        objective: "This test is to confirm the System Status screen distinguishes a Paper Out printer fault from other printer error sub-states."
+        steps: |
+          **GIVEN** the System Status screen is active
+            **AND** the printer has run out of paper
+          **WHEN** the operator views the Printer status row
+          **THEN** the Printer status shows the Error state with the "Paper out" detail
+        expected: "The Printer row shows Error with Paper out specifically named, distinct from Paper low and Paper Jam. (Source: NJT_FRFRP_FS002 p.84)"

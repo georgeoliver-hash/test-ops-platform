@@ -1,0 +1,44 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Technician]
+    cases:
+      - title: "Printer Firmware — applying firmware returns to Technician Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm applying printer firmware from the Technician Menu completes and returns to the Technician Menu.
+        steps: |
+          **GIVEN** the Technician Menu is displayed
+          **WHEN** the technician selects Apply Printer Firmware
+          **THEN** the Printer Firmware - Applying screen is displayed
+          **AND** the Printer Firmware - Applied screen is displayed
+          **AND** the Technician Menu is redisplayed
+        expected: "Applying printer firmware from the Technician Menu shows Applying then Applied, then returns to the Technician Menu."
+
+      - title: "Home Location — Back Office unavailable returns to Technician Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Home Location when the Back Office is unavailable shows Back Office Not Available and returns to the Technician Menu.
+        steps: |
+          **GIVEN** the Technician Menu is displayed
+          **AND** the Back Office is not available
+          **WHEN** the technician selects Home Location
+          **THEN** the Transferring Data to Back Office screen is displayed
+          **AND** the Back Office Not Available screen is displayed
+          **AND** the Technician Menu is redisplayed after the timeout
+        expected: "Selecting Home Location with the Back Office unavailable shows Back Office Not Available, then returns to the Technician Menu."
+
+      - title: "Penalty Fare Application — opens the third-party app"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Configure Penalty Fare Application from the Technician Menu opens the third-party penalty fare application.
+        steps: |
+          **GIVEN** the Technician Menu is displayed
+          **WHEN** the technician selects Configure Penalty Fare Application
+          **THEN** the third-party penalty fare application opens
+        expected: "Selecting Configure Penalty Fare Application from the Technician Menu opens the third-party penalty fare application."

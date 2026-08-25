@@ -1,0 +1,290 @@
+[
+ {
+  "section_id": 887862,
+  "title": "Configure report access for a role — Staff reports",
+  "preface": "This test is to confirm that an administrator can manage which Staff reports a role can access, including specific reports.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets the Staff report access for a role, including specific report access",
+    "expected": "**THEN** the role can access only the permitted Staff reports"
+   }
+  ],
+  "expected": "A role's Staff report access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure report access for a role — Alert reports",
+  "preface": "This test is to confirm that an administrator can manage which Alert reports a role can access, including specific reports.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets the Alert report access for a role, including specific report access",
+    "expected": "**THEN** the role can access only the permitted Alert reports"
+   }
+  ],
+  "expected": "A role's Alert report access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure report access for a role — Asset reports",
+  "preface": "This test is to confirm that an administrator can manage which Asset reports a role can access, including specific reports.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets the Asset report access for a role, including specific report access",
+    "expected": "**THEN** the role can access only the permitted Asset reports"
+   }
+  ],
+  "expected": "A role's Asset report access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure report access for a role — Topology reports",
+  "preface": "This test is to confirm that an administrator can manage which Topology reports a role can access, including specific reports.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets the Topology report access for a role, including specific report access",
+    "expected": "**THEN** the role can access only the permitted Topology reports"
+   }
+  ],
+  "expected": "A role's Topology report access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Dashboard module access",
+  "preface": "This test is to confirm that an administrator can set a role's Dashboard module access.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Dashboard access",
+    "expected": "**THEN** the role can access only the permitted Dashboard functions"
+   }
+  ],
+  "expected": "A role's Dashboard module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Events & Alerts module access",
+  "preface": "This test is to confirm that an administrator can set a role's Events & Alerts module access (Alert Configuration, Event Group Configuration).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Events & Alerts access (Alert Configuration, Event Group Configuration)",
+    "expected": "**THEN** the role can access only the permitted Events & Alerts functions"
+   }
+  ],
+  "expected": "A role's Events & Alerts module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Topology & Fares module access",
+  "preface": "This test is to confirm that an administrator can set a role's Topology & Fares module access (Route Management, Service Delete, Legacy Stages, Product Editor, Fare Rules, Ticket Editor, Delete Label).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Topology & Fares access (Route Management, Service Delete, Legacy Stages, Product Editor, Fare Rules, Ticket Editor, Delete Label)",
+    "expected": "**THEN** the role can access only the permitted Topology & Fares functions"
+   }
+  ],
+  "expected": "A role's Topology & Fares module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Schedule Manager module access",
+  "preface": "This test is to confirm that an administrator can set a role's Schedule Manager module access (Import, Topology Sync).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Schedule Manager access (Import, Topology Sync)",
+    "expected": "**THEN** the role can access only the permitted Schedule Manager functions"
+   }
+  ],
+  "expected": "A role's Schedule Manager module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Estate Management module access",
+  "preface": "This test is to confirm that an administrator can set a role's Estate Management module access (Comms Monitor, Activity Log, Asset Manager, Cash View, Staff Manager, Device Dataset Deployment, Quarantine, Device Logging).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Estate Management access (Comms Monitor, Activity Log, Asset Manager, Cash View, Staff Manager, Device Dataset Deployment, Quarantine, Device Logging)",
+    "expected": "**THEN** the role can access only the permitted Estate Management functions"
+   }
+  ],
+  "expected": "A role's Estate Management module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — Reports module access",
+  "preface": "This test is to confirm that an administrator can set a role's Reports module access.",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's Reports access",
+    "expected": "**THEN** the role can access only the permitted Reports functions"
+   }
+  ],
+  "expected": "A role's Reports module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — System Configuration module access",
+  "preface": "This test is to confirm that an administrator can set a role's System Configuration module access (Notifications).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's System Configuration access (Notifications)",
+    "expected": "**THEN** the role can access only the permitted System Configuration functions"
+   }
+  ],
+  "expected": "A role's System Configuration module access matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887862,
+  "title": "Configure module and group access for a role — gate/station claims",
+  "preface": "This test is to confirm that an administrator can set a role's gate/station claim (StationAdmin, TransitGuard, SystemSupervisor, StationSupervisor, Admin).",
+  "preconds": "**GIVEN** an administrator is signed into CloudFare",
+  "steps": [
+   {
+    "content": "**WHEN** the administrator sets a role's gate/station claim (StationAdmin, TransitGuard, SystemSupervisor, StationSupervisor or Admin)",
+    "expected": "**THEN** the role's gate/station access matches the configured claim"
+   }
+  ],
+  "expected": "A role's gate/station claim matches the administrator's configuration.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100342",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887866,
+  "title": "Fares export — ABT Fares export is exported",
+  "preface": "This test is to confirm the user can export the ABT Fares export from CloudFare.",
+  "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+  "steps": [
+   {
+    "content": "**WHEN** the user runs the fares export for the ABT Fares export (XLSX or CSV)",
+    "expected": "**THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+   }
+  ],
+  "expected": "The ABT Fares export for the selected operator is exported (XLSX or CSV).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887866,
+  "title": "Fares export — Route Attributes is exported",
+  "preface": "This test is to confirm the user can export the Route Attributes from CloudFare.",
+  "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+  "steps": [
+   {
+    "content": "**WHEN** the user runs the fares export for the Route Attributes (XLSX or CSV)",
+    "expected": "**THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+   }
+  ],
+  "expected": "The Route Attributes for the selected operator is exported (XLSX or CSV).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887866,
+  "title": "Fares export — Area/Zone overlays is exported",
+  "preface": "This test is to confirm the user can export the Area/Zone overlays from CloudFare.",
+  "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+  "steps": [
+   {
+    "content": "**WHEN** the user runs the fares export for the Area/Zone overlays (XLSX or CSV)",
+    "expected": "**THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+   }
+  ],
+  "expected": "The Area/Zone overlays for the selected operator is exported (XLSX or CSV).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ },
+ {
+  "section_id": 887866,
+  "title": "Fares export — single-file export is exported",
+  "preface": "This test is to confirm the user can export the single-file export from CloudFare.",
+  "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+  "steps": [
+   {
+    "content": "**WHEN** the user runs the fares export for the single-file export (XLSX or CSV)",
+    "expected": "**THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+   }
+  ],
+  "expected": "The single-file export for the selected operator is exported (XLSX or CSV).\n\n[Automatable: Yes · Cross-check: CloudFare]",
+  "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241,OldSuite-C2828485,OldSuite-C2828486,OldSuite-C2925143",
+  "priority_id": 1,
+  "custom_devtypes": [
+   100
+  ]
+ }
+]

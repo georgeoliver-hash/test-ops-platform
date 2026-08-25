@@ -1,0 +1,113 @@
+[
+  {
+    "id": 4102927,
+    "preface": "This test is to confirm that a customer can sign on to the Passenger Web Portal with a card that has journeys in the previous seven days.",
+    "preconds": "**GIVEN** the Passenger Web Portal sign-on page is displayed\n**AND** the customer's payment card or mobile wallet has completed journeys in the previous seven days",
+    "steps": [
+      {
+        "content": "**WHEN** the customer enters valid card details",
+        "expected": "**THEN** the customer is signed on to their anonymous account\n**AND** the account home screen is displayed"
+      }
+    ],
+    "expected": "The customer signs on and the account home screen is displayed.",
+    "refs": [
+      "REQ-3561",
+      "OldSuite-C2665782",
+      "OldSuite-C2665785",
+      "PSPEC-0015 Fig.51",
+      "PSPEC-0015 §6.1.1.1-6.1.1.2"
+    ]
+  },
+  {
+    "id": 4102928,
+    "refs": [
+      "REQ-3561",
+      "OldSuite-C2665784"
+    ]
+  },
+  {
+    "id": 4102882,
+    "preface": "This test is to confirm that an administrator can configure a minimum-fare setting for a customer e-Purse smartcard, so a customer without the minimum fare for the shortest journey cannot tag on.",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator sets a minimum fare for an e-Purse smartcard",
+        "expected": "**THEN** the minimum fare is saved\n**AND** the minimum fare is applied to e-Purse validation"
+      }
+    ],
+    "expected": "The minimum e-Purse fare is saved and applied.",
+    "refs": [
+      "REQ-3192.1",
+      "OldSuite-C2925129",
+      "PSPEC-0015 §3.7/§6.1.7.3"
+    ]
+  },
+  {
+    "id": 4102881,
+    "refs": [
+      "REQ-3399",
+      "REQ-3400",
+      "OldSuite-C2665809",
+      "OldSuite-C2665810",
+      "PSPEC-0015 §4.9"
+    ]
+  },
+  {
+    "id": 4102880,
+    "refs": [
+      "REQ-3414",
+      "OldSuite-C2665808"
+    ]
+  },
+  {
+    "id": 4102996,
+    "title": "Product — a Preset Reverse FLU product is configured",
+    "preface": "This test is to confirm the user can configure a Preset Reverse FLU (Fares Lookup Up) product.",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a Preset Reverse FLU product",
+        "expected": "**THEN** the Preset Reverse FLU product is saved with its configuration"
+      }
+    ],
+    "expected": "A Preset Reverse FLU product is configured and saved.",
+    "refs": [
+      "FBD-100268 §10",
+      "OldSuite-C2717262",
+      "REQ-0516",
+      "REQ-1592",
+      "REQ-1862"
+    ]
+  },
+  {
+    "id": 4102987,
+    "refs": [
+      "FBD-100296 para 236-238",
+      "OldSuite-C2840946",
+      "REQ-3291"
+    ]
+  },
+  {
+    "id": 4103099,
+    "preface": "This test is to confirm that an administrator can configure route revenue allocation (pass revenue, generation factor, rail mileage/journey allocation, BRT mileage/journey allocation) in the Merit Route Revenue Editor.",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator configures pass revenue, generation factor, rail mileage/journey allocation, and BRT mileage/journey allocation",
+        "expected": "**THEN** the route revenue settings are saved"
+      }
+    ],
+    "expected": "Route revenue allocation settings (pass revenue, generation factor, rail and BRT mileage/journey allocation) are saved.",
+    "refs": [
+      "FBD-100341",
+      "OldSuite-C2665861",
+      "OldSuite-C2665862",
+      "OldSuite-C2665863",
+      "OldSuite-C2665864",
+      "OldSuite-C2841019",
+      "OldSuite-C2841020",
+      "REQ-2066",
+      "REQ-2153",
+      "REQ-2137",
+      "REQ-2754",
+      "REQ-3285"
+    ]
+  }
+]

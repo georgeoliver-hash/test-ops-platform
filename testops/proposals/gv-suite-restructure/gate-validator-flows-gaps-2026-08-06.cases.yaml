@@ -1,0 +1,21 @@
+suite_id: 30286
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [25]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Commissioning & Router]
+    cases:
+      - title: "Boot — uncommissioned plinth shows Machine Not Commissioned (Gate)"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm an uncommissioned Validator/Plinth displays the Machine Not
+          Commissioned (Gate) screen after Loading.
+        steps: |
+          **GIVEN** the GV is powered on but not commissioned or fully operational
+          **AND** the Validator/Plinth is not commissioned
+          **WHEN** the GV completes its Loading sequence
+          **THEN** the "Machine Not Commissioned - Gate" screen is displayed
+        expected: "An uncommissioned Validator/Plinth shows the Machine Not Commissioned (Gate) screen after Loading."

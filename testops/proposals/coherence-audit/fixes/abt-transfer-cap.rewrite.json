@@ -1,0 +1,28 @@
+[
+  {
+    "id": 4102871,
+    "title": "Transfers — a qualifying Metro/Glider transfer is charged £0.00",
+    "preface": "This test is to confirm that a qualifying Metro/Ulsterbus-to-Glider transfer (or vice versa) is charged £0.00 rather than a normal fare, per the Glider transfer logic (CR123).",
+    "preconds": "**GIVEN** the seeded ABT test card makes two consecutive taps within the configured transfer time (e.g. 90 minutes) — a Directional feeder tap that is charged, then a Glider tap in the same direction whose TransferRouteType flag is not \"None\"\n**AND** example: an Inbound tap on Ulsterbus feeder route G10D, followed by an Inbound tap on Glider East within the transfer window (FBD-100651 §7.4, Scenario 1 \"Dir Fdr to GL\")\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History",
+    "steps": [
+      {
+        "content": "**WHEN** the two taps are matched as a transfer and the EndOfDay settlement runs\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the first (feeder) tap is charged its normal fare\n**AND** the second (Glider) tap is charged £0.00 and shown with the transfer icon\n**AND** the transfer tap is sent to MERIT under the transfer product, not the standard ABT product"
+      }
+    ],
+    "expected": "A qualifying Metro/Glider transfer tap is charged £0.00 and recorded as a transfer, while the originating tap is charged normally.\n\nData variations: Non-Directional feeder → Glider (FBD-100651 Scenario 3); Glider → feeder (Scenarios 2/4); Ulsterbus (transfers enabled) → Glider (Scenario 11). All require matching within the configured transfer time and, for a Directional flag, the same RouteDirection on both taps.\n\n[Automatable: Yes · Cross-check: CloudFare / MERIT]",
+    "action": "reword",
+    "refs": ["FBD-100651"],
+    "citations": [
+      "FBD-100651 §7.4 para 300 (Glider Transfers overview — free transfer to/from Metro/Ulsterbus)",
+      "FBD-100651 §7.4 para 326 (CR123 — align ABT with SmartLink transfer behaviour)",
+      "FBD-100651 §7.4.1 para 330 (TransferRouteType flag; 'None' = transfers not enabled, skip transfer logic)",
+      "FBD-100651 §7.4.3 para 334-337 (previous-tap match: within configured transfer time — expected 90 minutes — previous tap was charged and not itself a transfer)",
+      "FBD-100651 §7.4.4-7.4.5 para 338-341 (Non-Directional on either tap, or matching RouteDirection on both, marks the new tap as a transfer)",
+      "FBD-100651 §7.4.7 para 344-346 (qualifying tap is not charged, marked with the transfer icon, and sent to MERIT under the transfer product)",
+      "Glider Transfer Scenarios V3.00.xlsx, Scenario 1 'Dir Fdr to GL' (G10D In → Glider East In: tap 1 charged, tap 2 no charge/transfer)"
+    ],
+    "change_note": "RESOLVED gap: replaced the invented 'transfer capping rule' / 'Transfer Caps tab' premise (no such concept exists in the capping specs) with the real, spec-grounded Glider transfer behaviour — a qualifying transfer is charged £0.00 (FBD-100651, CR123), not capped. Retitled from a config-action case to an observable-behaviour case per the Gherkin standard; grounded with a concrete worked example (Scenario 1, G10D In → Glider East In) from the Glider Transfer Scenarios tracker. No existing case in suite 30279 covers this specific CR123 mechanism (the only other free-transfer case, C4103587, covers the separate bus-to-rail CR133/CR064 mechanism), so this is a reword, not a dedupe/condemn.",
+    "gaps": []
+  }
+]

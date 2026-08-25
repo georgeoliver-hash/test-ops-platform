@@ -1,0 +1,217 @@
+# MISSING paths from knowledge/flows/translink-pos-topup-validation-topup.md (rows 1,4,5,7,9,11,
+# 12,14-22). Grounded in that flow-map's "Screen states" and "Notes / unknowns" sections only.
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Top Up & Validation", "Top Up"]
+    cases:
+      - title: "Top Up — invalid smartcard presented shows Smartcard/Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting an unrecognised or blank smartcard at Please Present
+          Smartcard shows the Smartcard/Error catch-all and returns to Main Menu.
+        steps: |
+          **GIVEN** the POS is at Please Present Smartcard
+          **WHEN** an unrecognised or blank smartcard is presented
+          **THEN** Smartcard/Error is shown
+          **AND** after the timeout, or a key press, the POS returns to Main Menu
+        expected: "An unrecognised/blank smartcard shows Smartcard/Error and returns to Main Menu after the timeout or a key press."
+
+      - title: "Top Up — Recover Unique Code prints the smartcard code receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing Recover Unique Code on Smartcard/Menu-ABT prints a
+          receipt with the smartcard code.
+        steps: |
+          **GIVEN** a valid ABT smartcard is presented and Smartcard/Menu-ABT is shown
+          **WHEN** the operator presses Recover Unique Code
+          **THEN** a receipt is printed with the smartcard code
+        expected: "Recover Unique Code on Smartcard/Menu-ABT prints a receipt showing the smartcard code."
+
+      - title: "Top Up — Menu-ABT hands off into the Card Issue flow"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting the Card Issue option from Smartcard/Menu-ABT hands off
+          into the Card Issue flow.
+        steps: |
+          **GIVEN** a valid ABT smartcard is presented and Smartcard/Menu-ABT is shown
+          **WHEN** the operator selects the Card Issue option
+          **THEN** the POS proceeds into the Card Issue flow
+        expected: "Selecting Card Issue from Smartcard/Menu-ABT hands off into the Card Issue flow (see the Issue Card board for the flow's own screens)."
+
+      - title: "Top Up — ABT Basket/Expired Bank Card path"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the outcome of choosing Bank Card from ABT Basket/Expired.
+        steps: |
+          **GIVEN** an expired ABT smartcard is presented and ABT Basket/Expired is shown
+          **WHEN** the operator selects Bank Card
+          **THEN** **GAP** — the Bank Card path leads to an unlabeled decision node with no captured
+            destination in the flow-map (Overflow id e6a4bd9a) — not in requirements; confirm on the
+            live system before running
+        expected: "GAP — the outcome of Bank Card from ABT Basket/Expired is not captured in the flow-map; confirm on the live system before running."
+
+      - title: "Top Up — ABT Basket/Expired Warrant card write failure shows Top Up Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed card write on the ABT Basket/Expired Warrant path shows
+          Top Up/Top Up Error.
+        steps: |
+          **GIVEN** an expired ABT smartcard is presented, ABT Basket/Expired is shown, and Warrant
+            is selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+        expected: "A failed card write on the ABT Basket/Expired Warrant path shows Top Up/Top Up Error."
+
+      - title: "Top Up — DayLink top up success prints receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful DayLink card write shows Remove Smartcard/Daylink
+          with the top up receipt printed, then returns to the beginning of the flow.
+        steps: |
+          **GIVEN** an Adult DayLink card is presented, Smartcard/Top Up-Daylink/Payment is shown,
+            and payment is selected
+          **WHEN** the card write succeeds
+          **THEN** Remove Smartcard/Daylink is shown
+          **AND** the top up receipt is printed
+          **AND** the POS returns to the beginning of the flow
+        expected: "A successful DayLink card write shows Remove Smartcard/Daylink with the receipt printed, then returns to the beginning of the flow."
+
+      - title: "Top Up — DayLink card write failure shows Top Up Error"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed DayLink card write shows Top Up/Top Up Error.
+        steps: |
+          **GIVEN** an Adult DayLink card is presented, Smartcard/Top Up-Daylink/Payment is shown,
+            and payment is selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** any card payment is automatically voided, recorded as a diagnostic/event
+        expected: "A failed DayLink card write shows Top Up/Top Up Error and auto-voids any card payment."
+
+      - title: "Top Up — Belfast Visitor Pass top up success prints receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful Belfast Visitor Pass card write shows Remove
+          Smartcard/Expiry with the top up receipt printed, then returns to the beginning of the flow.
+        steps: |
+          **GIVEN** a Belfast Visitor Pass (expired or not expired) is presented and Smartcard/Top
+            Up/Belfast Visitor/Payment is shown with payment selected
+          **WHEN** the card write succeeds
+          **THEN** Remove Smartcard/Expiry is shown
+          **AND** the top up receipt is printed
+          **AND** the POS returns to the beginning of the flow
+        expected: "A successful Belfast Visitor Pass card write shows Remove Smartcard/Expiry with the receipt printed, then returns to the beginning of the flow."
+
+      - title: "Top Up — Belfast Visitor Pass card write failure returns to payment screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed Belfast Visitor Pass card write shows Top Up/Top Up Error
+          and returns to the Belfast Visitor Payment screen.
+        steps: |
+          **GIVEN** a Belfast Visitor Pass is presented and Smartcard/Top Up/Belfast Visitor/Payment
+            is shown with payment selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** the POS returns to the Belfast Visitor Payment screen
+        expected: "A failed Belfast Visitor Pass card write shows Top Up/Top Up Error, returning to the Belfast Visitor Payment screen."
+
+      - title: "Top Up — iLink top up success prints receipt"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful iLink card write shows Remove Smartcard/Expiry with
+          the top up receipt printed, then returns to the beginning of the flow.
+        steps: |
+          **GIVEN** an iLink card (expired or not expired) is presented and Smartcard/Top Up/iLink/
+            Payment is shown with payment selected
+          **WHEN** the card write succeeds
+          **THEN** Remove Smartcard/Expiry is shown
+          **AND** the top up receipt is printed
+          **AND** the POS returns to the beginning of the flow
+        expected: "A successful iLink card write shows Remove Smartcard/Expiry with the receipt printed, then returns to the beginning of the flow."
+
+      - title: "Top Up — iLink card write failure returns to payment screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed iLink card write shows Top Up/Top Up Error and returns to
+          the iLink Payment screen.
+        steps: |
+          **GIVEN** an iLink card is presented and Smartcard/Top Up/iLink/Payment is shown with
+            payment selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** the POS returns to the iLink Payment screen
+        expected: "A failed iLink card write shows Top Up/Top Up Error, returning to the iLink Payment screen."
+
+  - path: ["Metro", "Top Up"]
+    cases:
+      - title: "Top Up — Metro Multi-Journey card write failure returns to basket"
+        refs: MODE-METRO-ONLY
+        objective: |
+          This test is to confirm a failed card write on the Metro Multi-Journey basket shows Top Up
+          Error and returns to the same basket screen.
+        steps: |
+          **GIVEN** a Metro Multi-Journey basket is at Smartcard/Top Up/Basket with payment selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** the POS returns to the Metro Multi-Journey basket screen
+        expected: "A failed card write on the Metro Multi-Journey basket shows Top Up Error and returns to the same basket screen."
+
+      - title: "Top Up — Metro Travelcard FirstUse failure shows Top Up Error Not Used"
+        refs: MODE-METRO-ONLY
+        objective: |
+          This test is to confirm a Metro Travelcard failing its FirstUse check shows Top Up/Top Up
+          Error Not Used and returns to Main Screen-Rail selected.
+        steps: |
+          **GIVEN** an Adult Metro Travelcard is presented and the product is on FirstUse
+          **WHEN** the FirstUse check fails
+          **THEN** Top Up/Top Up Error Not Used is shown
+          **AND** the POS returns to Main Screen-Rail selected
+        expected: "A Metro Travelcard FirstUse failure shows Top Up/Top Up Error Not Used and returns to Main Screen-Rail selected."
+
+      - title: "Top Up — Metro Travelcard card write failure returns to basket"
+        refs: MODE-METRO-ONLY
+        objective: |
+          This test is to confirm a failed card write on the Metro Travelcard basket shows Top Up
+          Error and returns to the same basket screen.
+        steps: |
+          **GIVEN** a Metro Travelcard basket (expired or not-expired product) is at Smartcard/Top
+            Up-Metro Travelcard/Basket with payment selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** the POS returns to the Metro Travelcard basket screen
+        expected: "A failed card write on the Metro Travelcard basket shows Top Up Error and returns to the same basket screen."
+
+  - path: ["Ulsterbus", "Top Up"]
+    cases:
+      - title: "Top Up — Ulsterbus Multi Journey card write failure shows Top Up Error"
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm a failed card write on the Ulsterbus Multi Journey basket shows
+          Top Up/Top Up Error.
+        steps: |
+          **GIVEN** an Ulsterbus Multi Journey basket is at Smartcard/Top Up/Basket with payment
+            selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** any card payment is automatically voided, recorded as a diagnostic/event
+        expected: "A failed card write on the Ulsterbus Multi Journey basket shows Top Up/Top Up Error and auto-voids any card payment."
+
+      - title: "Top Up — Ulsterbus Travelcard card write failure returns to basket"
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm a failed card write on the Ulsterbus Travelcard basket shows Top
+          Up Error and returns to the same basket screen.
+        steps: |
+          **GIVEN** an Ulsterbus Travelcard basket (expired or not-expired product) is at
+            Smartcard/Top Up/Ulsterbus Travelcard/Basket with payment selected
+          **WHEN** the card write fails
+          **THEN** Top Up/Top Up Error is shown
+          **AND** the POS returns to the Ulsterbus Travelcard basket screen
+        expected: "A failed card write on the Ulsterbus Travelcard basket shows Top Up Error and returns to the same basket screen."

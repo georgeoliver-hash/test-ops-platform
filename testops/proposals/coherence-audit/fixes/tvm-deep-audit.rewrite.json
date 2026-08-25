@@ -1,0 +1,35 @@
+[
+  {"id": 4103657, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103658, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103659, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103660, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103661, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103662, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103663, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103664, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103665, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103666, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103667, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103668, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103669, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103670, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+  {"id": 4103672, "refs": "gap-register Q30 (no TVM/Ingenico EMV spec in REQS_DIR)"},
+
+  {"id": 4103740, "refs": "FBD-100383,PSPEC-0014 sec9,gap-register Q31"},
+  {"id": 4103746, "refs": "FBD-100383,PSPEC-0014 sec9,gap-register Q31"},
+  {"id": 4103758, "refs": "FBD-100383,PSPEC-0014 sec9,gap-register Q31"},
+  {"id": 4103759, "refs": "FBD-100383,PSPEC-0014 sec9,gap-register Q31"},
+  {"id": 4103760, "refs": "FBD-100383,gap-register Q31"},
+  {"id": 4103761, "refs": "FBD-100383,gap-register Q31"},
+  {"id": 4103762, "refs": "gap-register Q31 (no location-ID-format spec found)"},
+
+  {"id": 4103741, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103742, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103743, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103744, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103745, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103747, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+  {"id": 4103748, "refs": "gap-register Q32 (no TMS device-deployment spec in REQS_DIR)"},
+
+  {"id": 4103793, "refs": "FBD-100266,gap-register Q33 (conflict vs FBD-100359 Ethernet-only classification)"}
+]

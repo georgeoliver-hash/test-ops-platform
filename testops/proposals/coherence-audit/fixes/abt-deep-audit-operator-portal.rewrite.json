@@ -1,0 +1,840 @@
+[
+  {
+    "id": 4102883,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Account Status Report for a date range",
+        "expected": "**THEN** the Account Status Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102884,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Action List Report",
+        "expected": "**THEN** the Action List Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102885,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Action List Negative List Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102886,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Aftercare Report",
+        "expected": "**THEN** the Aftercare Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102887,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Audit Report",
+        "expected": "**THEN** the Audit Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102888,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Authorisation Failures Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102889,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Cancelled Tap Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102890,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Debt Report",
+        "expected": "**THEN** the Debt Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102891,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Declined Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102892,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Deny List Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102894,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the EMV Summary Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102895,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the ePurse Balance Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102896,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Exception Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102897,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Expired Tap Report",
+        "expected": "**THEN** the report is generated\n**AND** it displays expired card taps\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102898,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Fare Band Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102899,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Initial Taps by Brand Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102900,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Inspection Details Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102901,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journey Summary Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102902,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journeys by Card Scheme Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102903,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journeys by Service/Route Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102904,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Late Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102905,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Lost Tap Data Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102906,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the PSP Technical Errors Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102907,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Refunds Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102908,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Retail Debt Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102911,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue by Business Rule Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102912,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue by MID Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102914,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Shared Liability Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102916,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Transaction Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102917,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Unique Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102893,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm it exists on the live portal before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Duplicate Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged. Preserved the duplicate-detection cross-reference as a gap note instead of inline preface prose.",
+    "gaps": [
+      "Duplicate-tap detection behaviour is covered elsewhere in the ABT suite (Daily Capping / NIR TOTO sections); this report itself is not named in the governing specs."
+    ]
+  },
+  {
+    "id": 4102909,
+    "preface": "**UNCONFIRMED** — neither the Retail Transactions Report nor the Summary Retail Transaction Report is named in the seven governing specs; confirm both exist before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Retail Transactions Report or the Summary Retail Transaction Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102910,
+    "preface": "**UNCONFIRMED** — FBD-100341 defines the apportionment mechanism and the Pay-In Reconciliation report, but does not name a report literally called 'Revenue Apportionment Report'; confirm it exists before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue Apportionment Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100341",
+    "citations": [
+      "FBD-100341 (Revenue Apportionment & Reporting spec)"
+    ],
+    "change_note": "Terse-rewrite pass: moved the inline '(FBD-100341)' citation out of the preface into Refs; kept the specific 'does not name a report literally called...' fact (this is the gap reasoning itself, not sourcing prose, so kept in preface per the standard).",
+    "gaps": []
+  },
+  {
+    "id": 4102913,
+    "preface": "**UNCONFIRMED** — neither the Revenue Inspection Report nor the Revenue Inspectors Report is named in the seven governing specs; confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue Inspection Report or the Revenue Inspectors Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged. The FBD-100716 exclusion note (revenue-inspection device spec is a different capability) moved from inline preface prose to a gap note.",
+    "gaps": [
+      "FBD-100716 (Translink Revenue Inspection Device Specification) covers a revenue-inspection device — a different capability — and is not evidence this Operator Web Portal report exists."
+    ]
+  },
+  {
+    "id": 4102915,
+    "preface": "**UNCONFIRMED** — not named in the seven governing ABT/BOS reporting specs; confirm the report and its reconciliation behaviour before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** some ABT taps have been performed on an ETM",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Tap Reconciliation Report",
+        "expected": "**THEN** the report is generated\n**AND** it reconciles the taps\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387 para 218",
+    "citations": [
+      "FBD-100387 para 218"
+    ],
+    "change_note": "Terse-rewrite pass (Reports section, flagged as not-yet-done in abt-terse-rewrite.changelog.md): moved the inline '(FBD-100387 para 218)' citation and the 'generated via the CloudFare ABT Portal' / 'Operator Web Portal ABT report' prose out of the preface into Refs; preface now states only the UNCONFIRMED fact and the action to take. Behaviour, title, preconditions, steps and expected-result text unchanged. The parenthetical aside about the precondition moved to a gap note.",
+    "gaps": [
+      "The precondition 'ABT taps performed on an ETM' is a reasonable setup, but the report's exact contract (fields/reconciliation logic) is unverified."
+    ]
+  },
+  {
+    "id": 4102871,
+    "preconds": "**GIVEN** the seeded ABT test card makes two consecutive taps within the configured transfer time (e.g. 90 minutes) — a Directional feeder tap that is charged, then a Glider tap in the same direction whose TransferRouteType flag is not \"None\"\n**AND** example (Scenario 1, \"Dir Fdr to GL\"): an Inbound tap on Ulsterbus feeder route G10D, followed by an Inbound tap on Glider East within the transfer window\n**AND** you are signed in to the ABT Operator Portal to verify the card's Journey History",
+    "steps": [
+      {
+        "content": "**WHEN** the two taps are matched as a transfer and the EndOfDay settlement runs\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the first (feeder) tap is charged its normal fare\n**AND** the second (Glider) tap is charged £0.00 and shown with the transfer icon\n**AND** the transfer tap is sent to MERIT under the transfer product, not the standard ABT product"
+      }
+    ],
+    "expected": "The Data variations line: Non-Directional feeder → Glider (Scenario 3); Glider → feeder (Scenarios 2/4); Ulsterbus (transfers enabled) → Glider (Scenario 11). All require matching within the configured transfer time and, for a Directional flag, the same RouteDirection on both taps.\n\nA qualifying Metro/Glider transfer tap is charged £0.00 and recorded as a transfer, while the originating tap is charged normally.",
+    "action": "reword",
+    "refs": "FBD-100651 §7.4 (Scenarios 1,2,3,4,11)",
+    "citations": [
+      "FBD-100651 §7.4 Scenario 1 \"Dir Fdr to GL\"",
+      "FBD-100651 Scenarios 2,3,4,11"
+    ],
+    "change_note": "Terse-rewrite: relocated the inline '(FBD-100651 §7.4, Scenario 1 \"Dir Fdr to GL\")' and '(FBD-100651 Scenario 3)' / 'Scenarios 2/4' / 'Scenario 11' pinpoint citations out of the preconditions and Data-variations line into Refs; kept the Scenario numbers/names themselves in the body since they identify the worked example (concrete grounding), not sourcing prose. Refs extended from bare 'FBD-100651' to include the section/scenario locator.",
+    "gaps": []
+  },
+  {
+    "id": 4102953,
+    "preconds": "**GIVEN** the user is signed into CloudFare with rights to Zone Settings (Settings module > Topology sub-module > Zones)\n**AND** a stop that lies within more than one zone (e.g. a 403 (IN) stop within both a Magherafelt Ulsterbus Town Service zone and iLink Zone 4 — Ulsterbus Town Service zones can exist within an iLink zone)",
+    "steps": [
+      {
+        "content": "**WHEN** the user views the stop's zone membership in Zone Settings",
+        "expected": "**THEN** the stop is listed as a member of each overlapping zone it falls within"
+      },
+      {
+        "content": "**WHEN** a card makes qualifying taps at that stop and the EndOfDay settlement runs",
+        "expected": "**THEN** the capping engine evaluates the stop against each of its zones' caps\n**AND** **UNCONFIRMED** — capping-engine per-zone evaluation is not detailed in the zone spec; confirm the settlement outcome against seeded caps"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100229 para 119,187",
+    "citations": [
+      "FBD-100229 para 119 (zone boundaries)",
+      "FBD-100229 para 187"
+    ],
+    "change_note": "Terse-rewrite: relocated the inline '(FBD-100229 para 119, 187)' citation and the long 'zone membership is derived from the drawn zone boundaries..., NOT configured within the capping rules' explanatory sentence out of the step 2 THEN into Refs; kept the UNCONFIRMED marker and its short reasoning ('capping-engine per-zone evaluation is not detailed in the zone spec') as a tag, not a paragraph.",
+    "gaps": []
+  },
+  {
+    "id": 4102954,
+    "preconds": "**GIVEN** declined card taps have occurred for each reason — an expired card, an ODA/authenticity failure, a BIN-listed card and a Deny-listed card\n**AND** the user is signed into the ABT Operator Portal with the report claim for declined card taps",
+    "steps": [
+      {
+        "content": "**WHEN** the user opens the Declined Taps Report for the test period",
+        "expected": "**THEN** each declined tap is listed with its decline reason (e.g. Expired, Declined/ODA, On BIN List, On Deny List)\n**AND** the reason recorded matches the failure that caused each decline\n**AND** **UNCONFIRMED** — report name/claim/reason strings not in this spec set; confirm against live"
+      }
+    ],
+    "action": "reword",
+    "refs": "",
+    "citations": [],
+    "change_note": "Terse-rewrite: shortened the long UNCONFIRMED sentence ('the Declined Taps Report, the specific decline-reason labels and the report claim are not defined in any governing spec in this set (this pass's specs are product/topology/zone/export/asset). Confirm the report name, claim and reason strings against the reports/card-verification spec or live.') to a short tag. No citation existed to relocate (none was ever cited) — this is the 'full sentence where a tag would do' failure mode, not the citation-placement one.",
+    "gaps": [
+      "Declined Taps Report name, its claim, and the exact decline-reason label strings are not confirmed in any spec reviewed this pass — confirm against the reports/card-verification spec or live before relying on exact wording."
+    ]
+  },
+  {
+    "id": 4103593,
+    "preconds": "**GIVEN** the seeded card is on the Deny List from an earlier failed authorisation\n**AND** you are signed in to the ABT Operator Portal to verify the card's status\n**AND** the Deny List propagates removals via 15-minute delta files",
+    "steps": [
+      {
+        "content": "**WHEN** the card's payment is re-authorised online and the removal reaches the device via the next delta",
+        "expected": "**THEN** the card is removed from the Deny List"
+      },
+      {
+        "content": "**WHEN** the card taps again at the validator after removal",
+        "expected": "**THEN** the subsequent tap is accepted"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100307,FBD-100662 para 210",
+    "citations": [
+      "FBD-100662 para 210 (Deny List removal delta propagation)"
+    ],
+    "change_note": "Terse-rewrite: relocated the inline '(FBD-100662 para 210)' citation out of the precondition into Refs (Refs previously only listed FBD-100307). Wording otherwise unchanged.",
+    "gaps": []
+  },
+  {
+    "id": 4102937,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §4.7.3 (Issuer Liability/Chargeback Protection, para ~10920-10931, 13295-13412)",
+    "citations": [
+      "PSPEC-0015 §4.7.3 Issuer Liability/Chargeback Protection — UK limit currently £10.00"
+    ],
+    "change_note": "Grounding pass: this claim is confirmed in PSPEC-0015 (Product Specification - CloudFare - ABT v4.2.1) but the case carried no Refs citation. Added the citation; no wording change needed as the claim matches the spec. Confirms: 'Issuer Liability figure is now £10.00 ... UK-issued cards ... as long as the fare value is £10.00 or below' (para 13297-13299); 'If the transaction amount exceeds the £10 threshold then the Issuer Liability/Chargeback Protection does not apply' (para 13411-13412).",
+    "gaps": []
+  },
+  {
+    "id": 4102938,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §4.6 (AVR, para ~10543-10544)",
+    "citations": [
+      "PSPEC-0015: Visa AVR required on first-seen tap and every 14 days"
+    ],
+    "change_note": "Grounding pass: this claim is confirmed in PSPEC-0015 (Product Specification - CloudFare - ABT v4.2.1) but the case carried no Refs citation. Added the citation; no wording change needed as the claim matches the spec. Confirms: 'For Visa cards, an Account Verification Request (AVR) is required to be performed the first time that the card is seen in the transit network and every 14 days' (para 10543-10544).",
+    "gaps": []
+  },
+  {
+    "id": 4102939,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §4.6 (para ~10548-10550)",
+    "citations": [
+      "PSPEC-0015: Mastercard pre-authorisation/nominal authorisation required on first daily use"
+    ],
+    "change_note": "Grounding pass: this claim is confirmed in PSPEC-0015 (Product Specification - CloudFare - ABT v4.2.1) but the case carried no Refs citation. Added the citation; no wording change needed as the claim matches the spec. Confirms: 'For Mastercard a pre-authorisation/nominal authorisation is required the first time the card is seen each day or first tap when not used over 14 days or first tap immediately after the card has been removed from the deny list' (para 10548-10550).",
+    "gaps": []
+  },
+  {
+    "id": 4102940,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §4.6 (para ~10548-10550)",
+    "citations": [
+      "PSPEC-0015: Mastercard pre-authorisation required on first tap immediately after Deny List removal"
+    ],
+    "change_note": "Grounding pass: this claim is confirmed in PSPEC-0015 (Product Specification - CloudFare - ABT v4.2.1) but the case carried no Refs citation. Added the citation; no wording change needed as the claim matches the spec. Same paragraph as 4102939 explicitly lists 'first tap immediately after the card has been removed from the deny list' as a pre-authorisation trigger.",
+    "gaps": []
+  },
+  {
+    "id": 4102878,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 (End of Operational Day/Week settings, para ~2985-2986, 17478-17482)",
+    "citations": [
+      "PSPEC-0015: 'End of operational day time (e.g. 04:00)' / 'Operational week (e.g. Monday at 04:00 to Sunday at 03:59)' are configurable settings"
+    ],
+    "change_note": "Grounding pass: capability confirmed to exist in PSPEC-0015 (CloudFare ABT product spec); Refs was empty. Added citation.",
+    "gaps": []
+  },
+  {
+    "id": 4102879,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §3.17.2 Late Data (para ~3051, 9083, 9240)",
+    "citations": [
+      "PSPEC-0015: 'Late data period (global)' is a configurable setting; late data accepted up to X days (configurable by tenant)"
+    ],
+    "change_note": "Grounding pass: capability confirmed to exist in PSPEC-0015 (CloudFare ABT product spec); Refs was empty. Added citation.",
+    "gaps": []
+  },
+  {
+    "id": 4102880,
+    "action": "add_refs",
+    "refs": "",
+    "citations": [],
+    "change_note": "No paragraph in PSPEC-0015 or the reviewed FBDs was found that names a 'maximum journey duration' admin setting distinct from the NIR Maximum Journey Time (MJT, FBD-100690) or the ABT 'maximum late data period' (4102879). Left un-cited rather than guessing which config this is — see gap note.",
+    "gaps": [
+      "Could not confirm a distinct admin-configurable 'maximum journey duration' setting in the specs reviewed this pass; it may be the same control as the NIR MJT (FBD-100690) or a separate ABT-wide setting — confirm which, and cite precisely, before relying on this case."
+    ]
+  },
+  {
+    "id": 4102881,
+    "action": "add_refs",
+    "refs": "PSPEC-0015 §4.9 (Debt Recovery, para ~11486-11629)",
+    "citations": [
+      "PSPEC-0015 §4.9.1 Automatic Debt Recovery: retry attempts are scheme-specific and the retry duration is configurable; §4.9.2 Tap Initiated Debt Recovery: unlimited attempts (not a configured retry count); §4.9.3 Customer Online Debt Recovery"
+    ],
+    "change_note": "Grounding pass: capability confirmed to exist in PSPEC-0015 (CloudFare ABT product spec); Refs was empty. Added citation. Note: the spec distinguishes three debt-recovery routes (Automatic, Tap Initiated, Customer Online) with different retry-count semantics — Tap Initiated is unlimited, not a configured 'attempts' number. The case's 'online and tap-initiated debt-recovery retry attempts' wording should be checked against which of these three routes actually has a configurable attempt count (Automatic does; Tap Initiated does not per this pass's reading).",
+    "gaps": [
+      "Confirm whether 'online' in this case means Automatic Debt Recovery (which does have a configurable retry-attempt count per PSPEC-0015 §4.9.1) or Customer Online Debt Recovery (customer-initiated, not an admin-configured attempt count) — the case's wording doesn't disambiguate and could be testing the wrong control."
+    ]
+  },
+  {
+    "id": 4102882,
+    "action": "reword",
+    "preface": "This test is to confirm that an administrator can configure an e-Purse minimum-value setting for a customer smartcard. **GAP** — PSPEC-0015 names a 'Minimum ePurse balance (global)' setting, not a 'minimum fare'; confirm which control this case is testing before running.",
+    "preconds": "GIVEN an administrator is signed into the ABT Operator Portal with the AdminFullAccess claim (which includes e-Purse access)\nAND the Admin tab is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the administrator sets a minimum fare for an e-Purse smartcard",
+        "expected": "**THEN** the minimum fare is saved\n**AND** the minimum fare is applied to e-Purse validation"
+      }
+    ],
+    "refs": "PSPEC-0015 §3.7/§6.1.7.3 (e-Purse Settings, para ~3052, 15807-15810)",
+    "citations": [
+      "PSPEC-0015: 'Minimum ePurse balance (global)' and a minimum top-up level are configurable e-Purse settings — no 'minimum fare' setting located"
+    ],
+    "change_note": "Grounding pass: the spec's e-Purse admin settings are a 'Minimum ePurse balance' (threshold below which the card is added to the negative list) and a minimum top-up level — not a 'minimum fare'. Added a GAP marker rather than silently assuming the case's term is correct or silently renaming it, per no-gap-filling.",
+    "gaps": [
+      "Confirm whether the live Admin tab's 'minimum fare for e-Purse' control is actually the spec's 'Minimum ePurse balance' setting (different mechanism: balance floor vs fare floor) — case may be misnaming the capability under test."
+    ]
+  },
+  {
+    "id": 4102948,
+    "preconds": "**GIVEN** an ETM signed on to a Metro route and resting on the FLU (fare look-up) screen\n**AND** the seeded ABT test cEMV card, presented as Tap-On-Only\n**AND** you are signed in to CloudFare, MERIT and the ABT Operator and Passenger portals to verify\n**AND** example: board 10A (IN) Casement Park, Metro £4.00 cap / £2.30 single — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*",
+    "steps": [
+      {
+        "content": "**WHEN** the customer taps the card on the ETM to make a Metro Tap-On-Only journey",
+        "expected": "**THEN** the ETM shows an accepted tap"
+      },
+      {
+        "content": "**WHEN** the overnight EndOfDay settlement runs and you open the card's Journey History",
+        "expected": "**THEN** the journey is charged per the Metro capping rules\n**AND** the day is capped at £4.00\n**AND** the same journey is visible in CloudFare, MERIT and the ABT Operator and Passenger portals"
+      }
+    ],
+    "action": "reword",
+    "refs": "UB-TOO",
+    "citations": [
+      "UB-TOO tracker (same fare/cap source as the Daily Capping section)"
+    ],
+    "change_note": "Grounding consistency fix: this case hard-coded the Metro £4.00/£2.30 fare-cap values with no qualifier, while every other case citing the same figures (Daily Capping section) frames them as 'example per current ABT pricing config (back-end configurable)' per the standard's 'unknown configured value' rule. Added the same qualifier here and cited the UB-TOO tracker (Refs was empty) for consistency across the suite.",
+    "gaps": []
+  }
+]

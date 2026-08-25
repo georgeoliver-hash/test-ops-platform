@@ -1,0 +1,122 @@
+# ETM Technician Menu — authoring the 19 missing paths from flow-coverage.md, consolidated per
+# test-practices' minimal-sufficient rubric (navigation edges folded into their owning behaviour
+# case, not one case per Go Back). Grounded strictly in translink-etm-technician.md.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — Device Settings navigation edges
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the Device Settings navigation edges the happy-path case doesn't reach: Tray ID's Go Back skips straight to the Technician Menu (unlike Edit Home Location's Go Back, which returns to Device Settings), and a no-change edit returns to Device Settings without confirmation.
+        steps: |
+          **GIVEN** a Technician is at Device Settings
+          **WHEN** you open Edit Input Field (Tray ID) and press Go Back without entering the field
+          **THEN** the Technician lands directly on the Technician Menu, not Device Settings
+          **WHEN** you open Edit Home Location or Edit Input Field, make no change, and confirm
+          **THEN** the Technician returns to Device Settings without a Confirm Input step
+        expected: "Tray ID's Go Back skips Device Settings and lands on the Technician Menu directly; a no-change edit returns to Device Settings without confirmation."
+
+      - title: Technician — Display Settings, Force Comms and Soft Reboot Go Back
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm Go Back from Display Settings, Force Communications, and the Soft Reboot confirmation screen each return to the Technician Menu.
+        steps: |
+          **GIVEN** a Technician is at the Technician Menu
+          **WHEN** you open Display Settings and press Go Back
+          **THEN** the Technician Menu is displayed
+          **WHEN** you open Force Communications and press Go Back
+          **THEN** the Technician Menu is displayed
+          **WHEN** you open the Soft Reboot confirmation and press Go Back
+          **THEN** the Technician Menu is displayed
+        expected: "Go Back from Display Settings, Force Communications, and Soft Reboot's confirmation screen all return to the Technician Menu."
+
+      - title: Technician — Network Settings and FEC1 navigation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm Network Settings' own Refresh/Go Back, and the Cancel path from Edit IP Addresses / IP Address changed, all return correctly without applying the change.
+        steps: |
+          **GIVEN** a Technician is at Network Settings
+          **WHEN** you press Refresh
+          **THEN** the displayed information refreshes and you remain on Network Settings
+          **WHEN** you press Go Back
+          **THEN** the Technician Menu is displayed
+          **WHEN** you open FEC1, select Change, edit the IP address, and press Cancel from Edit IP Addresses
+          **THEN** you return to FEC1 with no change applied
+          **WHEN** you edit the IP address, confirm to IP Address changed, and press Cancel there instead
+          **THEN** you return to FEC1 with no change applied
+        expected: "Network Settings' Refresh/Go Back work as expected; cancelling from either Edit IP Addresses or IP Address changed returns to FEC1 with no change applied."
+
+      - title: Technician — Versions print error, paging and navigation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a print failure from any Versions screen routes to the shared FLU printer-error flow, Configuration Versions pages to a second page and back, and Go Back navigates correctly from each Versions sub-screen.
+        steps: |
+          **GIVEN** a Technician is viewing a Versions screen (Serial Numbers, Software Versions, or Configuration Versions)
+          **WHEN** you press Print and the print fails
+          **THEN** the shared FLU printer-error flow is shown instead of a version-specific error
+          **WHEN** you press Down from Configuration Versions
+          **THEN** Configuration Versions - Page 2 is displayed
+          **WHEN** you press Up from Configuration Versions - Page 2
+          **THEN** Configuration Versions is displayed
+          **WHEN** you press Go Back from any Versions sub-screen, then Go Back from Versions itself
+          **THEN** you return to Versions, then to the Technician Menu
+        expected: "A failed print from any Versions screen routes to the shared FLU printer-error flow; Configuration Versions pages between page 1 and 2; Go Back navigates correctly at each level."
+
+      - title: Technician — Paper Status actions and navigation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm Paper Status's Reverse Paper Feed and Print Test Ticket actions, and the Go Back chain from Paper Status through Device Status to the Technician Menu.
+        steps: |
+          **GIVEN** a Technician is at Device Status → Paper Status
+          **WHEN** you press Reverse Paper Feed
+          **THEN** the paper feed reverses and you remain on Paper Status
+          **WHEN** you press Print Test Ticket
+          **THEN** the shared "Was printing successful?" decision applies (success stays on screen, failure routes to the shared FLU printer-error flow)
+          **WHEN** you press Go Back from Paper Status, then Go Back from Device Status
+          **THEN** you return to Device Status, then to the Technician Menu
+        expected: "Reverse Paper Feed reverses the feed in place; Print Test Ticket follows the shared print-success/print-error decision; Go Back navigates correctly from Paper Status through Device Status to the Technician Menu."
+
+      - title: Technician — Card Reader invalid smartcard and reboot from details
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm presenting an invalid smartcard at the Technician Card Reader routes to the shared FLU smartcard-error/removal screen, and pressing Reboot from the valid-card Smartcard Details screen routes there too.
+        steps: |
+          **GIVEN** a Technician is at Device Status → Card Reader
+          **WHEN** you present an invalid smartcard
+          **THEN** the shared FLU "Smartcard Top Up - Error - Remove Smartcard" screen is shown
+          **AND** removing the card returns to Device Status
+          **WHEN** you present a valid smartcard to reach Smartcard Details, then press Reboot
+          **THEN** the same shared error/removal screen is shown
+          **AND** removing the card returns to Device Status
+        expected: "An invalid smartcard at the Technician Card Reader, and pressing Reboot from Smartcard Details, both route to the shared FLU smartcard error/removal screen; removing the card returns to Device Status either way."
+
+      - title: Technician — Other Devices (BV) reboot and navigation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a paired device selected from Other Devices can be rebooted, and that Cancel/Go Back navigate correctly back through BV Device Selected, Other Devices, and Device Status.
+        steps: |
+          **GIVEN** a Technician is at Device Status → Other Devices with a paired device listed
+          **WHEN** you select the device to reach BV Device Selected, then select Reboot and confirm
+          **THEN** the selected device reboots
+          **WHEN** you select Summary and press Cancel, or select Reboot? and press Cancel
+          **THEN** you return to BV Device Selected
+          **WHEN** you press Go Back from BV Device Selected, then from Other Devices
+          **THEN** you return to Other Devices, then to Device Status
+        expected: "A paired device can be rebooted from BV Device Selected; Cancel from Summary or Reboot? returns to BV Device Selected; Go Back navigates correctly back through Other Devices to Device Status."
+
+      - title: Technician Menu — Go Back to Idle Screen
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm pressing Go Back at the top-level Technician Menu returns the ETM to the Idle Screen.
+        steps: |
+          **GIVEN** a Technician is at the Technician Menu
+          **WHEN** you press Go Back
+          **THEN** the ETM returns to the Idle Screen
+        expected: "Go Back at the Technician Menu returns the ETM to the Idle Screen."

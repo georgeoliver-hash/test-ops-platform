@@ -1,0 +1,23 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Payments - Cash]
+    cases:
+      - title: "Change Voucher — voucher print failure shows the error screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM shows the change-voucher-failed error screen when a
+          change voucher fails to print.
+        steps: |
+          **GIVEN** the TVM is dispensing change as a change voucher
+          **WHEN** the change voucher fails to print
+          **THEN** the "Change Voucher failed" screen is displayed
+          **AND** **GAP** — the onward flow/recovery from this screen (e.g. return to Please wait,
+          Home Screen, or an attendant-call path) is not captured in the source transcription;
+          confirm on the live system before running
+        expected: "The change-voucher-failed error screen is shown on a voucher print failure; the onward/recovery flow is unconfirmed."

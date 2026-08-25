@@ -1,0 +1,587 @@
+# TVM — Commissioning & Deployment + EMS/TMS Maintenance + Non-Functional / Resilience
+# Consolidated cases for the NEW TVM Test Suite (30284). Read-only / propose-first: this file is
+# authored, NOT pushed. It does not touch any existing case in any suite.
+#
+# Grounding:
+#   - structure.md + cross-tab.md (this folder) — feature/test-type-first; model (Kiosk/Astreo) &
+#     mode (NIR-Rail/Ulsterbus/Metro/Glider) handled by TestRail Run Configurations.
+#   - Old-suite titles: 6160 (R2 commissioning/deploy/topology/EMS), 22270 (Kiosk EMS/TMS),
+#     22275 (Astreo EMS/TMS).
+#   - Specs: FBD-100266 (heartbeat/staff-list comms), FBD-100359 (SaaS comms-lock/offline),
+#     FBD-100320 (TID/TK at commissioning), FBD-100385 (config data exports), FBD-100296
+#     (topology / stop-route / location management).
+#
+# Shared-vs-Kiosk decision (per cross-tab.md §2): EMS/TMS maintenance core is SHARED and authored
+# ONCE. Only two proven Kiosk-only leaves get "... / Kiosk only" sub-sections:
+#   (a) Alarmboard & enclosure maintenance (siren/LEDs/temp/UPS/door/speaker/chute-fan/TL80/touchscreen),
+#   (b) Coin-recycler-hopper maintenance.
+# Astreo-only BNR/change-voucher flows live in the Payments YAML, not here.
+#
+# refs carry FBD id(s) only where a spec genuinely grounds the case; old-suite-only maintenance
+# primitives (cash reports, volume, brightness) carry no ref rather than a misleading one.
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_devtypes: [1]            # TVM
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+
+  # ============================================================================
+  # A. FUNCTIONAL — Commissioning & Deployment
+  # ============================================================================
+  - path: [Functional, Commissioning & Deployment]
+    cases:
+      - title: Commissioning — a TVM downloads its config and credentials by serial
+        refs: [FBD-100320]
+        objective: This test is to confirm a newly commissioned TVM receives its dataset and TID/TK from TMS keyed on its serial number.
+        steps: |-
+          **GIVEN** an uncommissioned TVM (example serial TVM0043) whose TID/TK are pre-configured on TMS against that serial
+          **AND** the payment device is an embedded Ingenico terminal in NMI Terminal Group "TVM"
+          **WHEN** the TVM is commissioned and downloads its configuration
+          **THEN** the device installs its dataset without any manual credential entry
+          **AND** the allocated TID/TK are the ones held on TMS for that serial number
+        expected: The TVM commissions and pulls its dataset and its serial-keyed TID/TK from TMS with no manual keying.
+      - title: Commissioning — credentials stay within the TVM Terminal Group
+        refs: [FBD-100320]
+        objective: This test is to confirm a TVM will only accept a TID/TK allocated within the TVM NMI Terminal Group.
+        steps: |-
+          **GIVEN** a TVM being commissioned with a payment device in NMI Terminal Group "TVM"
+          **AND** an example TID/TK that belongs to the "HHD Retailing" group is offered
+          **WHEN** the out-of-group TID/TK is applied to the TVM
+          **THEN** the credential is rejected
+          **AND** the TVM retains no payment credential from another Terminal Group
+        expected: A TID/TK from a different NMI Terminal Group is rejected; only a TVM-group credential is accepted.
+      - title: Commissioning — topology makes home-location products sellable
+        refs: [FBD-100296]
+        objective: This test is to confirm topology sent after commissioning makes the correct home-location products available for sale.
+        steps: |-
+          **GIVEN** a freshly commissioned TVM with home location set to Europa Buscentre
+          **AND** the topology defines the products sellable from that location's fares triangle
+          **WHEN** the topology is sent down to the device and the tester opens the sales app
+          **THEN** the products for the Europa Buscentre operator are offered for sale
+          **AND** products outside that location's fares triangle are not offered
+        expected: After commissioning, the deployed topology exposes exactly the home-location's operator products for sale.
+      - title: Software Deployment — immediate dataset installs and updates versions
+        refs: [FBD-100385]
+        objective: This test is to confirm a complete dataset scheduled for immediate activation installs and updates the reported software versions.
+        steps: |-
+          **GIVEN** a commissioned TVM in service
+          **AND** a complete dataset (example release CR8.7) is available on CloudFare for immediate activation
+          **WHEN** the dataset is deployed to the TVM
+          **THEN** the dataset installs and activates
+          **AND** the Software Versions report lists the new version numbers
+        expected: An immediate-activation dataset installs and the Software Versions report reflects the new versions.
+      - title: Software Deployment — future dataset downloads but waits to activate
+        refs: [FBD-100385]
+        objective: This test is to confirm a complete dataset scheduled for future activation downloads but does not activate until the scheduled time.
+        steps: |-
+          **GIVEN** a commissioned TVM in service
+          **AND** a complete dataset is scheduled on CloudFare for activation at a future date/time
+          **WHEN** the dataset downloads to the TVM before the scheduled time
+          **THEN** the current software versions remain in use
+          **AND** the new versions are shown as downloaded but not yet installed
+        expected: A future-activation dataset downloads without activating; the TVM keeps running the current versions until the scheduled time.
+      - title: Software Deployment — report separates downloaded from installed
+        refs: [FBD-100385]
+        objective: This test is to confirm the Software Versions report separates versions that are downloaded but not yet installed from those in use.
+        steps: |-
+          **GIVEN** a TVM that has downloaded a future-dated dataset that has not yet activated
+          **WHEN** an Engineer prints the Software Versions report
+          **THEN** the report shows the versions currently installed and in use
+          **AND** the report shows the downloaded versions awaiting installation separately
+        expected: The Software Versions report clearly separates installed versions from downloaded-but-pending versions.
+      - title: Failed Deployment — partial update reports both success and failure
+        refs: [FBD-100385]
+        objective: This test is to confirm that when some components update and others fail, the Software Versions report reflects both outcomes.
+        steps: |-
+          **GIVEN** a TVM that received a dataset in which some components installed and at least one failed
+          **WHEN** an Engineer views and prints the Software Versions report
+          **THEN** the successfully updated components show their new versions
+          **AND** the failed components show their prior versions
+        expected: A partly failed deployment is reported accurately, with updated components new and failed components unchanged.
+      - title: Topology Deployment — new fares deploy for future activation
+        refs: [FBD-100296, FBD-100385]
+        objective: This test is to confirm a topology carrying new ticket fares can be deployed for activation at a future date.
+        steps: |-
+          **GIVEN** a TVM at home location Europa Buscentre selling the current fares
+          **AND** a topology with amended ticket fares is scheduled on CloudFare for a future activation date
+          **WHEN** the topology downloads to the TVM before the activation date
+          **THEN** the TVM continues selling the current fares until the activation date
+          **AND** the new fares apply from the scheduled activation date
+        expected: A future-dated topology downloads without changing live fares, then the new fares take effect on the scheduled date.
+      - title: Topology Deployment — changing location changes sellable products
+        refs: [FBD-100296]
+        objective: This test is to confirm amending the TVM's location updates the products it offers to that location's fares triangle.
+        steps: |-
+          **GIVEN** a TVM whose home location is Europa Buscentre
+          **AND** the topology is amended to move the TVM to a new location (example Cairnshill Park & Ride)
+          **WHEN** the location change is deployed and the tester opens the sales app
+          **THEN** the products for the new location's operator are offered
+          **AND** the previous location's products are no longer offered
+        expected: Changing the TVM location swaps the sellable products to the new location's fares triangle.
+      - title: Configuration Deployment — coin vault threshold set in TMS applies
+        refs: [FBD-100385]
+        objective: This test is to confirm a coin vault threshold configured in TMS is applied on the TVM.
+        steps: |-
+          **GIVEN** a commissioned TVM in service
+          **AND** a coin vault threshold (example £400) is set for the device in TMS
+          **WHEN** the configuration is deployed to the TVM
+          **THEN** the TVM applies the configured coin vault threshold
+        expected: The coin vault threshold set in TMS is downloaded and enforced by the TVM.
+      - title: Configuration Deployment — EMV-only mode disables cash
+        refs: [FBD-100385]
+        objective: This test is to confirm setting EMV-only mode from CloudFare disables cash payment on the TVM.
+        steps: |-
+          **GIVEN** a commissioned TVM that currently accepts cash and card
+          **AND** EMV-only mode is configured for the device on CloudFare
+          **WHEN** the configuration is deployed and a customer starts a purchase
+          **THEN** card payment is offered
+          **AND** cash payment is not available
+        expected: With EMV-only mode deployed, the TVM offers card payment only and cash is disabled.
+      - title: BOS Interface — CloudFare forces communication with the TVM
+        refs: [FBD-100266]
+        objective: This test is to confirm a Force Comms command from CloudFare makes the TVM communicate on demand.
+        steps: |-
+          **GIVEN** a commissioned TVM in service
+          **WHEN** an operator sends a Force Comms command to the TVM from CloudFare
+          **THEN** the TVM communicates with the back office
+          **AND** its Last Communication time in CloudFare is updated
+        expected: A CloudFare Force Comms command triggers the TVM to call in and refresh its Last Communication time.
+      - title: BOS Interface — a secure connection is required for uVNC
+        refs: [FBD-100359]
+        objective: This test is to confirm remote uVNC access to a TVM requires a secure connection to the back office.
+        steps: |-
+          **GIVEN** an operator attempting to open a uVNC session to a TVM via the back office
+          **WHEN** the operator initiates the remote session
+          **THEN** the session is only established over a secure connection
+          **AND** an insecure connection attempt is refused
+        expected: uVNC remote access to the TVM is permitted only over a secure back-office connection.
+
+  # ============================================================================
+  # B. NON-FUNCTIONAL — EMS & TMS Maintenance (SHARED core, authored once)
+  # ============================================================================
+  - path: [Non-Functional, EMS & TMS Maintenance]
+    cases:
+      - title: EMS Access — a Technician signs in with a staff-list ID
+        refs: [FBD-100266]
+        objective: This test is to confirm a Technician can sign into EMS using a staff ID distributed from the CloudFare staff list.
+        steps: |-
+          **GIVEN** a TVM that has received the current staff list from CloudFare
+          **AND** a Technician whose seeded staff ID is on that list
+          **WHEN** the Technician signs into EMS with the seeded staff ID
+          **THEN** the EMS menu is displayed
+        expected: A Technician on the distributed staff list can sign into EMS.
+      - title: EMS Access — only authorised roles can sign into EMS
+        refs: [FBD-100266]
+        objective: This test is to confirm EMS sign-in is limited to the Technician, Cash Collector and Stock Manager roles.
+        steps: |-
+          **GIVEN** a TVM that has received the current staff list from CloudFare
+          **WHEN** a user signs into EMS with each seeded role in turn
+          **THEN** Technician, Cash Collector and Stock Manager are granted access
+          **AND** any other role is refused access
+        expected: EMS access is granted to Technician, Cash Collector and Stock Manager only; other roles are refused.
+      - title: Remote Control — remote Out of Service persists across reboot
+        refs: [FBD-100266]
+        objective: This test is to confirm a remote Out of Service command persists after the TVM exits EMS and reboots.
+        steps: |-
+          **GIVEN** a commissioned TVM that is In Service
+          **WHEN** an operator remotely places the TVM Out of Service from CloudFare
+          **THEN** the TVM reports Out of Service
+          **AND** it remains Out of Service after exiting EMS and after a reboot
+        expected: A remotely applied Out of Service state holds through an EMS exit and a reboot.
+      - title: Remote Control — CloudFare returns the TVM to In Service
+        refs: [FBD-100266]
+        objective: This test is to confirm an operator can remotely return an Out of Service TVM to In Service from CloudFare.
+        steps: |-
+          **GIVEN** a TVM currently Out of Service
+          **WHEN** an operator remotely places the TVM In Service from CloudFare
+          **THEN** the TVM reports In Service
+          **AND** it is available for sales
+        expected: A remote In Service command brings the TVM back into service for sales.
+      - title: Remote Control — remote reboot, de-activate and re-activate
+        refs: [FBD-100266]
+        objective: This test is to confirm an operator can remotely reboot, de-activate and re-activate a TVM from CloudFare.
+        steps: |-
+          **GIVEN** a commissioned TVM in service
+          **WHEN** an operator issues a remote lifecycle command from CloudFare
+          **THEN** the TVM performs the commanded action
+          **AND** the resulting state is reported back to CloudFare
+          **AND** Data variations — reboot / de-activate / re-activate
+        expected: Remote reboot, de-activate and re-activate commands each drive the TVM to the expected state and report back.
+      - title: Cash Collection — an Engineer prints a Cash Content Report
+        objective: This test is to confirm an Engineer can print a TVM Cash Content Report from the EMS menu.
+        steps: |-
+          **GIVEN** a TVM holding cash, with an Engineer signed into EMS
+          **WHEN** the Engineer selects the Cash Content Report in the EMS menu
+          **THEN** the report prints the current cash content of the TVM
+        expected: The EMS Cash Content Report prints the TVM's held cash.
+      - title: Cash Collection — prints collection and reload reports
+        objective: This test is to confirm an Engineer can print the cash collection, banknote collection and coin reload reports from EMS.
+        steps: |-
+          **GIVEN** a TVM with an Engineer signed into EMS after a cash collection
+          **WHEN** the Engineer prints a cash report from the EMS menu
+          **THEN** the report prints with the correct totals
+          **AND** Data variations — Cash Collection Report / Bank Note Collection Report / Coins Reload Report
+        expected: Each EMS cash report (collection, banknote, coins reload) prints with correct totals.
+      - title: Configuration Topology — home location sets the selling operator
+        refs: [FBD-100296]
+        objective: This test is to confirm the current home location determines the operator whose products the TVM sells.
+        steps: |-
+          **GIVEN** a TVM with home location set to Europa Buscentre
+          **WHEN** a customer opens the sales app and selects a product
+          **THEN** the products offered belong to the Europa Buscentre operator
+          **AND** the sale is priced from that location's fares
+        expected: The home location fixes the selling operator and the fares the TVM offers.
+      - title: Configuration Topology — destination outside triangle unavailable
+        refs: [FBD-100296]
+        objective: This test is to confirm a location outside the home fares triangle offers no products.
+        steps: |-
+          **GIVEN** a TVM with home location Europa Buscentre and its defined fares triangle
+          **WHEN** a customer selects a destination outside that fares triangle
+          **THEN** no product is offered for that destination
+        expected: A destination outside the home fares triangle yields no sellable product.
+      - title: Location Settings — amend home location to another valid location
+        refs: [FBD-100296]
+        objective: This test is to confirm an Engineer can amend the TVM home location to another valid location in EMS.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a TVM with home location Europa Buscentre
+          **WHEN** the Engineer amends the home location to another valid location (example George Best City Airport)
+          **THEN** the new home location is accepted
+          **AND** the sales app offers the new location's products
+        expected: An Engineer can move the home location to another valid location and the products follow.
+      - title: Location Settings — an invalid location ID is rejected
+        refs: [FBD-100296]
+        objective: This test is to confirm the EMS rejects an invalid location identifier.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on the Location setting screen
+          **AND** an example invalid 12-digit location ID that maps to no location
+          **WHEN** the Engineer enters the invalid location ID
+          **THEN** the entry is rejected
+          **AND** the home location is unchanged
+        expected: An invalid location ID is refused and the existing home location remains set.
+      - title: Sub Location — a sub-location must be a valid 3-digit ID
+        refs: [FBD-100296]
+        objective: This test is to confirm the EMS accepts a valid 3-digit sub-location and rejects malformed entries.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on the Sub Location setting screen
+          **WHEN** the Engineer enters a sub-location value
+          **THEN** a valid 3-digit sub-location ID is accepted
+          **AND** a 2-digit, text or symbol entry is rejected
+        expected: Only a valid 3-digit sub-location ID is accepted; short, text or symbol entries are refused.
+      - title: Ticket Roll Length — an Engineer corrects the roll length
+        objective: This test is to confirm an Engineer can manually correct the ticket roll length in EMS.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS after fitting a replacement ticket roll
+          **WHEN** the Engineer manually sets the ticket roll length
+          **THEN** the TVM records the corrected roll length
+          **AND** a value greater than a full new roll is not accepted
+        expected: The corrected ticket roll length is stored, and an over-length value beyond a new roll is rejected.
+      - title: Transaction Report — prints after multiple transactions
+        objective: This test is to confirm an Engineer can print a Transaction Report covering multiple completed sales.
+        steps: |-
+          **GIVEN** a TVM that has completed several sales, with an Engineer signed into EMS
+          **WHEN** the Engineer prints the Transaction Report
+          **THEN** the report lists the completed transactions with their totals
+        expected: The Transaction Report prints the completed sales and their totals.
+      - title: Volume Control — volume adjusts within limits and persists
+        objective: This test is to confirm system volume can be adjusted within the min/max limits and is retained after reboot.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on the Volume Control screen
+          **WHEN** the Engineer adjusts the system volume with the slider
+          **THEN** the volume cannot be set beyond the minimum or maximum limits
+          **AND** the set volume is retained after the TVM reboots
+        expected: Volume adjusts only within the min/max limits and the chosen level survives a reboot.
+      - title: Screen Brightness — backlight change persists into the Sales App
+        objective: This test is to confirm a backlight brightness change made in EMS is maintained when the Sales App reloads.
+        steps: |-
+          **GIVEN** an Engineer signed into the EMS control panel
+          **WHEN** the Engineer changes the screen backlight brightness and returns to the Sales App
+          **THEN** the Sales App displays at the adjusted brightness
+          **AND** Data variations — increase / decrease brightness
+        expected: A brightness change made in EMS carries through to the Sales App.
+      - title: Config Export — Product List reflects the TVM's configuration
+        refs: [FBD-100385]
+        objective: This test is to confirm the CloudFare Product List export filtered to TVM matches the products configured on the device.
+        steps: |-
+          **GIVEN** a commissioned TVM with a known product configuration
+          **WHEN** an operator runs the Product List Report on CloudFare filtered to Device Type TVM
+          **THEN** the export lists the TVM's configured products alphabetically
+          **AND** the disabled and override columns shown are limited to the TVM device type
+        expected: The TVM-filtered Product List export matches the device's configured products and shows only TVM-scoped columns.
+
+  # ----------------------------------------------------------------------------
+  # B (Kiosk-only leaf 1): Alarmboard & Enclosure maintenance
+  # cross-tab.md: R2 "EMS Maintenance (Kiosk only)". Astreo has no alarmboard.
+  # ----------------------------------------------------------------------------
+  - path: [Non-Functional, EMS & TMS Maintenance, Alarmboard & Enclosure / Kiosk only]
+    cases:
+      - title: Alarmboard — an Engineer tests the siren
+        objective: This test is to confirm an Engineer can test the Kiosk alarmboard siren from EMS.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer runs the siren test
+          **THEN** the siren sounds
+          **AND** the alarmboard reports the siren test result
+        expected: The alarmboard siren test sounds the siren and reports its result.
+      - title: Alarmboard — an Engineer tests the status LEDs
+        objective: This test is to confirm an Engineer can test the Kiosk alarmboard LEDs from EMS.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer runs an LED test
+          **THEN** the selected LED illuminates
+          **AND** Data variations — ticket-tray LED / payment LED
+        expected: Each alarmboard LED test illuminates the selected LED.
+      - title: Alarmboard — an Engineer measures the enclosure temperature
+        objective: This test is to confirm an Engineer can read the Kiosk enclosure temperature from the alarmboard.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer requests the temperature measurement
+          **THEN** the current enclosure temperature is displayed
+        expected: The alarmboard reports the current Kiosk enclosure temperature.
+      - title: Alarmboard — an Engineer reads the UPS status
+        objective: This test is to confirm an Engineer can read the UPS status from the Kiosk alarmboard.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer requests the UPS status
+          **THEN** the current UPS status is displayed
+        expected: The alarmboard reports the Kiosk UPS status.
+      - title: Alarmboard — an Engineer runs the door and sensor tests
+        objective: This test is to confirm an Engineer can run the door-state and sensor supplementary tests on the Kiosk alarmboard.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer runs a supplementary enclosure test
+          **THEN** the alarmboard reports the current reading
+          **AND** Data variations — door state / sensor test
+        expected: The door-state and sensor supplementary tests each report the current enclosure reading.
+      - title: Alarmboard — an Engineer tests the speaker
+        objective: This test is to confirm an Engineer can test the Kiosk speaker from the alarmboard.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer runs the speaker test
+          **THEN** the speaker plays the test output
+        expected: The alarmboard speaker test plays the test output.
+      - title: Alarmboard — an Engineer tests the ticket-chute fan
+        objective: This test is to confirm an Engineer can test the Kiosk ticket-chute fan from the alarmboard.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen
+          **WHEN** the Engineer runs the ticket-chute fan test
+          **THEN** the ticket-chute fan runs
+        expected: The alarmboard ticket-chute fan test runs the fan.
+      - title: TL80 Printer — an Engineer adjusts the print alignment
+        objective: This test is to confirm an Engineer can adjust the TL80 printer alignment from EMS on a Kiosk TVM.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the TL80 printer maintenance screen
+          **WHEN** the Engineer adjusts the print alignment and prints a test ticket
+          **THEN** the test ticket prints at the adjusted alignment
+        expected: The TL80 alignment adjustment is applied and confirmed on a test ticket.
+      - title: Touchscreen — an Engineer runs the touchscreen test
+        objective: This test is to confirm an Engineer can run the touchscreen maintenance test on a Kiosk TVM.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM at the touchscreen maintenance screen
+          **WHEN** the Engineer runs the touchscreen test
+          **THEN** the touchscreen registers the test touches
+        expected: The touchscreen maintenance test confirms the Kiosk touchscreen registers touches.
+      - title: Comms Configuration — an Engineer kills the on-screen keyboard
+        objective: This test is to confirm an Engineer can dismiss the on-screen keyboard from the Kiosk comms configuration screen.
+        steps: |-
+          **GIVEN** an Engineer signed into EMS on a Kiosk TVM with the on-screen keyboard shown at the comms configuration screen
+          **WHEN** the Engineer selects the kill on-screen keyboard option
+          **THEN** the on-screen keyboard is dismissed
+        expected: The on-screen keyboard is removed from the Kiosk comms configuration screen on request.
+
+  # ----------------------------------------------------------------------------
+  # B (Kiosk-only leaf 2): Coin-recycler-hopper maintenance
+  # cross-tab.md: Kiosk cash unit uses coin recycler hoppers.
+  # ----------------------------------------------------------------------------
+  - path: [Non-Functional, EMS & TMS Maintenance, Coin Recycler Hopper / Kiosk only]
+    cases:
+      - title: Coin Recycler Hopper — Cash Content Report after replacement
+        objective: This test is to confirm a Kiosk TVM produces a Cash Content Report after a coin recycler hopper is replaced.
+        steps: |-
+          **GIVEN** a Kiosk TVM with an Engineer signed into EMS who has replaced a coin recycler hopper
+          **WHEN** the Engineer requests a Cash Content Report following the replacement
+          **THEN** the report prints the cash content reflecting the replaced hopper
+        expected: A Cash Content Report reflecting the replaced coin recycler hopper is produced.
+      - title: Coin Recycler Hopper — reloading updates recorded cash content
+        objective: This test is to confirm reloading a coin recycler hopper updates the TVM's recorded coin content.
+        steps: |-
+          **GIVEN** a Kiosk TVM with an Engineer signed into EMS at the Load Hoppers screen
+          **WHEN** the Engineer reloads a coin hopper and sets its level
+          **THEN** the recorded coin content is updated to the set level
+          **AND** Data variations — set to full cassette (value from TMS) / set to empty then manually correct
+        expected: Reloading a coin recycler hopper updates the TVM's recorded coin content to the set level.
+
+  # ============================================================================
+  # C. NON-FUNCTIONAL — Resilience
+  # ============================================================================
+  - path: [Non-Functional, Resilience]
+    cases:
+      - title: Degraded Service — payment hardware failure transitions to amber
+        objective: This test is to confirm the TVM enters a degraded (amber) state and disables the affected payment method when its hardware fails.
+        steps: |-
+          **GIVEN** a TVM in service accepting cash and card
+          **WHEN** a payment hardware component fails
+          **THEN** the TVM transitions to a degraded amber status
+          **AND** the affected payment method is no longer offered
+          **AND** Data variations — Ingenico card reader / coin selector / banknote acceptor
+        expected: A payment-hardware failure moves the TVM to amber and withdraws the affected payment method.
+      - title: Degraded Service — low printer stock raises an amber status
+        objective: This test is to confirm low ticket-printer stock puts the TVM into a degraded amber state.
+        steps: |-
+          **GIVEN** a TVM in service whose ticket stock falls below the configured low threshold
+          **WHEN** the low-stock condition is detected
+          **THEN** the TVM reports a degraded amber status
+          **AND** the low-stock condition is reported to CloudFare
+        expected: Low printer stock drives the TVM to amber and is reported to the back office.
+      - title: Low Change — change unavailable notifies customer and CloudFare
+        objective: This test is to confirm the TVM notifies the customer and CloudFare when it cannot give change.
+        steps: |-
+          **GIVEN** a TVM whose change hoppers are too low to give change
+          **WHEN** a customer begins a cash purchase that would require change
+          **THEN** the customer is told change is unavailable
+          **AND** the low-change state is reported to CloudFare
+        expected: When change cannot be given the customer is warned and CloudFare is notified.
+      - title: Low Change — a change voucher is issued on request
+        objective: This test is to confirm the TVM issues a change voucher when change cannot be given and the customer requests one.
+        steps: |-
+          **GIVEN** a TVM in a low-change state during a cash purchase requiring change
+          **WHEN** the customer requests a change voucher for the outstanding change
+          **THEN** a change voucher is printed for the outstanding amount
+          **AND** a ChangeVoucher issued event is reported to CloudFare
+        expected: A change voucher is printed for the outstanding change and the issue is reported to CloudFare.
+      - title: Print Failure — cash is returned when a ticket fails to print
+        objective: This test is to confirm the TVM returns the customer's cash when a paid paper ticket fails to print.
+        steps: |-
+          **GIVEN** a customer who has paid the exact fare in cash for a paper ticket
+          **WHEN** the ticket fails to print
+          **THEN** the inserted cash is returned to the customer
+          **AND** the failure is reported to the back office
+        expected: A ticket print failure returns the customer's cash and is reported to the back office.
+      - title: Mains Power Failure — runs on battery and keeps vaults secure
+        objective: This test is to confirm the TVM runs on battery through a mains failure while keeping the cash and coin vaults secure.
+        steps: |-
+          **GIVEN** a TVM in service on mains power with cash and coin vaults secured
+          **WHEN** mains power is lost
+          **THEN** the TVM continues to run on battery power
+          **AND** the cash and coin vault security is maintained
+        expected: On a mains failure the TVM runs on battery and keeps the cash and coin vaults secure.
+      - title: Device Lockout — cash sale at the lockout limit goes Out of Service
+        objective: This test is to confirm the TVM goes Out of Service when a cash transaction meets or exceeds the configured lockout sales limit.
+        steps: |-
+          **GIVEN** a TVM whose cumulative cash sales are just below the configured lockout sales limit (example limit £250)
+          **WHEN** a cash sale takes the cumulative total to the lockout limit
+          **THEN** the sale completes
+          **AND** the TVM goes Out of Service
+          **AND** Data variations — paper ticket / smartcard top-up / discounted ticket
+        expected: A cash sale that reaches the configured lockout limit completes, then the TVM locks out of service.
+      - title: Device Lockout — card sale at the lockout limit stays In Service
+        objective: This test is to confirm the lockout limit applies to cash only and a card sale reaching it does not lock the TVM.
+        steps: |-
+          **GIVEN** a TVM whose cash sales are near the configured lockout sales limit
+          **WHEN** a card sale takes the cumulative total to the lockout limit
+          **THEN** the TVM remains In Service
+        expected: A card sale reaching the lockout limit leaves the TVM in service, since lockout is cash-only.
+      - title: Device Lockout — a cancelled cash sale stays In Service
+        objective: This test is to confirm the TVM does not lock out when a cash sale that would reach the lockout limit is cancelled.
+        steps: |-
+          **GIVEN** a TVM whose cash sales are near the configured lockout sales limit
+          **WHEN** a cash sale that would reach the limit is cancelled before completion
+          **THEN** the TVM remains In Service
+          **AND** the inserted cash is returned
+        expected: Cancelling a lockout-reaching cash sale keeps the TVM in service and returns the cash.
+      - title: Heartbeat — idle TVM updates Last Communication every 15 minutes
+        refs: [FBD-100266]
+        objective: This test is to confirm the TVM refreshes its CloudFare Last Communication at least every 15 minutes via the staff-list check even with no sales.
+        steps: |-
+          **GIVEN** a commissioned TVM that is idle and has taken no sales
+          **WHEN** the 15-minute staff-list refresh check runs
+          **THEN** the TVM's Last Communication time in CloudFare is updated
+          **AND** its Hours Since Last Communication is refreshed
+        expected: The idle TVM's 15-minute staff-list check refreshes its Last Communication in CloudFare without any sale.
+      - title: Heartbeat — a StaffList message resets Hours Since Last Comms
+        refs: [FBD-100266]
+        objective: This test is to confirm a StaffList message from a TVM resets its Hours Since Last Communication to zero in CloudFare.
+        steps: |-
+          **GIVEN** a TVM shown in the CloudFare Comms Monitor with a non-zero Hours Since Last Communication
+          **WHEN** the TVM sends a StaffList message
+          **THEN** its Hours Since Last Communication is reset to zero
+          **AND** its Last Communication time and Devices Last Seen entry are updated
+        expected: A StaffList message zeroes the TVM's Hours Since Last Communication and updates its last-seen data.
+      - title: Comms Lock — sustained outage drives the TVM to comms-locked OOS
+        refs: [FBD-100359]
+        objective: This test is to confirm a sustained Translink-network outage takes an Ethernet TVM offline and eventually to a communication-locked Out of Service state.
+        steps: |-
+          **GIVEN** an Ethernet-connected TVM routed to AWS through the Translink network
+          **WHEN** the Translink network is lost for a sustained period beyond the configured non-communication lockout limit
+          **THEN** the TVM operates offline initially
+          **AND** it enters a communication-locked Out of Service state after the configured limit
+        expected: A sustained network outage takes the Ethernet TVM offline and then to a communication-locked out-of-service state.
+      - title: Comms Recovery — returns to service and delivers queued sales
+        refs: [FBD-100359, FBD-100266]
+        objective: This test is to confirm a communication-locked TVM returns to service and its queued transactions reach the back office when comms are restored.
+        steps: |-
+          **GIVEN** a TVM that is communication-locked Out of Service after a network outage, with sales queued during the outage
+          **WHEN** communication with the back office is restored
+          **THEN** the TVM returns to In Service
+          **AND** the transactions queued during the outage are delivered to the back office with no data loss
+        expected: On comms restore the TVM comes back into service and its queued transactions deliver without loss.
+      - title: Comms Reporting — WAN-to-SIM failover reported to CloudFare
+        refs: [FBD-100266]
+        objective: This test is to confirm the TVM reports a comms failover from WAN to SIM to CloudFare and reverts when WAN returns.
+        steps: |-
+          **GIVEN** a Kiosk TVM communicating over its WAN connection
+          **WHEN** the WAN connection fails and the TVM falls back to the SIM
+          **THEN** a comms failover event is reported to CloudFare
+          **AND** the TVM returns to WAN when the connection is restored
+        expected: A WAN-to-SIM failover is reported to CloudFare and the TVM reverts to WAN on recovery.
+      - title: Screensaver Wake-Up — a screen tap wakes to the mode home
+        objective: This test is to confirm tapping the screen wakes the TVM from the screensaver to the mode-of-transport home screen.
+        steps: |-
+          **GIVEN** an in-service TVM with the idle screensaver active
+          **WHEN** a customer taps the screen
+          **THEN** the screensaver is dismissed
+          **AND** the mode-of-transport home screen is displayed
+        expected: A screen tap wakes the TVM from the screensaver to the mode-of-transport home screen.
+      - title: Screensaver Wake-Up — a smartcard starts the smartcard flow
+        objective: This test is to confirm presenting a smartcard while the screensaver is active starts the smartcard flow or shows the appropriate message.
+        steps: |-
+          **GIVEN** an in-service TVM with the screensaver active
+          **WHEN** a customer presents a smartcard to the reader
+          **THEN** a valid multi-journey or time-based smartcard opens the smartcard flow
+          **AND** a smartcard that cannot be used at the TVM shows the appropriate message
+          **AND** Data variations — valid multi-journey / valid time-based / invalid / free or half-fare SmartPass
+        expected: A smartcard presented at the screensaver either opens the smartcard flow or shows the cannot-be-used message as appropriate.
+      - title: Multi-Modal Home — selecting Bus or Rail shows the right home
+        objective: This test is to confirm selecting the mode of transport shows the matching Bus or Rail home screen.
+        steps: |-
+          **GIVEN** an in-service TVM showing the multi-modal home with a mode-of-transport choice
+          **WHEN** the customer selects a mode of transport
+          **THEN** the matching home screen is displayed
+          **AND** Data variations — Bus / Rail
+        expected: Selecting Bus or Rail displays the matching mode home screen.
+      - title: Audio Prompts — speech prompts and payment feedback play
+        objective: This test is to confirm the TVM plays speech prompts on workflow screens and audible feedback on payment input.
+        steps: |-
+          **GIVEN** an in-service TVM with audio enabled at the configured volume
+          **WHEN** a customer works through a purchase and makes a payment input
+          **THEN** the speech prompt for the current screen plays
+          **AND** audible feedback confirms the payment input
+          **AND** Data variations — cash / card / contactless / smartcard input
+        expected: Speech prompts play on workflow screens and audible feedback confirms each payment input.
+      - title: Performance — workflows launch from idle within tolerance
+        objective: This test is to confirm the TVM launches the main sales workflows from idle within the expected response time.
+        steps: |-
+          **GIVEN** an in-service TVM at the idle screensaver
+          **WHEN** a customer starts a sales workflow from idle
+          **THEN** the first workflow screen is displayed within the expected response tolerance
+          **AND** Data variations — Quick Select / Buy Other Tickets / Smartcard Top-up
+        expected: The main sales workflows open from idle within the expected response time.
+      - title: Performance — the TVM accepts at least 98% of valid cash
+        objective: This test is to confirm the TVM accepts valid coins and banknotes at the required 98% acceptance rate.
+        steps: |-
+          **GIVEN** an in-service TVM accepting cash, with a batch of valid tender coins and banknotes
+          **WHEN** the valid tender is inserted during payment
+          **THEN** at least 98% of valid coins are accepted
+          **AND** at least 98% of valid banknotes are accepted
+        expected: The TVM accepts valid coins and banknotes at or above the 98% acceptance rate.

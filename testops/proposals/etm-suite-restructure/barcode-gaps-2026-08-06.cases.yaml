@@ -1,0 +1,77 @@
+# ETM Barcode Scanning — authoring the missing paths from flow-coverage.md (paths 2,9,10,13,18,20,
+# 21,22,24,25 consolidated into 5 cases per minimal-sufficient rubric; path 28 — plain FLU<->Driver
+# Menu navigation — skipped as adequately implied by every other case that reaches Barcode Reference
+# via Driver Menu, and path 1/15/26/27 deliberately left alone per the flow-map's own GAP/FRAGMENTED
+# markers). Grounded strictly in translink-etm-barcode-scanning.md.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Barcode Scanning
+    cases:
+      - title: Barcode — data not received, and Validation Failed Retry / Cancel
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a barcode scan with no data received routes to Barcode Validation Failed, and that Validation Failed's Retry and Cancel keys navigate correctly.
+        steps: |
+          **GIVEN** a Driver is signed on at the FLU screen
+          **WHEN** a barcode is scanned and the data is not successfully received
+          **THEN** the Barcode Validation Failed screen is displayed
+          **WHEN** you press Retry on the Validation Failed screen
+          **THEN** you return to Barcode - Validating Details
+          **WHEN** you present a barcode that fails validation again and press Cancel
+          **THEN** you return to the FLU screen
+        expected: "A no-data-received scan routes to Barcode Validation Failed; Retry returns to Validating Details, Cancel returns to FLU."
+
+      - title: Barcode — Reference entry Cancel navigation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm pressing Cancel from either the Barcode Reference screen or Barcode Reference Entered returns to the FLU screen without validating.
+        steps: |
+          **GIVEN** a Driver has opened Barcode Reference from the Driver Menu
+          **WHEN** you press Cancel before entering a reference
+          **THEN** you return to the FLU screen
+          **WHEN** you enter a reference on Barcode Reference Entered and press Cancel there instead
+          **THEN** you return to the FLU screen
+        expected: "Cancel from either Barcode Reference or Barcode Reference Entered returns to the FLU screen without validating."
+
+      - title: Barcode — print error Cancel and Printed? No retry loop
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm pressing Cancel on a barcode print error returns to the FLU screen, and pressing No on the Printed? confirmation re-asks the print-success check.
+        steps: |
+          **GIVEN** a barcode has validated to Ticket Valid and printing has failed
+          **WHEN** you press Cancel on the Print Error screen
+          **THEN** you return to the FLU screen
+          **WHEN** a ticket prints and you press No on the Printed? confirmation
+          **THEN** the Successful Print? check is re-asked
+        expected: "Cancel on a barcode Print Error returns to FLU; pressing No on Printed? re-asks the print-success check."
+
+      - title: Barcode — mLink offline-key check and date-validity failures
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm an mLink ticket that fails the offline encryption-key check routes to Barcode Validation Failed, and one that fails the date-validity check routes to Transaction Cancelled - Ticket Not Valid.
+        steps: |
+          **GIVEN** a customer presents an mLink ticket and you scan it
+          **WHEN** offline validation using the encryption keys is not possible
+          **THEN** the Barcode Validation Failed screen is displayed
+          **WHEN** an mLink ticket passes the encryption-key check but the date is not valid
+          **THEN** the Transaction Cancelled - Ticket Not Valid screen is displayed
+        expected: "An mLink ticket failing the offline encryption-key check shows Barcode Validation Failed; one failing the date check shows Transaction Cancelled - Ticket Not Valid."
+
+      - title: Barcode — Ticket Not Valid Retry navigation (main and mLink)
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm pressing Retry on Transaction Cancelled - Ticket Not Valid returns to the offline-already-validated check for a main-path barcode, and to the encryption-key check for an mLink ticket.
+        steps: |
+          **GIVEN** a main-path barcode scan reaches Transaction Cancelled - Ticket Not Valid
+          **WHEN** you press Retry
+          **THEN** you return to the "already offline validated?" check
+          **GIVEN** an mLink ticket reaches Transaction Cancelled - Ticket Not Valid
+          **WHEN** you press Retry
+          **THEN** you return to the offline encryption-key check
+        expected: "Retry from Ticket Not Valid returns to the already-offline-validated check for a main-path barcode, and to the encryption-key check for an mLink ticket."

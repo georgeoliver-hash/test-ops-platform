@@ -1,0 +1,32 @@
+suite: NJT - SystemTestOps
+suite_id: 30295
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [1]
+sections:
+  - path: ["Fare Register", "OBV Functionality", "OBV Status"]
+    cases:
+      - title: "OBV Status — Emergency Mode excluded from top-line status indicator"
+        objective: "This test is to confirm the OBV reporting Emergency Validation mode alone does not affect the FR's top-line status indicator."
+        steps: |
+          **GIVEN** the OBV is communicating with the FR and otherwise reporting no fault
+          **WHEN** the OBV indicates it is operating in Emergency Validation mode
+          **THEN** the top-line status indicator on the driver display is unaffected by this condition
+        expected: "The top-line status indicator continues to reflect normal OBV operation; Emergency Mode status is excluded from it per the closing rule. (Source: NJT_FRFRP_FS002 p.79)"
+
+      - title: "OBV Status — no GPS excluded from top-line status indicator"
+        objective: "This test is to confirm the OBV reporting no GPS alone does not affect the FR's top-line status indicator."
+        steps: |
+          **GIVEN** the OBV is communicating with the FR, operating, and otherwise reporting no fault
+          **WHEN** the OBV indicates it has no GPS
+          **THEN** the top-line status indicator on the driver display is unaffected by this condition
+        expected: "The top-line status indicator continues to reflect normal OBV operation; lack of GPS is excluded from it per the closing rule. (Source: NJT_FRFRP_FS002 p.79)"
+
+      - title: "OBV Status — no screen display excluded from top-line status indicator"
+        objective: "This test is to confirm the OBV reporting no screen display alone does not affect the FR's top-line status indicator."
+        steps: |
+          **GIVEN** the OBV is communicating with the FR, operating, and otherwise reporting no fault
+          **WHEN** the OBV indicates it has no screen display
+          **THEN** the top-line status indicator on the driver display is unaffected by this condition
+        expected: "The top-line status indicator continues to reflect normal OBV operation; lack of screen display is excluded from it per the closing rule. (Source: NJT_FRFRP_FS002 p.79)"

@@ -1,0 +1,69 @@
+# ETM — Smoke (thin critical path, @mode(all): Metro + Ulsterbus)
+# A minimal confidence set run first on any build/config. Each smoke case maps to a fuller
+# Functional case; smoke just proves the happy path end-to-end.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Smoke
+    cases:
+      - title: Smoke — sign on, issue a ticket and sign off
+        objective: This test is to confirm the core end-to-end path of signing on, issuing a ticket and signing off works.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is at the idle screen and communicating with CloudFare
+          **WHEN** a Driver signs on and reaches the FLU screen
+          **THEN** the Driver is signed on at FLU
+          **WHEN** the Driver issues a single ticket and takes payment
+          **THEN** the ticket is issued
+          **AND** the ticket is printed
+          **WHEN** the Driver signs off
+          **THEN** the ETM returns to idle
+          **AND** the sign-off is audited
+        expected: A Driver can sign on, issue and print a ticket, and sign off — the core daily path.
+      - title: Smoke — smartcard validates on tap
+        objective: This test is to confirm a valid smartcard validates on the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** a customer presents a valid smartcard
+          **THEN** the card is validated
+          **AND** a success is indicated
+        expected: A valid smartcard validates with a success indication.
+      - title: Smoke — ABT contactless tap succeeds
+        objective: This test is to confirm a valid ABT contactless tap is accepted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** ABT taps are enabled and the ETM is at the FLU screen
+          **WHEN** a customer taps a valid contactless card
+          **THEN** the tap is accepted with the success tone
+        expected: A valid ABT tap is accepted with the success tone.
+      - title: Smoke — smartcard top-up succeeds
+        objective: This test is to confirm a smartcard top-up completes and prints a receipt.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and a topp-able smartcard is presented
+          **WHEN** the Driver tops up the card and takes payment
+          **THEN** the card is topped up
+          **AND** a receipt is printed
+        expected: A smartcard top-up completes with a printed receipt.
+      - title: Smoke — basket sale of multiple tickets
+        objective: This test is to confirm a multi-item basket can be sold and paid in one transaction.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver adds multiple tickets to the basket and takes a single payment
+          **THEN** all basket items are issued in one transaction
+        expected: A basket of tickets is sold and issued in one payment.
+      - title: Smoke — ETM communicates with the back office
+        objective: This test is to confirm the ETM can exchange data with the back office.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is in service
+          **WHEN** communications with the back office are forced
+          **THEN** the ETM exchanges data with the back office successfully
+        expected: The ETM successfully communicates with the back office on demand.

@@ -1,0 +1,47 @@
+# Mode-specific top-up products that were missing/lumped. Cross-mode cards stay in Shared.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Metro", "Top Up"]
+    cases:
+      - title: "Top Up — Metro Multi-Journey"
+        refs: ["TIBU-21133", "TIBU-21992", "TIBU-25081"]
+        objective: "This test is to confirm a Metro Multi-Journey smartcard can be topped up: journeys are added and shown, the maximum is enforced, and the mini-statement expiry is correct."
+        steps: |
+          **GIVEN** the operator presents a Metro Multi-Journey smartcard
+          **WHEN** the operator tops up journeys and pays
+          **THEN** the journeys are added
+          **AND** the journeys are shown
+          **AND** the card cannot exceed its maximum permitted journeys
+          **AND** the mini-statement expiry text is correct
+        expected: "Metro Multi-Journey top-up adds/shows journeys, enforces the max and shows the correct expiry (regression: TIBU-21133, TIBU-21992, TIBU-25081)."
+
+  - path: ["Ulsterbus", "Top Up"]
+    cases:
+      - title: "Top Up — Town Service Travelcard"
+        match: "Top Up — Ulsterbus / Town Service"
+        refs: ["TIBU-26720", "TIBU-26862", "TIBU-26713"]
+        objective: "This test is to confirm an Ulsterbus Town Service Travelcard can be topped up per its UX flow, including a card on first use."
+        steps: |
+          **GIVEN** the operator presents an Ulsterbus Town Service Travelcard
+          **WHEN** the operator selects Top Up, chooses a value and pays
+          **THEN** the top up completes following the correct UX flow
+          **AND** a card on first use is handled correctly
+        expected: "Town Service Travelcards top up per the UX flow incl. first use (regression: TIBU-26720, TIBU-26862, TIBU-26713)."
+      - title: "Top Up — Ulsterbus Multi-Journey"
+        refs: ["TIBU-26861", "TIBU-21133"]
+        objective: "This test is to confirm an Ulsterbus Multi-Journey smartcard can be topped up per its UX flow, with journeys added and the maximum enforced."
+        steps: |
+          **GIVEN** the operator presents an Ulsterbus Multi-Journey smartcard
+          **WHEN** the operator tops up journeys and pays
+          **THEN** the journeys are added following the correct UX flow
+          **AND** the journeys are shown
+          **AND** the card cannot exceed its maximum permitted journeys
+        expected: "Ulsterbus Multi-Journey top-up adds/shows journeys per the UX flow and enforces the max (regression: TIBU-26861, TIBU-21133)."

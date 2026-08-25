@@ -1,0 +1,532 @@
+# ETM correctness-fix pass, 2026-08-05 — fixes the 30 confirmed defects from
+# correctness-audit-2026-08-05.md against live suite 30254. `match:` = current live title.
+# 4100636 deliberately NOT included — flagged as a live CONFLICT (Q16, gap-register.md), needs
+# George's answer before either framing can be corrected.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Sign On & Session / Driver
+    cases:
+      - title: Driver Sign On — Smartcard, first use
+        match: Driver Sign On — Smartcard, first use
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Driver can sign on by presenting a Staff pass, which pre-populates the Staff ID, then proceeds through the first-use flow.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the ETM is displaying the idle screen and is communicating with CloudFare
+          **AND** the seeded test Driver's Staff pass (carrying the Staff ID) and PIN are to hand
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you present the Staff pass to the reader
+          **THEN** the operator sign-on screen is displayed with the Staff ID pre-populated
+          **AND** the PIN field is highlighted for entry
+          **WHEN** you enter the valid PIN and confirm with Enter, then remove the Staff pass
+          **THEN** the ETM authenticates the operator and displays the First Use Safety Check screen
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Start of Shift entry for the Driver is recorded at the time of the sign-on
+        expected: "The Staff pass pre-populates the ID; after a valid PIN the Driver proceeds through the first-use flow, and the sign-on is recorded in the CloudFare Activity Log.\n\n[Automatable: Partial · Cross-check: CloudFare]"
+
+      - title: Driver Sign On — subsequent use
+        match: Driver Sign On — subsequent use
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm subsequent-use sign-on honours the on-board First Use Safety Check state and reaches FLU.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the ETM is displaying the idle screen and a First Use Safety Check has already been performed for the vehicle today
+          **AND** the seeded test Driver's Staff ID and PIN are to hand, signing on to Metro route 10A (IN), seeded duty 4021 / journey 1030
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you sign on with the valid ID and PIN
+          **THEN** the ETM authenticates the operator
+          **AND** the First Use Safety Check On Board screen confirms the check is already satisfied
+          **WHEN** you complete duty 4021, route 10A and journey 1030 selection
+          **THEN** the FLU screen is displayed
+          **AND** the shift is audited
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a Start of Shift entry for the Driver is recorded at the time of the sign-on
+        expected: "Subsequent-use sign-on honours the on-board safety-check state, reaches the 10A FLU, and is recorded in the CloudFare Activity Log.\n\n[Automatable: Partial · Cross-check: CloudFare]"
+
+      - title: Driver Sign On — incorrect PIN locks the device after 3 attempts
+        match: Driver Sign On — incorrect PIN locks the device after the configured attempts
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM blocks sign-on after 3 failed PIN attempts (by manual entry and by Staff pass) and audits the lock-out.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/driver-sign-on/01_1_5 - Sign On - Device Locked.png
+        steps: |
+          **GIVEN** the ETM is in idle mode prompting for sign-on
+          **AND** the lockout threshold is 3 failed attempts (per the ETM UX transcription's explicit decision point)
+          **AND** a valid Staff ID and Staff pass for the seeded Driver are to hand, but the wrong PIN
+          **AND** the device's Activity Log is open in CloudFare Estate Management to verify
+          **WHEN** you enter the wrong PIN for the valid Staff ID once by manual entry, then once by Staff pass
+          **THEN** the Sign On Failed screen is displayed after each attempt
+          **WHEN** you keep entering the wrong PIN a third time
+          **THEN** the Device Locked screen is displayed
+          **AND** the device is locked against further sign-on
+          **WHEN** you open the device's Activity Log in CloudFare Estate Management
+          **THEN** a lock-out entry for the device is recorded at the time it locked
+        expected: "After 3 failed PIN attempts (manual or Staff pass) the device shows Device Locked, blocks further sign-on, and the lock-out appears in the CloudFare Activity Log.\n\n[Automatable: Yes · Cross-check: CloudFare]"
+
+      - title: Driver Sign On — not communicating with CloudFare
+        match: Driver Sign On — not communicating with CloudFare
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm sign-on behaviour when the ETM has not communicated with CloudFare within the configured period.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/driver-sign-on/01_0_1 - Communications Locked.png
+        steps: |
+          **GIVEN** the ETM has not communicated with CloudFare for the configured number of hours
+          **AND** the seeded test Driver's Staff ID and PIN are to hand
+          **WHEN** you view the idle screen while communications are failing
+          **THEN** a bad-comms indicator is displayed
+          **WHEN** the comms failure persists
+          **THEN** communications lock
+          **WHEN** you attempt to sign on with the valid ID and PIN while communications are locked
+          **THEN** sign-on proceeds in the not-communicating state per design
+          **AND** the not-communicating condition is made clear to the Driver on screen
+          **WHEN** communications are restored and you open the device's Activity Log in CloudFare Estate Management
+          **THEN** the sign-on and comms-restore entries for the device are recorded
+        expected: "A comms-locked ETM signals bad comms first, escalates to a communications lock only if the failure persists, handles sign-on per the not-communicating design, and the entries appear in the CloudFare Activity Log once comms restore.\n\n[Automatable: Yes · Cross-check: CloudFare]"
+
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver options — display settings
+        match: Driver options — display settings
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Driver can adjust display brightness and volume and restore defaults from Driver options.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the seeded test Driver is signed on and has opened Driver options
+          **WHEN** you raise then lower the brightness, and raise then lower the volume
+          **THEN** the display brightness changes on screen accordingly
+          **AND** the volume changes accordingly
+          **WHEN** you restore defaults
+          **THEN** the display settings return to their defaults
+        expected: "Brightness and volume adjust up and down from Driver options, and Restore Defaults returns the display settings to default.\n\n[Automatable: No]"
+
+      - title: Inspector — report and smartcard check
+        match: Inspector — report and smartcard check
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm an Inspector can present a smartcard for inspection, with invalid-card handling.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/driver-menu-options/08_0_1 - Inspector - Present Smartcard.png
+        steps: |
+          **GIVEN** the Inspector option is selected from the Driver Menu
+          **AND** a valid smartcard and an invalid smartcard are to hand
+          **WHEN** you present the valid smartcard for inspection
+          **THEN** the smartcard details are shown
+          **AND** removing the card returns to FLU
+          **WHEN** you present the invalid smartcard
+          **THEN** the invalid-smartcard error is shown
+          **AND** removing the card returns to FLU
+        expected: "The Inspector can check a presented smartcard, with invalid-card handling; removing the card returns to FLU either way.\n\n[Automatable: Partial]"
+
+  - path: Functional / Ticket Issue
+    cases:
+      - title: Ticket Issue — annulment (last ticket, timeout and refusal)
+        match: Ticket Issue — annulment (last ticket, timeout and refusal)
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm annulling the last issued ticket, the unconfirmed-annul timeout, and the annulment list clearing where annulment is not permitted.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver on route 72b (IN) has just issued an Adult single ticket
+          **WHEN** you annul the last issued ticket and confirm, then issue another and start an annul but let it time out unconfirmed
+          **THEN** the confirmed annulment voids the last ticket and records it in CloudFare
+          **AND** the unconfirmed annul times out leaving that ticket valid
+          **WHEN** you attempt to annul a ticket whose boarding stage has changed
+          **THEN** the annulment list clears, leaving nothing available to annul
+        expected: "The last ticket annuls; an unconfirmed annul times out leaving the ticket valid; a boarding-stage change clears the annulment list entirely instead of leaving it available. Basket-transaction annulment is covered by its own case (Basket Mode — annul a basketed transaction).\n\n[Automatable: Partial · Cross-check: CloudFare]"
+
+      - title: Ticket Issue — annulment fails then retry succeeds
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed annulment attempt can be retried to success.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver on route 72b (IN) attempts to annul the last issued ticket
+          **WHEN** the annulment attempt fails
+          **THEN** the Annulment Unsuccessful screen is displayed
+          **WHEN** you select Retry and the annulment succeeds
+          **THEN** the ticket is voided
+          **AND** it is recorded in CloudFare
+        expected: "A failed annulment shows Annulment Unsuccessful; retrying it through to success voids the ticket and records it in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]"
+
+      - title: Ticket Issue — issue a single ticket
+        match: Ticket Issue — issue a single ticket (Metro Single)
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a single ticket builds via fare look-up, takes payment and issues, printing a change receipt when change is due (worked example — Metro Single; this sub-flow is mode-generic, no Metro/Ulsterbus branching in the source).
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver is signed on to Metro route 10A (IN) at the FLU screen
+          **AND** an Adult Casement Park to City Hall Metro Single is £2.30 (ref.20)
+          **WHEN** you build the ticket via fare look-up, tender more than the fare and take payment
+          **THEN** the ticket prints for the selected product and fare
+          **AND** a change receipt prints for the change due
+          **WHEN** you check the printouts and open the CloudFare activity log
+          **THEN** the sale appears in the CloudFare activity log
+          **AND** the sale flows to MERIT
+        expected: "A ticket builds, pays and issues with a printed ticket (worked example — Metro Single); when change is due a change receipt prints; recorded in CloudFare and MERIT."
+
+      - title: Ticket Issue — printer or power interrupt during print recovers
+        match: Ticket Issue — printer or power interrupt during print recovers
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm ticket printing resumes or annuls correctly after a power or printer interrupt, recovering to the signed-in state where possible without duplicating or orphaning a ticket.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver is issuing a ticket on route 72b (IN) when a power or printer interrupt occurs mid-print
+          **WHEN** you cause a momentary printer or power failure during the print
+          **THEN** the momentary failure offers retry or annul
+          **AND** the print completes cleanly
+          **WHEN** you repeat the interrupt with a full reset
+          **THEN** the full reset recovers to the signed-in state where possible
+          **WHEN** you open the CloudFare activity log to reconcile issued tickets
+          **THEN** CloudFare shows no duplicate and no orphaned ticket for the interrupted print
+        expected: "Momentary failures allow retry or annul and complete cleanly on retry; full resets recover to signed-in where possible and never leave a duplicate or orphaned ticket, confirmed in CloudFare. The driver-annuls-instead-of-retrying branch is covered by its own case (Ticket Issue — printer or power interrupt during print, driver annuls).\n\n[Automatable: No · Cross-check: CloudFare]"
+
+      - title: Ticket Issue — printer or power interrupt during print, driver annuls
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm choosing Annul (instead of Retry) after a momentary printer or power failure during print routes to the standard annulment flow and issues no ticket.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver is issuing a ticket on route 72b (IN) when a power or printer interrupt occurs mid-print
+          **WHEN** a momentary printer or power failure occurs during the print and you select Annul instead of Retry
+          **THEN** the transaction is annulled via the standard annulment flow
+          **AND** no ticket is issued
+        expected: "Selecting Annul instead of Retry after a momentary print/power failure annuls the transaction and issues no ticket.\n\n[Automatable: No]"
+
+  - path: Functional / Fare Look-Up / Sales
+    cases:
+      - title: FLU — numeric entry, change and last transaction
+        match: FLU — numeric entry, change and last transaction
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm numeric entry for change and stage-by-ID, the purpose-specific error-bar messages, and the last-transaction display after a sale.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver is signed on to a valid route (IN) at the FLU screen
+          **AND** an Adult single Moygashel Busby Shop to Armagh Bus Centre is priced at £4.50 (ref.60)
+          **WHEN** you key the cash tendered for the £4.50 fare and take the sale
+          **THEN** the change due is calculated from the tendered amount
+          **AND** the change due is shown
+          **AND** the 3-second success confirmation is shown, followed by the last-transaction detail
+          **WHEN** you start a fresh entry and key a cash-tendered amount less than the fare due
+          **THEN** the "Unable to Calculate Change" error-bar message is shown
+          **AND** 'C' clears a character to correct the entry
+        expected: "Numeric entry calculates change and sets stages by ID; a cash-tendered amount less than the fare due shows the purpose-specific \"Unable to Calculate Change\" error-bar message and 'C' clears a character; a completed sale shows a 3-second success then the last transaction.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+
+      - title: FLU — Travel Mode and schedule adherence
+        match: FLU — Travel Mode and schedule adherence
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM enters Travel Mode while driving, showing time, date and schedule adherence, and restores to FLU on any input.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/flu/07_0_6 -Main Screen - Travel Mode.png
+        steps: |
+          **GIVEN** a Driver is signed on to Ulsterbus route 72b (IN) and the bus is in motion
+          **WHEN** you keep driving without touching the ETM for one minute
+          **THEN** the screen enters Travel Mode dimmed, showing the time and date
+          **AND** the schedule-adherence colour shows green (on time), orange (within tolerance) or red (outside tolerance)
+          **WHEN** you press any button or a passenger taps a smartcard
+          **THEN** the ETM restores the FLU screen
+        expected: "Travel Mode triggers after one minute while driving (dimmed, time/date plus the green/orange/red schedule-adherence colour); any button press or smartcard tap restores FLU.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+
+  - path: Functional / ABT
+    cases:
+      - title: ABT — successful tap and passback (Visa Credit)
+        match: ABT — successful tap and passback (Visa Credit)
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful ABT tap and second-tap passback with a Visa Credit contactless EMV card.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** ABT taps are enabled and a Driver is signed on to a valid route at the FLU screen
+          **AND** a seeded Visa Credit contactless card is available
+          **WHEN** you tap the Visa Credit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time within the passback period
+          **THEN** the "Card already validated" EMV Validation Failure screen is displayed
+          **AND** the screen clears after a 2-second timeout, card removal, or pressing L6
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: "A valid Visa Credit ABT tap is accepted (success tone, \"Success\"); a second tap within the passback period shows the Card-already-validated failure screen, clearing after 2s timeout / card removal / L6; both taps recorded in CloudFare and MERIT."
+
+      - title: ABT — successful tap and passback (Mastercard Credit)
+        match: ABT — successful tap and passback (Mastercard Credit)
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful ABT tap and second-tap passback with a Mastercard Credit contactless EMV card.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** ABT taps are enabled and a Driver is signed on to a valid route at the FLU screen
+          **AND** a seeded Mastercard Credit contactless card is available
+          **WHEN** you tap the Mastercard Credit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time within the passback period
+          **THEN** the "Card already validated" EMV Validation Failure screen is displayed
+          **AND** the screen clears after a 2-second timeout, card removal, or pressing L6
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: "A valid Mastercard Credit ABT tap is accepted (success tone, \"Success\"); a second tap within the passback period shows the Card-already-validated failure screen, clearing after 2s timeout / card removal / L6; both taps recorded in CloudFare and MERIT."
+
+      - title: ABT — successful tap and passback (Maestro Debit)
+        match: ABT — successful tap and passback (Maestro Debit)
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a successful ABT tap and second-tap passback with a Maestro Debit contactless EMV card.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** ABT taps are enabled and a Driver is signed on to a valid route at the FLU screen
+          **AND** a seeded Maestro Debit contactless card is available
+          **WHEN** you tap the Maestro Debit card
+          **THEN** the first tap is accepted with the success tone and "Success"
+          **WHEN** you tap it a second time within the passback period
+          **THEN** the "Card already validated" EMV Validation Failure screen is displayed
+          **AND** the screen clears after a 2-second timeout, card removal, or pressing L6
+          **WHEN** you open the CloudFare activity log
+          **THEN** both taps are recorded in CloudFare and flow to MERIT
+        expected: "A valid Maestro Debit ABT tap is accepted (success tone, \"Success\"); a second tap within the passback period shows the Card-already-validated failure screen, clearing after 2s timeout / card removal / L6; both taps recorded in CloudFare and MERIT."
+
+  - path: Functional / Basket Mode
+    cases:
+      - title: Basket Mode — limits
+        match: Basket Mode — limits
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the nine-item basket limit shows the Basket Full error, and the Delete Item button behaviour.
+        steps: |
+          **GIVEN** a Driver on Metro route 10A has nine items in the basket
+          **WHEN** you try to add a tenth item, then remove one item and add another
+          **THEN** the ETM shows the Basket Full error
+          **AND** removing an item frees a slot so another can be added
+          **WHEN** The User selects an item in the basket
+          **THEN** The Delete Item button becomes active
+        expected: "The basket caps at nine, showing the Basket Full error when exceeded."
+
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: Supervisor — soft reboot
+        match: Supervisor — soft reboot
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Supervisor can soft reboot the ETM from the Supervisor Menu, landing on the Idle Screen.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the seeded test Supervisor is at the Supervisor Menu
+          **WHEN** you select Soft Reboot
+          **THEN** the ETM restarts and lands on the Idle Screen, not signed in
+        expected: "A Supervisor can soft reboot the ETM; it restarts on the Idle Screen — distinct from the Driver Menu's own Soft Reboot, which lands on 'On Break' with the Driver still signed in.\n\n[Automatable: No]"
+
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — display settings
+        match: Technician — display settings
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Technician can restore default display settings.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the seeded test Technician is at the Technician Menu display settings
+          **WHEN** you restore defaults
+          **THEN** the display settings return to their defaults
+        expected: "A Technician can restore the default display settings.\n\n[Automatable: No]"
+
+      - title: Technician — soft reboot
+        match: Technician — soft reboot
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Technician can soft reboot the ETM from the Technician Menu.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** the seeded test Technician is at the Technician Menu
+          **WHEN** you select Soft Reboot
+          **THEN** the ETM restarts
+        expected: "A Technician can soft reboot the ETM.\n\n[Automatable: No]"
+
+  - path: Functional / Barcode Scanning
+    cases:
+      - title: Barcode — offline validation
+        match: Barcode — offline validation
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm barcode offline validation succeeds within the offline limit and is rejected when over the limit or invalid.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/barcode-scanning/12_2_1 - Barcode - Offline Check.png
+        steps: |
+          **GIVEN** the ETM is validating a barcode offline on route 72b (IN)
+          **AND** seeded barcodes are available within the offline limit, over the limit and invalid
+          **WHEN** you scan a barcode within the offline limit
+          **THEN** the within-limit barcode validates offline
+          **WHEN** you scan one over the offline limit, then an invalid one
+          **THEN** the over-limit and invalid barcodes are rejected with the reason
+        expected: "Offline validation accepts within the limit and rejects when over the offline limit or invalid. The queued-offline-result-posts-when-back-online behaviour is a separate, currently-untested path — see gap-register.md.\n\n[Automatable: Partial]"
+
+      - title: Barcode — operator rejects on visual inspection (Not Valid)
+        match: Barcode — online validation fails (visual inspection not passed)
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm an operator can reject an already-validated barcode ticket on visual inspection, cancelling the transaction.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver is signed on to route 72b (IN) and a barcode has already validated to Ticket Valid
+          **AND** the operator judges the ticket should not pass visual inspection
+          **WHEN** the ticket has validated and you press 'Not Valid' after visual inspection
+          **THEN** the transaction is cancelled with "visual inspection not passed" shown
+          **WHEN** you open the CloudFare activity log
+          **THEN** the cancelled attempt appears in CloudFare
+        expected: "An operator can cancel an already-validated barcode ticket on visual inspection (distinct from an automatic online-validation failure); recorded in CloudFare."
+
+      - title: Barcode — printed tickets and print error
+        match: Barcode — printed tickets and print error
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a barcode-bearing ticket can be printed and that a print error during a barcode ticket is handled.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **GIVEN** a Driver on route 72b (IN) is issuing a ticket configured to carry a barcode
+          **WHEN** you issue the barcode ticket normally
+          **THEN** the ticket prints
+          **WHEN** you issue one and cause a print error mid-print, then check the printout and open the CloudFare activity log
+          **THEN** the print error during a barcode ticket is handled with Retry or Cancel options
+        expected: "Barcode tickets print; a print error is handled with Retry/Cancel; recorded in CloudFare and MERIT.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]"
+
+      - title: Barcode — reference entry via Driver Menu
+        match: Barcode — reference entry via Driver Menu
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a Driver can enter a barcode reference manually for single use, with invalid references rejected.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/barcode-scanning/12_0_0 - Barcode Reference.png
+
+          **UNCONFIRMED**: multiple-use barcode reference validation via Driver Menu entry is noted in the source design as still under review post-R2.0 — not asserted here; see proposals/coherence-audit/gap-register.md, Session 2026-08-05.
+        steps: |
+          **GIVEN** a Driver has opened the barcode reference entry from the Driver Menu on route 72b (IN)
+          **WHEN** you key a valid single-use reference
+          **THEN** the valid reference validates
+          **WHEN** you key an invalid reference
+          **THEN** the invalid reference is rejected
+          **WHEN** you open the CloudFare activity log
+          **THEN** the pass posts its BarcodeUsage transaction to CloudFare
+        expected: "Manual barcode reference entry (single use) validates a valid reference and rejects an invalid one; recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]"
+
+  - path: Non-Functional / Printer and Paper
+    cases:
+      - title: Paper management — low warning and jam recovery
+        match: Paper management — low, jam, out and replacement
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM warns on low paper and handles a jam with reverse feed.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/flu/07_0_2 - Main Screen - FLU - Paper Low.png
+        steps: |
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **WHEN** you print a ticket that takes the paper below the low threshold
+          **THEN** the Paper Low warning is shown for five seconds and returns to FLU Home
+          **WHEN** you cause a paper jam
+          **THEN** the jam is reported with a reverse-paper-feed option
+        expected: "Paper low warns (5s, after a print) and a jam offers reverse feed. A distinct Paper-Out condition and roll-replacement-restores-printing behaviour were asserted here previously but had no source grounding — removed rather than invented.\n\n[Automatable: Partial]"
+
+      - title: Printer — out of service error
+        match: Printer — out of service error
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM shows an Out of Service error when the printer cannot print.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/flu/07_0_3 - Out of Service Error.png
+
+          **UNCONFIRMED**: the triggering condition is not confirmed against the live system — it may not be printer-caused. See proposals/coherence-audit/gap-register.md, Session 2026-08-05, Q6.
+        steps: |
+          **GIVEN** the seeded test Driver is signed on to route 10A (IN)
+          **WHEN** the printer goes out of service
+          **THEN** the Out of Service error is displayed
+        expected: "The Out of Service error displays when the printer goes out of service.\n\n[Automatable: Partial] — trigger condition UNCONFIRMED, see gap-register.md Q6."
+
+  - path: Non-Functional / Power
+    cases:
+      - title: Power interruption — minor versus major outage
+        match: Power interruption — minor versus major outage
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM handles a momentary power interruption versus a prolonged one, saving state safely before shutdown.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/power-interruption/11_0_0 - Power Interruption.png
+        steps: |
+          **GIVEN** the ETM is in service with the seeded test Driver signed on to route 10A (IN) at the FLU screen
+          **WHEN** you interrupt power momentarily and restore it
+          **THEN** the ETM returns the user to the screen they were originally on
+          **WHEN** you interrupt power for a prolonged period past the backup window
+          **THEN** the ETM saves its state and shuts down once the backup period is reached
+        expected: "A momentary outage restores the previous screen (any screen, not specifically FLU); a prolonged outage saves state and shuts down safely within the backup window.\n\n[Automatable: No]"
+
+      - title: Power — charging state on boot
+        match: Power — charging state on boot
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm the ETM shows the charging screen on boot when it does not yet have enough charge to safely save state on a future interruption.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/startup/11_2_0 - Charging.png
+        steps: |
+          **GIVEN** the ETM is booting with low charge
+          **WHEN** you boot it while it does not yet have enough charge to guarantee a safe state-save
+          **THEN** the charging screen is displayed
+        expected: "The charging screen is displayed on boot when there is not yet enough charge to safely save state on a power interruption.\n\n[Automatable: No]"
+
+  - path: Functional / Revenue Limit
+    cases:
+      - title: Revenue Limit — reached locks the ETM
+        match: Revenue Limit — reached locks the ETM
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm reaching the maximum revenue signs the Driver off, prints a waybill and locks the ETM pending supervisor or technician notification.
+
+          Design reference (Overflow): https://overflow.io/s/NDLGF6NF/
+          Screen image (repo): knowledge/flows/etm/revenue-limit/02_9_1 - Main Screen - Revenue Limit Reached.png
+
+          **UNCONFIRMED**: the exact mechanism a Supervisor/Technician uses to clear the lock is not specified in the source design — see proposals/coherence-audit/gap-register.md, Session 2026-08-05, Q12.
+        steps: |
+          **GIVEN** a Driver is signed on to route 72b (IN) and the takings reach the maximum revenue limit
+          **WHEN** you take the cash fare that reaches the maximum revenue limit
+          **THEN** the ETM auto-signs-off the Driver
+          **AND** the ETM prints a waybill
+          **AND** the ETM locks
+          **WHEN** you check the printout and the screen
+          **THEN** a Supervisor or Technician is notified
+          **AND** the back-office connection re-establishes in the background
+        expected: "Reaching max revenue auto-signs-off the Driver, prints a waybill, locks the ETM and notifies a Supervisor/Technician; back-office connection re-establishes in the background. Clearing mechanism UNCONFIRMED — see gap-register.md Q12.\n\n[Automatable: Partial · Cross-check: CloudFare]"

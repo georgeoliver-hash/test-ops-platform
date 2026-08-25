@@ -1,0 +1,387 @@
+# POS Tickets — clarity pass (suite 30253)
+# UPDATES 26 existing cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: POS wording (no ETM), fuller objective,
+# grounded preconditions (mode + a concrete product/passenger/payment worked example), one
+# predicate per THEN/AND line, no compound THEN. No CloudFare audit step is added — none of the
+# source Tickets cases carry one, and adding an assertion would change what they test. The
+# Cross-Border cases keep their original two-line outcome (issued + banner, no receipt line).
+# The [Automatable] tag line is stripped from Expected per instruction. Push with --update; do NOT
+# create new cases. Worked-example routes/stations are illustrative and grounded in the specs
+# (Ulsterbus routes per FBD-100662; NIR stations per FBD-100167); swap for seeded values on the rig.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Tickets]
+    cases:
+      - title: Single ticket
+        objective: |-
+          This test is to confirm the POS can sell and issue a Single ticket in either operating mode (NIR or Ulsterbus) — built via that mode's fare look-up, priced correctly for the passenger type, printed, and confirmed with the green success banner. Worked example: NIR Adult Single, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on (NIR or Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Single, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Single ticket via the mode's fare look-up
+          **AND** takes payment for the passenger type
+          **THEN** the Single ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Single ticket issues at the correct price in NIR and Ulsterbus, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child / concession); payment (cash / card / warrant).
+      - title: Day Return ticket
+        objective: |-
+          This test is to confirm the POS can sell and issue a Day Return ticket in either operating mode (NIR or Ulsterbus), priced correctly for the passenger type, printed, and confirmed with the green success banner. Worked example: NIR Adult Day Return, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on (NIR or Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Day Return, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Day Return ticket via the mode's fare look-up
+          **AND** takes payment for the passenger type
+          **THEN** the Day Return ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Day Return issues at the correct price in NIR and Ulsterbus, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child).
+      - title: iLink Single
+        objective: |-
+          This test is to confirm the POS can sell an iLink Single fare against a presented iLink smartcard in either operating mode (NIR or Ulsterbus), recording it against the card, printing a receipt, and confirming with the green success banner. Worked example: Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on (NIR or Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash
+          **WHEN** the operator sells an iLink Single fare against the presented iLink smartcard
+          **THEN** the iLink Single is issued
+          **AND** it is recorded against the presented card
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An iLink Single is sold against the presented iLink smartcard in NIR and Ulsterbus, recorded against the card, and printed. Data variations: iLink zone; passenger type.
+      - title: Warrant Return
+        objective: |-
+          This test is to confirm the POS can sell a Warrant Return against a warrant payment in either operating mode (NIR or Ulsterbus), printing a receipt and confirming with the green success banner. Worked example: Adult Warrant Return, Belfast Lanyon Place → Portadown, paid by warrant.
+        steps: |-
+          **GIVEN** an operator is signed on (NIR or Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Adult Warrant Return, Belfast Lanyon Place → Portadown, paid by warrant
+          **WHEN** the operator builds a Warrant Return
+          **AND** completes the warrant payment
+          **THEN** the Warrant Return ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Warrant Return issues against a warrant payment in NIR and Ulsterbus, prints a receipt, and shows the green success banner.
+      - title: Family & Friends Day ticket
+        objective: |-
+          This test is to confirm the POS can sell and issue a Family & Friends Day ticket in either operating mode (NIR or Ulsterbus), printing a receipt and confirming with the green success banner. Worked example: Family & Friends Day ticket, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on (NIR or Ulsterbus mode)
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Family & Friends Day ticket, paid by cash
+          **WHEN** the operator builds a Family & Friends Day ticket
+          **AND** takes payment
+          **THEN** the Family & Friends Day ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Family & Friends Day ticket issues in NIR and Ulsterbus, prints a receipt, and shows the green success banner. Data variations: payment (cash / card / warrant).
+  - path: [NIR (Rail), Tickets]
+    cases:
+      - title: NIR — Single
+        objective: |-
+          This test is to confirm the POS can sell and issue an NIR Single ticket for any passenger type and payment method — built from boarding and alighting stations via the rail fare look-up, priced correctly, printed, and confirmed with the green success banner. Worked example: NIR Adult Single, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Single, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Single ticket from the boarding station, alighting station and passenger type
+          **AND** takes payment
+          **THEN** the Single ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An NIR Single issues at the correct price, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child / concession); payment (cash / card / warrant).
+      - title: NIR — Day Return
+        objective: |-
+          This test is to confirm the POS can sell and issue an NIR Day Return ticket, priced correctly for the passenger type, printed, and confirmed with the green success banner. Worked example: NIR Adult Day Return, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Day Return, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Day Return ticket
+          **AND** takes payment
+          **THEN** the Day Return ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An NIR Day Return issues at the correct price, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child).
+      - title: 1/3 Off Day Return
+        objective: |-
+          This test is to confirm the POS can sell an NIR 1/3 Off Day Return ticket with the one-third discount applied, printed, and confirmed with the green success banner. Worked example: NIR Adult 1/3 Off Day Return, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult 1/3 Off Day Return, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a 1/3 Off Day Return ticket
+          **AND** takes payment
+          **THEN** the ticket is issued with the 1/3 discount applied
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A 1/3 Off Day Return issues with the one-third discount applied, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child).
+      - title: Weekly Season
+        objective: |-
+          This test is to confirm the POS can sell an NIR Weekly Season ticket carrying the correct From/To validity dates, printed, and confirmed with the green success banner. Worked example: NIR Adult Weekly Season, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Weekly Season, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Weekly Season ticket
+          **AND** takes payment
+          **THEN** the Weekly Season ticket is issued with the correct From/To dates
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Weekly Season issues with the correct From/To validity dates, prints a receipt, and shows the green success banner. Data variations: passenger type; payment.
+      - title: Monthly Season
+        refs: [TIBU-19299]
+        objective: |-
+          This test is to confirm the POS can sell an NIR Monthly Season ticket carrying the correct expiry (To) date, printed, and confirmed with the green success banner. This also pins the TIBU-19299 fix (Monthly Season expiry date). Worked example: NIR Adult Monthly Season, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Monthly Season, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a Monthly Season ticket
+          **AND** takes payment
+          **THEN** the Monthly Season ticket is issued with the correct From/To dates
+          **AND** the expiry (To) date is one calendar month from the start date
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Monthly Season issues with the correct expiry (To) date, prints a receipt, and shows the green success banner (regression pin — TIBU-19299). Data variations: passenger type; payment.
+      - title: NIR — Warrant Return
+        objective: |-
+          This test is to confirm the POS can sell an NIR Warrant Return using a warrant payment, printed, and confirmed with the green success banner. Worked example: NIR Adult Warrant Return, Belfast Lanyon Place → Portadown, paid by warrant.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult Warrant Return, Belfast Lanyon Place → Portadown, paid by warrant
+          **WHEN** the operator builds a Warrant Return
+          **AND** completes the warrant payment
+          **THEN** the Warrant Return ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An NIR Warrant Return issues against a warrant payment, prints a receipt, and shows the green success banner.
+      - title: 3 Day Select
+        objective: |-
+          This test is to confirm the POS can sell an NIR 3 Day Select ticket for the days chosen by the operator, printed, and confirmed with the green success banner. Worked example: NIR Adult 3 Day Select, Belfast Lanyon Place → Portadown, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult 3 Day Select, Belfast Lanyon Place → Portadown, paid by cash
+          **WHEN** the operator builds a 3 Day Select ticket
+          **AND** chooses the days
+          **AND** takes payment
+          **THEN** the 3 Day Select ticket is issued for the chosen days
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A 3 Day Select issues for the chosen days, prints a receipt, and shows the green success banner. Data variations: passenger type; payment.
+      - title: NIR — Family & Friends Day
+        objective: |-
+          This test is to confirm the POS can sell and issue an NIR Family & Friends Day ticket, printed, and confirmed with the green success banner. Worked example: NIR Family & Friends Day, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Family & Friends Day, paid by cash
+          **WHEN** the operator builds a Family & Friends Day ticket
+          **AND** takes payment
+          **THEN** the Family & Friends Day ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An NIR Family & Friends Day ticket issues, prints a receipt, and shows the green success banner. Data variations: payment.
+      - title: NIR — iLink Single
+        objective: |-
+          This test is to confirm the POS can sell an NIR iLink Single fare against a presented iLink smartcard, recording it against the card, printing a receipt, and confirming with the green success banner. Worked example: NIR Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash
+          **WHEN** the operator sells an iLink Single fare against the presented iLink smartcard
+          **THEN** the iLink Single is issued
+          **AND** it is recorded against the presented card
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An NIR iLink Single is sold against the presented iLink smartcard, recorded against the card, and printed. Data variations: iLink zone; passenger type.
+      - title: NIR — Dependents Pass
+        objective: |-
+          This test is to confirm the POS can process an NIR Dependents Pass entitlement smartcard fare — the pass sets the ticket type and validates per transaction — printing a receipt and confirming with the green success banner. Worked example: NIR Dependents Pass smartcard, single journey Belfast Lanyon Place → Botanic.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: NIR Dependents Pass smartcard, single journey Belfast Lanyon Place → Botanic
+          **WHEN** the operator processes a Dependents Pass smartcard fare
+          **THEN** the Dependents Pass fare is applied
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Dependents Pass fare is applied against the presented entitlement smartcard, prints a receipt, and shows the green success banner.
+      - title: NIR — Cross-Border Single
+        objective: |-
+          This test is to confirm the POS can sell and issue a Cross-Border Single ticket on a Rail (NIR) POS, confirmed with the green success banner, with the price button toggling GBP and EUR. Worked example: Adult Cross-Border Single, Belfast Lanyon Place → Dublin Connolly, priced in GBP, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Adult Cross-Border Single, Belfast Lanyon Place → Dublin Connolly, priced in GBP, paid by cash
+          **WHEN** the operator selects a Cross-Border Single
+          **AND** takes payment
+          **THEN** the Cross-Border Single ticket is issued
+          **AND** a green success banner is displayed
+        expected: |-
+          A Cross-Border Single issues and shows the green success banner. Data variations: currency (GBP / EUR); payment (cash / warrant / card).
+      - title: NIR — Cross-Border Day Return
+        objective: |-
+          This test is to confirm the POS can sell and issue a Cross-Border Day Return ticket on a Rail (NIR) POS, confirmed with the green success banner, with the price button toggling GBP and EUR. Worked example: Adult Cross-Border Day Return, Belfast Lanyon Place → Dublin Connolly, priced in GBP, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in rail (NIR) mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Adult Cross-Border Day Return, Belfast Lanyon Place → Dublin Connolly, priced in GBP, paid by cash
+          **WHEN** the operator selects a Cross-Border Day Return
+          **AND** takes payment
+          **THEN** the Cross-Border Day Return ticket is issued
+          **AND** a green success banner is displayed
+        expected: |-
+          A Cross-Border Day Return issues and shows the green success banner. Data variations: currency (GBP / EUR); payment (cash / warrant / card).
+  - path: [Ulsterbus, Tickets]
+    cases:
+      - title: Ulsterbus — Single
+        objective: |-
+          This test is to confirm the POS can sell and issue an Ulsterbus Single ticket for any passenger type and payment method — built from route and stages via the bus fare look-up, priced correctly, printed, and confirmed with the green success banner. Worked example: Ulsterbus Adult Single, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult Single, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash
+          **WHEN** the operator builds a Single ticket from the route, boarding and alighting stages and passenger type
+          **AND** takes payment
+          **THEN** the Single ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An Ulsterbus Single issues at the correct price, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child); payment (cash / card / warrant).
+      - title: Ulsterbus — Day Return
+        objective: |-
+          This test is to confirm the POS can sell and issue an Ulsterbus Day Return ticket, priced correctly for the passenger type, printed, and confirmed with the green success banner. Worked example: Ulsterbus Adult Day Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult Day Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash
+          **WHEN** the operator builds a Day Return ticket
+          **AND** takes payment
+          **THEN** the Day Return ticket is issued at the correct price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An Ulsterbus Day Return issues at the correct price, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child).
+      - title: Month Return
+        objective: |-
+          This test is to confirm the POS can sell an Ulsterbus Month Return ticket carrying the correct validity dates, printed, and confirmed with the green success banner. Worked example: Ulsterbus Adult Month Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult Month Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash
+          **WHEN** the operator builds a Month Return ticket
+          **AND** takes payment
+          **THEN** the Month Return ticket is issued with the correct validity dates
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Month Return issues with the correct validity dates, prints a receipt, and shows the green success banner. Data variations: passenger type (Adult / Child).
+      - title: Ulsterbus — Warrant Return
+        objective: |-
+          This test is to confirm the POS can sell an Ulsterbus Warrant Return against a warrant payment, printed, and confirmed with the green success banner. Worked example: Ulsterbus Adult Warrant Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by warrant.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult Warrant Return, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by warrant
+          **WHEN** the operator builds a Warrant Return
+          **AND** completes the warrant payment
+          **THEN** the Warrant Return ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An Ulsterbus Warrant Return issues against a warrant payment, prints a receipt, and shows the green success banner.
+      - title: Bus Rambler
+        objective: |-
+          This test is to confirm the POS can sell and issue an Ulsterbus Bus Rambler ticket, printed, and confirmed with the green success banner. Worked example: Ulsterbus Adult Bus Rambler, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult Bus Rambler, paid by cash
+          **WHEN** the operator builds a Bus Rambler ticket
+          **AND** takes payment
+          **THEN** the Bus Rambler ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Bus Rambler issues, prints a receipt, and shows the green success banner. Data variations: passenger type; payment.
+      - title: Ulsterbus — Family & Friends Day
+        objective: |-
+          This test is to confirm the POS can sell and issue an Ulsterbus Family & Friends Day ticket, printed, and confirmed with the green success banner. Worked example: Ulsterbus Family & Friends Day, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Family & Friends Day, paid by cash
+          **WHEN** the operator builds a Family & Friends Day ticket
+          **AND** takes payment
+          **THEN** the Family & Friends Day ticket is issued
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An Ulsterbus Family & Friends Day ticket issues, prints a receipt, and shows the green success banner. Data variations: payment.
+      - title: Jobseeker Single
+        objective: |-
+          This test is to confirm the POS can sell an Ulsterbus Jobseeker Single ticket at the correct concession price, printed, and confirmed with the green success banner. Worked example: Ulsterbus Jobseeker Single, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Jobseeker Single, 72b (IN) Moygashel Busby Shop → Armagh Bus Centre, paid by cash
+          **WHEN** the operator builds a Jobseeker Single ticket
+          **AND** takes payment
+          **THEN** the Jobseeker Single ticket is issued at the correct concession price
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Jobseeker Single issues at the correct concession price, prints a receipt, and shows the green success banner.
+      - title: Ulsterbus — iLink Single
+        objective: |-
+          This test is to confirm the POS can sell an Ulsterbus iLink Single fare against a presented iLink smartcard, recording it against the card, printing a receipt, and confirming with the green success banner. Worked example: Ulsterbus Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Adult iLink Single, iLink Zone 4, against a presented iLink smartcard, paid by cash
+          **WHEN** the operator sells an iLink Single fare against the presented iLink smartcard
+          **THEN** the iLink Single is issued
+          **AND** it is recorded against the presented card
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          An Ulsterbus iLink Single is sold against the presented iLink smartcard, recorded against the card, and printed. Data variations: iLink zone; passenger type.
+      - title: Rail Substitution Service
+        objective: |-
+          This test is to confirm the POS can process an Ulsterbus Rail Substitution Service fare while running a rail substitution service, printed, and confirmed with the green success banner. Worked example: Rail Substitution Service fare, Adult single, paid by cash.
+        steps: |-
+          **GIVEN** an operator is signed on in Ulsterbus mode running a rail substitution service
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Rail Substitution Service fare, Adult single, paid by cash
+          **WHEN** the operator processes a Rail Substitution Service fare
+          **AND** takes payment
+          **THEN** the fare is issued under the rail substitution service
+          **AND** a receipt is printed
+          **AND** a green success banner is displayed
+        expected: |-
+          A Rail Substitution Service fare is processed under the rail substitution service, prints a receipt, and shows the green success banner.

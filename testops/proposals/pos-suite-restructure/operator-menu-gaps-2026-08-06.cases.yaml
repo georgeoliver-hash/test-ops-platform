@@ -1,0 +1,187 @@
+# POS operator-menu-gaps — NEW coverage closing MISSING paths found in
+# knowledge/flows/translink-pos-operator-menu.md (Sign Off / Break Mode / Operator
+# Information / Excess Tickets, everything except Annulment).
+# Every Given/When/Then wording is grounded verbatim in that flow-map's "Screen states"
+# and "Notes / unknowns" sections — no invented screen names or behaviour.
+# Path 7 (break-timeout decision node) is left GAP per the flow-map's own Notes — the
+# Overflow export gave a raw UUID instead of readable text, and two candidate
+# annotations conflict (signed out vs suspend mode); do not guess.
+# Push to the new suite (30253) only.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  # ───────────────────── Operator > Options (Sign Off / Break Mode) ─────────────────────
+  - path: [Functional, Operator, Options]
+    cases:
+      - title: "Sign Off — printer error still returns to the Idle Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm that a printer error during Sign Off still returns the POS to the Idle Screen.
+        steps: |
+          **GIVEN** the POS is signed on and the operator has opened Sign Off from the Operator Menu
+          **AND** the device is unable to print
+          **WHEN** the operator confirms Sign Off
+          **THEN** the SignOff Printer Error screen is displayed
+          **AND** the POS returns to the Idle Screen
+        expected: "A printer error during Sign Off shows the SignOff Printer Error screen and the POS still returns to the Idle Screen."
+
+      - title: "Sign Off — cancelling returns to the Operator Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling Sign Off returns the operator to the Operator Menu without signing off.
+        steps: |
+          **GIVEN** the POS is signed on and the operator has opened Sign Off from the Operator Menu
+          **WHEN** the operator presses Cancel
+          **THEN** the POS returns to the Operator Menu
+        expected: "Cancelling Sign Off returns to the Operator Menu without signing off."
+
+      - title: "Break Mode — cancelling returns to the Operator Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling Break Mode returns the operator to the Operator Menu without entering break mode.
+        steps: |
+          **GIVEN** the POS is signed on and the operator has opened Break Mode from the Operator Menu
+          **WHEN** the operator presses Cancel
+          **THEN** the POS returns to the Operator Menu
+        expected: "Cancelling Break Mode returns to the Operator Menu without entering break mode."
+
+      - title: "Break Mode — driver on break for the configured time (GAP)"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm what happens once a driver on Break Mode has been on break for the configured amount of time.
+        steps: |
+          **GIVEN** a driver is on Break Mode at the Idle Screen - Driver on Break
+          **WHEN** the configured break time elapses
+          **THEN** **GAP** — the resulting screen/state transition is not captured in the flow-map export (raw UUID decision node, no readable label); two conflicting candidate annotations exist ("signed out" vs "POS put in suspend mode") — confirm on the live system before running
+        expected: "GAP — flow-map export lacks the decision-node label for the break-timeout transition; behaviour unconfirmed, see knowledge/flows/translink-pos-operator-menu.md Notes/unknowns."
+
+  # ───────────────────── Operator > Ticket History (all Operator Information items) ─────────────────────
+  - path: [Functional, Operator, Ticket History]
+    cases:
+      - title: "Operator Information — Console Settings screen opens"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Console Settings from Operator Information opens the Console Settings screen.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **WHEN** the operator selects Console Settings
+          **THEN** the Console Settings screen is displayed
+        expected: "Selecting Console Settings from Operator Information opens the Console Settings screen."
+
+      - title: "Operator Information — Word and Colour of the Day shown when available"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Word and Colour of the Day screen is shown when the feature is available.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** Word and Colour of the Day is available
+          **WHEN** the operator selects Word and Colour of the Day
+          **THEN** the Operator - Word and Colour of the Day screen is displayed
+        expected: "When Word and Colour of the Day is available, selecting it from Operator Information shows the Word and Colour of the Day screen."
+
+      - title: "Operator Information — Word and Colour of the Day Unavailable screen shown when unavailable"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Unavailable screen is shown when Word and Colour of the Day is not available.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** Word and Colour of the Day is unavailable
+          **WHEN** the operator selects Word and Colour of the Day
+          **THEN** the Word and Colour of the Day - Unavailable screen is displayed
+        expected: "When Word and Colour of the Day is unavailable, selecting it from Operator Information shows the Unavailable screen."
+
+      - title: "Operator Information — Message of the Day shown when available"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Message of the Day screen is shown when the feature is available.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** Message of the Day is available
+          **WHEN** the operator selects Message of the Day
+          **THEN** the Operator - Message of the Day screen is displayed
+        expected: "When Message of the Day is available, selecting it from Operator Information shows the Message of the Day screen."
+
+      - title: "Operator Information — Message of the Day Unavailable screen shown when unavailable"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Unavailable screen is shown when Message of the Day is not available.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** Message of the Day is unavailable
+          **WHEN** the operator selects Message of the Day
+          **THEN** the Message of the Day - Unavailable screen is displayed
+        expected: "When Message of the Day is unavailable, selecting it from Operator Information shows the Unavailable screen."
+
+      - title: "Ticket History — Back returns to Operator Information"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing Back from Ticket History returns to Operator Information.
+        steps: |
+          **GIVEN** the POS is signed on and showing Ticket History, reached from Operator Information
+          **WHEN** the operator presses Back
+          **THEN** the POS returns to Operator Information
+        expected: "Pressing Back from Ticket History returns to Operator Information."
+
+      - title: "Report Faulty Device — reporting shows the Faulty Device icon on the Main Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm reporting a device as faulty shows the Faulty Device info screen and then the Faulty Device icon on the Main Screen.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** the device has not already been reported as faulty
+          **WHEN** the operator selects Report Faulty Device
+          **AND** the operator presses Confirm
+          **THEN** the Operator Information - Faulty Device screen is displayed
+          **WHEN** the operator navigates to the Main Screen
+          **THEN** the Faulty Device icon is shown in the header
+        expected: "Reporting a device as faulty shows the Faulty Device info screen, and the Main Screen then shows the Faulty Device icon in the header."
+
+      - title: "Report Faulty Device — already-reported device shows Already Reported"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Report Faulty Device on an already-reported device shows the Already Reported screen before returning to the Faulty Device info screen.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **AND** the device has already been reported as faulty
+          **WHEN** the operator selects Report Faulty Device
+          **THEN** the Faulty Device Already Reported screen is displayed
+          **AND** the POS returns to the Operator Information - Faulty Device screen
+        expected: "Selecting Report Faulty Device when the device is already reported shows the Already Reported screen, then returns to the Faulty Device info screen."
+
+      - title: "Operator Information — Back returns to the Operator Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing Back from Operator Information returns to the Operator Menu.
+        steps: |
+          **GIVEN** the POS is signed on and showing Operator Information
+          **WHEN** the operator presses Back
+          **THEN** the POS returns to the Operator Menu
+        expected: "Pressing Back from Operator Information returns to the Operator Menu."
+
+  # ───────────────────── Operator > Excess Tickets ─────────────────────
+  - path: [Functional, Operator, Excess Tickets]
+    cases:
+      - title: "Excess Tickets — an over-limit value shows Value Exceeded"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm entering an invalid/over-limit value at Excess Tickets Enter Value shows the Value Exceeded error.
+        steps: |
+          **GIVEN** the POS is signed on and showing Excess Tickets Enter Value
+          **WHEN** the operator enters an invalid/over-limit value
+          **THEN** the Excess Tickets Value Exceeded screen is displayed
+        expected: "Entering an invalid/over-limit value at Excess Tickets Enter Value shows the Value Exceeded error screen."
+
+      - title: "Excess Tickets — cancelling Enter Value returns to Excess Tickets"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling at Excess Tickets Enter Value returns to the Excess Tickets screen.
+        steps: |
+          **GIVEN** the POS is signed on and showing Excess Tickets Enter Value
+          **WHEN** the operator presses Cancel
+          **THEN** the POS returns to the Excess Tickets screen
+        expected: "Cancelling at Excess Tickets Enter Value returns to the Excess Tickets screen."

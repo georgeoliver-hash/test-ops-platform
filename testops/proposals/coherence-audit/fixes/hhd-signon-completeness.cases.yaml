@@ -1,0 +1,43 @@
+# HHD Sign On completeness fix — 2026-07-23 consolidation-COMPLETENESS audit.
+# Two genuinely distinct scenarios found in the old suites (5446/13958) with no representation in
+# 30285 — neither a case nor a "Data variations:" line. Both are negative/contrast counterparts of
+# cases already in the suite, not "another value in a class already covered" (test-practices.md
+# rubric #2/#3): they are distinct observable outcomes.
+# DO NOT touch old suites. New-suite-only push.
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_devtypes: [30]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Supervisor]
+    cases:
+      - title: Sign On — an incorrect Supervisor PIN leaves a PIN-locked HHD locked
+        refs: [REQ-0099.1]
+        objective: This test is to confirm a PIN-locked HHD stays locked when the Supervisor override itself fails (incorrect PIN, or PIN-entry timeout) — the counterpart negative case to the Supervisor unlock case.
+        steps: |-
+          **GIVEN** the HHD is PIN-locked after too many failed sign-on attempts
+          **AND** the seeded Supervisor smartcard is available, with an incorrect PIN to enter
+          **WHEN** the supervisor presents their smartcard and enters an incorrect PIN
+          **THEN** the PIN lock is not released
+          **AND** the HHD remains PIN-locked
+          **WHEN** the supervisor instead lets the PIN-entry attempt time out
+          **THEN** the HHD remains PIN-locked
+        expected: An incorrect Supervisor PIN, or a PIN-entry timeout, does not unlock a PIN-locked HHD — it stays locked either way.
+  - path: [Functional, Sign On & Session]
+    cases:
+      - title: Sign On — device resets to Inspector Mode after a full sign-off
+        refs: [FBD-100651]
+        objective: This test is to confirm a full sign-off/sign-on cycle (not a driver break) always returns the HHD to Inspector Mode by default, in contrast to a break, after which the pre-break mode is resumed.
+        steps: |-
+          **GIVEN** an Operator is signed on to the HHD in Validation Mode (or Inspection Mode)
+          **AND** worked example: an Operator on the Glider network completes a full sign-off, not a break
+          **WHEN** the operator signs back on afterwards
+          **THEN** the HHD Sales Menu is displayed with the device in Inspector Mode by default
+          **AND** this differs from a break, where the pre-break mode is instead resumed (see the Break-Mode Sign On case)
+        expected: |-
+          **UNCONFIRMED** — old-suite evidence (5446 C3509566/C3509644) shows a full sign-off/sign-on
+          cycle defaults the HHD back to Inspector Mode regardless of the mode before sign-off, unlike
+          a break (which preserves mode). No REQ/FBD distinguishing "full sign-off" from "break" as
+          separate triggers was found this pass — confirm live before running.

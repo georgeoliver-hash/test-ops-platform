@@ -1,0 +1,16 @@
+[
+  {
+    "id": 4100512,
+    "action": "reword",
+    "expected": "The recorded defect is captured against the shift and is visible against the Driver and vehicle in the CloudFare Activity Log.\n\nData variations: Manual or Smartcard sign-on.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "refs": "old suite 4943 C2481159",
+    "change_note": "Consolidation-completeness audit (2026-07-23): old suite 4943 C2481159 (Driver sign on - Smartcard -First Use with Defects) tests the defects-recording behaviour specifically via the Smartcard sign-on method; this live case's precondition did not name the sign-on method, so the smartcard variant was not named anywhere. Added an explicit Data variations line (mechanism is identical regardless of method, confirmed against C2481159's steps) rather than a new case."
+  },
+  {
+    "id": 4100655,
+    "action": "reword",
+    "expected": "The ETM validates the supported MIFARE card types (Classic 1K, Classic EV1), and the validations are recorded in the back office. Data variations: 8-digit PSN range.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "refs": "old suite 4943 C2439098",
+    "change_note": "Consolidation-completeness audit (2026-07-23): old suite 4943 C2439098 (8 Digit PSN range) tests a card-format dimension (PSN digit length) alongside the MIFARE chip-type cases (C2439095, C2439099) already folded into this case's Classic 1K / Classic EV1 pair. Added an explicit Data variations line naming the PSN range so it is not silently dropped."
+  }
+]

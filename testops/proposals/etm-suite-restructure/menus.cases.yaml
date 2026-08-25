@@ -1,0 +1,308 @@
+# ETM — Driver Menu & Options + Supervisor Menu + Technician Menu (Functional, @mode(all))
+# Grounded in the "Driver Menu / Options" (32 notes), "Supervisor" (13) and "Technician" (29) flows.
+# NOT duplicated here (covered elsewhere): annulments + Open Tickets (Ticket Issue), Driver Sign Off
+# (Sign On & Session), Start New Journey (Fare Look-Up), Barcode Reference Entry (Barcode Scanning).
+# "Other Devices" is kept = ETM managing a paired device (incl. BV); pure-BV cases are out of scope.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver Menu — access and navigation
+        objective: This test is to confirm a signed-on Driver can open the Driver Menu and navigate it, including via a Staff pass.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_0 Driver Menu.png
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver opens the Driver Menu
+          **THEN** the Driver Menu options are displayed
+          **WHEN** the Driver presses 'C' or Go Back
+          **THEN** the ETM returns to the previous screen
+        expected: A signed-on Driver can open and navigate the Driver Menu (incl. via Staff pass) and back out with 'C'/Go Back.
+      - title: Driver Break — enter, leave and override
+        objective: This test is to confirm the Driver Break flow, including who may sign in during a break, the configured break duration, and supervisor override.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_7 - Idle Screen - On Break_Black.png
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** the Driver selects Driver Break to enter break mode
+          **THEN** the ETM shows the On Break idle screen
+          **AND** only the operator who started the break may sign back in
+          **WHEN** the Driver leaves the break by manual sign-in or Staff card, or aborts the leave
+          **THEN** the Driver resumes the shift, or the abort returns to the On Break screen
+          **WHEN** a Supervisor signs in during the break
+          **THEN** the Supervisor overrides the break
+          **WHEN** the TMS-configured break time elapses
+          **THEN** the Driver is signed out and others may sign in
+        expected: Driver Break locks sign-in to that operator; leave (manual/smartcard) or abort works; Supervisor can override; the break auto-ends after the configured time and signs the Driver out.
+      - title: Driver options — display settings
+        objective: This test is to confirm a Driver can adjust display brightness and volume from Driver options.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver adjusts the brightness and volume
+          **THEN** the display brightness and volume change accordingly
+        expected: Brightness and volume adjust from Driver options.
+      - title: Driver options — duty and journey totals
+        objective: This test is to confirm a Driver can view duty and journey totals.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views the totals
+          **THEN** the duty totals and journey totals are displayed
+        expected: Duty and journey totals are displayed.
+      - title: Driver options — ticket history and last ticket
+        objective: This test is to confirm a Driver can view ticket history and the last ticket issued, with annulled tickets marked.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_2_0 - Driver Menu - Ticket History.png
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views the ticket history
+          **THEN** the issued tickets are listed and can be scrolled with the up/down arrows
+          **AND** annulled transactions are marked with a cross
+          **WHEN** the Driver selects the last ticket issued
+          **THEN** the ticket detail is displayed
+        expected: Ticket history lists tickets (annulled marked); the last ticket issued can be viewed.
+      - title: Driver options — messages
+        objective: This test is to confirm a Driver can view messages, with an Unavailable state when none can be retrieved.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views Messages
+          **THEN** the available messages are displayed
+          **WHEN** messages cannot be retrieved
+          **THEN** the Messages — Unavailable state is shown
+        expected: Messages are shown, or an Unavailable state when none can be retrieved.
+      - title: Driver options — Word and Colour of the Day
+        objective: This test is to confirm a Driver can view the Word and Colour of the Day, with an Unavailable state when it cannot be retrieved.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views the Word and Colour of the Day
+          **THEN** the configured word and colour are displayed
+          **WHEN** the Word and Colour of the Day cannot be retrieved
+          **THEN** the Unavailable state is shown
+        expected: The Word and Colour of the Day is shown, or an Unavailable state when it cannot be retrieved.
+      - title: Driver options — paper status
+        objective: This test is to confirm a Driver can view the printer paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views Paper Status
+          **THEN** the current paper status is displayed
+        expected: The paper status is displayed to the Driver.
+      - title: Driver options — soft reboot
+        objective: This test is to confirm a soft reboot restarts the ETM without signing the Driver out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_9_6 - ETM Soft Reboot.png
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver selects Soft Reboot
+          **THEN** the ETM turns off and on again
+          **AND** the ETM restarts on the Driver on Break screen with the Driver still signed in
+        expected: A soft reboot restarts the ETM and returns to the Driver on Break screen without signing the Driver out.
+      - title: Driver options — reboot card reader
+        objective: This test is to confirm a Driver can reboot the card reader from Driver options.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver selects Reboot Card Reader
+          **THEN** the card reader is rebooted
+        expected: The card reader is rebooted from Driver options.
+      - title: Driver options — report faulty reader
+        objective: This test is to confirm reporting a faulty card reader notifies the back office and shows the faulty-device icon until reboot.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_10_1 - Report Faulty Device_.png
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver reports the card reader as faulty
+          **THEN** a notification is sent to the back office
+          **AND** the faulty-device icon is shown in the header until the ETM is rebooted
+          **WHEN** the device is already reported faulty
+          **THEN** the already-reported state is shown
+        expected: Reporting a faulty reader notifies the back office and shows the faulty-device icon until reboot; re-reporting shows the already-reported state.
+      - title: Driver Menu — change currency
+        objective: This test is to confirm a Driver can change the sale currency between Pounds and Euros from the menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened the Driver Menu
+          **WHEN** the Driver changes the currency to Euros
+          **THEN** the sale currency is set to Euros
+          **WHEN** the Driver changes the currency back to Pounds
+          **THEN** the sale currency is set to Pounds
+        expected: The Driver can switch the sale currency between Pounds and Euros from the menu.
+      - title: Inspector — report and smartcard check
+        objective: This test is to confirm an Inspector can present a smartcard for inspection and produce an Inspector report.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_0_1 - Inspector - Present Smartcard.png
+        steps: |
+          **Given** the Inspector option is selected from the Driver Menu
+          **WHEN** a smartcard is presented for inspection
+          **THEN** the card's inspection detail is displayed
+          **WHEN** an invalid smartcard is presented
+          **THEN** the invalid-smartcard error is shown
+          **WHEN** the Inspector requests a report
+          **THEN** the Inspector report is produced
+        expected: The Inspector can check a presented smartcard (with invalid-card handling) and produce an Inspector report.
+      - title: Other devices — manage a paired device
+        objective: This test is to confirm the Driver can view status, reboot and view alerts for a paired on-vehicle device.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-menu-options/08_9_0 - Driver Menu - BV Devices.png
+        steps: |
+          **Given** a Driver has opened the Other Devices option with a paired device present
+          **WHEN** the Driver views the paired device status and summary
+          **THEN** the device status and summary are displayed
+          **WHEN** the Driver reboots the paired device
+          **THEN** the paired device is rebooted
+          **WHEN** the Driver views the device alerts
+          **THEN** the alerts for the paired device are displayed
+        expected: The Driver can view status/summary, reboot and view alerts for a paired on-vehicle device (e.g. a paired BV the ETM manages).
+
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: Supervisor — view and print versions
+        objective: This test is to confirm a Supervisor can view and print software versions, configuration data versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_5_0 Supervisor Menu - Versioning.png
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor opens Versions and views software versions, configuration data versions and serial numbers
+          **THEN** the version and serial information is displayed and can be scrolled
+          **WHEN** the Supervisor prints the information
+          **THEN** the version and serial information is printed
+        expected: A Supervisor can view and print software versions, configuration versions and serial numbers.
+      - title: Supervisor — historic waybills
+        objective: This test is to confirm a Supervisor can view historic waybills and navigate between them.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_3_0 Supervisor Menu - Waybills - History.png
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor opens Historic Waybills and selects one
+          **THEN** the waybill detail is displayed
+          **AND** the left/right arrows move between waybills
+        expected: A Supervisor can view historic waybills and page between them.
+      - title: Supervisor — force communications
+        objective: This test is to confirm a Supervisor can force communications with the back office, refresh, and exit.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/supervisor/09_1_0 Supervisor Menu - Force Communications.png
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor presses Force Comms
+          **THEN** the ETM communicates with the back office for downloads and uploads
+          **WHEN** the Supervisor presses Refresh
+          **THEN** the communication information is updated
+          **WHEN** the Supervisor exits
+          **THEN** the ETM returns to the Supervisor Menu
+        expected: A Supervisor can force comms (download/upload), refresh the comms info, and exit back to the menu.
+      - title: Supervisor — GPS information
+        objective: This test is to confirm a Supervisor can view GPS information, including the error state.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor views GPS Information
+          **THEN** the current GPS information is displayed
+          **WHEN** GPS information cannot be obtained
+          **THEN** the GPS information error state is shown
+        expected: A Supervisor can view GPS information, with an error state when it cannot be obtained.
+      - title: Supervisor — soft reboot
+        objective: This test is to confirm a Supervisor can soft reboot the ETM from the Supervisor Menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor selects Soft Reboot
+          **THEN** the ETM restarts
+        expected: A Supervisor can soft reboot the ETM.
+
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — device settings
+        objective: This test is to confirm a Technician can edit device settings — home location, tray identifier and fleet identifier — and confirm or cancel the change.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_1_0 - Technician - Device Settings.png
+        steps: |
+          **Given** a Technician is at the Technician Menu
+          **WHEN** the Technician edits the home location, tray identifier or fleet identifier and presses Enter to confirm
+          **THEN** the change is saved
+          **AND** the Technician returns to the Technician Menu
+          **WHEN** the home location is not available
+          **THEN** the home-location-not-available state is shown
+          **WHEN** the Technician cancels instead
+          **THEN** the change is discarded
+        expected: A Technician can edit home location / tray / fleet identifiers (confirm saves, cancel discards); an unavailable home location is handled.
+      - title: Technician — display settings
+        objective: This test is to confirm a Technician can adjust display brightness and volume and restore defaults.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Technician Menu
+          **WHEN** the Technician adjusts brightness (L2/R2) and volume (L4/R4)
+          **THEN** the brightness and volume change accordingly
+          **WHEN** the Technician restores defaults
+          **THEN** the display settings return to their defaults
+        expected: A Technician can adjust brightness/volume and restore defaults.
+      - title: Technician — network settings
+        objective: This test is to confirm a Technician can view and edit network settings, including IP addresses, cellular modem and the network routing table.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_4_0 - Technician - Network Settings.png
+        steps: |
+          **Given** a Technician is at the Network Settings screen
+          **WHEN** the Technician edits an IP address and confirms
+          **THEN** the IP address is updated
+          **WHEN** the Technician views the cellular modem and the network routing table
+          **THEN** the cellular modem detail and routing table are displayed and can be refreshed
+        expected: A Technician can edit IP addresses and view cellular modem + network routing information (with refresh).
+      - title: Technician — device status
+        objective: This test is to confirm a Technician can view device status, including other devices, GPS, the card reader and paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_3_0 - Technician - Device Status.png
+        steps: |
+          **Given** a Technician is at the Device Status screen
+          **WHEN** the Technician views other devices, GPS information, the card reader and paper status
+          **THEN** the corresponding status detail is displayed
+          **WHEN** a smartcard is presented at the card reader screen
+          **THEN** the card status is displayed
+          **AND** the reader can be rebooted from that screen
+        expected: A Technician can view other-devices/GPS/card-reader/paper status; presenting a card shows its status and the reader can be rebooted there.
+      - title: Technician — view and print versions
+        objective: This test is to confirm a Technician can view and print software versions, configuration data versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Technician Menu
+          **WHEN** the Technician opens Versions and views software versions, configuration versions and serial numbers
+          **THEN** the version and serial information is displayed
+          **WHEN** the Technician prints the information
+          **THEN** the version and serial information is printed
+        expected: A Technician can view and print software versions, configuration versions and serial numbers.
+      - title: Technician — force communications
+        objective: This test is to confirm a Technician can force communications with the back office and refresh.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Force Communications screen
+          **WHEN** the Technician forces communications
+          **THEN** the ETM communicates with the back office while the status is identified
+          **WHEN** the Technician refreshes
+          **THEN** the communication information is updated
+        expected: A Technician can force comms and refresh the communication information.
+      - title: Technician — soft reboot
+        objective: This test is to confirm a Technician can soft reboot the ETM from the Technician Menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Technician Menu
+          **WHEN** the Technician selects Soft Reboot
+          **THEN** the ETM restarts
+        expected: A Technician can soft reboot the ETM.
+      - title: Technician — decommissioning
+        objective: This test is to confirm a Technician can decommission the ETM, with a warning before it proceeds.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/technician/10_8_0 - Technician Menu - Decommissioning.png
+        steps: |
+          **Given** a Technician is at the Technician Menu
+          **WHEN** the Technician selects Decommissioning
+          **THEN** a decommissioning warning is shown before any action
+          **WHEN** the Technician confirms the warning
+          **THEN** the ETM is decommissioned
+        expected: Decommissioning warns before proceeding and only decommissions on confirmation.

@@ -1,0 +1,95 @@
+[
+  {
+    "id": 4100414,
+    "title": "ZZ_DELETE_REVIEW - Smartcard — Youth",
+    "action": "remove",
+    "citations": [
+      "C4100415 \"Smartcard — yLink\" — identical GWT scenario: same preface, same preconds pattern (NIR/Ulsterbus mode, entitlement smartcard available, NIR Adult Single example), same 4 steps (present card → recognised/entitlement applied; CloudFare activity log; MERIT; SmartTrack), only the product label and one extra clause ('a personalised Funded card — FBD-100250') differ",
+      "George (live-system confirmation), 2026-07-21 — \"Youth\" is not a distinct entitlement type; it is the yLink product under a different label",
+      "gap-register.md (POS product-identity confirmation, 2026-07-21)"
+    ],
+    "change_note": "CONDEMNED (George, live-system confirmation, 2026-07-21): C4100414 tests a 'Youth' entitlement smartcard; George confirms Youth is not a real distinct entitlement — it is yLink relabelled. Compared full live content of both cases: preface, preconds, and all 4 custom_steps_seperated steps are the same scenario shape (present the card at NIR/Ulsterbus sale, card recognised, entitlement applied, then cross-checked in CloudFare/MERIT/SmartTrack) with only the product name swapped and yLink additionally citing FBD-100250. No genuinely distinct scenario found in C4100414 that C4100415 (yLink) doesn't already cover — condemned as a pure duplicate now that the product identity is confirmed wrong, per CLAUDE.md's never-delete-old-suite-but-condemn-duplicates model.",
+    "gaps": []
+  },
+  {
+    "id": 4100417,
+    "title": "ZZ_DELETE_REVIEW - Smartcard — Concession",
+    "action": "remove",
+    "citations": [
+      "C4100413 \"Smartcard — Half Fare\" — identical GWT scenario: same preface, same preconds pattern (NIR/Ulsterbus mode, entitlement smartcard available, Ulsterbus Adult Single example), same 4 steps (present card → recognised/entitlement applied; CloudFare activity log; MERIT; SmartTrack), only the product label differs",
+      "George (live-system confirmation), 2026-07-21 — \"Concession\" is not a distinct entitlement type; it is the Half-Fare product under a different label",
+      "gap-register.md (POS product-identity confirmation, 2026-07-21)"
+    ],
+    "change_note": "CONDEMNED (George, live-system confirmation, 2026-07-21): C4100417 tests a 'Concession' entitlement smartcard; George confirms Concession is not a real distinct entitlement — it is Half-Fare relabelled. Compared full live content of both cases: preface, preconds, and all 4 custom_steps_seperated steps are the same scenario shape (present the card at an Ulsterbus Adult Single sale, card recognised, entitlement applied, then cross-checked in CloudFare/MERIT/SmartTrack) with only the product name swapped. No genuinely distinct scenario found in C4100417 that C4100413 (Half Fare) doesn't already cover — condemned as a pure duplicate now that the product identity is confirmed wrong.",
+    "gaps": []
+  },
+  {
+    "id": 4100360,
+    "title": "Power — interruption duration determines resume state",
+    "preface": "This test is to confirm the POS resumes to the correct state after a power interruption, depending on how long power was lost relative to the Auto Sign Off time. **CONFIRMED (George, live-system confirmation, 2026-07-21)** — for a power interruption shorter than the Auto Sign Off time, the POS resumes via the Operator Break screen; break mode is used, not skipped. Closes gap-register.md Q18 and resolves the prior CONFLICT with C4100436 (audit 2026-07-17) — that case previously modelled the equivalent Auto-Sign-Off transition as skipping break mode and has been corrected to match this case.",
+    "preconds": "**GIVEN** an operator is signed on during a shift",
+    "steps": [
+      {
+        "content": "**WHEN** power is interrupted briefly and restored",
+        "expected": "**THEN** the POS returns to the screen the operator was on"
+      },
+      {
+        "content": "**WHEN** power is lost for less than the Auto Sign Off time",
+        "expected": "**THEN** on restart the POS goes to the Operator Break screen"
+      },
+      {
+        "content": "**WHEN** power is lost for longer than the Auto Sign Off time",
+        "expected": "**THEN** on restart the POS goes to the Idle screen with no waybill printed"
+      },
+      {
+        "content": "**WHEN** the CloudFare activity log is checked",
+        "expected": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — break mode is used for the sign-off/suspend destination (answers gap-register.md Q18)",
+      "gap-register.md Q18 (ANSWERED)",
+      "TIBU-29752 (existing ref — pre-boot charge check / regression, unchanged)"
+    ],
+    "change_note": "No change to the GWT body — this case already modelled 'break mode is used' correctly (S2: power loss < Auto Sign Off → Operator Break screen) and is the sibling that WINS the break-mode contradiction against C4100436. Replaced the in-suite CONFLICT banner (stamped 2026-07-17, pointing at gap-register Q18) with a CONFIRMED banner citing George's live-system confirmation and noting C4100436 has been corrected to match. The separate S1/'briefly' vs S2/'less than Auto Sign Off' overlap flagged as a Medium finding in pos-2.findings.md is NOT addressed here — out of scope for the break-mode question asked; left as a residual finding for a future pass.",
+    "gaps": [
+      "pos-2.findings.md (Medium, C4100360): S1 ('briefly' interrupted) and S2 ('less than Auto Sign Off') conditions overlap and the discriminating variable (did the device reboot?) is never stated — unresolved, out of scope for this fix, needs a follow-up pass."
+    ]
+  },
+  {
+    "id": 4100436,
+    "title": "Sign Off / Suspend — inactivity timers",
+    "preface": "This test is to confirm the configurable inactivity behaviour: FLU timeout signs off via Operator Break; Idle timeout (or continued inactivity on the Operator Break screen) suspends; suspend duration auto-reboots. **CONFIRMED (George, live-system confirmation, 2026-07-21)** — break mode is used, not skipped, for the Auto Sign Off destination; closes gap-register.md Q18. This case previously modelled the FLU/Auto-Sign-Off timeout as skipping break mode ('break mode skipped'), in direct conflict with C4100360 (audit 2026-07-17). Corrected below to route through the Operator Break screen, matching C4100360's wording.",
+    "preconds": "**GIVEN** the device is configured with Auto Sign Off, Auto Suspend and Suspend Duration periods",
+    "steps": [
+      {
+        "content": "**WHEN** the device is inactive on a FLU screen for the Auto Sign Off period",
+        "expected": "**THEN** the POS goes to the Operator Break screen with no waybill printed"
+      },
+      {
+        "content": "**WHEN** the device is then inactive on the Operator Break screen for the Auto Suspend period",
+        "expected": "**THEN** the POS turns the screen off and enters suspend"
+      },
+      {
+        "content": "**WHEN** the Suspend Duration elapses (or a key is pressed in suspend)",
+        "expected": "**THEN** the POS reboots and returns to the Idle screen"
+      },
+      {
+        "content": "**WHEN** the CloudFare activity log is checked",
+        "expected": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21 — break mode is used for the sign-off/suspend destination (answers gap-register.md Q18)",
+      "gap-register.md Q18 (ANSWERED)",
+      "C4100360 \"Power — interruption duration determines resume state\" S2 — sibling case wording pattern ('the POS goes to the Operator Break screen') mirrored here"
+    ],
+    "change_note": "CORRECTED (George, live-system confirmation, 2026-07-21 — break mode IS used, confirmed WRONG as previously written): C4100436 was the sibling that modelled 'break mode skipped' ('the POS reverts to the Idle screen with no waybill (break mode skipped)'), directly contradicting C4100360. Step 1's expected outcome changed from Idle/no-break to 'the POS goes to the Operator Break screen', mirroring C4100360's exact wording pattern for its equivalent Auto-Sign-Off transition. Because step 1 no longer lands on the Idle screen, step 2's precondition ('inactive on Idle') was changed to 'inactive on the Operator Break screen' so the 3-step chain (FLU timeout -> Break -> Suspend -> reboot to Idle) stays internally consistent; step 2/3/4's expected outcomes are otherwise unchanged. Not condemned as a duplicate of C4100360: this case's trigger is inactivity-timer configuration (FLU/Idle/Suspend/Suspend-Duration), a genuinely different scenario from C4100360's power-interruption-duration trigger, and it covers the Auto Suspend + reboot steps that C4100360 does not.",
+    "gaps": [
+      "Whether the Auto Suspend timer runs from the Operator Break screen itself, or whether Break first auto-transitions to Idle before the Auto Suspend timer starts, is not stated in any FBD-* spec (pos-2.findings.md flags this whole case Low/needs-confirmation for the same reason) — the chained precondition in step 2 is a minimal, non-invented edit to keep the corrected step 1 internally consistent, not a confirmed mechanic; confirm the exact Break->Suspend trigger surface on the live system before relying on this case.",
+      "The case's custom_expected summary field ('FLU inactivity → Idle (no waybill, no break)...') still says 'no break' — this field is not touched by tools/apply_rewrite.py (only title/preface/preconds/steps); needs a manual follow-up edit in TestRail to keep the summary consistent with the corrected steps."
+    ]
+  }
+]

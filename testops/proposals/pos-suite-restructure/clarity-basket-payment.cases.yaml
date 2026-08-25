@@ -1,0 +1,428 @@
+# POS Basket & Payment / Numerical Input / Customer Displays — clarity pass (suite 30253)
+# UPDATES 30 existing Functional cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: fuller objective, grounded preconditions with a
+# concrete role/mode/product/amount/payment example, one predicate per THEN/AND, CloudFare (+ MERIT /
+# SmartTrack) audit steps kept where present. No @tags, no [Automatable] line. Refs preserved verbatim.
+# Push with --update; do NOT create new cases.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Basket & Payment, Basket]
+    cases:
+      - title: Basket — add & review
+        refs: [TIBU-21777, TIBU-24364]
+        objective: This test is to confirm the operator can add built fares to the basket and open the basket to review the listed items, the running total and the available controls before paying.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator on the Fare-Look-Up (FLU) screen
+          **AND** the operator has built one or more fares, e.g. Adult Single £2.30 + Child Single £1.15 on Ulsterbus route 10A (Casement Park → City Hall)
+          **WHEN** the operator adds the fares to the basket and opens the basket
+          **THEN** the basket lists each added item
+          **AND** the basket total is correct (£3.45 for the example)
+          **AND** the expected basket controls are present (Add More, Clear Basket, Checkout)
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The added fares are listed in the basket with the correct total and the expected basket controls, ready for checkout.
+      - title: Basket — clear basket
+        refs: [TIBU-24368]
+        objective: This test is to confirm the Clear Basket control removes every item from the basket in one action, returning an empty basket.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the basket contains two or more items, e.g. Adult Single £2.30 + Child Single £1.15 on Ulsterbus route 10A
+          **WHEN** the operator presses Clear Basket
+          **THEN** the basket is emptied of all items
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Clear Basket empties the basket of every item in a single action.
+      - title: Basket — checkout total
+        refs: [TIBU-24098, TIBU-24860]
+        objective: This test is to confirm the basket checkout total equals the sum of the basketed items, and that Add More becomes unavailable once the basket can no longer accept another ticket.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the basket contains multiple items, e.g. 2 × Adult Single £2.30 + Child Single £1.15 on Ulsterbus route 10A
+          **WHEN** the operator proceeds to checkout
+          **THEN** the checkout total equals the sum of the basketed items (£5.75 for the example)
+          **AND** Add More is unavailable when the basket cannot accept another ticket
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The checkout total matches the basketed items and Add More is disabled once the basket is full.
+      - title: Basket — maximum of 9 tickets
+        objective: This test is to confirm the basket caps at 9 tickets — Add More disables when the ninth ticket is reached and re-enables after a ticket is deleted.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator on the FLU screen
+          **AND** the operator is adding Adult Single £2.30 tickets on Ulsterbus route 10A to the basket
+          **WHEN** the basket reaches 9 tickets
+          **THEN** the Add More control becomes unavailable
+          **WHEN** the operator deletes a ticket from the basket
+          **THEN** the Add More control becomes available again
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The basket holds at most 9 tickets; Add More disables at the cap and re-enables after a delete.
+      - title: Basket — entitlement passes cannot be basketed
+        objective: This test is to confirm that a smartcard entitlement-pass fare (Senior, War Pensioner, Blind, yLink, 24+, Half-Fare, etc.) cannot be added to a basket, because such passes validate per transaction and must be paid individually.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has built a fare using a smartcard entitlement pass, e.g. a Senior SmartPass on Ulsterbus route 10A
+          **WHEN** the operator attempts to add the entitlement-pass fare to the basket
+          **THEN** the fare cannot be added to the basket
+          **AND** the fare must be validated and paid as an individual transaction
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Entitlement-pass fares cannot be basketed; they must be validated and paid as individual transactions.
+      - title: Basket — bus basket is single-route
+        objective: This test is to confirm a bus basket is limited to a single route — tickets from a second route are rejected — while multiple boarding stages on the same route are accepted.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in Ulsterbus mode
+          **AND** the operator is building a bus basket on route 10A with an Adult Single £2.30 already added
+          **WHEN** the operator tries to add a ticket from a different route (e.g. route 12B)
+          **THEN** the second-route ticket is not allowed into the basket
+          **WHEN** the operator adds tickets with two different boarding stages on route 10A
+          **THEN** both same-route tickets are accepted
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A bus basket accepts tickets from only one route; multiple boarding stages on that route are allowed.
+  - path: [Functional, Basket & Payment, Cash Payment]
+    cases:
+      - title: Cash — pay a basket
+        refs: [TIBU-19336, TIBU-7379]
+        objective: This test is to confirm a basket can be paid by cash to completion, and that a further basket (including one on a different route) also completes without the device freezing.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in Ulsterbus mode
+          **AND** the basket has one or more items, e.g. Adult Single £2.30 + Child Single £1.15 on route 10A
+          **WHEN** the operator takes cash payment and completes the transaction
+          **THEN** the transaction completes
+          **AND** the basket tickets are issued
+          **WHEN** the operator builds and cash-pays a further basket on a different route (e.g. route 12B)
+          **THEN** the second transaction also completes
+          **AND** the device does not freeze
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Cash payment completes a basket and issues its tickets; subsequent baskets on other routes also complete without the device freezing.
+      - title: Cash — EOS total net
+        refs: [TIBU-29484, TIBU-30634]
+        objective: This test is to confirm the End of Shift cash total is the net figure — sales less annulments — rather than the gross sales figure.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in Ulsterbus mode
+          **AND** the operator has taken cash sales (e.g. 3 × Adult Single £2.30) and made at least one annulment during the shift
+          **WHEN** the End of Shift cash total is produced
+          **THEN** the cash total is the net amount, with annulments deducted
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The End of Shift cash total is net of annulments, not the gross sales figure.
+  - path: [Functional, Basket & Payment, Card Payment]
+    cases:
+      - title: Card Payment — pay by card
+        refs: [TIBU-24777, TIBU-24834]
+        objective: This test is to confirm a transaction can be paid by bank card through the attached payment card device (PCD) — by contactless, chip & PIN or swipe — on NIR and Ulsterbus modes (Metro is cash-only).
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in NIR or Ulsterbus mode with a payment card device (PCD) attached
+          **AND** the basket is ready for payment, e.g. Adult Single £2.30 on route 10A
+          **WHEN** the operator selects Bank Card and the customer pays by contactless, chip & PIN, or swipe
+          **THEN** the payment terminal authorises the transaction
+          **AND** the ticket is printed as soon as the transaction succeeds
+          **AND** the customer is offered an optional payment receipt
+          **AND** the POS returns to the Bus/Rail FLU screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Bank Card payment authorises, prints the ticket and offers an optional receipt on NIR and Ulsterbus; the Bank Card option is hidden when no PCD is attached. Data variations, contactless / chip & PIN / swipe.
+      - title: Card Payment — back from payment
+        refs: [TIBU-24876]
+        objective: This test is to confirm that pressing Back on the payment screen returns the operator to the basket/fare with its state intact and no part of the transaction lost.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in NIR or Ulsterbus mode with a PCD attached
+          **AND** the operator is on the payment screen for a single Adult Single £2.30 ticket
+          **WHEN** the operator presses Back
+          **THEN** the operator is returned to the basket/fare
+          **AND** the basket/fare state is intact
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Back from the payment screen returns the operator to the basket/fare with its state preserved.
+      - title: Card Payment — declined, cancelled or error
+        objective: This test is to confirm each bank-card error path is handled with the correct message and recovery — declined, cancelled before PIN, too many wrong PINs, amount too big, and signature mismatch.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in NIR or Ulsterbus mode with a PCD attached
+          **AND** the customer is paying an Adult Single £2.30 by bank card
+          **WHEN** the card is declined
+          **THEN** a declined message is shown
+          **AND** a declined receipt is printed
+          **WHEN** the customer cancels on the PIN pad before entering the PIN
+          **THEN** the transaction is cancelled
+          **AND** no cancelled-payment receipt is printed
+          **WHEN** the PIN is entered incorrectly too many times, or the amount is too big for a card, or the signature does not match
+          **THEN** the matching error message (driven by the M020/PCD) is shown
+          **AND** the POS returns to the payment screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Each card error path shows its correct message and recovery — declined (with receipt), cancelled-before-PIN (no receipt), too many PIN attempts, value too big and signature mismatch each return to the payment screen.
+  - path: [Functional, Basket & Payment, Annulment]
+    cases:
+      - title: Annulment — annul last transaction
+        refs: [TIBU-19352, TIBU-24878]
+        objective: This test is to confirm the operator can annul the last transaction of the shift, and that the annul control is enabled only when there is a transaction available to annul.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has issued a ticket this shift, e.g. an Adult Single £2.30 on route 10A
+          **WHEN** the operator annuls the last transaction
+          **THEN** the last transaction is annulled
+          **WHEN** there is no transaction available to annul
+          **THEN** the 'No ticket to Annul' option is greyed out
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The last transaction annuls, and the annul control is disabled when there is nothing to annul.
+      - title: Annulment — newly issued smartcard
+        refs: [TIBU-24334, TIBU-23949, TIBU-26760]
+        objective: This test is to confirm a smartcard that has just been issued can be annulled within the shift, with the issue reversed, the annulment recorded and its receipt printed.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has just issued a new smartcard, e.g. an iLink Zone 1 Adult card
+          **WHEN** the operator annuls that smartcard issue
+          **THEN** the smartcard issue is annulled successfully
+          **AND** the annulment is recorded
+          **AND** the annulment receipt prints
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A newly issued smartcard annuls cleanly, the annulment is recorded and its receipt prints.
+      - title: Annulment — multi-journey top-up
+        refs: [TIBU-25072, TIBU-25100]
+        objective: This test is to confirm a multi-journey card top-up can be annulled, reversing the top-up and correcting the journey count held on the card.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has just topped up a multi-journey smartcard, e.g. a 10-journey Ulsterbus Multi-Journey top-up (£20)
+          **WHEN** the operator annuls the top-up
+          **THEN** the top-up is annulled
+          **AND** the journey count on the card is corrected
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A multi-journey top-up annuls and the journey count on the card is corrected.
+      - title: Annulment — receipt content
+        refs: [TIBU-23932, TIBU-25888, TIBU-25889, TIBU-25402, TIBU-25404, TIBU-25800, TIBU-25116]
+        objective: This test is to confirm an annulment receipt prints complete, correct content — title, card type, journey/cancellation details and identifiers — with no text truncated.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has annulled a transaction, e.g. an Ulsterbus Multi-Journey top-up
+          **WHEN** the annulment receipt prints
+          **THEN** the receipt shows the correct title, card type and journey/cancellation information
+          **AND** the card type text is not cut short
+          **AND** the Tray ID is present
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: The annulment receipt prints complete, correct content — title, card type, journeys, cancellations and Tray ID — with no truncation.
+      - title: Annulment — during paper jam
+        refs: [TIBU-19311, TIBU-20980]
+        objective: This test is to confirm the Annul Transaction control still responds and annuls the transaction when the printer is in a paper-jam state.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the printer is in a paper-jam state after a transaction, e.g. an Adult Single £2.30 issue
+          **WHEN** the operator presses Annul Transaction on the Paper Jam screen
+          **THEN** the annul control responds
+          **AND** the transaction is annulled
+        expected: The Annul Transaction control responds from the Paper Jam screen and annuls the transaction.
+      - title: Annulment — Belfast Visitor Pass
+        refs: [TIBU-21443]
+        objective: This test is to confirm a newly issued Adult Belfast Visitors Pass can be annulled within the shift.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has just issued an Adult Belfast Visitors Pass
+          **WHEN** the operator annuls the issue
+          **THEN** the Belfast Visitors Pass issue is annulled successfully
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A newly issued Adult Belfast Visitors Pass annuls successfully.
+      - title: Annulment — re-present different card
+        refs: [TIBU-25073]
+        objective: This test is to confirm that presenting a different card during the Annul Last Transaction flow is handled gracefully and does not leave the device stuck.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator is annulling the last transaction, e.g. a multi-journey top-up made moments earlier
+          **WHEN** a different card from the original is presented during the annul flow
+          **THEN** the card mismatch is handled gracefully
+          **AND** the device is not left stuck
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Presenting a different card during annul is handled gracefully, leaving the device usable.
+      - title: Annulment — ticket issue
+        objective: This test is to confirm a ticket that has just been issued can be annulled within the shift, with the issue reversed, the annulment recorded and an annulment receipt printed.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has just issued a ticket this shift, e.g. an Adult Single £2.30 on route 10A
+          **WHEN** the operator annuls that ticket issue
+          **THEN** the ticket issue is annulled
+          **AND** the annulment is recorded
+          **AND** an annulment receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A newly issued ticket annuls cleanly, the annulment is recorded and an annulment receipt prints.
+  - path: [Functional, Basket & Payment, Receipts & Printing]
+    cases:
+      - title: Receipts — printed per transaction
+        refs: [TIBU-21135, TIBU-21176, TIBU-23016, TIBU-21266]
+        objective: This test is to confirm every issuing transaction — ticket sale, smartcard issue or top-up — prints its receipt on completion.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator completes an issuing transaction, e.g. an Adult Single £2.30 ticket, a card issue or a top-up
+          **WHEN** the transaction completes
+          **THEN** a receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Every issuing transaction prints its receipt on completion.
+      - title: Receipts — no duplicates
+        refs: [TIBU-22548, TIBU-22557]
+        objective: This test is to confirm a completed transaction prints exactly one receipt, never a duplicate.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator completes a transaction that prints a receipt, e.g. an Adult Single £2.30 ticket
+          **WHEN** the receipt prints
+          **THEN** exactly one receipt is produced
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A transaction prints a single receipt and never a duplicate.
+      - title: Receipts — template & fonts
+        refs: [TIBU-23835, TIBU-24890, TIBU-23096, TIBU-16109, TIBU-24848]
+        objective: This test is to confirm printouts use the correct template, fonts and current Translink logo (including the revised rail template naming), and that a missing template is handled gracefully.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator prints a ticket/receipt, e.g. an Adult Single £2.30 rail ticket
+          **WHEN** the printout is produced
+          **THEN** it uses the correct template, fonts and current Translink logo
+          **AND** rail ticket templates follow the revised naming
+          **AND** a missing template is handled gracefully with no crash
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Printouts use the correct template, fonts, logo and rail naming, and a missing template is handled gracefully without a crash.
+      - title: Receipts — mini statement
+        refs: [TIBU-20759, TIBU-21581, TIBU-23989, TIBU-21178, TIBU-21463]
+        objective: This test is to confirm the mini statement prints correct content — including the real expiry date and adequate length — and still prints for an expired multi-journey card.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator prints a mini statement for a smartcard, e.g. an Ulsterbus Multi-Journey card
+          **WHEN** the mini statement prints
+          **THEN** it shows the correct information including the actual expiry date
+          **AND** the printout is long enough to contain all content
+          **AND** an expired multi-journey card still prints its mini statement
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The mini statement prints correct content with a real expiry date and adequate length, and still prints for expired multi-journey cards.
+      - title: Receipts — day summary
+        refs: [TIBU-24800]
+        objective: This test is to confirm the day summary printout includes the details of card transactions taken during the day.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in NIR or Ulsterbus mode
+          **AND** card transactions have occurred during the day, e.g. an Adult Single £2.30 paid by contactless
+          **WHEN** the operator prints the day summary
+          **THEN** the printout includes the card transaction details
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The day summary printout includes the details of the day's card transactions.
+  - path: [Functional, Numerical Input]
+    cases:
+      - title: Numerical Input — keypad entry
+        refs: [TIBU-21771]
+        objective: This test is to confirm the numeric keypad correctly enters digits for amounts and selections, and that the C key corrects the entry one character at a time.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator on a screen requiring numeric entry, e.g. the rail station-number field
+          **WHEN** the operator keys in digits
+          **THEN** the entered value reflects the key presses
+          **WHEN** the operator presses the C key
+          **THEN** one character is cleared per key press
+        expected: Numeric entry reflects the digits keyed, and the C key corrects the entry one character at a time.
+      - title: Numerical Input — group ticket
+        objective: This test is to confirm the operator can issue a group ticket by entering a passenger count (up to the maximum of 100) for a group-eligible product, and that non-eligible products or invalid counts are rejected.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator
+          **AND** the operator has selected a group-eligible product with boarding/alighting set, e.g. Adult Single £2.30 on route 10A (group eligibility configured in CloudFare)
+          **WHEN** the operator enters a passenger count (or uses + / -) up to 100 and confirms, e.g. 4 passengers
+          **THEN** a single group ticket is printed
+          **AND** one back-office transaction is recorded with a sub-element per passenger
+          **WHEN** the operator selects a non-group-eligible product or enters an invalid count
+          **THEN** an error banner is shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A group ticket issues for up to 100 passengers as one printed ticket and one multi-passenger back-office transaction; non-eligible products and invalid counts are rejected.
+      - title: Numerical Input — calculate change
+        objective: This test is to confirm the operator can calculate change for a cash payment from the amount tendered, and that the Calculate Change option is unavailable in the invalid cases.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator taking a cash payment, e.g. an Adult Single £2.30
+          **WHEN** the operator enters the amount tendered (e.g. £5.00) and selects Calculate Change
+          **THEN** the change is calculated
+          **AND** the change is shown (£2.70 for the example)
+          **WHEN** too many digits are entered, or the amount is less than the ticket value, or the previous transaction had no value
+          **THEN** the Calculate Change option is unavailable
+        expected: Change is calculated and shown for a valid tendered amount; the option is unavailable for too-many-digits, under-value or no-value cases.
+  - path: [Functional, Customer Displays]
+    cases:
+      - title: Customer Display — passenger display
+        refs: [TIBU-24845]
+        objective: This test is to confirm the passenger-facing display shows the fare and basket total to the customer and updates as the transaction progresses.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator building and paying for a fare, e.g. Adult Single £2.30 + Child Single £1.15 on route 10A
+          **WHEN** the operator adds items and takes payment
+          **THEN** the passenger display shows the fare and running total
+          **AND** the passenger display updates as the transaction progresses
+        expected: The passenger display shows the fare and running total and keeps updating through the transaction.
+      - title: Customer Display — Rail passenger display
+        objective: This test is to confirm the passenger-facing display shows the fare and total to the customer in Rail (NIR) mode and updates as the transaction progresses.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in Rail (NIR) mode building a fare, e.g. an Adult Single rail ticket
+          **WHEN** the operator adds items and takes payment
+          **THEN** the passenger display shows the rail fare and running total
+          **AND** the passenger display updates as the transaction progresses
+        expected: In Rail (NIR) mode the passenger display shows the fare and running total and keeps updating through the transaction.
+      - title: Customer Display — Ulsterbus passenger display
+        objective: This test is to confirm the passenger-facing display shows the fare and total to the customer in Ulsterbus mode and updates as the transaction progresses.
+        steps: |-
+          **GIVEN** the POS is signed on as an Operator in Ulsterbus mode building a fare, e.g. an Adult Single £2.30 on route 10A
+          **WHEN** the operator adds items and takes payment
+          **THEN** the passenger display shows the Ulsterbus fare and running total
+          **AND** the passenger display updates as the transaction progresses
+        expected: In Ulsterbus mode the passenger display shows the fare and running total and keeps updating through the transaction.

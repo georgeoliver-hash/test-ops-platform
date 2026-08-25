@@ -1,0 +1,516 @@
+# POS Top Up & Validation / Smartcards / Issue Card — clarity pass (suite 30253)
+# UPDATES 31 existing Functional cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: POS wording, fuller objective, grounded
+# preconditions (device state + a concrete card/product + amount/journeys + payment method + mode),
+# one predicate per THEN/AND line (no compound), CloudFare audit step kept where present, back-office
+# MERIT/SmartTrack verification steps preserved so coverage is unchanged. Short prose Expected. Refs preserved.
+# Push with --update; do NOT create new cases. SKIPPED: ZZ_* folded cases and any id >= 4103473 (out of scope).
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Issue Card, Issue from Blank]
+    cases:
+      - title: Issue Card — issue from blank
+        refs: [TIBU-26845, TIBU-21266, TIBU-26760, TIBU-21208, TIBU-24715, TIBU-25890]
+        objective: This test is to confirm an operator can issue a product onto a blank smartcard, take the correct payment, print a receipt, and have the issued product recognised when the card is next used.
+        steps: |-
+          **GIVEN** the POS is signed on and idle
+          **AND** a blank (unencoded) smartcard is presented on the reader
+          **AND** example: issue an Adult Metro Multi-Journey (City zone) product — 10 journeys at £20.00, paid by cash (Metro is cash-only) (FBD-100261)
+          **WHEN** the operator selects the product and the journey/value amount
+          **THEN** the price for that product is shown
+          **WHEN** the operator takes payment and confirms the issue
+          **THEN** the product is written to the card
+          **AND** the product is written at the correct price
+          **WHEN** the issue completes
+          **THEN** a receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A product is issued onto a blank card at the correct price with a receipt, and the issued product is recognised on next use. Run across products — Metro Multi-Journey, Multi-Journey, DayLink, iLink, Metro Travelcard, Belfast Visitor Pass, Ulsterbus Multi-Journey, Town Service Travelcard.
+      - title: Issue Card — recognised by other devices
+        refs: [TIBU-21446, TIBU-22603, TIBU-23996, TIBU-26721, TIBU-26722]
+        objective: This test is to confirm a smartcard created from blank on the POS is recognised as valid on other Translink devices and can subsequently be topped up on the POS.
+        steps: |-
+          **GIVEN** a smartcard has been created from blank on the POS
+          **AND** example: an Adult iLink Zone 4 travelcard issued on the POS
+          **AND** another Translink device (an ETM or TVM) is available to read the card
+          **WHEN** the card is presented to the other device
+          **THEN** the card is recognised as valid
+          **WHEN** the card is returned to the POS for top-up
+          **THEN** the card can be topped up
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A card created from blank on the POS is recognised by other devices and can be topped up on the POS.
+      - title: Issue Card — blank card options
+        refs: [TIBU-23963]
+        objective: This test is to confirm that when an Adult BVP or iLink Zone 1 blank card is placed and the Adult Belfast Visitors option is selected, the POS offers the correct Belfast Visitors options and does not show the iLink Zone options.
+        steps: |-
+          **GIVEN** the POS is signed on and idle
+          **AND** an Adult Belfast Visitor Pass or iLink Zone 1 blank card is placed on the reader (BVP and iLink share the same product family — FBD-100250)
+          **WHEN** the operator selects the Adult Belfast Visitors option
+          **THEN** the correct Belfast Visitors card options are offered
+          **AND** the iLink Zone card options are not shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Selecting Adult Belfast Visitors on a blank BVP / iLink Zone 1 card shows the correct Belfast Visitors options, not the iLink Zone options.
+  - path: [Functional, Smartcards]
+    cases:
+      - title: Smartcard — Half Fare
+        refs: [TIBU-24795]
+        objective: This test is to confirm a Half Fare smartcard is recognised at the point of sale and applies the half-fare entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a Half Fare entitlement smartcard is available
+          **AND** example: selling an Ulsterbus Adult Single, the half-fare rate is applied on presenting the card
+          **WHEN** the operator presents the Half Fare smartcard
+          **THEN** the card is recognised
+          **AND** the half-fare entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A Half Fare smartcard is recognised and applies the half-fare price at sale. NIR + Ulsterbus only.
+      - title: Smartcard — Youth
+        objective: This test is to confirm a Youth smartcard is recognised at the point of sale and applies the youth entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a Youth entitlement smartcard is available
+          **AND** example: selling a NIR Adult Single, the youth entitlement is applied on presenting the card
+          **WHEN** the operator presents the Youth smartcard
+          **THEN** the card is recognised
+          **AND** the youth entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A Youth smartcard is recognised and applies the youth entitlement at sale. NIR + Ulsterbus only.
+      - title: Smartcard — yLink
+        objective: This test is to confirm a yLink smartcard is recognised at the point of sale and applies the yLink entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a yLink entitlement smartcard is available (a personalised Funded card — FBD-100250)
+          **AND** example: selling a NIR Adult Single, the yLink entitlement is applied on presenting the card
+          **WHEN** the operator presents the yLink smartcard
+          **THEN** the card is recognised
+          **AND** the yLink entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A yLink smartcard is recognised and applies the yLink entitlement at sale. NIR + Ulsterbus only.
+      - title: Smartcard — 24+
+        objective: This test is to confirm a 24+ smartcard is recognised at the point of sale and applies the 24+ entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a 24+ entitlement smartcard is available (a personalised Funded card — FBD-100250)
+          **AND** example: selling a NIR Adult Single, the 24+ entitlement is applied on presenting the card
+          **WHEN** the operator presents the 24+ smartcard
+          **THEN** the card is recognised
+          **AND** the 24+ entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A 24+ smartcard is recognised and applies the 24+ entitlement at sale. NIR + Ulsterbus only.
+      - title: Smartcard — Concession
+        objective: This test is to confirm a Concession smartcard is recognised at the point of sale and applies the concession entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a Concession entitlement smartcard is available
+          **AND** example: selling an Ulsterbus Adult Single, the concession rate is applied on presenting the card
+          **WHEN** the operator presents the Concession smartcard
+          **THEN** the card is recognised
+          **AND** the concession entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A Concession smartcard is recognised and applies the concession entitlement at sale. NIR + Ulsterbus only.
+      - title: Smartcard — Dependents Pass
+        objective: This test is to confirm a Dependents Pass smartcard is recognised at the point of sale and applies the dependents-pass entitlement to the fare.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** a Dependents Pass entitlement smartcard is available (a Corporate card — FBD-100250)
+          **AND** example: selling a NIR Adult Single, the dependents-pass entitlement is applied on presenting the card
+          **WHEN** the operator presents the Dependents Pass smartcard
+          **THEN** the card is recognised
+          **AND** the dependents-pass entitlement is applied to the fare
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A Dependents Pass smartcard is recognised and applies the dependents-pass entitlement at sale. NIR + Ulsterbus only.
+  - path: [Functional, Top Up & Validation, Faulty Card]
+    cases:
+      - title: Faulty Card — options
+        refs: [TIBU-25818, TIBU-21256]
+        objective: This test is to confirm that a faulty smartcard presents the Charge Full Fare, Issue Ticket and Select Card Type options, can be cancelled, and that Issue Ticket followed by Issue Receipt produces a ticket and its receipt.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare
+          **AND** a faulty (unreadable) smartcard is presented — example: a faulty Metro Multi-Journey card
+          **WHEN** the faulty smartcard screen is shown
+          **THEN** Charge Full Fare is offered
+          **AND** Issue Ticket is offered
+          **AND** Select Card Type is offered
+          **AND** a Cancel option is available
+          **WHEN** the operator chooses Issue Ticket then Issue Receipt
+          **THEN** a ticket is produced
+          **AND** its receipt is produced
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: A faulty smartcard offers Charge Full Fare, Issue Ticket and Select Card Type with a working Cancel, and Issue Ticket then Issue Receipt produces a ticket and its receipt.
+      - title: Faulty Card — invalid card removal
+        refs: [TIBU-20851]
+        objective: This test is to confirm that when an invalid top-up card is removed from the reader, the POS detects the removal.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** an invalid top-up card is resting on the reader
+          **WHEN** the card is removed from the reader
+          **THEN** the POS detects that the card has been removed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Removal of an invalid top-up card from the reader is detected by the POS.
+      - title: Faulty — Fare-Paying Smartcard
+        objective: This test is to confirm a faulty fare-paying (stored-value) smartcard is handled with the faulty-card options and produces a faulty fare-paying smartcard receipt, with the event recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare
+          **AND** a faulty (unreadable) fare-paying smartcard is presented
+          **WHEN** the card cannot be read correctly
+          **THEN** the faulty-card options are offered (Charge Full Fare, Select Card Type, Issue Ticket)
+          **WHEN** the operator selects the appropriate option and completes the transaction
+          **THEN** a faulty fare-paying smartcard receipt is produced
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** any fare charged appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty fare-paying smartcard is recorded in SmartTrack
+        expected: A faulty fare-paying smartcard offers the faulty-card options and produces a faulty receipt, recorded in the CloudFare activity log, MERIT and SmartTrack.
+      - title: Faulty — Smartpass Receipt
+        objective: This test is to confirm a faulty concessionary Smartpass produces the correct faulty Smartpass receipt, with the event recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare
+          **AND** a faulty concessionary Smartpass is presented — example: a Senior SmartPass (Fare Foregone — FBD-100250)
+          **WHEN** the operator handles the faulty Smartpass and issues the receipt
+          **THEN** a faulty Smartpass receipt is produced with the correct content
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty Smartpass is recorded in SmartTrack
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A faulty Smartpass produces the correct faulty Smartpass receipt, recorded in the CloudFare activity log and SmartTrack.
+      - title: Faulty — Dependants Pass Receipt
+        objective: This test is to confirm a faulty Dependants Pass produces the correct faulty Dependants Pass receipt, with the event recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare
+          **AND** a faulty Dependants Pass is presented (a Corporate card — FBD-100250)
+          **WHEN** the operator handles the faulty Dependants Pass and issues the receipt
+          **THEN** a faulty Dependants Pass receipt is produced with the correct content
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the faulty Dependants Pass is recorded in SmartTrack
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A faulty Dependants Pass produces the correct faulty Dependants Pass receipt, recorded in the CloudFare activity log and SmartTrack.
+  - path: [Functional, Top Up & Validation, Top Up]
+    cases:
+      - title: Top Up — top up a smartcard
+        refs: [TIBU-23016, TIBU-21280, TIBU-21119, TIBU-21184, TIBU-22985]
+        objective: This test is to confirm an operator can top up a smartcard, take payment, print a top-up receipt, and auto-validate the card for the current journey where applicable.
+        steps: |-
+          **GIVEN** the POS is signed on and idle
+          **AND** a toppable smartcard is presented — example: an Adult iLink Zone 4 travelcard, top up 1 Week, paid by cash (top-up amount labels per FBD-100260; Metro is cash-only, bank card / warrant available on NIR + Ulsterbus)
+          **WHEN** the operator selects Top Up and the amount
+          **THEN** the top-up amount and price are shown
+          **WHEN** the operator takes payment and confirms
+          **THEN** the card is topped up
+          **AND** a top-up receipt is printed
+          **WHEN** the card requires validation for the current journey
+          **THEN** the card is auto-validated where applicable
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Top-up completes with a receipt and auto-validation where applicable. Run across products — Metro Travelcard, Ulsterbus Town Service Travelcard, DayLink, iLink, Belfast Visitor Pass, ABT smartcard, Monthly Season, half-fare/concession.
+      - title: Top Up — cancel a top-up
+        refs: [TIBU-24858, TIBU-25885, TIBU-21786]
+        objective: This test is to confirm that cancelling or going back during a smartcard top-up returns the operator to the previous screen and leaves the screen responsive.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** the operator has started a smartcard top-up — example: a part-completed iLink top-up
+          **WHEN** the operator cancels or presses Back
+          **THEN** the operator is returned to the previous screen
+          **AND** the screen remains responsive
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: Cancelling or going back during a top-up returns cleanly to the previous screen with the screen responsive.
+      - title: Top Up — Multi-Journey limit
+        refs: [TIBU-21133, TIBU-21992, TIBU-24051, TIBU-25886]
+        objective: This test is to confirm that topping up a Multi-Journey smartcard adds and displays journeys, enforces the maximum permitted journeys, allows a card with expired journeys to be topped up, and does not crash.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a Multi-Journey smartcard is presented — example: an Adult Metro Multi-Journey (City zone) card, topping up 10 journeys (FBD-100261)
+          **WHEN** the operator tops up journeys
+          **THEN** the journeys are added
+          **AND** the added journeys are shown
+          **WHEN** the operator tries to top up beyond the maximum permitted journeys
+          **THEN** the card cannot exceed its maximum permitted journeys
+          **WHEN** a card with expired journeys is topped up
+          **THEN** the card can still be topped up
+          **AND** the device does not crash
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Multi-Journey top-up adds and shows journeys, enforces the maximum, tops up cards with expired journeys, and never crashes.
+      - title: Top Up — mini statement
+        refs: [TIBU-21450, TIBU-22398, TIBU-25098, TIBU-23989, TIBU-22558]
+        objective: This test is to confirm that presenting a topped-up smartcard shows a mini statement with the correct, up-to-date card type, number, balance/journeys, start date and expiry, reflecting top-ups from this and other devices.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a topped-up smartcard is presented — example: an Adult iLink Zone 4 travelcard topped up on both the POS and an ETM
+          **WHEN** the mini statement is shown
+          **THEN** it shows the correct card type
+          **AND** it shows the correct card number
+          **AND** it shows the correct balance/journeys
+          **AND** it shows the correct start date
+          **AND** it shows the correct expiry
+          **AND** it reflects top-ups made on this and other devices
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The mini statement shows correct, current card details and balance/journeys, including top-ups made on other devices.
+      - title: Top Up — non-toppable card handled
+        refs: [TIBU-21219]
+        objective: This test is to confirm that presenting a card that cannot be topped up is handled gracefully — the POS reports it and does not crash.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a card that cannot be topped up is presented — example: an expired or non-toppable product card
+          **WHEN** the card is read
+          **THEN** the POS reports that the card cannot be topped up
+          **AND** the device does not crash
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A card that cannot be topped up is reported gracefully with no crash.
+      - title: Top Up — expired Multi-Journey clears existing journeys
+        objective: This test is to confirm that topping up an expired Multi-Journey card removes the existing (expired) journeys and prints a journey-removal receipt.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** an expired Multi-Journey card is presented — example: an Adult Metro Multi-Journey (City zone) card past its expiry
+          **WHEN** the operator adds journeys (tops it up) and the top-up succeeds
+          **THEN** all existing journeys are removed
+          **AND** a journey-removal receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Topping up an expired Multi-Journey card clears the prior journeys and prints a journey-removal receipt.
+      - title: Fare-Paying Smartcard — top-up
+        objective: This test is to confirm a fare-paying (stored-value) smartcard can be topped up with value, showing the new balance and a receipt, with the top-up recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a fare-paying (stored-value) smartcard is presented — example: top up £10.00 by cash
+          **WHEN** the operator tops up the card with value and takes payment
+          **THEN** the value is added to the card balance
+          **AND** the new balance is shown
+          **AND** a receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the top-up transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard balance appears in SmartTrack
+        expected: A fare-paying smartcard top-up adds value, shows the new balance and prints a receipt, recorded in the CloudFare activity log, MERIT and SmartTrack.
+      - title: Top Up — on expiry
+        objective: This test is to confirm that a smartcard topped up on its product expiry date applies the top-up and recalculates the product validity, with the top-up recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a smartcard is presented on its product expiry date — example: an Adult iLink Zone 4 travelcard topped up 1 Week on its expiry date
+          **WHEN** the operator tops up the card
+          **THEN** the top-up is applied
+          **AND** the product validity is recalculated from the top-up
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the top-up transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A top-up on the product expiry date applies and recalculates the product validity, recorded in the CloudFare activity log, MERIT and SmartTrack.
+  - path: [Functional, Top Up & Validation, Validation]
+    cases:
+      - title: Validation — validate a smartcard
+        objective: This test is to confirm that presenting a valid smartcard for validation shows the validation confirmation screen.
+        steps: |-
+          **GIVEN** the POS is on the main screen in NIR or Ulsterbus mode (Metro has no smartcard validation)
+          **AND** a valid smartcard is available — example: an Adult iLink Zone 4 travelcard in date
+          **WHEN** the valid smartcard is presented for validation
+          **THEN** the validation confirmation screen is shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Presenting a valid smartcard for validation shows the validation confirmation screen. NIR + Ulsterbus only.
+      - title: Validation — already validated
+        objective: This test is to confirm that a smartcard which has already been validated is detected as such rather than being re-validated.
+        steps: |-
+          **GIVEN** the POS is on the main screen in NIR or Ulsterbus mode
+          **AND** a smartcard has already been validated — example: an Adult Metro Multi-Journey card validated moments earlier
+          **WHEN** the card is presented again
+          **THEN** the 'Smartcard Already Validated' message is shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: An already-validated card is detected and the 'Smartcard Already Validated' message is shown.
+      - title: Validation — hotlisted card
+        objective: This test is to confirm that a hotlisted smartcard is rejected with the Hotlisted Error and not accepted.
+        steps: |-
+          **GIVEN** the POS is on the main screen in NIR or Ulsterbus mode
+          **AND** a smartcard that is on the hotlist is available
+          **WHEN** the hotlisted card is presented
+          **THEN** the Hotlisted Error is shown
+          **AND** the card is not accepted
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A hotlisted card is rejected with the Hotlisted Error and is not accepted.
+      - title: Validation — outside time band
+        objective: This test is to confirm that a card presented outside its valid time band is handled per the Outside Time Band rules, with the outcome recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is on the main screen in NIR or Ulsterbus mode
+          **AND** a smartcard is presented outside its valid time band — example: a time-banded travelcard presented before its start time
+          **WHEN** the card is read
+          **THEN** the Outside Time Band handling is applied
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the validation outcome is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: A card presented outside its valid time band is handled per the Outside Time Band rules, recorded in the CloudFare activity log, MERIT and SmartTrack.
+      - title: Validation — entitlement smartcard sets the ticket type
+        objective: This test is to confirm that presenting an entitlement smartcard (Senior/Blind/War Pensioner/yLink/24+/Half-Fare/Dependants) sets the matching ticket type, validates per transaction, and cannot be basketed. Half-Fare sub-types include Partially Sighted, Learning Disability and No Driving Licence; DLA is also an entitlement card.
+        steps: |-
+          **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+          **AND** an entitlement smartcard is available — example: a 60+ SmartPass selling a "60+ Single"
+          **WHEN** the operator presents an entitlement smartcard (e.g. Senior, Blind, War Pensioner, yLink, 24+, Half-Fare, Dependants)
+          **THEN** the matching ticket type is set (e.g. "60+ Single", "Half Fare Single")
+          **AND** the fare must be validated per transaction
+          **AND** the fare cannot be added to a basket
+          **AND** the operator can still change the boarding station
+          **AND** the operator can still change the alighting station
+          **WHEN** the sale is on Rail
+          **THEN** cross-border variants are selectable via the L4/R4 keys
+          **WHEN** a Half-Fare sub-type or DLA card is presented (Partially Sighted, Learning Disability, No Driving Licence, DLA)
+          **THEN** the matching ticket type is set
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: An entitlement smartcard sets its ticket type, requires per-transaction validation (no basketing), allows boarding/alighting change, and offers cross-border variants on Rail. NIR + Ulsterbus only.
+      - title: Validation — error mid-transaction voids the payment
+        objective: This test is to confirm that when a validation error occurs during a paid transaction, no cash or warrant is recorded and any card payment is auto-voided, with a diagnostic event audited.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a fare is being validated as part of a paid transaction — example: a card fare part-paid when a validation error occurs
+          **WHEN** a validation error occurs
+          **THEN** any cash or warrant payment is not recorded in the POS audit data
+          **AND** any card transaction is automatically voided by the POS
+          **AND** a diagnostic event is recorded to audit the error
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A mid-transaction validation error records no cash or warrant, auto-voids any card payment, and audits a diagnostic event.
+      - title: Mini Statement — reflects usage and top-ups
+        objective: This test is to confirm a smartcard's mini statement shows the correct, up-to-date balance/journeys after the card has been used (validated) and after top-ups, including actions made on other devices.
+        steps: |-
+          **GIVEN** the POS is signed on
+          **AND** a smartcard that has been validated/used and topped up is available — example: an Adult iLink Zone 4 card used on an ETM and topped up on the POS
+          **WHEN** the operator presents the card to view the mini statement
+          **THEN** the mini statement shows the correct current balance/journeys
+          **AND** it reflects recent validations/usage
+          **AND** it reflects top-ups made on this and other devices
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: The mini statement is accurate and current after usage and top-ups, including activity on other devices.
+      - title: Fare-Paying Smartcard — validation
+        objective: This test is to confirm a fare-paying (stored-value) smartcard validates by deducting the fare from its balance when in funds and is handled when out of funds, with the validation recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on in NIR or Ulsterbus mode
+          **AND** a fare-paying smartcard with sufficient balance is presented — example: a stored-value card with £10.00 balance against a £2.30 fare
+          **WHEN** the operator validates a fare against the card
+          **THEN** the fare is deducted from the card balance
+          **AND** the remaining balance is shown
+          **WHEN** a fare-paying smartcard with insufficient balance is presented
+          **THEN** the shortfall is handled per the rules
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the validation event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the fare transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard balance appears in SmartTrack
+        expected: A fare-paying smartcard deducts the fare when in funds and handles insufficient balance otherwise, recorded in the CloudFare activity log, MERIT and SmartTrack.
+      - title: Validation — passback
+        objective: This test is to confirm a smartcard re-presented within the passback period is handled per the passback rules, with the outcome recorded in the back office.
+        steps: |-
+          **GIVEN** the POS is signed on in NIR or Ulsterbus mode
+          **AND** a smartcard has just been validated on the POS (passback always applies and takes priority over transfer — FBD-100271)
+          **WHEN** the same smartcard is presented again within the passback period
+          **THEN** the passback rule is applied
+          **AND** no second deduction is taken within the period
+          **WHEN** the same smartcard is presented again after the passback period
+          **THEN** a new validation is allowed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the validation event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: Passback is applied within the period and a new validation allowed after it, recorded in the CloudFare activity log, MERIT and SmartTrack.

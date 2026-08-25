@@ -1,0 +1,133 @@
+# POS Refund — Functional / Refund (suite 30253)
+# Phase-6 pilot: NEW coverage, requirement-grounded from FBD-100373 Refund on POS V3.00.
+# The whole feature was absent (0 refund cases). Concrete worked examples in preconditions
+# per the strengthened standard. Cross-device refunds gated on CR115 (flagged).
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Functional, Refund]
+    cases:
+      - title: Cash Refund — valid URN and amount refunds and prints a receipt
+        refs: [FBD-100373]
+        objective: This test is to confirm the Operator can issue a cash refund against a valid ticket URN.
+        steps: |-
+          **GIVEN** an Operator is signed on to the POS
+          **AND** a paper ticket was sold for £13.00 with URN 01122400428500078601300 (23 chars)
+          **WHEN** the Operator selects Operator Menu, Issue Refund, Cash Refund
+          **AND** keys the URN and a refund amount of £13.00
+          **THEN** the refund is accepted
+          **AND** a refund receipt is printed with a customer and operator copy
+          **AND** a success message shows the amount refunded
+        expected: The cash refund is accepted, a two-part receipt prints, and the refunded amount is confirmed on screen.
+      - title: Cash Refund — a URN that is not 23 characters is rejected
+        refs: [FBD-100373]
+        objective: This test is to confirm the POS rejects a cash refund whose URN is not exactly 23 characters.
+        steps: |-
+          **GIVEN** an Operator is on the Cash Refund screen
+          **AND** an example short URN of 011224004285 (12 chars) is to be entered
+          **WHEN** the Operator keys the short URN and presses Enter
+          **THEN** an error message and error tone are given
+          **AND** both the URN and amount fields are cleared for re-entry
+        expected: The malformed URN is rejected with an error and tone, and the fields clear for re-entry.
+      - title: Cash Refund — an amount above the original sale value is rejected
+        refs: [FBD-100373]
+        objective: This test is to confirm a cash refund greater than the original sale value is rejected.
+        steps: |-
+          **GIVEN** an Operator is on the Cash Refund screen
+          **AND** the ticket URN 01122400428500078601300 carries an original sale value of £13.00
+          **WHEN** the Operator keys the URN and a refund amount of £15.00
+          **THEN** an error message and error tone are given
+          **AND** the fields are cleared for re-entry
+        expected: A refund above the original £13.00 sale value is rejected with an error and tone.
+      - title: Cash Refund — a refund that would make shift totals negative is blocked
+        refs: [FBD-100373]
+        objective: This test is to confirm the POS blocks a cash refund that would drive shift totals negative.
+        steps: |-
+          **GIVEN** an Operator whose shift cash total is lower than the requested refund
+          **AND** a valid ticket URN with an original sale value above the shift cash total
+          **WHEN** the Operator submits the cash refund
+          **THEN** the message "Cash refund cannot be performed" is displayed
+          **AND** no refund is issued
+        expected: The refund is blocked with "Cash refund cannot be performed" and nothing is refunded.
+      - title: Card Refund — valid PRN refunds via the payment provider and prints a receipt
+        refs: [FBD-100373]
+        objective: This test is to confirm the Operator can issue a card refund that is processed by the payment provider in real time.
+        steps: |-
+          **GIVEN** an Operator is signed on with a live network to the payment provider
+          **AND** a card sale printed the PRN P0428500778601300YG on its ticket
+          **WHEN** the Operator selects Issue Refund, Card Refund, keys the PRN and the refund amount
+          **AND** confirms the refund
+          **THEN** the POS calls the payment provider with the amount and PRN
+          **AND** the provider-returned refunded amount is printed on a refund receipt
+        expected: The card refund is processed by the provider in real time and the returned amount is receipted.
+      - title: Card Refund — no connection to the payment provider blocks the refund
+        refs: [FBD-100373]
+        objective: This test is to confirm a card refund is not performed when the payment provider cannot be reached.
+        steps: |-
+          **GIVEN** an Operator is on the Card Refund screen with no network to the payment provider
+          **AND** a valid card-sale PRN P0428500778601300YG
+          **WHEN** the Operator submits the card refund and the provider call times out
+          **THEN** an error message and error tone are given
+          **AND** no refund is issued
+        expected: With the provider unreachable the card refund is not performed and an error is shown.
+      - title: Card Refund — an amount above the original sale value is capped to the original
+        refs: [FBD-100373]
+        objective: This test is to confirm the payment provider caps a card refund at the original sale value.
+        steps: |-
+          **GIVEN** an Operator is on the Card Refund screen with a live provider connection
+          **AND** a card sale of £13.00 with PRN P0428500778601300YG
+          **WHEN** the Operator keys the PRN and a refund amount of £20.00
+          **THEN** the provider caps the refund at the £13.00 original sale value
+          **AND** the £13.00 capped amount is receipted and audited
+        expected: The over-value card refund is capped to the £13.00 original and that capped amount is receipted.
+      - title: Refund — only the Operator role can issue a refund
+        refs: [FBD-100373]
+        objective: This test is to confirm refund is available to the Operator role only and not to Supervisor, Technician or Administrator.
+        steps: |-
+          **GIVEN** the POS is signed on as a Supervisor, Technician or Administrator
+          **WHEN** the user opens the Operator Menu
+          **THEN** the Issue Refund option is not available to that role
+        expected: Issue Refund is available to the Operator role only; Supervisor, Technician and Administrator cannot refund.
+      - title: Refund — the audit record posts a positive fare with the correct payment method and reference
+        refs: [FBD-100373]
+        objective: This test is to confirm a completed refund posts a conformant transaction to the back office.
+        steps: |-
+          **GIVEN** an Operator has completed a £13.00 cash refund on an Ulsterbus POS
+          **WHEN** the refund transaction is sent to CloudFare
+          **THEN** the record shows the fare as a positive £13.00
+          **AND** the Payment Method is 1 for cash (3 for card)
+          **AND** the Payment Reference is the URN for cash (the PRN for card)
+          **AND** the product is the "Refund" Open product with Allow Refund set
+          **AND** the Ulsterbus Route Variant Id is populated (the NIR Route Reference Id is used on NIR instead)
+        expected: The refund posts a positive-fare transaction with the correct payment method, reference, Refund product, and mode route id.
+      - title: Refund — a completed refund is final and cannot be annulled
+        refs: [FBD-100373]
+        objective: This test is to confirm a completed refund cannot subsequently be annulled or cancelled.
+        steps: |-
+          **GIVEN** an Operator has completed a refund
+          **WHEN** the Operator attempts to annul that refund
+          **THEN** the refund cannot be annulled
+        expected: A completed refund is final and cannot be annulled.
+      - title: Basket Refund — each ticket URN carries its own value while the card PRN is shared
+        refs: [FBD-100373]
+        objective: This test is to confirm basket sales carry a per-ticket URN value but a single shared PRN across the basket.
+        steps: |-
+          **GIVEN** a basket sale of an Adult ticket at £10.00 and a Child ticket at £5.00
+          **WHEN** the Operator inspects the URN and PRN printed on each ticket
+          **THEN** each ticket's URN carries its own sale value (£10.00 and £5.00)
+          **AND** the same PRN is printed on both tickets
+        expected: Each basket ticket's URN holds its own value while one shared PRN covers the basket.
+      - title: Cross-device Refund — a POS refunds a sale made on another device (CR115)
+        refs: [FBD-100373, CR115]
+        objective: This test is to confirm a POS can refund a qualifying sale originally made on TVM, HHD or ETM (subject to CR115).
+        steps: |-
+          **GIVEN** an Operator on a Bus POS and a paper-ticket sale originally made on a Rail TVM
+          **AND** cross-device refunds are enabled (CR115)
+          **WHEN** the Operator issues a refund against that sale's reference
+          **THEN** the refund is accepted on the POS
+          **AND** an ETM sale is refundable only when it was originally paid by cash
+        expected: A POS refunds a qualifying TVM/HHD/ETM sale under CR115; ETM sales are refundable by cash only. (Deselect if CR115 is not shipped.)

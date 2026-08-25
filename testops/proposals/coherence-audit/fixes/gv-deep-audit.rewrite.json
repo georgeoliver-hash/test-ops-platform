@@ -1,0 +1,95 @@
+[
+  {
+    "id": 4104013,
+    "title": "ABT Tap — the TapId is composed of DeviceId, TID and UNIX timestamp",
+    "preface": "This test is to confirm the audit TapId is the DeviceId, Terminal ID and UNIX timestamp concatenated.",
+    "preconds": "**GIVEN** an NIR GV head with DeviceId 042002 and Terminal ID 20115688 has accepted a tap\n**AND** an example composed TapId of 042002201156881725545715",
+    "steps": [
+      {
+        "content": "**WHEN** the tap record is sent to the ABT back office",
+        "expected": "**THEN** the TapId is 042002201156881725545715 — DeviceId, Terminal ID and UNIX timestamp concatenated"
+      }
+    ],
+    "expected": "The audit TapId concatenates DeviceId, Terminal ID and UNIX timestamp (042002 + 20115688 + 1725545715 = 042002201156881725545715).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "refs": "FBD-100658",
+    "action": "reword",
+    "citations": ["FBD-100658 para 226-231 (TapId field definition + worked example)"],
+    "change_note": "Fixed a real grounding error found on deep re-check: the precondition split the spec's own worked-example TapId string into the wrong DeviceId/TID boundary (case said DeviceId 0420 / TID 02201156; the spec's example is DeviceId 042002 / TID 20115688 -- concatenating 042002 + 20115688 + unix ts 1725545715 = 042002201156881725545715, which is what the case's own composed-TapId value already was). Also strengthened the weak expected line (flagged in the earlier coherence pass) to assert the concrete composed value rather than restate the title."
+  },
+  {
+    "id": 4104029,
+    "title": "Barcode — a barcode on a mobile device screen validates the same as a printed one",
+    "preface": "This test is to confirm a multi-use barcode shown on a mobile device screen validates identically to a printed barcode.",
+    "preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid Corethree mLink barcode (format 02) is shown on a passenger's mobile device screen",
+    "steps": [
+      {
+        "content": "**WHEN** the passenger presents the on-screen barcode to the reader",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "expected": "A Corethree mLink barcode presented from a mobile device screen validates using the same offline business rules as a printed Flowbird barcode.\n\n[Automatable: Partial]",
+    "refs": "FBD-100167",
+    "action": "reword",
+    "citations": ["FBD-100167 V12.00 para 267 (Corethree mLink mobile tickets validated by Flowbird devices offline, same business rules as TFTS Multiple Use barcodes)", "FBD-100167 V12.00 para 422 (barcode format 02 = Corethree)"],
+    "change_note": "Named the on-screen artefact as the Corethree mLink barcode (format 02) instead of an unnamed 'mobile device screen' barcode, closing the under-specification flagged in the earlier coherence pass (gv.findings.md)."
+  },
+  {
+    "id": 4104038,
+    "title": "ZZ_DELETE_REVIEW - Barcode — a barcode validated on one gate head is rejected on another head of the same gateline",
+    "action": "remove",
+    "change_note": "Condemned as a duplicate of C4104051 (Passback section), which describes the identical CR105.2 gateline Unique-ID-share scenario with near-identical preconds/step/expected. Passback is the better functional home (per the earlier coherence-audit recommendation, gv.findings.md); kept C4104051, condemned this copy rather than carrying double coverage of the same behaviour."
+  },
+  {
+    "id": 4104070,
+    "title": "Location Settings — a no-comms condition is indicated when changing location without back-office comms",
+    "preface": "This test is to confirm the Location Settings screen behaves correctly when the GV has no back-office comms.",
+    "preconds": "**GIVEN** a technician on the Location Settings screen with no comms to the back office",
+    "steps": [
+      {
+        "content": "**WHEN** the technician attempts to change the location",
+        "expected": "**THEN** a no-comms condition is indicated on the Location Settings screen"
+      }
+    ],
+    "expected": "With no back-office comms the Location Settings screen indicates the no-comms condition. **UNCONFIRMED** whether the location edit/save is actually blocked or only flagged -- confirm on the live system.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "refs": "FBD-100654",
+    "action": "reword",
+    "citations": ["FBD-100654 V1.02 (no paragraph found describing whether the edit is blocked vs merely flagged; not in the commissioning guide's Location Settings section, paras 249-253)"],
+    "change_note": "The old title asserted 'location cannot be changed' but the expected only ever proved a no-comms indication is shown -- a coherence gap flagged in the earlier pass. On deep re-check FBD-100654 does not state whether the change is actually blocked or just flagged, so the title now matches only what is tested/provable, and the unconfirmed blocking claim is marked explicitly rather than silently implied."
+  },
+  {
+    "id": 4104100,
+    "title": "Comms — the GV updates CloudFare Last Communication at least every 15 minutes via the StaffList refresh",
+    "action": "reword",
+    "change_note": "Renamed off the 'Heartbeat' label (which the earlier coherence pass flagged as conflating this 15-minute StaffList/Last-Communication refresh with the distinct gate<->validator heartbeat mechanism correctly tested in C4104094). Body unchanged, only the title moved."
+  },
+  {
+    "id": 4104065,
+    "expected": "An incorrect PIN is refused and the technician is not signed on. (needs-spec -- PIN-entry mechanics not detailed in FBD-100654; confirm live)\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "FBD-100654 (TFTS Gate System Commissioning Guide) confirms Technician card sign-on exists (para 250) but nowhere describes a PIN, an invalid-PIN rejection, or its mechanics -- deep re-check found no supporting text for this specific claim. Added an honest needs-spec marker rather than removing/inventing; logged to the gap register (Q25) for George to confirm whether GV technician sign-on genuinely uses a PIN (as POS/ETM do) or was carried over from another device's convention without a GV-specific spec."
+  },
+  {
+    "id": 4104067,
+    "expected": "After the inactivity timeout the technician is auto signed off and the GV returns to service. (needs-spec -- timeout duration/mechanics not detailed in FBD-100654; confirm live)\n\n[Automatable: Yes]",
+    "action": "reword",
+    "change_note": "No text in FBD-100654 describes an inactivity timeout for the Technician Menu. Marked needs-spec; logged to gap register (Q25)."
+  },
+  {
+    "id": 4104073,
+    "expected": "The technician changes the screen brightness and the display updates to the selected level. (needs-spec -- Display Brightness screen not detailed in FBD-100654; confirm live)\n\n[Automatable: No]",
+    "action": "reword",
+    "change_note": "No text in FBD-100654 describes a Display Brightness technician setting. Marked needs-spec; logged to gap register (Q25)."
+  },
+  {
+    "id": 4104074,
+    "expected": "The technician changes the audio volume and the validation tone plays at the selected level. (needs-spec -- Audio Volume screen not detailed in FBD-100654; the only volume reference found (FBD-100348 para 352) is the gate infraction buzzer, a different feature; confirm live)\n\n[Automatable: No]",
+    "action": "reword",
+    "change_note": "FBD-100348 mentions gate-buzzer volume for an infraction, which is a different feature from a Technician Menu validation-tone volume control -- not the same claim. No spec text found for an adjustable validation-tone volume setting. Marked needs-spec; logged to gap register (Q25)."
+  },
+  {
+    "id": 4104075,
+    "expected": "Forcing comms opens a session with the back office and updates the GV Last Communication time in CloudFare. (needs-spec -- Force Communications screen/mechanics not detailed in FBD-100654 or FBD-100266; confirm live)\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "No text in FBD-100654 or FBD-100266 (Device Heartbeat) describes a technician-menu 'Force Communications' action. Marked needs-spec; logged to gap register (Q25)."
+  }
+]

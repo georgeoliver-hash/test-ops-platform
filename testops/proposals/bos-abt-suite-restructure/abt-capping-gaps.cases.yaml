@@ -1,0 +1,207 @@
+# ABT capping-gap cases — BOS & ABT Suite (30279)
+# Authored 2026-07-14 from the UBTOO Test Tracker sheet (Groups A/B/E base capping,
+# Group G correction limits, Group F late taps) in UB_TOO_Test_Tracker_FILLED.xlsx.
+# Each case carries a CONCRETE worked example (route + boarding→alighting stage + fare
+# + time) pulled from the tracker, so a tester has real journeys to tap — while the
+# title/objective stay behaviour-level. Single-predicate THENs; run in both Operator
+# and Passenger portals (a precondition).
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ───────────────────── Daily Capping (base) ─────────────────────
+  - path: [ABT, Functional, Daily Capping]
+    cases:
+      - title: Metro daily cap is reached and applied
+        refs: [UB-TOO]
+        objective: This test is to confirm that a day of Metro-zone taps reaches and holds the £4.00 Metro daily cap.
+        steps: |-
+          **GIVEN** a card making Metro-zone taps on a Tap-On-Only day
+          **AND** the Metro daily cap is £4.00 with a £2.30 single fare
+          **AND** the scenario is run in both the Operator and Passenger portals
+          **AND** example journeys: 10A (IN) Casement Park → City Hall at ~09:00, then 10A (IN) Slievegallion Drive → Falls Park at ~12:00, £2.30 each
+          **WHEN** the two Metro-zone taps are made more than 15 minutes apart
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged the full £2.30
+          **AND** the second tap is charged £1.70 to complete the £4.00 cap
+          **AND** any further Metro-zone tap that day is charged £0.00
+        expected: The Metro day caps at £4.00 — first tap £2.30, second £1.70, later taps free.
+      - title: Ulsterbus reference-fare cap is reached within a fare band
+        refs: [UB-TOO]
+        objective: This test is to confirm that same-reference Ulsterbus taps reach and hold the reference-fare daily cap for their band.
+        steps: |-
+          **GIVEN** a card making same-reference Ulsterbus taps with zonal capping disabled
+          **AND** the reference-fare cap governs the day (ref.60 = £7.20, single £4.50)
+          **AND** example journeys: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at ~09:00, then again at ~12:00, £4.50 each (ref.60)
+          **WHEN** the two same-ref taps are made more than 15 minutes apart
+          **AND** the EndOfDay settlement runs
+          **THEN** the first tap is charged the full £4.50 single fare
+          **AND** the second tap is charged £2.70 to complete the £7.20 reference cap
+          **AND** any further ref.60 tap that day is charged £0.00
+        expected: The reference band caps at its daily value (ref.60 £7.20); later same-ref taps are free.
+      - title: Metro cap and Ulsterbus reference cap both apply on the same day
+        refs: [UB-TOO]
+        objective: This test is to confirm that the Metro daily cap and an Ulsterbus reference-fare cap are calculated independently on the same card-day.
+        steps: |-
+          **GIVEN** a card making Metro-zone taps and outside-zone Ulsterbus ref.60 taps on one day
+          **AND** example journeys: Metro 10A (IN) Casement Park → City Hall ×2 (£2.30) plus Ulsterbus 72b (IN) Moygashel Busby Shop → Armagh Bus Centre ×2 (£4.50, ref.60)
+          **WHEN** enough taps are made to reach both the £4.00 Metro cap and the £7.20 ref.60 cap
+          **AND** the EndOfDay settlement runs
+          **THEN** the Metro-zone taps cap at £4.00
+          **AND** the Ulsterbus ref.60 taps cap at £7.20
+          **AND** the two caps are calculated independently of each other
+        expected: Both caps apply independently on the same day — Metro £4.00 and ref.60 £7.20.
+      - title: Metro and Ulsterbus caps evaluate independently when taps are interleaved
+        refs: [UB-TOO]
+        objective: This test is to confirm that interleaving Metro and Ulsterbus taps does not change either daily cap total.
+        steps: |-
+          **GIVEN** a card alternating Metro-zone and outside-zone Ulsterbus ref.60 taps through the day
+          **AND** example order: 10A (IN) Casement Park → City Hall, 72b (IN) Moygashel Busby Shop → Armagh, 10A (IN) Slievegallion Drive → Falls Park, 72b (IN) Greys Farm → Armagh
+          **WHEN** the taps are made in that interleaved order
+          **AND** the EndOfDay settlement runs
+          **THEN** the Metro-zone taps still cap at £4.00
+          **AND** the ref.60 taps still cap at £7.20
+          **AND** the tap order does not change either cap total
+        expected: Interleaving does not affect either cap; Metro £4.00 and ref.60 £7.20 still hold.
+      - title: Two reference-fare bands cap independently on the same day
+        refs: [UB-TOO]
+        objective: This test is to confirm that two Ulsterbus reference bands each cap at their own value without borrowing the other's.
+        steps: |-
+          **GIVEN** a card making outside-zone Ulsterbus taps in the ref.60 and ref.61 bands
+          **AND** the ref.60 cap is £7.20 and the ref.61 cap is £8.20
+          **AND** example journeys: ref.60 = 72b (IN) Moygashel Busby Shop → Armagh Bus Centre ×2 (£4.50); ref.61 = 302d (OUT) Arras Pk → Newtownards (Transfer) ×2 (£4.50)
+          **WHEN** enough taps are made in each band to reach both caps
+          **AND** the EndOfDay settlement runs
+          **THEN** the ref.60 band caps at £7.20
+          **AND** the ref.61 band caps at £8.20
+          **AND** neither band borrows the other band's cap value
+        expected: Each reference band caps at its own value — ref.60 £7.20 and ref.61 £8.20 — independently.
+      - title: A single Metro tap does not trigger the Metro cap
+        refs: [UB-TOO]
+        objective: This test is to confirm that a lone Metro-zone tap is charged in full because the cap needs two in-zone taps.
+        steps: |-
+          **GIVEN** a card that makes only one Metro-zone tap on the day
+          **AND** example journey: a single 10A (IN) Casement Park → City Hall tap, £2.30
+          **WHEN** the EndOfDay settlement runs
+          **THEN** the tap is charged the full £2.30 single fare
+          **AND** no Metro daily cap is applied
+        expected: A lone Metro tap is charged the full £2.30; no cap applies.
+      - title: Single taps in different reference bands are each charged in full
+        refs: [UB-TOO]
+        objective: This test is to confirm that one tap per reference band incurs no cap and each is charged its full single fare.
+        steps: |-
+          **GIVEN** a card making one tap each in several different reference bands with zonal capping disabled
+          **AND** example journeys on 72b (IN) from Greys Farm: → Grange Brigde (ref.10, £1.90), → Currans Brae (ref.20, £2.30), → Allens Corner Dark Lane (ref.55, £4.00), one tap each
+          **WHEN** the EndOfDay settlement runs
+          **THEN** each tap is charged its full single fare
+          **AND** no reference-fare cap is applied to any band
+        expected: With one tap per band, each is charged in full and no reference cap applies.
+
+  # ───────────────────── Correction Limits (CR122) ─────────────────────
+  - path: [ABT, Functional, Correction Limits]
+    cases:
+      - title: First alighting-stop correction in the month is accepted
+        refs: [CR122]
+        objective: This test is to confirm that a passenger's first alighting-stop correction in a calendar month is accepted.
+        steps: |-
+          **GIVEN** a settled Tap-On-Only journey with no prior correction this calendar month
+          **AND** example journey: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (£4.50), corrected to alight at Dungannon Bus Station
+          **WHEN** the passenger corrects the alighting stop
+          **AND** the EndOfDay settlement runs
+          **THEN** the correction is accepted
+          **AND** the journey fare is recalculated for the new stop
+        expected: The first correction of the month is accepted and the fare recalculates.
+      - title: A second correction in the same calendar month is refused
+        refs: [CR122]
+        objective: This test is to confirm that a second alighting-stop correction in the same calendar month is refused.
+        steps: |-
+          **GIVEN** a settled journey that has already had one accepted correction this calendar month
+          **AND** example journey: a second correction attempted on 72b (IN) Greys Farm → Armagh Bus Centre in the same month
+          **WHEN** the second correction is attempted in the same month
+          **THEN** the correction is refused
+          **AND** the journey keeps its previous alighting stop and fare
+        expected: A second correction in the same month is refused; the journey is unchanged.
+      - title: A correction in a new calendar month is accepted
+        refs: [CR122]
+        objective: This test is to confirm that the monthly correction allowance resets so a correction in a new month is accepted within the annual limit.
+        steps: |-
+          **GIVEN** a passenger who used their one correction in the previous calendar month and is within the annual limit
+          **AND** example journey: a 72b (IN) Moygashel Busby Shop → Armagh Bus Centre journey corrected in the new month
+          **WHEN** the correction is made in the new calendar month
+          **THEN** the correction is accepted
+          **AND** the journey fare is recalculated
+        expected: A correction in a new month is accepted as the monthly allowance resets, within the annual limit.
+      - title: A fourth correction in the year is refused
+        refs: [CR122]
+        objective: This test is to confirm that the annual limit of three corrections is enforced even across different calendar months.
+        steps: |-
+          **GIVEN** a passenger who has already made three accepted corrections this year
+          **AND** example: a fourth correction attempted in a fresh calendar month on any settled 72b (IN) journey
+          **WHEN** the fourth correction is attempted
+          **THEN** the correction is refused
+          **AND** the annual limit of three corrections is enforced
+        expected: The fourth correction of the year is refused even in a new month.
+      - title: Boundary — the third yearly correction is accepted and an immediate fourth is refused
+        refs: [CR122]
+        objective: This test is to confirm the annual boundary, where the third correction of the year is accepted and a further attempt is refused.
+        steps: |-
+          **GIVEN** a passenger who has made two accepted corrections earlier in the year
+          **AND** example: a third correction on a settled 72b (IN) journey in a fresh month, then an immediate fourth attempt
+          **WHEN** the third correction is made in a fresh calendar month
+          **AND** a fourth correction is then attempted immediately
+          **THEN** the third correction is accepted
+          **AND** the fourth correction is refused at the annual limit
+        expected: The third yearly correction is accepted; the immediate fourth is refused at the annual limit.
+
+  # ───────────────────── Processing Taps / Late Taps (Group F additions) ─────────────────────
+  - path: [ABT, Processing Taps, Late Taps]
+    cases:
+      - title: Taps held on a blocked ETM are processed and capped when the device is unblocked
+        refs: [UB-TOO]
+        objective: This test is to confirm that taps held on a blocked ETM are processed and capped once the device is unblocked and uploads them.
+        steps: |-
+          **GIVEN** taps made on an ETM that is blocked from the back office
+          **AND** the taps are held on the device
+          **AND** example journeys: two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps (£4.50, ref.60) held while the ETM is blocked
+          **WHEN** the ETM is unblocked and the held taps are uploaded
+          **AND** the EndOfDay settlement runs
+          **THEN** the held taps are processed
+          **AND** the applicable daily caps are applied to them
+        expected: Held taps from a blocked ETM are processed on unblock and capped correctly (ref.60 £7.20).
+      - title: An intraday late tap is capped together with the day's live taps
+        refs: [UB-TOO]
+        objective: This test is to confirm that a late tap arriving the same day is combined with the live taps and capped as one day.
+        steps: |-
+          **GIVEN** a day with live taps and further taps held for late arrival
+          **AND** example journeys: one live 72b (IN) Moygashel Busby Shop → Armagh Bus Centre tap plus a held tap on the same route/day
+          **WHEN** the held taps arrive later the same day before settlement
+          **AND** the EndOfDay settlement runs
+          **THEN** the late taps are combined with the live taps of the day
+          **AND** the daily cap is applied across all of them
+        expected: An intraday late tap is capped together with the day's live taps.
+      - title: A late tap arriving after settlement is reconciled into the correct day
+        refs: [UB-TOO]
+        objective: This test is to confirm that a late tap arriving after a day has settled is reconciled into that day and its cap total corrected.
+        steps: |-
+          **GIVEN** a day that has already run EndOfDay settlement
+          **AND** example: a 72b (IN) Greys Farm → Armagh Bus Centre tap for that day arriving after settlement
+          **WHEN** the late tap arrives after settlement
+          **AND** the next settlement reconciliation runs
+          **THEN** the late tap is reconciled against the correct day
+          **AND** that day's cap total is corrected to include it
+        expected: A cross-settlement late tap is reconciled into the correct day and the cap total corrected.
+      - title: A late tap accompanied by an annulment settles correctly
+        refs: [UB-TOO]
+        objective: This test is to confirm that held late taps that include an annulment settle with the annulled tap free and the rest capped.
+        steps: |-
+          **GIVEN** held late taps that include an annulled tap
+          **AND** example journeys: two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps held, one of which is annulled
+          **WHEN** the held taps and the annulment are uploaded
+          **AND** the EndOfDay settlement runs
+          **THEN** the annulled tap is charged £0.00
+          **AND** the annulled tap is shown cancelled
+          **AND** the remaining late taps are capped correctly
+        expected: With a late annulment, the annulled tap is £0.00 and the remaining late taps cap correctly.

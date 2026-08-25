@@ -1,0 +1,1160 @@
+# TVM variant expansion, follow-up batch 2026-07-24 — Sales - Tickets: Ticket Issue (887783),
+# Advance & 3-Day (887784), Rail & Cross-Border / Kiosk (887785). Payment-method split (3-way)
+# for cases where payment is the only in-scope data axis; product/concession-type split where
+# that is the named axis instead (not crossed with payment). Mode/model axes are UNCHANGED
+# (Configurations). See tvm-variant-expansion-2.changelog.md for the full rationale.
+suite: '**NEW** TVM Test Suite'
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_devtypes:
+  - 1
+  custom_revstatus: 2
+  custom_autoconfirmation: false
+sections:
+- path:
+  - Functional
+  - Sales - Tickets
+  - Ticket Issue
+  cases:
+  - match: Ticket Issue — a selected product is issued and printed
+    title: Ticket Issue — a selected product is issued and printed (cash)
+    refs: &id001
+    - FBD-100336
+    - FBD-100207
+    objective: This test is to confirm the customer can select a valid product, pay by cash, and receive
+      a printed ticket.
+    steps: '**GIVEN** a TVM at its home stage on the multi-modal home screen
+
+      **AND** an example product of a Metro Adult Single from 10A (IN) Casement Park to City Hall at £2.30
+      (fares export FBD-100336)
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a ticket is printed for the selected product
+
+      **AND** the paid fare on the ticket matches the fares export'
+    expected: 'The chosen product is issued and a ticket printed at the fares-export price, paying by
+      cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — a selected product is issued and printed (card (Chip & PIN))
+    refs: *id001
+    objective: This test is to confirm the customer can select a valid product, pay by card (Chip & PIN),
+      and receive a printed ticket.
+    steps: '**GIVEN** a TVM at its home stage on the multi-modal home screen
+
+      **AND** an example product of a Metro Adult Single from 10A (IN) Casement Park to City Hall at £2.30
+      (fares export FBD-100336)
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a ticket is printed for the selected product
+
+      **AND** the paid fare on the ticket matches the fares export'
+    expected: 'The chosen product is issued and a ticket printed at the fares-export price, paying by
+      card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — a selected product is issued and printed (contactless)
+    refs: *id001
+    objective: This test is to confirm the customer can select a valid product, pay by contactless, and
+      receive a printed ticket.
+    steps: '**GIVEN** a TVM at its home stage on the multi-modal home screen
+
+      **AND** an example product of a Metro Adult Single from 10A (IN) Casement Park to City Hall at £2.30
+      (fares export FBD-100336)
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a ticket is printed for the selected product
+
+      **AND** the paid fare on the ticket matches the fares export'
+    expected: 'The chosen product is issued and a ticket printed at the fares-export price, paying by
+      contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Adult single ticket
+    title: Ticket Issue — Adult single ticket (cash)
+    refs: &id002
+    - FBD-100336
+    - FBD-100207
+    objective: This test is to confirm the customer can buy an Adult single ticket for the boarding and
+      alighting stages selected, paying by cash.
+    steps: '**GIVEN** a TVM showing the Adult product range
+
+      **AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30
+
+      **WHEN** the customer pays by cash
+
+      **THEN** an Adult single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Adult single fare'
+    expected: 'An Adult single is issued for the selected stages at the Adult fare, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Adult single ticket (card (Chip & PIN))
+    refs: *id002
+    objective: This test is to confirm the customer can buy an Adult single ticket for the boarding and
+      alighting stages selected, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the Adult product range
+
+      **AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** an Adult single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Adult single fare'
+    expected: 'An Adult single is issued for the selected stages at the Adult fare, paying by card (Chip
+      & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Adult single ticket (contactless)
+    refs: *id002
+    objective: This test is to confirm the customer can buy an Adult single ticket for the boarding and
+      alighting stages selected, paying by contactless.
+    steps: '**GIVEN** a TVM showing the Adult product range
+
+      **AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** an Adult single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Adult single fare'
+    expected: 'An Adult single is issued for the selected stages at the Adult fare, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Child single ticket
+    title: Ticket Issue — Child single ticket (cash)
+    refs: &id003
+    - FBD-100336
+    - FBD-100207
+    objective: This test is to confirm the customer can buy a Child single ticket at the Child fare, paying
+      by cash.
+    steps: '**GIVEN** a TVM showing the Child product range
+
+      **AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per
+      the fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a Child single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Child single fare'
+    expected: 'A Child single is issued at the Child fare, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Child single ticket (card (Chip & PIN))
+    refs: *id003
+    objective: This test is to confirm the customer can buy a Child single ticket at the Child fare, paying
+      by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the Child product range
+
+      **AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per
+      the fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a Child single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Child single fare'
+    expected: 'A Child single is issued at the Child fare, paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Child single ticket (contactless)
+    refs: *id003
+    objective: This test is to confirm the customer can buy a Child single ticket at the Child fare, paying
+      by contactless.
+    steps: '**GIVEN** a TVM showing the Child product range
+
+      **AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per
+      the fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a Child single ticket is printed for the selected stages
+
+      **AND** the fare charged equals the fares-export Child single fare'
+    expected: 'A Child single is issued at the Child fare, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Family and Friends day ticket
+    title: Ticket Issue — Family and Friends day ticket (cash)
+    refs: &id004
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a Family and Friends day ticket for the group,
+      paying by cash.
+    steps: '**GIVEN** a TVM showing the Family and Friends product
+
+      **AND** an example Metro Family and Friends Day ticket priced per the fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a Family and Friends day ticket is printed
+
+      **AND** the fare charged equals the fares-export Family and Friends fare'
+    expected: 'A Family and Friends day ticket is issued for the group at the fares-export price, paying
+      by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Family and Friends day ticket (card (Chip & PIN))
+    refs: *id004
+    objective: This test is to confirm the customer can buy a Family and Friends day ticket for the group,
+      paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the Family and Friends product
+
+      **AND** an example Metro Family and Friends Day ticket priced per the fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a Family and Friends day ticket is printed
+
+      **AND** the fare charged equals the fares-export Family and Friends fare'
+    expected: 'A Family and Friends day ticket is issued for the group at the fares-export price, paying
+      by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Family and Friends day ticket (contactless)
+    refs: *id004
+    objective: This test is to confirm the customer can buy a Family and Friends day ticket for the group,
+      paying by contactless.
+    steps: '**GIVEN** a TVM showing the Family and Friends product
+
+      **AND** an example Metro Family and Friends Day ticket priced per the fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a Family and Friends day ticket is printed
+
+      **AND** the fare charged equals the fares-export Family and Friends fare'
+    expected: 'A Family and Friends day ticket is issued for the group at the fares-export price, paying
+      by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Family and Friends additional child
+    title: Ticket Issue — Family and Friends additional child (cash)
+    refs: &id005
+    - FBD-100336
+    objective: This test is to confirm the customer can add an additional child to a Family and Friends
+      ticket at the add-child price, paying by cash.
+    steps: '**GIVEN** a TVM with a Family and Friends day ticket selected
+
+      **AND** the fares export defines a Family and Friends Additional Child price
+
+      **WHEN** the customer pays by cash
+
+      **THEN** an additional-child ticket is printed alongside the Family and Friends ticket
+
+      **AND** the fare charged includes the add-child price from the fares export'
+    expected: 'An additional child is added to the Family and Friends ticket and charged the add-child
+      price, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Family and Friends additional child (card (Chip & PIN))
+    refs: *id005
+    objective: This test is to confirm the customer can add an additional child to a Family and Friends
+      ticket at the add-child price, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM with a Family and Friends day ticket selected
+
+      **AND** the fares export defines a Family and Friends Additional Child price
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** an additional-child ticket is printed alongside the Family and Friends ticket
+
+      **AND** the fare charged includes the add-child price from the fares export'
+    expected: 'An additional child is added to the Family and Friends ticket and charged the add-child
+      price, paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Family and Friends additional child (contactless)
+    refs: *id005
+    objective: This test is to confirm the customer can add an additional child to a Family and Friends
+      ticket at the add-child price, paying by contactless.
+    steps: '**GIVEN** a TVM with a Family and Friends day ticket selected
+
+      **AND** the fares export defines a Family and Friends Additional Child price
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** an additional-child ticket is printed alongside the Family and Friends ticket
+
+      **AND** the fare charged includes the add-child price from the fares export'
+    expected: 'An additional child is added to the Family and Friends ticket and charged the add-child
+      price, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Popular tickets shortcut
+    title: Ticket Issue — Popular tickets shortcut (cash)
+    refs: &id006
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a product from the Popular Tickets shortcut
+      list, paying by cash.
+    steps: '**GIVEN** a TVM showing the Popular Tickets shortcuts
+
+      **AND** an example Popular shortcut for a Metro Adult Single at £2.30
+
+      **WHEN** the customer pays by cash
+
+      **THEN** the shortcut product is printed as a ticket
+
+      **AND** the fare charged matches the fares export for that product'
+    expected: 'A product bought from the Popular Tickets shortcut is issued at its fares-export price,
+      paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Popular tickets shortcut (card (Chip & PIN))
+    refs: *id006
+    objective: This test is to confirm the customer can buy a product from the Popular Tickets shortcut
+      list, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the Popular Tickets shortcuts
+
+      **AND** an example Popular shortcut for a Metro Adult Single at £2.30
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** the shortcut product is printed as a ticket
+
+      **AND** the fare charged matches the fares export for that product'
+    expected: 'A product bought from the Popular Tickets shortcut is issued at its fares-export price,
+      paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Popular tickets shortcut (contactless)
+    refs: *id006
+    objective: This test is to confirm the customer can buy a product from the Popular Tickets shortcut
+      list, paying by contactless.
+    steps: '**GIVEN** a TVM showing the Popular Tickets shortcuts
+
+      **AND** an example Popular shortcut for a Metro Adult Single at £2.30
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** the shortcut product is printed as a ticket
+
+      **AND** the fare charged matches the fares export for that product'
+    expected: 'A product bought from the Popular Tickets shortcut is issued at its fares-export price,
+      paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Evening ticket
+    title: Ticket Issue — Evening ticket (cash)
+    refs: &id007
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a Metro Evening ticket during the evening
+      validity window, paying by cash.
+    steps: '**GIVEN** a TVM inside the Metro Evening validity window
+
+      **AND** an example Metro Evening Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** an Evening ticket is printed
+
+      **AND** the fare charged equals the fares-export Evening fare'
+    expected: 'A Metro Evening ticket is issued at the Evening fare during its validity window, paying
+      by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Evening ticket (card (Chip & PIN))
+    refs: *id007
+    objective: This test is to confirm the customer can buy a Metro Evening ticket during the evening
+      validity window, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM inside the Metro Evening validity window
+
+      **AND** an example Metro Evening Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** an Evening ticket is printed
+
+      **AND** the fare charged equals the fares-export Evening fare'
+    expected: 'A Metro Evening ticket is issued at the Evening fare during its validity window, paying
+      by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Evening ticket (contactless)
+    refs: *id007
+    objective: This test is to confirm the customer can buy a Metro Evening ticket during the evening
+      validity window, paying by contactless.
+    steps: '**GIVEN** a TVM inside the Metro Evening validity window
+
+      **AND** an example Metro Evening Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** an Evening ticket is printed
+
+      **AND** the fare charged equals the fares-export Evening fare'
+    expected: 'A Metro Evening ticket is issued at the Evening fare during its validity window, paying
+      by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — Summer Bus Rambler ticket
+    title: Ticket Issue — Summer Bus Rambler ticket (cash)
+    refs: &id008
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a Summer Bus Rambler ticket at the fares-export
+      price, paying by cash.
+    steps: '**GIVEN** a TVM showing the Summer Bus Rambler product within its seasonal availability
+
+      **AND** an example Summer Bus Rambler Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a Bus Rambler ticket is printed
+
+      **AND** the fare charged equals the fares-export Bus Rambler fare'
+    expected: 'A Summer Bus Rambler ticket is issued at its fares-export price, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Summer Bus Rambler ticket (card (Chip & PIN))
+    refs: *id008
+    objective: This test is to confirm the customer can buy a Summer Bus Rambler ticket at the fares-export
+      price, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the Summer Bus Rambler product within its seasonal availability
+
+      **AND** an example Summer Bus Rambler Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a Bus Rambler ticket is printed
+
+      **AND** the fare charged equals the fares-export Bus Rambler fare'
+    expected: 'A Summer Bus Rambler ticket is issued at its fares-export price, paying by card (Chip &
+      PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Summer Bus Rambler ticket (contactless)
+    refs: *id008
+    objective: This test is to confirm the customer can buy a Summer Bus Rambler ticket at the fares-export
+      price, paying by contactless.
+    steps: '**GIVEN** a TVM showing the Summer Bus Rambler product within its seasonal availability
+
+      **AND** an example Summer Bus Rambler Adult ticket priced per the fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a Bus Rambler ticket is printed
+
+      **AND** the fare charged equals the fares-export Bus Rambler fare'
+    expected: 'A Summer Bus Rambler ticket is issued at its fares-export price, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Ticket Issue — concessionary half-fare single
+    title: Ticket Issue — concessionary half-fare single (cash)
+    refs: &id009
+    - FBD-100336
+    - FBD-100207
+    objective: This test is to confirm the customer can buy a half-fare concessionary single at the half-fare
+      price, paying by cash.
+    steps: '**GIVEN** a TVM showing the concessionary product range
+
+      **AND** an example half-fare concessionary single at half the Adult fares-export single fare
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the half-fare price from the fares export'
+    expected: 'A half-fare concessionary single is issued at the half-fare price, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]'
+  - title: Ticket Issue — concessionary half-fare single (card (Chip & PIN))
+    refs: *id009
+    objective: This test is to confirm the customer can buy a half-fare concessionary single at the half-fare
+      price, paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the concessionary product range
+
+      **AND** an example half-fare concessionary single at half the Adult fares-export single fare
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the half-fare price from the fares export'
+    expected: 'A half-fare concessionary single is issued at the half-fare price, paying by card (Chip
+      & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]'
+  - title: Ticket Issue — concessionary half-fare single (contactless)
+    refs: *id009
+    objective: This test is to confirm the customer can buy a half-fare concessionary single at the half-fare
+      price, paying by contactless.
+    steps: '**GIVEN** a TVM showing the concessionary product range
+
+      **AND** an example half-fare concessionary single at half the Adult fares-export single fare
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the half-fare price from the fares export'
+    expected: 'A half-fare concessionary single is issued at the half-fare price, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]'
+  - match: Ticket Issue — Day and Day Return tickets
+    title: Ticket Issue — Day ticket
+    refs:
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a Day ticket at the fares-export price.
+    steps: '**GIVEN** a TVM showing the Day and Day Return products
+
+      **AND** an example Metro Adult Day ticket priced per the fares export
+
+      **WHEN** the customer buys the Day ticket and pays
+
+      **THEN** the Day ticket is printed
+
+      **AND** the fare charged equals the fares-export price for that product'
+    expected: 'A Day ticket is issued at its fares-export price.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Day Return ticket
+    refs:
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a Day Return ticket at the fares-export price.
+    steps: '**GIVEN** a TVM showing the Day and Day Return products
+
+      **AND** an example Metro Adult Day Return ticket priced per the fares export
+
+      **WHEN** the customer buys the Day Return ticket and pays
+
+      **THEN** the Day Return ticket is printed
+
+      **AND** the fare charged equals the fares-export price for that product'
+    expected: 'A Day Return ticket is issued at its fares-export price.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — 1 Month Return ticket
+    refs:
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a 1 Month Return ticket at the fares-export
+      price.
+    steps: '**GIVEN** a TVM showing the Day and Day Return products
+
+      **AND** an example Metro Adult 1 Month Return ticket priced per the fares export
+
+      **WHEN** the customer buys the 1 Month Return ticket and pays
+
+      **THEN** the 1 Month Return ticket is printed
+
+      **AND** the fare charged equals the fares-export price for that product'
+    expected: 'A 1 Month Return ticket is issued at its fares-export price.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — issued ticket carries a single-use barcode
+    refs:
+    - FBD-100167
+    - FBD-100317 (old suite C3544955-C3544968 Rail multi-use barcode issuance; gap-register Q10; consolidation-completeness
+      audit 2026-07-23)
+    objective: This test is to confirm a printed ticket carries a single-use barcode when the ticket type
+      has barcode printing enabled.
+    steps: '**GIVEN** a TVM issuing a product whose ticket type has barcode printing enabled in CloudFare
+
+      **AND** an example Metro Adult Single from 10A (IN) Casement Park to City Hall
+
+      **WHEN** the customer completes the purchase
+
+      **THEN** a single-use barcode is printed at the end of the ticket'
+    expected: 'A ticket for a barcode-enabled product prints a single-use barcode at the end of the ticket.
+
+
+      [Automatable: Partial — Cross-check: CloudFare / MERIT]'
+  - title: Ticket Issue — Cross Border, Family & Friends and concession rail products print a multi-use
+      barcode
+    refs:
+    - FBD-100167
+    - FBD-100317 (old suite C3544955-C3544968 Rail multi-use barcode issuance; gap-register Q10; consolidation-completeness
+      audit 2026-07-23)
+    objective: This test is to confirm a Cross Border, Family & Friends or concession rail product prints
+      a multi-use-type barcode for redemption elsewhere, in contrast to the single-use barcode on the
+      standard product (see the sibling single-use-barcode case).
+    steps: '**GIVEN** a TVM issuing a Cross Border, Family & Friends or concession rail product whose
+      ticket type has barcode printing enabled in CloudFare
+
+      **AND** an example NI Rail Cross-Border Adult single from Newry to Dundalk
+
+      **WHEN** the customer completes the purchase
+
+      **THEN** a multi-use-type barcode is printed at the end of the ticket
+
+      **AND** the TVM cannot itself validate that multi-use barcode presented back to it (the restriction
+      is on read-back, not on printing)'
+    expected: 'A Cross Border / Family & Friends / concession rail product prints a multi-use barcode
+      for redemption elsewhere; the TVM does not read that barcode type back.
+
+
+      [Automatable: Partial — Cross-check: CloudFare / MERIT]'
+- path:
+  - Functional
+  - Sales - Tickets
+  - Advance & 3-Day
+  cases:
+  - match: 3-Day — a 3-day ticket is issued
+    title: 3-Day — a 3-day ticket is issued (cash)
+    refs: &id010
+    - FBD-100336
+    objective: This test is to confirm the customer can buy a 3-day ticket at the fares-export price,
+      paying by cash.
+    steps: '**GIVEN** a TVM showing the 3-day product
+
+      **AND** an example Adult 3-Day ticket priced per the fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a 3-day ticket is printed
+
+      **AND** the fare charged equals the fares-export 3-day price'
+    expected: 'A 3-day ticket is issued at its fares-export price, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: 3-Day — a 3-day ticket is issued (card (Chip & PIN))
+    refs: *id010
+    objective: This test is to confirm the customer can buy a 3-day ticket at the fares-export price,
+      paying by card (Chip & PIN).
+    steps: '**GIVEN** a TVM showing the 3-day product
+
+      **AND** an example Adult 3-Day ticket priced per the fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a 3-day ticket is printed
+
+      **AND** the fare charged equals the fares-export 3-day price'
+    expected: 'A 3-day ticket is issued at its fares-export price, paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: 3-Day — a 3-day ticket is issued (contactless)
+    refs: *id010
+    objective: This test is to confirm the customer can buy a 3-day ticket at the fares-export price,
+      paying by contactless.
+    steps: '**GIVEN** a TVM showing the 3-day product
+
+      **AND** an example Adult 3-Day ticket priced per the fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a 3-day ticket is printed
+
+      **AND** the fare charged equals the fares-export 3-day price'
+    expected: 'A 3-day ticket is issued at its fares-export price, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+- path:
+  - Functional
+  - Sales - Tickets
+  - Rail & Cross-Border (Kiosk)
+  cases:
+  - match: NI Rail — Adult single between two stations
+    title: NI Rail — Adult single between two stations (cash)
+    refs: &id011
+    - FBD-100450
+    - FBD-100207
+    objective: This test is to confirm a Kiosk in NIR-Rail mode issues an Adult rail single between the
+      selected from and to stations, paying by cash.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the rail from/to station selection
+
+      **AND** an example Adult single from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** an Adult rail single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export single fare'
+    expected: 'A Kiosk issues an Adult NI rail single between the selected stations at the NIR fares-export
+      fare, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: NI Rail — Adult single between two stations (card (Chip & PIN))
+    refs: *id011
+    objective: This test is to confirm a Kiosk in NIR-Rail mode issues an Adult rail single between the
+      selected from and to stations, paying by card (Chip & PIN).
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the rail from/to station selection
+
+      **AND** an example Adult single from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** an Adult rail single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export single fare'
+    expected: 'A Kiosk issues an Adult NI rail single between the selected stations at the NIR fares-export
+      fare, paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: NI Rail — Adult single between two stations (contactless)
+    refs: *id011
+    objective: This test is to confirm a Kiosk in NIR-Rail mode issues an Adult rail single between the
+      selected from and to stations, paying by contactless.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the rail from/to station selection
+
+      **AND** an example Adult single from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** an Adult rail single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export single fare'
+    expected: 'A Kiosk issues an Adult NI rail single between the selected stations at the NIR fares-export
+      fare, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: NI Rail — 3-Day Select ticket
+    title: NI Rail — 3-Day Select ticket (cash)
+    refs: &id012
+    - FBD-100450
+    - FBD-100167
+    objective: This test is to confirm a Kiosk issues a rail 3-Day Select ticket valid on three selected
+      dates, paying by cash.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the 3-Day Select product
+
+      **AND** an example Adult 3-Day Select between Belfast Lanyon Place and Portadown priced per the
+      NIR fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a 3-Day Select ticket is printed
+
+      **AND** the printed validity reflects the 3-Day Select date rule'
+    expected: 'A rail 3-Day Select ticket is issued with its selectable-date validity, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: NI Rail — 3-Day Select ticket (card (Chip & PIN))
+    refs: *id012
+    objective: This test is to confirm a Kiosk issues a rail 3-Day Select ticket valid on three selected
+      dates, paying by card (Chip & PIN).
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the 3-Day Select product
+
+      **AND** an example Adult 3-Day Select between Belfast Lanyon Place and Portadown priced per the
+      NIR fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a 3-Day Select ticket is printed
+
+      **AND** the printed validity reflects the 3-Day Select date rule'
+    expected: 'A rail 3-Day Select ticket is issued with its selectable-date validity, paying by card
+      (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: NI Rail — 3-Day Select ticket (contactless)
+    refs: *id012
+    objective: This test is to confirm a Kiosk issues a rail 3-Day Select ticket valid on three selected
+      dates, paying by contactless.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing the 3-Day Select product
+
+      **AND** an example Adult 3-Day Select between Belfast Lanyon Place and Portadown priced per the
+      NIR fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a 3-Day Select ticket is printed
+
+      **AND** the printed validity reflects the 3-Day Select date rule'
+    expected: 'A rail 3-Day Select ticket is issued with its selectable-date validity, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: Cross-Border — Adult single
+    title: Cross-Border — Adult single (cash)
+    refs: &id013
+    - FBD-100450
+    - FBD-100207
+    objective: This test is to confirm a Kiosk issues a Cross-Border Adult single between a NI and a cross-border
+      station, paying by cash.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing cross-border stations
+
+      **AND** an example Cross-Border Adult single from Newry to Dundalk priced per the NIR fares export
+
+      **WHEN** the customer pays by cash
+
+      **THEN** a Cross-Border Adult single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export cross-border single fare'
+    expected: 'A Cross-Border single is issued between the selected NI and cross-border stations at the
+      fares-export fare, paying by cash.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Cross-Border — Adult single (card (Chip & PIN))
+    refs: *id013
+    objective: This test is to confirm a Kiosk issues a Cross-Border Adult single between a NI and a cross-border
+      station, paying by card (Chip & PIN).
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing cross-border stations
+
+      **AND** an example Cross-Border Adult single from Newry to Dundalk priced per the NIR fares export
+
+      **WHEN** the customer pays by card (Chip & PIN)
+
+      **THEN** a Cross-Border Adult single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export cross-border single fare'
+    expected: 'A Cross-Border single is issued between the selected NI and cross-border stations at the
+      fares-export fare, paying by card (Chip & PIN).
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - title: Cross-Border — Adult single (contactless)
+    refs: *id013
+    objective: This test is to confirm a Kiosk issues a Cross-Border Adult single between a NI and a cross-border
+      station, paying by contactless.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing cross-border stations
+
+      **AND** an example Cross-Border Adult single from Newry to Dundalk priced per the NIR fares export
+
+      **WHEN** the customer pays by contactless
+
+      **THEN** a Cross-Border Adult single is printed for the selected stations
+
+      **AND** the fare charged equals the NIR fares-export cross-border single fare'
+    expected: 'A Cross-Border single is issued between the selected NI and cross-border stations at the
+      fares-export fare, paying by contactless.
+
+
+      [Automatable: Partial · Cross-check: CloudFare / MERIT]'
+  - match: NI Rail — Day Return, Weekly and Monthly products
+    title: NI Rail — Day Return ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a NI rail Day Return product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with stations selected
+
+      **AND** an example Adult Day Return from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the Day Return product and pays
+
+      **THEN** the Day Return ticket is printed for the stations
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A NI rail Day Return product is issued at its NIR fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — Weekly ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a NI rail Weekly product at the fares-export price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with stations selected
+
+      **AND** an example Adult Weekly from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the Weekly product and pays
+
+      **THEN** the Weekly ticket is printed for the stations
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A NI rail Weekly product is issued at its NIR fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — Monthly ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a NI rail Monthly product at the fares-export price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with stations selected
+
+      **AND** an example Adult Monthly from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the Monthly product and pays
+
+      **THEN** the Monthly ticket is printed for the stations
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A NI rail Monthly product is issued at its NIR fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — 1/3-off Day Return ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a NI rail 1/3-off Day Return product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with stations selected
+
+      **AND** an example Adult 1/3-off Day Return from Belfast Lanyon Place to Portadown priced per the
+      NIR fares export
+
+      **WHEN** the customer selects the 1/3-off Day Return product and pays
+
+      **THEN** the 1/3-off Day Return ticket is printed for the stations
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A NI rail 1/3-off Day Return product is issued at its NIR fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — Day Tracker ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a NI rail Day Tracker product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with stations selected
+
+      **AND** an example Adult Day Tracker from Belfast Lanyon Place to Portadown priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the Day Tracker product and pays
+
+      **THEN** the Day Tracker ticket is printed for the stations
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A NI rail Day Tracker product is issued at its NIR fares-export price.
+
+
+      [Automatable: Partial]'
+  - match: Cross-Border — Return, Monthly and 1-Month-Return products
+    title: Cross-Border — Day Return ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a Cross-Border Day Return product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with cross-border stations selected
+
+      **AND** an example Cross-Border Adult Day Return from Newry to Dundalk priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the Day Return product and pays
+
+      **THEN** the Day Return cross-border ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A Cross-Border Day Return product is issued at its fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: Cross-Border — Weekly ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a Cross-Border Weekly product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with cross-border stations selected
+
+      **AND** an example Cross-Border Adult Weekly from Newry to Dundalk priced per the NIR fares export
+
+      **WHEN** the customer selects the Weekly product and pays
+
+      **THEN** the Weekly cross-border ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A Cross-Border Weekly product is issued at its fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: Cross-Border — Monthly ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a Cross-Border Monthly product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with cross-border stations selected
+
+      **AND** an example Cross-Border Adult Monthly from Newry to Dundalk priced per the NIR fares export
+
+      **WHEN** the customer selects the Monthly product and pays
+
+      **THEN** the Monthly cross-border ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A Cross-Border Monthly product is issued at its fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: Cross-Border — 1 Month Return ticket
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a Cross-Border 1 Month Return product at the fares-export
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode with cross-border stations selected
+
+      **AND** an example Cross-Border Adult 1 Month Return from Newry to Dundalk priced per the NIR fares
+      export
+
+      **WHEN** the customer selects the 1 Month Return product and pays
+
+      **THEN** the 1 Month Return cross-border ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export price for that product'
+    expected: 'A Cross-Border 1 Month Return product is issued at its fares-export price.
+
+
+      [Automatable: Partial]'
+  - match: Cross-Border — 1st Class ticket
+    title: Cross-Border — 1st Class Single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a 1st Class Cross-Border Single at the 1st Class
+      fares-export price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing 1st Class cross-border products
+
+      **AND** an example 1st Class Cross-Border Adult Single priced per the NIR fares export
+
+      **WHEN** the customer buys the 1st Class Single and pays
+
+      **THEN** a 1st Class Cross-Border Single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export 1st Class price'
+    expected: 'A 1st Class Cross-Border Single is issued at the 1st Class fares-export price.
+
+
+      [Automatable: Partial]'
+  - title: Cross-Border — 1st Class 1 Month Return
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a 1st Class Cross-Border 1 Month Return at the 1st
+      Class fares-export price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing 1st Class cross-border products
+
+      **AND** an example 1st Class Cross-Border Adult 1 Month Return priced per the NIR fares export
+
+      **WHEN** the customer buys the 1st Class 1 Month Return and pays
+
+      **THEN** a 1st Class Cross-Border 1 Month Return ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export 1st Class price'
+    expected: 'A 1st Class Cross-Border 1 Month Return is issued at the 1st Class fares-export price.
+
+
+      [Automatable: Partial]'
+  - match: NI Rail — concessionary single
+    title: NI Rail — Senior concessionary single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a rail concessionary single at the Senior concessionary
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products
+
+      **AND** an example Senior concessionary single from Belfast Lanyon Place to Portadown priced per
+      the NIR fares export
+
+      **WHEN** the customer buys a Senior concessionary single and pays
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export concessionary price'
+    expected: 'A rail Senior concessionary single is issued at its fares-export concessionary price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — ROI Senior concessionary single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a rail concessionary single at the ROI Senior concessionary
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products
+
+      **AND** an example ROI Senior concessionary single from Belfast Lanyon Place to Portadown priced
+      per the NIR fares export
+
+      **WHEN** the customer buys a ROI Senior concessionary single and pays
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export concessionary price'
+    expected: 'A rail ROI Senior concessionary single is issued at its fares-export concessionary price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — Blind concessionary single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a rail concessionary single at the Blind concessionary
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products
+
+      **AND** an example Blind concessionary single from Belfast Lanyon Place to Portadown priced per
+      the NIR fares export
+
+      **WHEN** the customer buys a Blind concessionary single and pays
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export concessionary price'
+    expected: 'A rail Blind concessionary single is issued at its fares-export concessionary price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — War Pensioner concessionary single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a rail concessionary single at the War Pensioner
+      concessionary price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products
+
+      **AND** an example War Pensioner concessionary single from Belfast Lanyon Place to Portadown priced
+      per the NIR fares export
+
+      **WHEN** the customer buys a War Pensioner concessionary single and pays
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export concessionary price'
+    expected: 'A rail War Pensioner concessionary single is issued at its fares-export concessionary price.
+
+
+      [Automatable: Partial]'
+  - title: NI Rail — 60+ concessionary single
+    refs:
+    - FBD-100450
+    objective: This test is to confirm a Kiosk issues a rail concessionary single at the 60+ concessionary
+      price.
+    steps: '**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products
+
+      **AND** an example 60+ concessionary single from Belfast Lanyon Place to Portadown priced per the
+      NIR fares export
+
+      **WHEN** the customer buys a 60+ concessionary single and pays
+
+      **THEN** a concessionary single ticket is printed
+
+      **AND** the fare charged equals the NIR fares-export concessionary price'
+    expected: 'A rail 60+ concessionary single is issued at its fares-export concessionary price.
+
+
+      [Automatable: Partial]'

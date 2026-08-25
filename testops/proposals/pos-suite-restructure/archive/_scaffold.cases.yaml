@@ -1,0 +1,16 @@
+# Creates the empty top-level scope sections so existing feature sections can be dragged under them.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+sections:
+  - path: ["Smoke"]
+    cases: []
+  - path: ["Functional"]
+    cases: []
+  - path: ["NIR (Rail)"]
+    cases: []
+  - path: ["Ulsterbus"]
+    cases: []
+  - path: ["Metro"]
+    cases: []
+  - path: ["Non-Functional"]
+    cases: []

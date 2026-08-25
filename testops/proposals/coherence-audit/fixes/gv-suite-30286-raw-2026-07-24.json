@@ -1,0 +1,3432 @@
+[
+  {
+    "id": 4104011,
+    "title": "ABT Tap — a valid contactless card tap succeeds and the gate opens",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276934,
+    "updated_by": 156,
+    "updated_on": 1784286137,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a route whose ABT Type is \"Tap On Tap Off\"\n**AND** its home location is within the configured \"Northern Ireland Zone\"\n**AND** the \"ABT Tap Product Name\" product (Product ID 6000) is configured\n**AND** a valid, in-date Visa Debit card is presented to the reader",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the card on the GV",
+        "expected": "**THEN** the success screen is displayed\n**AND** the success beep sounds\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A valid cEMV tap is accepted, the success screen and beep are given, and the gate opens. Data variations, card scheme, Visa Debit / Visa Credit / Mastercard Debit / Mastercard Credit.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104012,
+    "title": "ABT Tap — a successful tap posts an ABT audit record with zero revenue",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100658,FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276935,
+    "updated_by": 156,
+    "updated_on": 1784286138,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a successful cEMV tap posts a conformant ABT audit record to the back office.",
+    "custom_preconds": "**GIVEN** an NIR GV head has accepted a valid contactless tap at a rail station gate\n**AND** the configured travel product is the NIR TOTO product (Product ID 6000)",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the tap record is sent to the ABT back office",
+        "expected": "**THEN** the record shows paymentType \"ABT\"\n**AND** the record shows revenue 0\n**AND** the record shows CardType \"emv\"\n**AND** the record carries the NIR TOTO Product ID 6000"
+      }
+    ],
+    "custom_expected": "The successful tap posts an ABT record with paymentType ABT, zero revenue, CardType emv and the TOTO product id, as the back office calculates the fare.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104013,
+    "title": "ABT Tap — the TapId is composed of DeviceId, TID and UNIX timestamp",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276936,
+    "updated_by": 156,
+    "updated_on": 1784710607,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the audit TapId is the DeviceId, Terminal ID and UNIX timestamp concatenated.",
+    "custom_preconds": "**GIVEN** an NIR GV head with DeviceId 042002 and Terminal ID 20115688 has accepted a tap\n**AND** an example composed TapId of 042002201156881725545715",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the tap record is sent to the ABT back office",
+        "expected": "**THEN** the TapId is 042002201156881725545715 — DeviceId, Terminal ID and UNIX timestamp concatenated"
+      }
+    ],
+    "custom_expected": "The audit TapId concatenates DeviceId, Terminal ID and UNIX timestamp (042002 + 20115688 + 1725545715 = 042002201156881725545715).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104014,
+    "title": "ABT Tap — an expired card is declined with Declined Reason 1",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276937,
+    "updated_by": 156,
+    "updated_on": 1784286139,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card that fails the expiry check is declined and audited with Declined Reason 1.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service at a rail station gate\n**AND** a contactless card whose expiry date has passed is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the expired card",
+        "expected": "**THEN** the invalid-tap screen is displayed\n**AND** the gate does not open\n**AND** an audit record is posted with Declined Reason 1"
+      }
+    ],
+    "custom_expected": "An expired card is declined, the gate stays closed, and the tap is audited with Declined Reason 1 (Expired).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104015,
+    "title": "ABT Tap — a card failing ODA is declined with Declined Reason 3",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276938,
+    "updated_by": 156,
+    "updated_on": 1784286139,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card that fails Offline Data Authentication is declined and audited with Declined Reason 3.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service at a rail station gate\n**AND** a contactless card that fails Offline Data Authentication (ODA) is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the card",
+        "expected": "**THEN** the invalid-tap screen is displayed\n**AND** the gate does not open\n**AND** an audit record is posted with Declined Reason 3"
+      }
+    ],
+    "custom_expected": "A card failing ODA is declined, the gate stays closed, and the tap is audited with Declined Reason 3 (Declined).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104016,
+    "title": "ABT Tap — a card on the BIN List is declined with Declined Reason 15",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276938,
+    "updated_by": 156,
+    "updated_on": 1784286140,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card whose BIN is on the downloaded BIN List is declined and audited with Declined Reason 15.",
+    "custom_preconds": "**GIVEN** an NIR GV head has the daily BIN List downloaded from CloudFare\n**AND** a contactless card whose BIN is on that BIN List is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the card",
+        "expected": "**THEN** the invalid-tap screen is displayed\n**AND** the gate does not open\n**AND** an audit record is posted with Declined Reason 15"
+      }
+    ],
+    "custom_expected": "A card on the BIN List is declined, the gate stays closed, and the tap is audited with Declined Reason 15 (On BIN List).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104017,
+    "title": "ABT Tap — a card on the Deny List is rejected in entry mode with Declined Reason 2",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276939,
+    "updated_by": 156,
+    "updated_on": 1784286141,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card on the Deny List is rejected and the gate stays closed when the GV is in an entry-only mode.",
+    "custom_preconds": "**GIVEN** an NIR GV head is running in an entry-only Direction configuration\n**AND** the full Deny List and 15-minute delta files are downloaded from CloudFare\n**AND** a contactless card that appears on the Deny List is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the deny-listed card",
+        "expected": "**THEN** the invalid-tap screen is displayed\n**AND** the gate does not open\n**AND** an audit record is posted with Declined Reason 2"
+      }
+    ],
+    "custom_expected": "In entry mode a deny-listed card is rejected, the gate stays closed, and the tap is audited with Declined Reason 2 (On Deny List). (Exit/bi-di behaviour differs — see the exit exception case.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104018,
+    "title": "ABT Tap — every declined check still posts an audit record",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276940,
+    "updated_by": 156,
+    "updated_on": 1784277810,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm each declined card check still emits an audit record carrying the relevant Declined Reason.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service at a rail station gate\n**AND** a card that will fail one of the card checks is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the card and the check fails",
+        "expected": "**THEN** an audit record is posted for the declined tap\n**AND** the record carries the Declined Reason for that check"
+      }
+    ],
+    "custom_expected": "A declined tap always produces an audit record carrying its Declined Reason, so no failed tap goes unrecorded. Data variations, Declined Reason 1 Expired / 2 Deny List / 3 Declined / 15 BIN List / 20 Passback.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104019,
+    "title": "ABT Tap — an offline transaction is accepted and queued for the back office",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276941,
+    "updated_by": 156,
+    "updated_on": 1784286142,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a valid tap taken while the GV has no back-office connection is accepted and queued.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service with the BIN List and Deny List already downloaded\n**AND** the connection to the ABT back office is currently unavailable\n**AND** a valid, in-date contactless card is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the card",
+        "expected": "**THEN** the success screen is displayed\n**AND** the gate opens\n**AND** the tap record is queued for upload when the connection is restored"
+      }
+    ],
+    "custom_expected": "An offline valid tap is accepted against the on-device lists, the gate opens, and the record is queued for later upload.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104020,
+    "title": "ABT Tap — the reader stays disarmed when the route ABT Type is not Tap On Tap Off",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276942,
+    "updated_by": 156,
+    "updated_on": 1784277811,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV reader does not arm when the first route at the home location is not an ABT Tap On Tap Off route.",
+    "custom_preconds": "**GIVEN** an NIR GV head whose home-location first route has an ABT Type other than \"Tap On Tap Off\"",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the GV performs its pre-read route-attribute check",
+        "expected": "**THEN** the cEMV reader does not arm for ABT taps"
+      }
+    ],
+    "custom_expected": "With a non-TOTO route attribute the pre-read check fails and the reader does not arm for ABT taps.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104021,
+    "title": "ABT Tap — the reader stays disarmed when the home location is outside the Northern Ireland Zone",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276943,
+    "updated_by": 156,
+    "updated_on": 1784277812,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV reader does not arm when its home location falls outside the configured Northern Ireland Zone.",
+    "custom_preconds": "**GIVEN** an NIR GV head whose home location is not within the configured \"Northern Ireland Zone\"",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the GV performs its pre-read location check",
+        "expected": "**THEN** the cEMV reader does not arm for ABT taps"
+      }
+    ],
+    "custom_expected": "With a home location outside the Northern Ireland Zone the pre-read location check fails and the reader does not arm.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104022,
+    "title": "ABT Tap — the reader stays disarmed when the ABT Tap Product is not configured",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276943,
+    "updated_by": 156,
+    "updated_on": 1784277813,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV reader does not arm when no product matching the TMS \"ABT Tap Product Name\" exists.",
+    "custom_preconds": "**GIVEN** an NIR GV head with no product matching the configured TMS \"ABT Tap Product Name\"",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the GV performs its pre-read product check",
+        "expected": "**THEN** the cEMV reader does not arm for ABT taps"
+      }
+    ],
+    "custom_expected": "With no ABT Tap Product configured the pre-read product check fails and the reader does not arm.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104023,
+    "title": "ABT Tap — an unreadable card presentation gives an error and the gate stays closed",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276944,
+    "updated_by": 156,
+    "updated_on": 1784277814,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 13,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm an unreadable card presentation is handled without opening the gate.",
+    "custom_preconds": "**GIVEN** an armed NIR GV head at a rail station gate\n**AND** a card that cannot be read is presented to the reader",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the unreadable card",
+        "expected": "**THEN** an error is shown to the passenger\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "An unreadable card presentation is rejected with an error and the gate stays closed.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104024,
+    "title": "ABT Tap — a Maestro card is not accepted at the GV",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690",
+    "created_by": 156,
+    "created_on": 1784276945,
+    "updated_by": 156,
+    "updated_on": 1784277814,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 14,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV accepts Visa and Mastercard schemes only, not Maestro (which is a PV-only scheme).",
+    "custom_preconds": "**GIVEN** an armed NIR GV head at a rail station gate\n**AND** a Maestro card is presented to the reader",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the Maestro card",
+        "expected": "**THEN** the card is not accepted for an ABT tap\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "The GV validates Visa and Mastercard only; a Maestro tap is not accepted (Maestro is accepted on the PV, not the GV).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104025,
+    "title": "ABT Tap — an exit-capable gate opens for a deny-listed card but audits the tap invalid",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276946,
+    "updated_by": 156,
+    "updated_on": 1784286143,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 15,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm that in an exit-capable mode a deny-listed card still opens the gate to let the passenger out while the tap is audited as invalid.",
+    "custom_preconds": "**GIVEN** an NIR GV head is running in an exit or bi-directional Direction configuration\n**AND** the Deny List is downloaded and a card on that Deny List is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the deny-listed card to exit",
+        "expected": "**THEN** the gate opens to let the passenger leave\n**AND** the screen shows the tap as invalid\n**AND** the tap is audited as invalid\n**AND** the invalid tap triggers a debt retry"
+      }
+    ],
+    "custom_expected": "In exit/bi-directional mode a deny-listed card opens the gate to let the passenger out, but the tap is audited invalid and a debt retry is triggered (unlike entry mode, which rejects).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104026,
+    "title": "ABT Tap — an entry-configured gate audits the tap as a Tap On",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276947,
+    "updated_by": 156,
+    "updated_on": 1784277816,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 16,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a tap on a gate configured for entry is classified as a Tap On in the audit.",
+    "custom_preconds": "**GIVEN** an NIR GV head running in an entry Direction configuration\n**AND** a valid contactless card is tapped and accepted",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the tap record is sent to the ABT back office",
+        "expected": "**THEN** the Gate Direction is \"entry\"\n**AND** the tap is classified as a Tap On"
+      }
+    ],
+    "custom_expected": "A tap on an entry-configured gate carries Gate Direction \"entry\" and is classified as a Tap On.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104027,
+    "title": "ABT Tap — an exit-configured gate audits the tap as a Tap Off",
+    "section_id": 887831,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276948,
+    "updated_by": 156,
+    "updated_on": 1784277817,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 17,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a tap on a gate configured for exit is classified as a Tap Off in the audit.",
+    "custom_preconds": "**GIVEN** an NIR GV head running in an exit Direction configuration\n**AND** a valid contactless card is tapped and accepted",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the tap record is sent to the ABT back office",
+        "expected": "**THEN** the Gate Direction is \"exit\"\n**AND** the tap is classified as a Tap Off"
+      }
+    ],
+    "custom_expected": "A tap on an exit-configured gate carries Gate Direction \"exit\" and is classified as a Tap Off.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104028,
+    "title": "Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276949,
+    "updated_by": 156,
+    "updated_on": 1784286144,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid, in-date multi-use barcode for an Adult product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode to the reader",
+        "expected": "**THEN** a green tick result is displayed\n**AND** a success audio tone sounds\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A valid multi-use barcode is accepted with a green tick and audio, and the gate opens. Data variations, product, Adult / Child / 3-Day Select / 1-3 Off Day Return / 24+ / Ylink / Concession / Half Fare / Day Tracker / Unemployed Day Return.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104029,
+    "title": "Barcode — a barcode on a mobile device screen validates the same as a printed one",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276950,
+    "updated_by": 156,
+    "updated_on": 1784710608,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a multi-use barcode shown on a mobile device screen validates identically to a printed barcode.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid Corethree mLink barcode (format 02) is shown on a passenger's mobile device screen",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the on-screen barcode to the reader",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A Corethree mLink barcode presented from a mobile device screen validates using the same offline business rules as a printed Flowbird barcode.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104030,
+    "title": "Barcode — a TVM-produced barcode validates at the GV",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276951,
+    "updated_by": 156,
+    "updated_on": 1784277819,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a multi-use barcode printed by a TVM validates at the GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode ticket printed on a TVM is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the TVM-produced barcode",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A TVM-produced multi-use barcode validates at the GV and opens the gate.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104031,
+    "title": "Barcode — an HHD-produced barcode validates at the GV",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276951,
+    "updated_by": 156,
+    "updated_on": 1784277820,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a multi-use barcode printed by an HHD validates at the GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode ticket printed on an HHD is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the HHD-produced barcode",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "An HHD-produced multi-use barcode validates at the GV and opens the gate.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104032,
+    "title": "Barcode — a route/location-only failure gives a yellow question mark",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276952,
+    "updated_by": 156,
+    "updated_on": 1784277821,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode that passes all checks except the route/location step gives a yellow question-mark result.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode valid on time, mode, product and zone but not for this gate's location is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode",
+        "expected": "**THEN** a yellow question-mark result is displayed\n**AND** the yellow result is shown for 3 seconds or until the next transaction or keypress"
+      }
+    ],
+    "custom_expected": "A barcode failing only the route/location step gives a yellow question mark shown for 3 seconds or until the next transaction, distinguishing it from a full pass or a hard reject.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104033,
+    "title": "Barcode — a failed validation gives a red cross with a reason",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276953,
+    "updated_by": 156,
+    "updated_on": 1784286144,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode failing a check other than route/location gives a red-cross result with a reason.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode that fails a check other than route/location is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the failure reason is shown\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "A barcode failing a non-location check gives a red cross with the reason and the gate stays closed.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104034,
+    "title": "Barcode — an already-validated barcode is rejected",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276954,
+    "updated_by": 156,
+    "updated_on": 1784277822,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode already validated is rejected when presented again at the GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a multi-use barcode that has already been validated is presented again",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the already-validated barcode",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "An already-validated barcode is rejected with a red cross and the gate stays closed.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104035,
+    "title": "Barcode — an expired barcode is rejected",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276955,
+    "updated_by": 156,
+    "updated_on": 1784277823,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode whose expiry has passed is rejected at the GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a multi-use barcode whose encoded expiry time has passed is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the expired barcode",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "An expired barcode is rejected with a red cross and the gate stays closed.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104036,
+    "title": "Barcode — a rail barcode failing the location check is treated valid when the fare is at least the £90 fallback",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276956,
+    "updated_by": 156,
+    "updated_on": 1784277824,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the rail fare-fallback (CR105.3) treats a location-failing barcode as valid when the product rule value is at least £90.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a rail barcode whose product carries a TMS rule value of at least £90 fails the rail location check",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode",
+        "expected": "**THEN** the barcode is treated as valid under the £90 fare-fallback\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "Under CR105.3, a rail barcode that fails the location check but whose product rule value is at least £90 is treated as valid and opens the gate.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104037,
+    "title": "Barcode — a rail barcode failing the location check is rejected when the fare is below the £90 fallback",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276956,
+    "updated_by": 156,
+    "updated_on": 1784277825,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a location-failing rail barcode below the £90 fallback threshold is not treated as valid.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a rail barcode whose product rule value is below £90 fails the rail location check",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "A location-failing rail barcode below the £90 fare-fallback threshold is rejected and the gate stays closed.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104039,
+    "title": "Barcode — an expiry between midnight and 4am shows the previous day and no time",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276958,
+    "updated_by": 156,
+    "updated_on": 1784277827,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the CR116 expiry display shows the previous day and no time for an expiry between 00:00 and 04:00.",
+    "custom_preconds": "**GIVEN** an NIR GV head with CR116 enabled is in service\n**AND** a barcode with an encoded expiry of 20240520-0400 is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode and the result screen shows the expiry",
+        "expected": "**THEN** the expiry date is displayed as \"19/05/2024\"\n**AND** no expiry time is displayed"
+      }
+    ],
+    "custom_expected": "With CR116, an expiry of 04:00 or earlier in the 00:00-04:00 window shows the previous day (19/05/2024) with no time.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104040,
+    "title": "Barcode — an expiry just after 4am shows the same day with a time",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276959,
+    "updated_by": 156,
+    "updated_on": 1784277827,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 13,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the CR116 expiry display shows the same day and a time for an expiry after 04:00.",
+    "custom_preconds": "**GIVEN** an NIR GV head with CR116 enabled is in service\n**AND** a barcode with an encoded expiry of 20240520-0401 is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the barcode and the result screen shows the expiry",
+        "expected": "**THEN** the expiry is displayed as \"20/05/24 04:01\""
+      }
+    ],
+    "custom_expected": "With CR116, an expiry after 04:00 shows the same calendar day with its time (20/05/24 04:01).\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104041,
+    "title": "Barcode — the read-to-beep response is within one second",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276960,
+    "updated_by": 156,
+    "updated_on": 1784277828,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 14,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV gives its result beep within one second of reading a barcode.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the GV reads the barcode",
+        "expected": "**THEN** the result beep is given within one second of the read"
+      }
+    ],
+    "custom_expected": "The barcode read-to-beep response is within one second under reasonable conditions.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104042,
+    "title": "Barcode — a new barcode presented during a result screen is processed immediately",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276961,
+    "updated_by": 156,
+    "updated_on": 1784277829,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 15,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode presented while a previous result screen is showing is processed immediately without waiting for the timeout.",
+    "custom_preconds": "**GIVEN** an NIR GV head is showing a barcode result screen\n**AND** a second valid multi-use barcode is presented before the screen times out",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the second barcode",
+        "expected": "**THEN** the second barcode is processed immediately\n**AND** its own result is displayed"
+      }
+    ],
+    "custom_expected": "A barcode presented during a result screen is processed immediately rather than waiting for the previous result to time out.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104043,
+    "title": "Barcode — a successful validation posts a zero-fare BarcodeUsage transaction",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276962,
+    "updated_by": 156,
+    "updated_on": 1784286145,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 16,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a successful barcode validation posts a zero-fare BarcodeUsage transaction to the back office.",
+    "custom_preconds": "**GIVEN** an NIR GV head has accepted a valid multi-use barcode with a green tick",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the transaction is sent to CloudFare",
+        "expected": "**THEN** the transaction type is the barcode Product ID\n**AND** the fare is zero\n**AND** the payment type is \"BarcodeUsage\"\n**AND** the transaction carries the barcode Unique ID"
+      }
+    ],
+    "custom_expected": "A successful barcode validation posts a BarcodeUsage transaction with zero fare, the barcode Product ID and the Unique ID.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104044,
+    "title": "Barcode — a failed validation posts an event carrying the Unique ID and reason",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276962,
+    "updated_by": 156,
+    "updated_on": 1784286146,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 17,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a failed barcode validation posts an event to the back office carrying the Unique ID and failure reason.",
+    "custom_preconds": "**GIVEN** an NIR GV head has rejected a barcode with a red cross",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the failure is sent to CloudFare",
+        "expected": "**THEN** an event is posted for the failed validation\n**AND** the event carries the barcode Unique ID\n**AND** the event carries the failure reason"
+      }
+    ],
+    "custom_expected": "A failed barcode validation posts an event carrying the barcode Unique ID and the failure reason, viewable in the back-office event viewers.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104045,
+    "title": "Barcode — the GV validates multi-use barcodes",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276963,
+    "updated_by": 156,
+    "updated_on": 1784277832,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 18,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV validates multi-use barcodes (unlike POS and TVM, which validate single-use barcodes only).",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use (not single-use) barcode is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the multi-use barcode",
+        "expected": "**THEN** the barcode is validated as a multi-use barcode\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "The GV validates multi-use barcodes, confirming it is in the multi-use device set (ETM/HHD/GV/PV) rather than the single-use-only set (POS/TVM).\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104046,
+    "title": "Barcode — a 3-Day Select ticket is valid on its start, additional and end dates",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276964,
+    "updated_by": 156,
+    "updated_on": 1784277832,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 19,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a 3-Day Select barcode validates only on its start date, an additional-dates offset, or its end date.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a 3-Day Select barcode whose current date equals its Start date is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the 3-Day Select barcode",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A 3-Day Select barcode is valid when the current date equals its Start date, an Additional-Dates offset, or its End date. Data variations, current date equals Start / an Additional Date / End.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104047,
+    "title": "Barcode — a barcode encoded for bus mode only is rejected on a rail gate",
+    "section_id": 887832,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276965,
+    "updated_by": 156,
+    "updated_on": 1784277833,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 20,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode whose encoded mode does not include rail is rejected on a rail GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode encoded with mode BUS (0001) only is presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger presents the bus-only barcode",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "A barcode encoded for BUS mode only fails the mode check at a rail GV and is rejected; only ALL (FFFF) or RAIL (0002) modes are valid there.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104048,
+    "title": "Passback — a barcode re-presented within the passback window is rejected",
+    "section_id": 887833,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276966,
+    "updated_by": 156,
+    "updated_on": 1784277834,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a multi-use barcode re-presented within the configured passback window is rejected at the GV.",
+    "custom_preconds": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a multi-use barcode was just validated successfully with a green tick",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the same barcode is presented again within the passback window",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "A barcode re-presented within the passback window is rejected on its Unique-ID passback check and the gate stays closed.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104049,
+    "title": "Passback — a barcode re-presented after other transactions is still rejected within the window",
+    "section_id": 887833,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276967,
+    "updated_by": 156,
+    "updated_on": 1784277835,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode re-presented within the passback window is rejected even after intervening transactions.",
+    "custom_preconds": "**GIVEN** an NIR GV head validated a multi-use barcode, then processed other transactions\n**AND** the original barcode's passback window has not yet elapsed",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the original barcode is presented again",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "A barcode is still rejected on passback within its window even after other transactions have been processed in between.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104050,
+    "title": "Passback — a card re-tapped within the passback time is declined with Declined Reason 20",
+    "section_id": 887833,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100658",
+    "created_by": 156,
+    "created_on": 1784276968,
+    "updated_by": 156,
+    "updated_on": 1784286147,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a contactless card re-tapped within the TMS passback time is declined with Declined Reason 20 and a distinct error screen.",
+    "custom_preconds": "**GIVEN** an NIR GV head accepted a valid contactless tap\n**AND** the same card is re-tapped within the configured TMS passback time",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger re-taps the card",
+        "expected": "**THEN** the distinct passback error screen is displayed\n**AND** the gate does not open\n**AND** an audit record is posted with Declined Reason 20"
+      }
+    ],
+    "custom_expected": "A card re-tapped within the passback time gives the distinct passback error screen, the gate stays closed, and the tap is audited with Declined Reason 20 (Passback).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104051,
+    "title": "Passback — a barcode presented on a second gateline head is rejected as passback",
+    "section_id": 887833,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276969,
+    "updated_by": 156,
+    "updated_on": 1784277837,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the gateline Unique-ID share rejects as passback a barcode already validated on another head of the same gateline.",
+    "custom_preconds": "**GIVEN** two NIR GV heads share barcode Unique IDs as one gateline (CR105.2)\n**AND** a barcode was validated on the first head within the passback window",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the same barcode is presented to the second head",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "The gateline share (CR105.2) means a barcode validated on one head is rejected as passback on the other head of the gateline.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104052,
+    "title": "Passback — a barcode presented after the passback window elapses is accepted",
+    "section_id": 887833,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276969,
+    "updated_by": 156,
+    "updated_on": 1784277837,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode presented after its passback window has elapsed is accepted (where the product otherwise permits re-use).",
+    "custom_preconds": "**GIVEN** an NIR GV head validated a multi-use barcode whose product permits re-use\n**AND** the configured passback window has fully elapsed",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented again after the window",
+        "expected": "**THEN** a green tick result is displayed\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "Once the passback window has elapsed, a re-usable barcode is accepted again and the gate opens.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104053,
+    "title": "Commissioning — both GV heads boot into service after live software load",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277152,
+    "updated_by": 156,
+    "updated_on": 1784642203,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm both GV heads on a commissioned lane self-extract the live software and enter service.",
+    "custom_preconds": "**GIVEN** a lane commissioned with the primary app zip on the P microSD and the secondary app zip on the S microSD\n**AND** an example lane at York Street with the current live app pair loaded",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** each head boots for the first time and the operator taps Allow on the three Android permission prompts",
+        "expected": "**THEN** each head completes its first-boot self-extract\n**AND** the gate enters service on both heads"
+      }
+    ],
+    "custom_expected": "Both heads self-extract the live software, accept the permission prompts, and the gate reaches service.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104054,
+    "title": "Commissioning — Primary head is Entry/unpaid and Secondary head is Exit/paid (roles not swapped)",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277153,
+    "updated_by": 156,
+    "updated_on": 1784277839,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the commissioned lane has the Primary head on the entry/unpaid side and the Secondary head on the exit/paid side.",
+    "custom_preconds": "**GIVEN** a commissioned lane with the P image on one head and the S image on the other\n**AND** the entry/unpaid side is physically the approach side of an example York Street lane",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician verifies which image booted on each side",
+        "expected": "**THEN** the Primary (P) head is on the entry/unpaid side\n**AND** the Secondary (S) head is on the exit/paid side"
+      }
+    ],
+    "custom_expected": "The Primary head serves the entry/unpaid side and the Secondary head the exit/paid side, confirming the images were not swapped.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104055,
+    "title": "Commissioning — SkyLane interface firmware is HF03",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100653,FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277153,
+    "updated_by": 156,
+    "updated_on": 1784277840,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the SkyLane interface board of a commissioned lane runs firmware HF03.",
+    "custom_preconds": "**GIVEN** a commissioned lane whose SkyLane interface board is reachable at 192.168.0.200",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician logs in to the SkyLane board and reads the firmware version",
+        "expected": "**THEN** the firmware version is HF03"
+      }
+    ],
+    "custom_expected": "The SkyLane interface board reports HF03 firmware, which enables the front-most plinth sensors.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104056,
+    "title": "Commissioning — correct gate width variant (Standard vs Wide) is installed",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277154,
+    "updated_by": 156,
+    "updated_on": 1784277841,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the SkyLane firmware variant matches the physical gate aisle width.",
+    "custom_preconds": "**GIVEN** a commissioned lane that is physically a Standard 600 mm aisle\n**AND** the SkyLane firmware ships in distinct Standard and Wide (disabled-access) variants",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician reads the installed firmware variant",
+        "expected": "**THEN** the installed variant is the Standard variant"
+      }
+    ],
+    "custom_expected": "The installed firmware variant matches the physical aisle width (Standard for a 600 mm aisle, Wide for a 900 mm aisle).\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104057,
+    "title": "Commissioning — one-wire homeLocation and zoneNo match the install spreadsheet",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277155,
+    "updated_by": 156,
+    "updated_on": 1784277842,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm each head's minimal one-wire parameters were programmed to the values in the per-location install spreadsheet.",
+    "custom_preconds": "**GIVEN** a commissioned head whose one-wire chip was programmed in Maintenance Mode\n**AND** the example install spreadsheet row gives homeLocation \"RA\" and zoneNo \"128\"",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician reads the stored one-wire parameters on the head",
+        "expected": "**THEN** homeLocation reads \"RA\"\n**AND** zoneNo reads \"128\""
+      }
+    ],
+    "custom_expected": "The head's one-wire homeLocation and zoneNo match the install-spreadsheet values for that lane.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104058,
+    "title": "Commissioning — Technician Location Settings match the install spreadsheet",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277156,
+    "updated_by": 156,
+    "updated_on": 1784277842,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the Location Settings on each head match the per-location install spreadsheet.",
+    "custom_preconds": "**GIVEN** a commissioned head signed in to the Technician Location Settings screen\n**AND** an example install-spreadsheet row for the York Street lane giving Home Location, Stop Location, Zone Number, Install Point ID and ID",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician reads the Home Location, Stop Location, Zone Number, Install Point ID and ID",
+        "expected": "**THEN** each field matches the install-spreadsheet row for that lane"
+      }
+    ],
+    "custom_expected": "Home Location, Stop Location, Zone Number, Install Point ID and ID all match the install spreadsheet for the lane.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104059,
+    "title": "Router — each lane has a unique static WAN IP per the install spreadsheet",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100653",
+    "created_by": 156,
+    "created_on": 1784277157,
+    "updated_by": 156,
+    "updated_on": 1784277843,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the lane router is configured with the static WAN IP allocated to that lane.",
+    "custom_preconds": "**GIVEN** a commissioned lane whose MicroTik router WAN is set to Mode Router, Address Acquisition Static\n**AND** an example install-spreadsheet row allocating a unique WAN IP, netmask and gateway to the York Street lane",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician reads the router WAN address configuration",
+        "expected": "**THEN** the WAN IP matches the unique static address allocated to that lane"
+      }
+    ],
+    "custom_expected": "The lane router uses the unique static WAN IP, netmask and gateway from the install spreadsheet.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104060,
+    "title": "Router — SkyLane at .200 with eth0 gateway .0.1 and a port-80 NAT rule",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100653",
+    "created_by": 156,
+    "created_on": 1784277158,
+    "updated_by": 156,
+    "updated_on": 1784277844,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the router addressing lets the gate interface board be reached over port 80 from the corporate network.",
+    "custom_preconds": "**GIVEN** a commissioned lane with the SkyLane board at 192.168.0.200 and its eth0 gateway set to 192.168.0.1\n**AND** a NAT rule redirecting the router WAN IP port 80 to the interface board port 80",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** authorised staff browse to the router WAN IP on port 80 from the corporate network",
+        "expected": "**THEN** the gate interface web service is reached"
+      }
+    ],
+    "custom_expected": "With SkyLane at .200, gateway .0.1 and the port-80 NAT rule present, the gate interface is reachable from the corporate LAN. (Transitional stop-gap — target is CloudFare/Station Manager control.)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104061,
+    "title": "Router — the router admin password is set (not blank)",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100653",
+    "created_by": 156,
+    "created_on": 1784277158,
+    "updated_by": 156,
+    "updated_on": 1784277845,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the lane router does not retain its blank default admin password.",
+    "custom_preconds": "**GIVEN** a commissioned lane router managed over SSH",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician attempts to reach the router admin account with a blank password",
+        "expected": "**THEN** the blank-password login is refused\n**AND** login succeeds only with the configured admin password"
+      }
+    ],
+    "custom_expected": "The router admin password is set and the blank default is rejected. (Security note — a single shared password is used across all lanes — raise with the team. Never record the value.)\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104062,
+    "title": "Software Distribution — a software / configuration / barcode-data file downloads to the GV",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 4,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277159,
+    "updated_by": 156,
+    "updated_on": 1784277846,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV downloads a distributed software, configuration or barcode-data file from the back office.",
+    "custom_preconds": "**GIVEN** a GV in service with a new software, configuration or barcode-data file staged for it in the back office",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the GV performs its scheduled file download",
+        "expected": "**THEN** the file is downloaded to the GV\n**AND** the new version is reported on the Software Versions or Configuration Versions screen"
+      }
+    ],
+    "custom_expected": "The distributed file downloads to the GV and the new version shows on the relevant versions screen. (needs-spec — GV distribution mechanics are not fully specced, cross-ref ETM analog.)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104063,
+    "title": "Software Distribution — a configuration file with a future activation date applies on that date",
+    "section_id": 887834,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 4,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277160,
+    "updated_by": 156,
+    "updated_on": 1784277847,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a configuration file carrying a future activation date is held and applied only on that date.",
+    "custom_preconds": "**GIVEN** a GV that has downloaded a configuration file with an example activation date of tomorrow",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the current date reaches the activation date",
+        "expected": "**THEN** the configuration becomes active on the activation date\n**AND** the active configuration version updates on the Configuration Versions screen"
+      }
+    ],
+    "custom_expected": "The future-dated configuration is held until its activation date, then becomes active. (needs-spec — distribution mechanics.)\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104064,
+    "title": "Technician Sign On — valid technician card reaches the Technician Menu",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277161,
+    "updated_by": 156,
+    "updated_on": 1784277847,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can sign on to a GV with a valid technician card and PIN.",
+    "custom_preconds": "**GIVEN** a GV in service showing the idle Present Card or Barcode screen\n**AND** the seeded technician card and PIN are available",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician presents the seeded card and enters the seeded PIN",
+        "expected": "**THEN** the Technician Menu is displayed"
+      }
+    ],
+    "custom_expected": "A valid technician card and PIN sign the technician on and open the Technician Menu.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104065,
+    "title": "Technician Sign On — an invalid PIN is rejected",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,REQ-0050.0,REQ-0050.2",
+    "created_by": 156,
+    "created_on": 1784277162,
+    "updated_by": 156,
+    "updated_on": 1784726516,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician sign-on with an incorrect PIN is refused.",
+    "custom_preconds": "**GIVEN** a GV showing the technician PIN entry screen after a valid technician card",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician enters an incorrect PIN",
+        "expected": "**THEN** the sign-on is refused\n**AND** the technician is not signed on"
+      }
+    ],
+    "custom_expected": "An incorrect PIN is refused and the technician is not signed on.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104066,
+    "title": "Technician Sign On — an abandoned sign-on returns to the idle screen",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277163,
+    "updated_by": 156,
+    "updated_on": 1784277849,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm abandoning technician sign-on returns the GV to its idle screen.",
+    "custom_preconds": "**GIVEN** a GV showing the technician PIN entry screen after a valid technician card",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician cancels the sign-on without completing PIN entry",
+        "expected": "**THEN** the GV returns to the idle Present Card or Barcode screen"
+      }
+    ],
+    "custom_expected": "Abandoning sign-on returns the GV to the idle screen with no session started.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104067,
+    "title": "Technician Menu — the session auto signs off after the inactivity timeout",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,REQ-3129.0,REQ-3129.1",
+    "created_by": 156,
+    "created_on": 1784277164,
+    "updated_by": 156,
+    "updated_on": 1784726516,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the Technician Menu automatically signs the technician off after a period of inactivity.",
+    "custom_preconds": "**GIVEN** a technician signed on to the Technician Menu\n**AND** the configured inactivity timeout is in force",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the menu is left idle beyond the inactivity timeout",
+        "expected": "**THEN** the technician is signed off automatically\n**AND** the GV returns to service on the idle screen"
+      }
+    ],
+    "custom_expected": "After the inactivity timeout the technician is auto signed off and the GV returns to service.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104068,
+    "title": "Technician Menu — a technician navigates the menu pages",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277165,
+    "updated_by": 156,
+    "updated_on": 1784277851,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can navigate between the Technician Menu pages.",
+    "custom_preconds": "**GIVEN** a technician signed on to the Technician Menu",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician navigates through the menu pages",
+        "expected": "**THEN** each selected page is displayed"
+      }
+    ],
+    "custom_expected": "The technician can move between the Technician Menu pages and each page displays.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104069,
+    "title": "Location Settings — a technician sets the GV location",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277166,
+    "updated_by": 156,
+    "updated_on": 1784277852,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can set the GV location from the Location Settings screen.",
+    "custom_preconds": "**GIVEN** a technician on the Location Settings screen with comms to the back office\n**AND** an example install-spreadsheet row giving Home Location, Stop Location, Zone Number, Install Point ID and ID",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician enters and saves the location values",
+        "expected": "**THEN** the saved Location Settings show the entered values"
+      }
+    ],
+    "custom_expected": "The technician sets and saves the GV location and the values persist on the Location Settings screen.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104070,
+    "title": "Location Settings — a no-comms condition is indicated when changing location without back-office comms",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277166,
+    "updated_by": 156,
+    "updated_on": 1784710609,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the Location Settings screen behaves correctly when the GV has no back-office comms.",
+    "custom_preconds": "**GIVEN** a technician on the Location Settings screen with no comms to the back office",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician attempts to change the location",
+        "expected": "**THEN** a no-comms condition is indicated on the Location Settings screen"
+      }
+    ],
+    "custom_expected": "With no back-office comms the Location Settings screen indicates the no-comms condition. **UNCONFIRMED** whether the location edit/save is actually blocked or only flagged -- confirm on the live system.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104071,
+    "title": "Software Versions — the Software Versions screen lists all software versions",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 4,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277167,
+    "updated_by": 156,
+    "updated_on": 1784277853,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the Software Versions screen shows the GV software version information.",
+    "custom_preconds": "**GIVEN** a technician signed on to the Technician Menu",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician opens the Software Versions screen",
+        "expected": "**THEN** the software version information is displayed"
+      }
+    ],
+    "custom_expected": "The Software Versions screen lists the GV software versions.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104072,
+    "title": "Configuration Versions — the Configuration Versions screen lists all configuration versions",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 4,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277168,
+    "updated_by": 156,
+    "updated_on": 1784277854,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the Configuration Versions screen shows the GV configuration version information.",
+    "custom_preconds": "**GIVEN** a technician signed on to the Technician Menu",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician opens the Configuration Versions screen",
+        "expected": "**THEN** the configuration version information is displayed"
+      }
+    ],
+    "custom_expected": "The Configuration Versions screen lists the GV configuration versions.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104073,
+    "title": "Display Brightness — a technician adjusts the screen brightness",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,REQ-0511.0,REQ-0511.1",
+    "created_by": 156,
+    "created_on": 1784277169,
+    "updated_by": 156,
+    "updated_on": 1784726517,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can adjust the GV screen brightness from the Technician Menu.",
+    "custom_preconds": "**GIVEN** a technician on the Display Brightness screen",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician changes the brightness setting",
+        "expected": "**THEN** the screen brightness changes to the selected level"
+      }
+    ],
+    "custom_expected": "The technician changes the screen brightness and the display updates to the selected level.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104074,
+    "title": "Audio Volume — a technician adjusts the audio volume",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,REQ-0511.0,REQ-0511.1",
+    "created_by": 156,
+    "created_on": 1784277170,
+    "updated_by": 156,
+    "updated_on": 1784726518,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can adjust the GV audio volume from the Technician Menu.",
+    "custom_preconds": "**GIVEN** a technician on the Audio Volume screen",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician changes the audio volume setting",
+        "expected": "**THEN** the validation tone plays at the selected volume"
+      }
+    ],
+    "custom_expected": "The technician changes the audio volume and the validation tone plays at the selected level.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104075,
+    "title": "Force Communications — a technician forces a comms session with the back office",
+    "section_id": 887835,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,FBD-100266,REQ-0348.0",
+    "created_by": 156,
+    "created_on": 1784277171,
+    "updated_by": 156,
+    "updated_on": 1784726519,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can force a communications session with the back office from the Technician Menu.",
+    "custom_preconds": "**GIVEN** a technician on the Force Communications screen with a reachable back office",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician forces communications",
+        "expected": "**THEN** the GV establishes a comms session with the back office\n**AND** the GV Last Communication time updates in CloudFare"
+      }
+    ],
+    "custom_expected": "Forcing comms opens a session with the back office and updates the GV Last Communication time in CloudFare.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104076,
+    "title": "Idle Screen — Present Card or Barcode",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277172,
+    "updated_by": 156,
+    "updated_on": 1784277857,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm an in-service GV displays the idle Present Card or Barcode screen.",
+    "custom_preconds": "**GIVEN** a GV in service with no card or barcode presented",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the operator views the idle screen",
+        "expected": "**THEN** the screen matches the approved Present Card or Barcode design"
+      }
+    ],
+    "custom_expected": "The idle screen shows the approved Present Card or Barcode content. (needs-spec — Project-3 screen content.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104077,
+    "title": "Idle Screen — Not In Service",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277173,
+    "updated_by": 156,
+    "updated_on": 1784277858,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a GV that is out of service displays the Not In Service screen.",
+    "custom_preconds": "**GIVEN** a GV that is out of service",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the operator views the screen",
+        "expected": "**THEN** the screen matches the approved Not In Service design"
+      }
+    ],
+    "custom_expected": "An out-of-service GV shows the approved Not In Service screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104078,
+    "title": "Error Screen — Re-present Card",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277174,
+    "updated_by": 156,
+    "updated_on": 1784277859,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Re-present Card screen when a card read must be retried.",
+    "custom_preconds": "**GIVEN** a GV in service",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** a card read cannot complete and must be retried",
+        "expected": "**THEN** the screen matches the approved Re-present Card design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Re-present Card screen on a failed read. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104079,
+    "title": "Error Screen — Not Valid At This Location",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277175,
+    "updated_by": 156,
+    "updated_on": 1784277860,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Not Valid At This Location screen for a card invalid at the current location.",
+    "custom_preconds": "**GIVEN** a GV in service at an example location where the presented product is not valid",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented",
+        "expected": "**THEN** the screen matches the approved Not Valid At This Location design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Not Valid At This Location screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104080,
+    "title": "Error Screen — Invalid Time Of Day",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277176,
+    "updated_by": 156,
+    "updated_on": 1784277861,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Invalid Time Of Day screen for a card presented outside its valid time.",
+    "custom_preconds": "**GIVEN** a GV in service and a card whose product is not valid at the current time of day",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented",
+        "expected": "**THEN** the screen matches the approved Invalid Time Of Day design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Invalid Time Of Day screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104081,
+    "title": "Error Screen — Product Expired",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277176,
+    "updated_by": 156,
+    "updated_on": 1784277862,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Product Expired screen for an expired product.",
+    "custom_preconds": "**GIVEN** a GV in service and a card whose product has expired",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented",
+        "expected": "**THEN** the screen matches the approved Product Expired design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Product Expired screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104082,
+    "title": "Error Screen — Faulty Card",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277177,
+    "updated_by": 156,
+    "updated_on": 1784277862,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Faulty Card screen for an unreadable/faulty card.",
+    "custom_preconds": "**GIVEN** a GV in service and an example faulty (unreadable) card",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented",
+        "expected": "**THEN** the screen matches the approved Faulty Card design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Faulty Card screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104083,
+    "title": "Error Screen — Not Accepted",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277178,
+    "updated_by": 156,
+    "updated_on": 1784277863,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Not Accepted screen for a card that is not accepted.",
+    "custom_preconds": "**GIVEN** a GV in service and a card that is not accepted",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented",
+        "expected": "**THEN** the screen matches the approved Not Accepted design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Not Accepted screen. (needs-spec.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104084,
+    "title": "Passback Screen — Card Already Validated",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167,FBD-100690",
+    "created_by": 156,
+    "created_on": 1784277179,
+    "updated_by": 156,
+    "updated_on": 1784277864,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Card Already Validated screen when a card is re-presented within the passback window.",
+    "custom_preconds": "**GIVEN** a GV in service and a card already validated within the passback window",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is re-presented",
+        "expected": "**THEN** the screen matches the approved Card Already Validated design"
+      }
+    ],
+    "custom_expected": "Re-presenting a card within the passback window shows the approved Card Already Validated screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104085,
+    "title": "Success Screen — Successful",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277180,
+    "updated_by": 156,
+    "updated_on": 1784277865,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the success screen on a successful validation.",
+    "custom_preconds": "**GIVEN** a GV in service and a valid card",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is validated successfully",
+        "expected": "**THEN** the screen matches the approved success design"
+      }
+    ],
+    "custom_expected": "A successful validation shows the approved success screen. (needs-spec — Project-3 screen content.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104086,
+    "title": "Barcode Error Screen — Barcode Already Validated",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277181,
+    "updated_by": 156,
+    "updated_on": 1784277866,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Already Validated screen when a used barcode is re-presented.",
+    "custom_preconds": "**GIVEN** a GV in service and a multi-use barcode already validated within its passback window",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is re-presented",
+        "expected": "**THEN** the screen matches the approved Barcode Already Validated design"
+      }
+    ],
+    "custom_expected": "Re-presenting a used barcode shows the approved Barcode Already Validated screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104087,
+    "title": "Barcode Error Screen — Barcode Has Expired",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277181,
+    "updated_by": 156,
+    "updated_on": 1784277866,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Has Expired screen for an expired barcode.",
+    "custom_preconds": "**GIVEN** a GV in service and an expired multi-use barcode",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented",
+        "expected": "**THEN** the screen matches the approved Barcode Has Expired design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Barcode Has Expired screen for an expired barcode.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104088,
+    "title": "Barcode Error Screen — Barcode Not Valid At This Location",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277182,
+    "updated_by": 156,
+    "updated_on": 1784277867,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 13,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Not Valid At This Location screen for an out-of-location barcode.",
+    "custom_preconds": "**GIVEN** a GV at an example location where the presented barcode product is not valid",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented",
+        "expected": "**THEN** the screen matches the approved Barcode Not Valid At This Location design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Barcode Not Valid At This Location screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104089,
+    "title": "Barcode Error Screen — Barcode Type Invalid",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277183,
+    "updated_by": 156,
+    "updated_on": 1784277868,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 14,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Type Invalid screen for an unrecognised barcode type.",
+    "custom_preconds": "**GIVEN** a GV in service and an example barcode of an unrecognised type",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented",
+        "expected": "**THEN** the screen matches the approved Barcode Type Invalid design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Barcode Type Invalid screen for an unrecognised barcode.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104090,
+    "title": "Barcode Success Screen — Barcode Use",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277184,
+    "updated_by": 156,
+    "updated_on": 1784277869,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 15,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the barcode success screen on a successful barcode validation.",
+    "custom_preconds": "**GIVEN** a GV in service and a valid multi-use barcode",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is validated successfully",
+        "expected": "**THEN** the screen matches the approved barcode success design"
+      }
+    ],
+    "custom_expected": "A successful barcode validation shows the approved Barcode Use success screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104111,
+    "title": "Barcode Error Screen — Barcode Not Valid At The Current Time",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784799763,
+    "updated_by": 156,
+    "updated_on": 1784799763,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 16,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Not Valid At The Current Time screen for a barcode presented outside its valid time.",
+    "custom_preconds": "**GIVEN** a GV presented with a barcode for a product that is not valid at the current time",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented",
+        "expected": "**THEN** the screen matches the approved Barcode Not Valid At The Current Time design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Barcode Not Valid At The Current Time screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104112,
+    "title": "Barcode Error Screen — Barcode Not Valid On This Service",
+    "section_id": 887837,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784799764,
+    "updated_by": 156,
+    "updated_on": 1784799764,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 17,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV shows the Barcode Not Valid On This Service screen for a barcode that is not a valid Rail barcode.",
+    "custom_preconds": "**GIVEN** a GV presented with a barcode that is not a valid Rail barcode for this service",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented",
+        "expected": "**THEN** the screen matches the approved Barcode Not Valid On This Service design"
+      }
+    ],
+    "custom_expected": "The GV shows the approved Barcode Not Valid On This Service screen.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104091,
+    "title": "Power — the gate stays open when mains fails with a user inside the aisle",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100348 FUN",
+    "created_by": 156,
+    "created_on": 1784277185,
+    "updated_by": 156,
+    "updated_on": 1784642204,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a mains power failure with a user inside the aisle leaves the gate open for safe egress.",
+    "custom_preconds": "**GIVEN** a lane in service with a user positioned inside the aisle",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** mains power fails",
+        "expected": "**THEN** the gate remains open"
+      }
+    ],
+    "custom_expected": "On mains failure with a user in the aisle the gate remains open. (pending integration)\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104092,
+    "title": "Power — a power loss of two seconds or less does not force a reboot",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100348,TIBU-14160",
+    "created_by": 156,
+    "created_on": 1784277186,
+    "updated_by": 156,
+    "updated_on": 1784642204,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV resumes without rebooting after a power loss of two seconds or less.",
+    "custom_preconds": "**GIVEN** a lane in service",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** mains power is lost for two seconds or less and then restored",
+        "expected": "**THEN** the gate resumes service without rebooting"
+      }
+    ],
+    "custom_expected": "A power loss of two seconds or less is ridden through and the gate resumes without a reboot.\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104093,
+    "title": "Emergency Release — the Emergency Release Button opens the gate",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348,TIBU-16813,TIBU-18635",
+    "created_by": 156,
+    "created_on": 1784277187,
+    "updated_by": 156,
+    "updated_on": 1784642205,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm operating the Emergency Release Button opens the gate.",
+    "custom_preconds": "**GIVEN** a lane in service in a controlled mode",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the Emergency Release Button is operated",
+        "expected": "**THEN** the gate opens in the evacuation direction\n**AND** the gate returns to its configured mode after the emergency clears without requiring a reboot"
+      }
+    ],
+    "custom_expected": "The Emergency Release Button opens the gate and it recovers to its configured mode without a reboot. (pending integration)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104094,
+    "title": "Heartbeat — loss of a validator heartbeat raises a major fault",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348 INT,FBD-100266",
+    "created_by": 156,
+    "created_on": 1784277188,
+    "updated_by": 156,
+    "updated_on": 1784642206,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm loss of the heartbeat from either validator for the configured period raises a major fault.",
+    "custom_preconds": "**GIVEN** a lane in service with the gate-to-validator heartbeat running at its configured rate of at least one per second",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the heartbeat from one validator is absent for the configured period",
+        "expected": "**THEN** the gate declares a major fault"
+      }
+    ],
+    "custom_expected": "Losing a validator heartbeat for the configured period raises a major fault. (pending integration)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104095,
+    "title": "Power-up — the gate is Out of Service until both validators communicate",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277188,
+    "updated_by": 156,
+    "updated_on": 1784277873,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the gate powers up Out of Service and enters service only once both validators communicate and BIST passes.",
+    "custom_preconds": "**GIVEN** a lane powered off",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the gate is powered up",
+        "expected": "**THEN** the gate is Out of Service on power-up\n**AND** the gate enters service only once both validators communicate and BIST passes"
+      }
+    ],
+    "custom_expected": "The gate powers up Out of Service and enters service only when both validators are communicating and BIST has passed. (pending integration.)\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104096,
+    "title": "Mains restore — the gate returns to its previous operational mode",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277189,
+    "updated_by": 156,
+    "updated_on": 1784277874,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the gate returns to its previous operational mode when mains power is restored, absent a major fault.",
+    "custom_preconds": "**GIVEN** a lane that was in an example Exit controlled mode when mains power failed",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** mains power is restored and no major fault is present",
+        "expected": "**THEN** the gate returns to the Exit controlled mode it held before the failure"
+      }
+    ],
+    "custom_expected": "On mains restore the gate returns to its previous operational mode when no major fault is present. (pending integration.)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104097,
+    "title": "BOS Comms — the GV keeps validating and queues audit data while the back office is unreachable",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100359,FBD-100263",
+    "created_by": 156,
+    "created_on": 1784277190,
+    "updated_by": 156,
+    "updated_on": 1784642207,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 7,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a GV continues validating and queues its audit data when it cannot reach the back office.",
+    "custom_preconds": "**GIVEN** a GV in service that has lost comms to the back office",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** a valid card or barcode is presented during the outage",
+        "expected": "**THEN** the validation completes\n**AND** the resulting audit data is queued on the GV for later upload"
+      }
+    ],
+    "custom_expected": "During a back-office outage the GV keeps validating and queues its audit data locally. (soft-failure)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104098,
+    "title": "BOS Comms — queued audit data uploads to CloudFare when comms is restored",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100359,FBD-100263,TIBU-16455,TIBU-17104,TIBU-18566",
+    "created_by": 156,
+    "created_on": 1784277191,
+    "updated_by": 156,
+    "updated_on": 1784642208,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm audit data queued during an outage uploads to CloudFare once comms is restored, with no data loss.",
+    "custom_preconds": "**GIVEN** a GV holding audit data queued during a back-office outage",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** comms to the back office is restored",
+        "expected": "**THEN** the queued audit data uploads to CloudFare\n**AND** the GV Last Communication time updates in CloudFare"
+      }
+    ],
+    "custom_expected": "On comms restore the queued audit data uploads to CloudFare with no loss and Last Communication updates.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104099,
+    "title": "SaaS — a sustained Translink-network outage drives the GV to a communication-locked Out of Service state",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100359",
+    "created_by": 156,
+    "created_on": 1784277192,
+    "updated_by": 156,
+    "updated_on": 1784642209,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a sustained Translink-network outage eventually places the Ethernet-connected GV in a communication-locked Out of Service state.",
+    "custom_preconds": "**GIVEN** a GV routed to AWS through the Translink network",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the Translink network is unavailable for a sustained period",
+        "expected": "**THEN** the GV operates offline initially\n**AND** the GV enters a communication-locked Out of Service state after the significant offline period"
+      }
+    ],
+    "custom_expected": "A sustained network outage takes the Ethernet GV offline and then to a communication-locked Out of Service state. (hard-failure)\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104100,
+    "title": "Comms — the GV updates CloudFare Last Communication at least every 15 minutes via the StaffList refresh",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100266,TIBU-18310",
+    "created_by": 156,
+    "created_on": 1784277193,
+    "updated_by": 156,
+    "updated_on": 1784710610,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the GV updates its CloudFare Last Communication time at least every 15 minutes via the staff-list check, even with no validations.",
+    "custom_preconds": "**GIVEN** a GV in service with no validations occurring",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the fixed 15-minute staff-list refresh check runs",
+        "expected": "**THEN** a StaffList message updates the GV Last Communication time in CloudFare\n**AND** Hours Since Last Communication resets to zero for the GV"
+      }
+    ],
+    "custom_expected": "The 15-minute staff-list check updates Last Communication and resets Hours Since Last Communication, even with no validations.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104101,
+    "title": "Throughput — Primary and Secondary heads sustain back-to-back validations",
+    "section_id": 887838,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100348,TIBU-18597,TIBU-21005,TIBU-16221",
+    "created_by": 156,
+    "created_on": 1784277193,
+    "updated_by": 156,
+    "updated_on": 1784642210,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm each head sustains a quick succession of card and barcode validations without dropping or blocking taps.",
+    "custom_preconds": "**GIVEN** a lane in service with both heads accepting validations\n**AND** an example burst of valid cards and barcodes presented in quick succession to one head",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the burst is presented to the Primary head and then the Secondary head",
+        "expected": "**THEN** each valid card and barcode in the burst is validated"
+      }
+    ],
+    "custom_expected": "Both heads sustain a quick succession of card and barcode validations without dropping or blocking valid taps. (needs-spec throughput)\n\n[Automatable: No]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104102,
+    "title": "Smoke — both heads boot into service",
+    "section_id": 887839,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654,FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277195,
+    "updated_by": 156,
+    "updated_on": 1784277878,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm both GV heads on a lane boot into service.",
+    "custom_preconds": "**GIVEN** a commissioned lane powered off",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the lane is powered up and both validators communicate",
+        "expected": "**THEN** both heads reach the idle Present Card or Barcode screen in service"
+      }
+    ],
+    "custom_expected": "Both heads boot into service and show the idle screen.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104103,
+    "title": "Smoke — a valid card opens the gate with a success screen and beep",
+    "section_id": 887839,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100690,FBD-100348",
+    "created_by": 156,
+    "created_on": 1784277195,
+    "updated_by": 156,
+    "updated_on": 1784286148,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a valid card presented to an in-service head opens the gate with a success screen and beep.",
+    "custom_preconds": "**GIVEN** a lane in service and an example valid card",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the card is presented to the entry head",
+        "expected": "**THEN** the success screen is shown\n**AND** a success beep is played\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A valid card gives a success screen, a beep, and an open gate.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104104,
+    "title": "Smoke — a valid multi-use barcode opens the gate with a success screen",
+    "section_id": 887839,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784277196,
+    "updated_by": 156,
+    "updated_on": 1784277880,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a valid multi-use barcode presented to an in-service head opens the gate with a success screen.",
+    "custom_preconds": "**GIVEN** a lane in service and an example valid multi-use barcode",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the barcode is presented to the entry head",
+        "expected": "**THEN** the barcode success screen is shown\n**AND** the gate opens"
+      }
+    ],
+    "custom_expected": "A valid multi-use barcode gives the barcode success screen and an open gate.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104105,
+    "title": "Smoke — an immediate re-present of the same card is rejected as passback",
+    "section_id": 887839,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167,FBD-100690",
+    "created_by": 156,
+    "created_on": 1784277197,
+    "updated_by": 156,
+    "updated_on": 1784277881,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm re-presenting the same card within the passback window is rejected.",
+    "custom_preconds": "**GIVEN** a lane in service and a card just validated on the entry head",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the same card is re-presented within the passback window",
+        "expected": "**THEN** the Card Already Validated screen is shown\n**AND** the gate does not open a second time"
+      }
+    ],
+    "custom_expected": "An immediate re-present of the same card is rejected as passback and the gate does not re-open.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104106,
+    "title": "Smoke — a technician can sign on to the Technician Menu",
+    "section_id": 887839,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100654",
+    "created_by": 156,
+    "created_on": 1784277198,
+    "updated_by": 156,
+    "updated_on": 1784277881,
+    "estimate": "6m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can reach the Technician Menu on an in-service head.",
+    "custom_preconds": "**GIVEN** a head in service showing the idle screen\n**AND** the seeded technician card and PIN are available",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the technician presents the seeded card and enters the seeded PIN",
+        "expected": "**THEN** the Technician Menu is displayed"
+      }
+    ],
+    "custom_expected": "A technician reaches the Technician Menu on an in-service head.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  },
+  {
+    "id": 4104038,
+    "title": "ZZ_DELETE_REVIEW - Barcode — a barcode validated on one gate head is rejected on another head of the same gateline",
+    "section_id": 887841,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100167",
+    "created_by": 156,
+    "created_on": 1784276957,
+    "updated_by": 156,
+    "updated_on": 1784722865,
+    "estimate": "1m",
+    "estimate_forecast": null,
+    "suite_id": 30286,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the gateline Unique-ID share (CR105.2) rejects a barcode already validated on another head of the same gateline.",
+    "custom_preconds": "**GIVEN** two NIR GV heads form a single gateline sharing barcode Unique IDs (CR105.2)\n**AND** a multi-use barcode was already validated on the first head within the passback window",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the same barcode is presented to the second head of the gateline",
+        "expected": "**THEN** a red-cross result is displayed\n**AND** the gate does not open"
+      }
+    ],
+    "custom_expected": "Under CR105.2 the gateline shares Unique IDs, so a barcode validated on one head is rejected as passback on another head of the same gateline.\n\n[Automatable: Partial]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      15
+    ]
+  }
+]

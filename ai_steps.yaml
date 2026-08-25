@@ -1,0 +1,93 @@
+# The AI boundary declaration for this platform.
+#
+# Every place a model call happens anywhere in this repo is listed here, by name, with:
+#   - what agent/prompt it maps to today (in testops/.claude/agents/)
+#   - what --no-ai does instead (never "nothing" — always a real, narrower, deterministic result)
+#   - its cost tier (rough signal for how expensive a call is, not a hard budget)
+#
+# Rule: if a model call isn't listed here, it shouldn't exist. Anything not in this file is
+# expected to be `kind: cli` / `kind: gate` / `kind: human` in testops/.claude/pipelines/*.yaml —
+# i.e. already zero-AI.
+
+version: 1
+
+steps:
+  - id: distil-spec
+    required: true
+    description: >
+      Read converted requirement-doc text (output of testops/tools/ingest_docs.py) and extract
+      testable facts into model/ — device/function/screen facts, each citing its source spec +
+      paragraph. The one step where understanding raw prose is genuinely unavoidable.
+    maps_to_agent: standards-keeper (testops/.claude/agents/standards-keeper.md, via /ingest-docs)
+    inputs: [converted_spec_text, existing_model_snapshot]
+    outputs: [model_facts (schema-validated against model/functions.py + model/devices.py)]
+    fallback_no_ai: >
+      Emit a work order listing which spec files changed since the model was last distilled —
+      no fact is guessed or written to model/ without this step actually running.
+    cost_tier: high
+    run_frequency: once per spec version, not per session
+
+  - id: author-case
+    required: false
+    description: >
+      Draft a Gherkin case for a path/behaviour that has no template match in model/ — a genuinely
+      novel scenario, not a mechanical per-screen/per-keyword variant.
+    maps_to_agent: gherkin-author (testops/.claude/agents/gherkin-author.md)
+    inputs: [model_facts, existing_cases, target_path_or_feature]
+    outputs: [case_draft (*.cases.yaml)]
+    fallback_no_ai: >
+      Run testops/codegen/ (Phase 3/4) against model/ for any templated case type it recognises;
+      for anything left over, emit a stub case with a GAP marker instead of a drafted body.
+    cost_tier: medium
+    run_frequency: per novel case, not per mechanical one
+
+  - id: classify-coverage
+    required: false
+    description: >
+      Classify a scope item (JIRA story, or a flow-map path) as covered/partial/missing/stale
+      against the live case inventory.
+    maps_to_agent: coverage-analyst (testops/.claude/agents/coverage-analyst.md)
+    inputs: [coverage_prefilter_shortlist, scope_item]
+    outputs: [coverage_status, rationale]
+    fallback_no_ai: >
+      testops/system_test_ops/coverage/ 's exact-Refs-match prefilter only (already shipped, tested
+      in tests/test_coverage_prefilter.py) — narrower recall than the agent, but zero-AI today.
+    cost_tier: medium
+    run_frequency: per scope item, or once per flow-map file (see fan-out note below)
+    note: >
+      This is the step with the largest real fan-out — coverage-analyst runs once per flow-map file
+      in /audit-flows, which is 13-24+ concurrent calls on a real device. See the AI Boundary Map
+      artifact's pipeline-density table before assuming this step is cheap in aggregate.
+
+  - id: judge-fold
+    required: false
+    description: >
+      Decide whether a group of near-duplicate cases should be folded into one keeper, and whether
+      a defect should fold into an existing case's Refs vs become a new dedicated case.
+    maps_to_agent: test-lead (testops/.claude/agents/test-lead.md, via /consolidate and /fold-defect)
+    inputs: [candidate_case_group_or_defect, existing_case_text]
+    outputs: [fold_decision, keeper_case_id]
+    fallback_no_ai: >
+      List candidate fold groups by structural similarity (title/steps overlap) without deciding —
+      a human picks the keeper. Never auto-merges unattended.
+    cost_tier: low
+    run_frequency: per /consolidate or /fold-defect invocation, once
+
+  - id: triage-failure
+    required: false
+    description: >
+      Flag always-failing / never-run / flaky / regressed / orphaned cases from run history, and
+      recommend add/edit/remove/reorganise.
+    maps_to_agent: run-historian (testops/.claude/agents/run-historian.md)
+    inputs: [run_health_json]
+    outputs: [flags, recommendation]
+    fallback_no_ai: >
+      The deterministic TestHealth flags already computed in testops/system_test_ops/runs/history.py
+      (always_failing/never_executed/flaky/recently_regressed/orphaned) — already code today, this
+      fallback just skips the agent's prose recommendation layer on top.
+    cost_tier: low
+    run_frequency: per /review-runs or /audit-coverage invocation, once
+
+# Any pipeline step in testops/.claude/pipelines/*.yaml tagged kind: cli / kind: gate / kind: human
+# needs no entry here — it was already zero-AI. If you're about to add a new model call anywhere in
+# this repo, add its entry here FIRST, with a real fallback — that's the whole point of this file.

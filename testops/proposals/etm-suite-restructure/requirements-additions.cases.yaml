@@ -1,0 +1,180 @@
+# ETM — Requirements-grounded ADDITIONS (Functional). NEW coverage only.
+# Closes cross-examination gaps from proposals/translink-requirements-review/gaps-etm.md:
+#   Rail Substitution (FBD-100335 + FBD-100662/100690), Shift Board sign-on (FBD-100831),
+#   Legacy-smartcard transfer decision (FBD-100271), ABT audit-schema conformance (FBD-100658).
+# Each case carries a CONCRETE worked example (real route/duty/stop/product/fare from the spec) in
+# its preconditions per docs/gherkin-standard.md "Concrete grounding"; title/When/Then stay
+# behaviour-level. Single-predicate THEN lines. DO NOT edit/supersede existing cases here — this
+# file only ADDS. See the returned note for existing cases (declined-reason 4100583/4100591) to flag.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  # ───────────────────── Rail Substitution ─────────────────────
+  - path: [Functional, Rail Substitution]
+    cases:
+      - title: Rail Substitution — Manual Override sign-on to an ad-hoc rail-sub route
+        refs: [FBD-100335]
+        objective: This test is to confirm a Driver can sign on to an ad-hoc rail-substitution route that is not in timetable data using Manual Override.
+        steps: |-
+          **GIVEN** a Driver is at the ETM sign-on screen on an Ulsterbus rail-sub bus
+          **AND** a "Bangor Rail Sub (IN)" route variant exists with Transport Mode = "Rail Sub", each station (Belfast Lanyon Place, Holywood, Cultra, Helen's Bay, Bangor) its own fare stage
+          **AND** the rail-sub route is not present in the bus timetable data
+          **WHEN** the Driver selects Manual Override and enters the "Bangor Rail Sub (IN)" route variant
+          **THEN** the Driver is signed on to the rail-sub route
+          **AND** the FLU is populated from the rail-sub Default Product Group
+          **AND** no schedule-adherence prompt is shown for the route
+        expected: The Driver signs on via Manual Override to the ad-hoc Bangor rail-sub route with its rail-sub products and no schedule adherence.
+      - title: Rail Substitution — GPS auto-advances the boarding stop with widened tolerances
+        refs: [FBD-100335]
+        objective: This test is to confirm the ETM auto-advances the boarding stop from GPS as the bus progresses along a rail-sub route with widened station tolerances.
+        steps: |-
+          **GIVEN** a Driver is signed on to the "Bangor Rail Sub (IN)" route with widened GPS tolerances around each station
+          **AND** the current boarding stop is Belfast Lanyon Place
+          **WHEN** the bus drives past Holywood then Cultra without stopping exactly at either station
+          **THEN** the ETM auto-updates the boarding stop to Holywood as the bus enters its widened tolerance
+          **AND** the ETM auto-updates the boarding stop to Cultra as the bus progresses
+        expected: The boarding stop auto-advances station-by-station from GPS despite the bus not halting exactly at each rail station.
+      - title: Rail Substitution — a tap is audited with TransportationType "Rail Sub"
+        refs: [FBD-100335, FBD-100658, FBD-100662]
+        objective: This test is to confirm a tap taken on a rail-substitution service is audited with the rail-sub transport type.
+        steps: |-
+          **GIVEN** a Driver is signed on to the "Bangor Rail Sub (IN)" route (Transport Mode = "Rail Sub") on an Ulsterbus ETM
+          **AND** a customer taps a valid cEMV card at Belfast Lanyon Place with alighting stage Bangor selected
+          **WHEN** the ETM audits the tap to CloudFare
+          **THEN** the tap carries TransportationType = "Rail Sub"
+          **AND** the tap carries paymentType = "ABT"
+          **AND** the tap carries revenue = 0
+        expected: The rail-sub tap is audited as TransportationType "Rail Sub" with ABT payment type and zero on-device revenue.
+      - title: Rail Substitution — the back office ignores PJT but applies MJT on a rail-sub journey
+        refs: [FBD-100335, FBD-100690, FBD-100662]
+        objective: This test is to confirm the ABT back office skips Programmed Journey Time yet still applies Maximum Journey Time for a rail-substitution journey.
+        steps: |-
+          **GIVEN** an Ulsterbus ETM has audited a single TOO tap on the "Bangor Rail Sub (IN)" route (Belfast Lanyon Place → Bangor, TransportationType "Rail Sub")
+          **WHEN** the back office processes the rail-sub tap
+          **THEN** the single TOO tap is split into two TOTO taps with equal boarding and alighting times
+          **AND** rail business rules are applied with Programmed Journey Time ignored
+          **AND** Maximum Journey Time is still applied to the journey
+        expected: The back office splits the rail-sub TOO tap into two equal-time TOTO taps, ignoring PJT while still enforcing MJT.
+
+  # ───────────────────── Shift Board ─────────────────────
+  - path: [Functional, Shift Board]
+    cases:
+      - title: Shift Board — Duty selection yields the predicted Journey List
+        refs: [FBD-100831]
+        objective: This test is to confirm that entering a Duty number after sign-on presents the predicted Journey List for that duty.
+        steps: |-
+          **GIVEN** a Driver has entered driver number and PIN and passed the first-of-day safety check on an ETM with Home Location = Armagh
+          **AND** a shift board is active listing Duty 4021 with journey 0730 on route 72b valid on weekdays
+          **WHEN** the Driver enters Duty number 4021
+          **THEN** the predicted Journey List for Duty 4021 is displayed
+          **AND** the closest future journey is auto-highlighted
+          **AND** each row shows Journey Start Time, Journey Number, Service Name, First Boarding Stage and Direction
+        expected: Entering Duty 4021 shows the predicted Journey List with the closest future journey highlighted and the expected columns.
+      - title: Shift Board — the Journey List applies the four-way filter
+        refs: [FBD-100831]
+        objective: This test is to confirm the Journey List is filtered by home location, day of week, duty number and valid route together.
+        steps: |-
+          **GIVEN** an ETM with Home Location = Armagh on a weekday
+          **AND** the schedule DB holds Duty 4021 journeys for several depots with a Monday→Sunday day bitmask (1111100 = Mon–Fri)
+          **WHEN** the Driver enters Duty 4021 to view the Journey List
+          **THEN** only journeys for the Armagh home location are listed
+          **AND** only journeys whose day bitmask includes the current weekday are listed
+          **AND** only journeys for Duty 4021 are listed
+          **AND** only journeys on a route valid for the Armagh home location are listed
+        expected: The Journey List shows only journeys matching all four filters — Armagh home location, current weekday, Duty 4021 and an Armagh-valid route.
+      - title: Shift Board — Manual Override falls back to legacy route entry
+        refs: [FBD-100831]
+        objective: This test is to confirm an invalid Duty number offers Manual Override that falls back to legacy route entry.
+        steps: |-
+          **GIVEN** a Driver has passed the safety check on an ETM with Home Location = Armagh
+          **AND** Duty 9999 does not exist in the active shift board
+          **WHEN** the Driver enters Duty 9999
+          **THEN** an error screen is shown offering retry or Manual Override
+          **AND** selecting Manual Override presents the legacy route-entry screen
+        expected: An unknown Duty 9999 is rejected with retry/Manual Override, and Manual Override drops to legacy route entry.
+      - title: Shift Board — import sets Valid From at 4am and purges entries older than 7 days
+        refs: [FBD-100831]
+        objective: This test is to confirm a shift-board import sets Valid From to 4am local and purges superseded entries past the 7-day retention.
+        steps: |-
+          **GIVEN** a shift board for the Armagh depot is imported on 16/07/26 with retention set to the default 7 days
+          **AND** an existing entry was superseded by this import and a further entry has a Valid To older than 7 days
+          **WHEN** the import completes in the Shift Board Viewer
+          **THEN** each new or updated entry shows Valid From = 04:00 local on 16/07/26
+          **AND** each superseded entry shows Valid To = 04:00 local on 16/07/26
+          **AND** the entry whose Valid To is older than 7 days is purged
+        expected: On import, new entries take Valid From 04:00, superseded entries take Valid To 04:00, and entries past the 7-day retention are deleted.
+
+  # ───────────────────── Legacy smartcard transfers ─────────────────────
+  - path: [Functional, Smartcards, Transfers]
+    cases:
+      - title: Transfer — the ETM decides transfer vs journey from the ROUTE Transfer Time
+        refs: [FBD-100271]
+        objective: This test is to confirm the ETM uses the ROUTE Transfer Time property, not the product property, to decide transfer versus journey.
+        steps: |-
+          **GIVEN** a Metro Multi-Journey card (Field ID 01, City Adult) previously validated on Metro route 10A with time and direction written
+          **AND** route 10A carries a ROUTE Transfer Time of 90 minutes and the current stop is inside the Metro Transfer Zone
+          **AND** the card is re-presented 30 minutes later in the same direction of travel
+          **WHEN** the card is re-validated on the ETM
+          **THEN** the ETM evaluates the transfer window against the ROUTE Transfer Time of 90 minutes
+          **AND** no journey is deducted from the card
+        expected: The ETM reads the ROUTE Transfer Time (90 min) to allow the re-tap as a transfer with no journey deducted.
+      - title: Transfer — a stop outside the Metro Transfer Zone is charged as a journey
+        refs: [FBD-100271]
+        objective: This test is to confirm a re-validation outside the Metro Transfer Zone is treated as a journey rather than a transfer.
+        steps: |-
+          **GIVEN** a Metro Multi-Journey card (Field ID 01, City Adult) previously validated within the transfer window on route 10A
+          **AND** the current stop is outside the Metro Transfer Zone (zone ID > 256 membership fails)
+          **WHEN** the card is re-validated on the ETM
+          **THEN** the re-validation is treated as a journey
+          **AND** a journey is deducted from the card
+        expected: A re-tap at a stop outside the Metro Transfer Zone is charged as a journey with a deduction, not a transfer.
+      - title: Transfer — passback is prioritised over the transfer window
+        refs: [FBD-100271]
+        objective: This test is to confirm a re-tap inside the passback window is handled as passback and not as a transfer.
+        steps: |-
+          **GIVEN** a Metro Multi-Journey card (Field ID 01, City Adult) just validated on route 10A inside the Metro Transfer Zone
+          **AND** the passback time is configured shorter than the 90-minute route Transfer Time
+          **AND** the card is re-presented within the passback window
+          **WHEN** the card is re-validated on the ETM
+          **THEN** passback is applied ahead of the transfer decision
+          **AND** the re-tap is not recorded as a transfer
+        expected: A re-tap within the passback window is treated as passback, taking priority over the transfer window.
+      - title: Transfer — a transfer audits WTS SmartTransfer while a journey audits WTS SmartUse
+        refs: [FBD-100271]
+        objective: This test is to confirm the ETM audits a transfer as WTS SmartTransfer and a deducted journey as WTS SmartUse.
+        steps: |-
+          **GIVEN** a Metro Multi-Journey card (Field ID 01, City Adult) making two validations on route 10A inside the Metro Transfer Zone
+          **AND** the second validation falls inside the 90-minute route Transfer Time in the same direction
+          **WHEN** each validation is audited to CloudFare
+          **THEN** the first validation is audited as a WTS SmartUse transaction
+          **AND** the second validation is audited as a WTS SmartTransfer transaction
+          **AND** the Transaction Reference Number is incremented on the transfer
+        expected: The first tap audits as WTS SmartUse and the in-window re-tap audits as WTS SmartTransfer with the TRN incremented.
+
+  # ───────────────────── ABT audit conformance ─────────────────────
+  - path: [Functional, ABT Audit]
+    cases:
+      - title: ABT Audit — a TOO tap records ABT payment, zero revenue and product id 7000
+        refs: [FBD-100658]
+        objective: This test is to confirm a Tap-On-Only tap audits the constant ABT fields and the TOO travel product id.
+        steps: |-
+          **GIVEN** an Ulsterbus ETM signed on to route 72b (IN) with a customer tapping at Moygashel Busby Shop, alighting stage Armagh Bus Centre selected (£4.50)
+          **WHEN** the ETM audits the TOO tap to CloudFare
+          **THEN** the tap records paymentType = "ABT"
+          **AND** the tap records revenue = 0
+          **AND** the transaction records product id 7000 (ABT Tap On Only)
+        expected: The TOO tap audits paymentType "ABT", revenue 0 and product id 7000.
+      - title: ABT Audit — Fare is recorded in pounds and fareCost in pence
+        refs: [FBD-100658]
+        objective: This test is to confirm the audit records the tap Fare in pounds while the transaction product fareCost is in pence.
+        steps: |-
+          **GIVEN** a Metro ETM signed on to route 10A (IN) with a customer tapping at Casement Park for a £2.30 single fare
+          **WHEN** the ETM audits the TOO tap to CloudFare
+          **THEN** the tap-level Fare is recorded as 2.3 in pounds
+          **AND** the transactionProducts fareCost is recorded as 230 in pence
+        expected: The same £2.30 fare is carried as Fare 2.3 (pounds) at tap level and fareCost 230 (pence) at product level.

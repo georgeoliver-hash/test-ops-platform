@@ -1,0 +1,22 @@
+[
+  {
+    "id": 4103480,
+    "preconds": "**GIVEN** a settled Tap-On-Only journey on the seeded card with no prior alighting-stop correction this calendar month (limit 1/month, 3/year)\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre (£4.50), to be corrected to alight earlier at Greys Farm (£1.90 — **UNCONFIRMED** fare, not verified against a fares export; gap Q14)\n**AND** CR122 alighting-stop correction is confirmed live on the Passenger Portal; exact UX mechanics remain unconfirmed (gap Q21b)"
+  },
+  {
+    "id": 4103481,
+    "preconds": "**GIVEN** the seeded card has already had one accepted alighting-stop correction this calendar month\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a second correction attempted on a settled 72b (IN) Greys Farm → Armagh Bus Centre journey (£4.50) in the same month\n**AND** CR122 alighting-stop correction is confirmed live on the Passenger Portal; the exact refusal warning-message wording remains unconfirmed (gap Q21b) — confirmed only for the analogous TOTO missing-tap correction"
+  },
+  {
+    "id": 4103482,
+    "preconds": "**GIVEN** the seeded card used its one correction in the previous calendar month and is still within the annual limit of three\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a 72b (IN) Moygashel Busby Shop → Armagh Bus Centre journey corrected in the new month\n**AND** CR122 alighting-stop correction is confirmed live on the Passenger Portal; the monthly reset is implied by the 1/month, 3/year limits but not explicitly stated (gap Q21b)"
+  },
+  {
+    "id": 4103483,
+    "preconds": "**GIVEN** the seeded card has already made three accepted corrections this year\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a fourth correction attempted in a fresh calendar month on a settled 72b (IN) journey\n**AND** CR122 alighting-stop correction is confirmed live on the Passenger Portal"
+  },
+  {
+    "id": 4103484,
+    "preconds": "**GIVEN** the seeded card has made two accepted corrections earlier in the year\n**AND** you are signed in to the ABT Passenger Portal viewing the card's Journey History\n**AND** example: a third correction on a settled 72b (IN) journey in a fresh month, then an immediate fourth attempt\n**AND** CR122 alighting-stop correction is confirmed live on the Passenger Portal"
+  }
+]

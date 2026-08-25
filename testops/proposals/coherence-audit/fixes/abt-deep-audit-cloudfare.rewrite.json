@@ -1,0 +1,556 @@
+[
+  {
+    "id": 4102977,
+    "title": "Topology filter — services and routes filter by operator",
+    "preface": "This test is to confirm that services and routes can be filtered and managed by operator level within the CloudFare Operator Hierarchy.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module\n**AND** more than one operator level exists in the CloudFare Operator Hierarchy",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects an operator level in the hierarchy",
+        "expected": "**THEN** only that level's services and routes are shown\n**UNCONFIRMED** — no discrete 'filter by operator' control is described; confirm the actual live control"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100385 para 178,FBD-100698 para 86",
+    "citations": ["FBD-100385 para 178", "FBD-100698 para 86"],
+    "change_note": "Relocated the inline FBD paragraph citations (previously baked into the UNCONFIRMED sentence) to Refs; shortened the marker to a tag per the terse mandate. Behaviour/gap substance unchanged.",
+    "gaps": [
+      "No discrete 'filter by operator' UI control is described in the governing specs — only an Operator Hierarchy level (FBD-100385 para 178) and a fixed OperatorId of 1 (FBD-100698 para 86). Confirm the exact live control."
+    ]
+  },
+  {
+    "id": 4102978,
+    "title": "Fares export — configured fares are exported",
+    "preface": "This test is to confirm the user can export configured fares from CloudFare.",
+    "preconds": "**GIVEN** the user is signed into CloudFare\n**AND** routes with a shared Service Group have fares configured (e.g. routes sharing one service group)",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the fares export (Fares Export function, or exports fares for routes sharing a Service Group)",
+        "expected": "**THEN** the fares file is produced\n**UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100385 para 157-159,FBD-100336,FBD-100296 para 241",
+    "citations": ["FBD-100385 para 157-159", "FBD-100336", "FBD-100296 para 241"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker text. No behavioural change.",
+    "gaps": [
+      "Governing specs place fares export in the Reports module / a dedicated Fares Export function (FBD-100385 para 157-159, detailed in FBD-100336) and describe export for routes sharing a Service Group (FBD-100296 para 241); export 'for a selected operator' from the Topology & Fares page is not confirmed. Confirm the surface and parameters live."
+    ]
+  },
+  {
+    "id": 4102979,
+    "title": "Import Map Point File — stops are added and existing stops updated",
+    "preface": "This test is to confirm the user can import a map point CSV file to add new stops and update existing stops.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module\n**AND** a map point CSV file in the specified format is available",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects 'Import Map Point File' from the Topology main menu, selects the CSV file and presses 'Import'",
+        "expected": "**THEN** a success box reports the number of stops added (Stops Added) and updated (Stops Updated)\n**AND** stops not already present are added\n**AND** existing stops are updated from the file"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 ref [1] (Map Point Import File Example)",
+    "citations": ["FBD-100296 ref [1]"],
+    "change_note": "Relocated the file-format citation out of Preconditions text into Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4102980,
+    "title": "Import route data at parent and child operator level",
+    "preface": "This test is to confirm the user can import route data at parent and child operator level.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module with an operator selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user imports route data at parent operator level and at child operator level",
+        "expected": "**THEN** the route data is imported at the selected level\n**UNCONFIRMED** — this import path is not described; confirm it exists live and capture its real file format/screen"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 para 44,FBD-100296 para 72",
+    "citations": ["FBD-100296 para 44", "FBD-100296 para 72"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. Substance (spec covers CSV map-point import only; TransXChange import explicitly not required for R2.0; XLSX route-data import at parent/child level not described) preserved in gaps.",
+    "gaps": [
+      "The governing spec covers only CSV map-point import and states a TransXChange route import is NOT required during R2.0 (FBD-100296 para 44, para 72); an XLSX route-data import at parent/child level is not described. Confirm this import exists live and capture its real file format and screen."
+    ]
+  },
+  {
+    "id": 4102986,
+    "title": "Route Management — create, amend, copy and delete a route",
+    "preface": "This test is to confirm the user can create, amend, copy and delete a route in the Route Management module. Note: this bundles four behaviours; consider splitting per the Gherkin standard.",
+    "preconds": "**GIVEN** the user is in the Route Management module with a Service selected in the Services sub-module",
+    "steps": [
+      {
+        "content": "**WHEN** the user presses 'Create New Route' in the Routes sub-module, completes the route attributes and stops, and presses 'Add Route'",
+        "expected": "**THEN** the new route is added and appears in the Routes drop-down"
+      },
+      {
+        "content": "**WHEN** the user selects the route, opens the '3 dot' menu on the Route Pane and chooses 'Edit Route Attributes' (or 'Copy Route', or 'Delete Route')",
+        "expected": "**THEN** 'Edit Route Attributes' applies the amended attributes\n**AND** 'Copy Route' creates a copy in the same Service named '<route>-copy'\n**AND** 'Delete Route' removes the route after the Yes/No confirmation\n**UNCONFIRMED** — that a copy retains its fare area is not confirmed; verify against the fares spec/live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 para 44",
+    "citations": ["FBD-100296 para 44"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "That a copied route 'retains its assigned fare area' is not in FBD-100296 (fares are explicitly out of scope of that spec, para 44); confirm fare-area copy behaviour against the fares spec/live."
+    ]
+  },
+  {
+    "id": 4102987,
+    "title": "Route — service and public route code configured",
+    "preface": "This test is to confirm the user can add a route to a Service and set its route codes.",
+    "preconds": "**GIVEN** the user is in the Route Management module with a Service selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the route's 'Add to a Service' attribute and its 'Public Route Code' (the code printed on tickets)",
+        "expected": "**THEN** the route is saved with the selected Service and Public Route Code\n**UNCONFIRMED** — no per-route 'service code'/'operator' field exists in the spec; confirm the live screen's terms"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 para 236-238",
+    "citations": ["FBD-100296 para 236-238"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. Flagged title/expected-result drift for the engineer.",
+    "gaps": [
+      "FBD-100296 route attributes are 'Add to a Service' and 'Public Route Code' (para 236-238); there is no per-route 'service code' field nor a per-route 'operator' assignment (routes belong to a Service, not an operator). The case title and the Expected-result summary still say 'service code' and 'operator' — confirm what those terms map to on the live screen, and consider retitling to match the real field names."
+    ]
+  },
+  {
+    "id": 4102988,
+    "title": "Route — enable ABT flat fare",
+    "preface": "This test is to confirm the user can enable ABT flat-fare travel on a route.",
+    "preconds": "**GIVEN** the user has selected a route in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user enables ABT flat fare on the route",
+        "expected": "**THEN** the route is configured for ABT flat-fare travel\n**UNCONFIRMED** — no 'ABT flat fare' route attribute is named in the spec; confirm the setting exists and where it lives"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 para 234-249,FBD-100296 para 44",
+    "citations": ["FBD-100296 para 234-249", "FBD-100296 para 44"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "An 'ABT flat fare' route attribute is not among the FBD-100296 route attributes (para 234-249), and fares are out of scope of that spec (para 44). Confirm the flat-fare setting exists and where it lives."
+    ]
+  },
+  {
+    "id": 4102989,
+    "title": "Route — enable Multi-Journey transfers and set the transfer time",
+    "preface": "This test is to confirm the user can permit Multi-Journey transfers on a route and set the transfer time so a transfer within the window retrieves the correct fare.",
+    "preconds": "**GIVEN** the user is editing a route's attributes in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the route's 'Transfer Time' (minutes) — and 'Directional Transfer' if the previous journey's direction must match",
+        "expected": "**THEN** Multi-Journey transfers are permitted on the route with the configured Transfer Time"
+      },
+      {
+        "content": "**WHEN** a second tap is made within the configured Transfer Time",
+        "expected": "**THEN** the fares engine returns the correct transfer fare for the window\n**UNCONFIRMED** — confirm the exact fare returned against seeded fares"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100698",
+    "citations": ["FBD-100698"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "Transfer-fare retrieval is fares-engine behaviour (FBD-100698); the exact fare returned is not pinned in the case — confirm against seeded fares live rather than hard-coding a figure."
+    ]
+  },
+  {
+    "id": 4102990,
+    "title": "Route — configure the fares triangle and calculate a fare",
+    "preface": "This test is to confirm the user can configure a route's fares triangle, create a fare area and calculate a fare.",
+    "preconds": "**GIVEN** the user has selected a route in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the fares triangle, creates a new fare area and calculates a fare",
+        "expected": "**THEN** the fares triangle is saved\n**AND** the calculated fare matches the configured fare area\n**UNCONFIRMED** — fares-triangle/area configuration is out of scope of this spec; confirm the screen and fields live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100296 para 44,FBD-100296 para 239,FBD-100336",
+    "citations": ["FBD-100296 para 44", "FBD-100296 para 239", "FBD-100336"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. Flagged possible cross-surface concern in gaps (fares config living outside Route Management).",
+    "gaps": [
+      "Fares management (fares triangle, fare areas) is explicitly OUT of scope of FBD-100296 (para 44); the fares-triangle concept is only referenced in passing (para 239). Fare-triangle/area configuration lives in a fares spec (e.g. FBD-100336), outside this governing set — confirm whether this is even reachable from the Route Management screen, or belongs in a different CloudFare area/section."
+    ]
+  },
+  {
+    "id": 4102991,
+    "title": "Route — ETM rail substitution service",
+    "preface": "This test is to confirm the user can create an ETM rail-substitution service route.",
+    "preconds": "**GIVEN** the user has selected an ETM operator and created a rail replacement service in the Route Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the rail-substitute route",
+        "expected": "**THEN** the rail-substitute route is saved\n**UNCONFIRMED** — no CloudFare screen for creating a rail-substitution service route is described; confirm the configuration surface live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100698 para 109",
+    "citations": ["FBD-100698 para 109"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "'Rail substitution' is grounded only as a fare-request concept (tap-on-only taps on an ETM split into tap-on/tap-off by ABT — FBD-100698 para 109); a CloudFare screen to create a rail-substitution *service route* is not described. Confirm the configuration surface live."
+    ]
+  },
+  {
+    "id": 4102996,
+    "title": "Product — a Preset product is configured",
+    "preface": "This test is to confirm the user can configure a Preset product.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures a Preset product",
+        "expected": "**THEN** the Preset product is saved with its configuration\n**UNCONFIRMED** — no 'Preset Reverse FLU' variant is named in the spec; confirm whether it is a real live sub-type"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100268 §10",
+    "citations": ["FBD-100268 §10"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. Flagged a title/Expected-result mismatch found during this pass: the title says plain 'Preset product' but the Expected-result field still says 'preset reverse FLU product' — not changed here (naming call for the engineer), but logged as a gap so it doesn't silently drift further.",
+    "gaps": [
+      "FBD-100268 confirms a 'Preset' product type (§10 header) but there is no 'Preset Reverse FLU' variant in the spec. Confirm whether 'reverse FLU' is a real Preset sub-type live.",
+      "Title/Expected-result drift: the title reads 'a Preset product' but custom_expected still reads 'a preset reverse FLU product' — align once the sub-type is confirmed."
+    ]
+  },
+  {
+    "id": 4102998,
+    "title": "Product — an Excess (open-value) product is configured",
+    "preface": "This test is to confirm the user can configure an excess product as an open-value product with minimum and maximum values.",
+    "preconds": "**GIVEN** the user is in the Products area of the Topology & Fares Management module with an operator level selected",
+    "steps": [
+      {
+        "content": "**WHEN** the user configures the product's Minimum Value and Maximum Value (in pence)",
+        "expected": "**THEN** the product is saved as an open-value / excess product\n**UNCONFIRMED** — no distinct 'Excess' product-type field is named in the spec; confirm live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100268 §47-48",
+    "citations": ["FBD-100268 §47-48"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "FBD-100268 has no distinct 'Excess' product-type column; it describes Excess as an open-value ticket governed by the Minimum Value and Maximum Value fields (§47-48). Confirm whether 'Excess' is a named product type live."
+    ]
+  },
+  {
+    "id": 4103004,
+    "title": "Product buttons — assigned via Menu product groups per device",
+    "preface": "This test is to confirm the user can add, remove and toggle the device buttons that products appear on, per device type.",
+    "preconds": "**GIVEN** the user is in the Product Groups area of the Products menu with a Menu-type product group open",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds, removes or reorders products against buttons in a Menu-type product group for a device type",
+        "expected": "**THEN** the button assignment is saved for that device type\n**UNCONFIRMED** — no per-product 'keyboard button' field exists; confirm the exact live surface"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100293 para 155,FBD-100293 para 202",
+    "citations": ["FBD-100293 para 155", "FBD-100293 para 202"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "Device button assignment is done through Menu-type Product Groups (products mapped to L1-L5 / R1-R5 keys), not a per-product 'keyboard button' field (FBD-100293 para 155, para 202). FBD-100268 has no keyboard-button property. Confirm the exact live surface."
+    ]
+  },
+  {
+    "id": 4103006,
+    "title": "Product — assignment expiry / enablement",
+    "preface": "This test is to confirm the user can set when a product assignment expires or is disabled.",
+    "preconds": "**GIVEN** the user is viewing a product's ticket/device assignment in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user sets the expiry (or enabled/disabled state) of the product assignment",
+        "expected": "**THEN** the assignment's expiry / enabled state is saved\n**UNCONFIRMED** — no 'product assignment expiry' field is named in the spec; confirm what the live screen actually controls"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100268 §89,FBD-100268 §110,FBD-100385 §202",
+    "citations": ["FBD-100268 §89", "FBD-100268 §110", "FBD-100385 §202"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "FBD-100268 has product-level date fields (e.g. End Date, Travel Token Expiry §89,110) but no 'product assignment expiry'; FBD-100385 shows a ticket-assignment 'Enabled' Yes/No (§202). Confirm what 'product assignment expiry' controls on the live screen."
+    ]
+  },
+  {
+    "id": 4103007,
+    "title": "Fares rule — a new rule is added",
+    "preface": "This test is to confirm the user can add a new fares rule.",
+    "preconds": "**GIVEN** the user is in the Topology & Fares Management module",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds a new fares rule",
+        "expected": "**THEN** the rule is saved and appears in the configured rules\n**UNCONFIRMED** — the add-rule screen/fields are not described; confirm the rule-creation flow live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100385 para 125-126",
+    "citations": ["FBD-100385 para 125-126"],
+    "change_note": "Relocated inline FBD citation to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "Rules exist and can be exported (Rules Report, FBD-100385 para 125-126), but the governing specs do not describe the add-a-rule screen or fields. Confirm the rule-creation flow live."
+    ]
+  },
+  {
+    "id": 4103036,
+    "title": "Device Details — view and edit device information",
+    "preface": "This test is to confirm the user can view and edit a device's information from the Device Details page in Asset Manager.",
+    "preconds": "**GIVEN** the user is in Asset Manager with a device's Device Details page displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user enters Edit mode on the Device Details page and changes the device information",
+        "expected": "**THEN** the device information is updated\n**UNCONFIRMED** — the full scope of editable fields is not covered; confirm live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100263 para 418,FBD-100263 para 450,FBD-100263 para 419,FBD-100263 para 57,FBD-100263 para 5",
+    "citations": ["FBD-100263 para 418", "FBD-100263 para 450", "FBD-100263 para 419", "FBD-100263 para 57", "FBD-100263 para 5"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "FBD-100263 names the 'Device Details page' and an 'Edit mode' (para 418, 450) and 'Asset Manager' (para 419) but explicitly does not cover the full scope of asset management (para 57/para 5). Confirm the editable fields live."
+    ]
+  },
+  {
+    "id": 4103037,
+    "title": "Device — status set from Device Details page",
+    "preface": "This test is to confirm the user can set and clear a device status from the Device Details page.",
+    "preconds": "**GIVEN** the user is in Asset Manager with a device's Device Details page displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user assigns a status to the device, then later changes it back",
+        "expected": "**THEN** the device's status is updated accordingly\n**UNCONFIRMED** — spec describes status categories, not a disable/enable toggle; confirm the live control"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100263 para 418,FBD-100263 para 423",
+    "citations": ["FBD-100263 para 418", "FBD-100263 para 423"],
+    "change_note": "Relocated inline FBD citations to Refs; shortened marker. No behavioural change.",
+    "gaps": [
+      "FBD-100263 describes selecting new status categories from the Device Details page (para 418, 423) but does not describe a 'disable/enable' device state. Confirm whether the live control is disable/enable or a status category."
+    ]
+  },
+  {
+    "id": 4103055,
+    "title": "[UNCONFIRMED] Dashboard — summary tiles show their metrics",
+    "preface": "This test is to confirm the CloudFare Dashboard shows configured summary tiles with their metrics.\n**UNCONFIRMED** — only the 'Hours since last communication' tile is specified; the rest of the tile set is unconfirmed",
+    "preconds": "**GIVEN** a Dashboard has been configured with summary tiles\n**AND** the user is signed into CloudFare",
+    "steps": [
+      {
+        "content": "**WHEN** the user views the Dashboard",
+        "expected": "**THEN** the 'Hours since last communication' tile shows its metric"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100347 REQ-3585/3586,FBD-100263 (Exceptions)",
+    "citations": ["FBD-100347 REQ-3585/3586", "FBD-100263 (Exceptions)"],
+    "change_note": "Relocated inline FBD/REQ citations from the preface into Refs; shortened the UNCONFIRMED sentence to a tag. No behavioural change.",
+    "gaps": [
+      "The CloudFare KPI Dashboard is 'subject to detailed design' per FBD-100347 (REQ-3585/3586). Only the 'Hours since last communication' tile is specified (FBD-100263 Exceptions); the remaining tiles (missing transactions, devices by status, recent alerts, ABT users/journeys/revenue, TVM status, quarantine count) are NOT specified in the governing specs. Confirm the tile set on the live system."
+    ]
+  },
+  {
+    "id": 4103056,
+    "title": "[UNCONFIRMED] Create, clone, favourite and delete a dashboard",
+    "preface": "**UNCONFIRMED** — dashboard create/clone/favourite/delete is not specified. Confirm on the live system before running.",
+    "preconds": "**GIVEN** the user is signed into CloudFare on the dashboard homepage",
+    "steps": [
+      {
+        "content": "**WHEN** the user creates, clones, favourites or deletes a dashboard",
+        "expected": "**THEN** each change is applied to the user's dashboards"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100347 REQ-3585/3586",
+    "citations": ["FBD-100347 REQ-3585/3586"],
+    "change_note": "Relocated inline FBD/REQ citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "Dashboard create/clone/favourite/delete functionality is NOT specified in any of the seven governing specs (the CloudFare KPI Dashboard is 'subject to detailed design', FBD-100347 REQ-3585/3586)."
+    ]
+  },
+  {
+    "id": 4103057,
+    "title": "[UNCONFIRMED] Add and remove dashboard tiles",
+    "preface": "**UNCONFIRMED** — adding/removing dashboard tiles is not specified. Confirm on the live system before running.",
+    "preconds": "**GIVEN** the user is signed into CloudFare with a dashboard created",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds and removes tiles",
+        "expected": "**THEN** the dashboard reflects the tile changes"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100347",
+    "citations": ["FBD-100347"],
+    "change_note": "Relocated inline FBD citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "Adding/removing dashboard tiles is NOT specified in any of the seven governing specs (KPI Dashboard 'subject to detailed design', FBD-100347)."
+    ]
+  },
+  {
+    "id": 4103058,
+    "title": "[UNCONFIRMED] View a dashboard full screen",
+    "preface": "**UNCONFIRMED** — a dashboard full-screen view is not specified. Confirm on the live system before running.",
+    "preconds": "**GIVEN** a dashboard with tiles is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects full screen",
+        "expected": "**THEN** the dashboard is shown full screen"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100347",
+    "citations": ["FBD-100347"],
+    "change_note": "Relocated inline FBD citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "A dashboard full-screen view is NOT specified in any of the seven governing specs (KPI Dashboard 'subject to detailed design', FBD-100347)."
+    ]
+  },
+  {
+    "id": 4103065,
+    "title": "[UNCONFIRMED] Software Versions Report",
+    "preface": "**UNCONFIRMED** — no standalone 'Software Versions Report' is scoped; Software Version appears only as a field within other asset reports. Confirm the report exists before running.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Software Versions Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100263",
+    "citations": ["FBD-100263"],
+    "change_note": "Relocated inline FBD citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "A standalone 'Software Versions Report' is NOT among the three asset reports scoped by FBD-100263 (Depot Location, Operator/Staff Activity, Devices Last Seen). Software Version appears only as a field within the Depot Location and Devices Last Seen reports, not as a separate report. Confirm the report exists before running."
+    ]
+  },
+  {
+    "id": 4103066,
+    "title": "Staff Activity Report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Staff Activity Report (staff-to-device interactions). Filters cascade Company to Staff Home Location to Staff ID; export is .xlsx.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu\n**AND** staff/device interaction data has been processed",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Staff Activity Report for a company, staff home location and staff ID",
+        "expected": "**THEN** the Staff Activity Report is generated\n**AND** it can be downloaded as .xlsx"
+      }
+    ],
+    "action": "reword",
+    "refs": "REQ-2499.2 (formerly Operator Report)",
+    "citations": ["REQ-2499.2"],
+    "change_note": "Relocated the inline '(formerly the Operator Report, REQ-2499.2)' provenance note from the preface sentence into Refs. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4103067,
+    "title": "[UNCONFIRMED] Engineer Visits Report",
+    "preface": "**UNCONFIRMED** — an 'Engineer Visits Report' is not among the scoped asset reports. Confirm before running.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Engineer Visits Report for a TVM, PV or GV",
+        "expected": "**THEN** the report is generated for the selected device type\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100263",
+    "citations": ["FBD-100263"],
+    "change_note": "Relocated inline FBD citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "An 'Engineer Visits Report' and a 'Reports Staff sub-page' are NOT in FBD-100263 (which scopes exactly three asset reports under the Assets sub-menu) nor any of the seven governing specs."
+    ]
+  },
+  {
+    "id": 4103068,
+    "title": "[UNCONFIRMED] Revenue Inspector's Report",
+    "preface": "**UNCONFIRMED** — a 'Revenue Inspector's Report' (with a BRT variant) is not among the scoped asset reports; a differently-scoped Inspector's Report exists on a different surface. Confirm before running.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Revenue Inspector's Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100263,FBD-100306 §6.18,FBD-100716",
+    "citations": ["FBD-100263", "FBD-100306 §6.18", "FBD-100716"],
+    "change_note": "Relocated inline FBD citations from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "A 'Revenue Inspector's Report' (with a BRT operator variant) on a 'Reports Staff sub-page' is NOT in FBD-100263 nor any of the seven governing specs. FBD-100306 has an Inspector's Report (§6.18) in the Merit Web viewer — a different surface — and FBD-100716 concerns a revenue-inspection device, not this report. Confirm whether this CloudFare report is real and distinct, live."
+    ]
+  },
+  {
+    "id": 4103070,
+    "title": "[UNCONFIRMED] TVM cash revenue reports",
+    "preface": "**UNCONFIRMED** — TVM cash-revenue reports (sales revenue, change to customer, driver totals) are not specified. Confirm before running; per-shift cash totals are covered by a separate API, not these reports.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a cash revenue report",
+        "expected": "**THEN** the selected cash revenue report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100276",
+    "citations": ["FBD-100276"],
+    "change_note": "Relocated inline FBD citation from preface to Refs; shortened sentence. No behavioural change.",
+    "gaps": [
+      "TVM cash-revenue reports (cash ticket sales revenue, change to customer, summary totals by driver) are NOT specified in any of the seven governing specs. Per-shift cash totals are covered by the Operator Totals API (FBD-100276), but that is a JSON API, not these reports — confirm before running."
+    ]
+  },
+  {
+    "id": 4103079,
+    "title": "Reports — audit data flows end to end into a report",
+    "preface": "This test is to confirm device audit data flows end to end into a CloudFare/Merit report. Only COMPLETED journeys sync to Merit/DWH; expect near-real-time but non-zero latency between device write and report availability (scheduled load, default ~10 minutes).",
+    "preconds": "**GIVEN** a controlled device transaction/completed journey has been generated\n**AND** it has been processed and synced to Merit/the Data Warehouse",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the corresponding report after the sync window",
+        "expected": "**THEN** the report reflects the processed audit data"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100387,FBD-100356",
+    "citations": ["FBD-100387", "FBD-100356"],
+    "change_note": "Relocated the two inline FBD citations from the preface sentence into Refs; kept the substantive facts (COMPLETED-only sync, ~10 min default schedule) as a short parenthetical rather than a cited sentence. No behavioural change.",
+    "gaps": []
+  },
+  {
+    "id": 4103083,
+    "title": "Ticket Editor — configure a change ticket (NOT IN SPEC)",
+    "preface": "This test is to confirm configuration of a 'change ticket'. NOTE: no 'change ticket' concept is described in the Ticket Editor spec.",
+    "preconds": "GIVEN a user is in the Ticket Editor",
+    "steps": [
+      {
+        "content": "**WHEN** the user attempts to configure a change ticket",
+        "expected": "**THEN** **GAP** — 'change ticket' concept not defined; confirm live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100363",
+    "citations": ["FBD-100363"],
+    "change_note": "Relocated the FBD-100363 citation from the step's GAP text into Refs. No behavioural change.",
+    "gaps": [
+      "A 'change ticket' is not defined in FBD-100363 — confirm the concept exists live before running."
+    ]
+  },
+  {
+    "id": 4103085,
+    "title": "Ticket Editor — group a set of ticket layouts (NOT IN SPEC)",
+    "preface": "This test is to confirm grouping of ticket layouts. NOTE: no ticket-layout grouping feature is described in the Ticket Editor spec.",
+    "preconds": "GIVEN a user is in the Ticket Editor with ticket templates available",
+    "steps": [
+      {
+        "content": "**WHEN** the user attempts to group a set of ticket templates",
+        "expected": "**THEN** **GAP** — no ticket-layout grouping feature exists; confirm live"
+      }
+    ],
+    "action": "reword",
+    "refs": "FBD-100363",
+    "citations": ["FBD-100363"],
+    "change_note": "Relocated the FBD-100363 citation from the step's GAP text into Refs. No behavioural change.",
+    "gaps": [
+      "No ticket-template grouping feature exists in FBD-100363 — confirm before running."
+    ]
+  }
+]

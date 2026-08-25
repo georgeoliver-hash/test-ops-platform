@@ -1,0 +1,185 @@
+# POS requirements-additions — NEW coverage closing gaps found in the POS requirements
+# cross-examination (proposals/translink-requirements-review/gaps-pos.md).
+# Requirement-grounded from the distilled specs in knowledge/translink/specs/:
+#   Barcode  : FBD-100167 (Multiple Use Barcodes), FBD-100317 (Corethree single/multi),
+#              FBD-100318 (Barcode Product Configuration)
+#   Heartbeat: FBD-100266 (Device Heartbeat)
+#   Fare-Stage: FBD-100207 (Fare Stage to Stop)
+#   MERIT    : FBD-100341 (Revenue Apportionment & Reporting)
+# Each case carries a CONCRETE worked example in its preconditions (real barcode type /
+# route / product / value / depot from the spec) per the strengthened grounding standard.
+# Single predicate per THEN/AND. Do NOT push over the old suite — new suite (30253) only.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ───────────────────── Barcode Validation ─────────────────────
+  - path: [Functional, Barcode Validation]
+    cases:
+      - title: Barcode — a single-use barcode is validated online and shows a green tick
+        refs: [FBD-100317, FBD-100167]
+        objective: This test is to confirm the POS validates an accepted single-use barcode online and redeems it.
+        steps: |-
+          **GIVEN** a POS is signed on in rail mode with a live connection to Corethree
+          **AND** single-use rail barcode types B, U, E, S, D and H are accepted on a POS (Translink scheme id 5720)
+          **AND** example: a type B (no-date) single-use barcode for product 640 Cross Border Standard Adult Single, presented within its validity window
+          **WHEN** the operator scans the single-use barcode
+          **THEN** the barcode is validated online against Corethree
+          **AND** a green tick is shown
+          **AND** a success tone is played
+          **AND** the ticket type Display Description is shown on the result screen
+        expected: The accepted single-use barcode validates online against Corethree and is redeemed with a green tick and success tone.
+      - title: Barcode — a multiple-use barcode is rejected as not accepted on the POS
+        refs: [FBD-100167, FBD-100317]
+        objective: This test is to confirm the POS rejects multiple-use barcodes, which it does not validate.
+        steps: |-
+          **GIVEN** a POS is signed on and able to scan barcodes
+          **AND** the POS validates single-use barcodes only and never multiple-use barcodes
+          **AND** example: a multiple-use mLink barcode for the "Barc - Adult Single" barcode-use product
+          **WHEN** the operator scans the multiple-use barcode
+          **THEN** the message "This Barcode Type is not accepted on this device" is displayed
+          **AND** the barcode is not validated
+        expected: A multiple-use barcode is refused on the POS with "This Barcode Type is not accepted on this device".
+      - title: Barcode — a Manifest (type F) barcode is rejected as not accepted on the POS
+        refs: [FBD-100317, FBD-100167]
+        objective: This test is to confirm the POS rejects a single-use Manifest (type F) barcode, which is valid only on an ETM.
+        steps: |-
+          **GIVEN** a POS is signed on and able to scan barcodes
+          **AND** single-use type F (Manifest) is accepted only on an ETM, never on a POS
+          **AND** example: a type F Manifest barcode intended for ETM validation
+          **WHEN** the operator scans the type F Manifest barcode
+          **THEN** the message "This Barcode Type is not accepted on this device" is displayed
+          **AND** the barcode is not validated
+        expected: A type F Manifest barcode is refused on the POS with "This Barcode Type is not accepted on this device".
+      - title: Barcode — offline single-use validation is allowed only at or below the Ceiling Limit
+        refs: [FBD-100317]
+        objective: This test is to confirm the POS validates an offline single-use barcode only when its value is at or below the Ceiling Limit.
+        steps: |-
+          **GIVEN** a POS is signed on but offline from Corethree
+          **AND** offline single-use validation is permitted only when the ticket value is at or below the BOS-configured Ceiling Limit
+          **AND** example: a Ceiling Limit of £10.00, a type B barcode worth £8.00, and a second worth £12.00
+          **WHEN** the operator scans the £8.00 barcode while offline
+          **AND** then scans the £12.00 barcode while offline
+          **THEN** the £8.00 barcode is validated offline
+          **AND** the £12.00 barcode is rejected as above the Ceiling Limit
+        expected: Offline, a single-use barcode at or below the £10.00 Ceiling Limit validates while one above it is rejected.
+      - title: Barcode — an offline single-use redemption syncs back to Corethree on reconnect
+        refs: [FBD-100317]
+        objective: This test is to confirm an offline single-use redemption is synced back to Corethree on reconnect to prevent reuse.
+        steps: |-
+          **GIVEN** a POS validated a single-use barcode offline while disconnected from Corethree
+          **AND** example: a type B barcode for product 640 redeemed offline at £8.00, under the £10.00 Ceiling Limit
+          **WHEN** the POS reconnects to Corethree
+          **THEN** the offline redemption is synced back to Corethree
+          **AND** a later attempt to reuse the same barcode is rejected as already redeemed
+        expected: An offline redemption syncs to Corethree on reconnect so the same barcode cannot be reused.
+      - title: Barcode — a successful single-use validation is audited as an event, not a MERIT transaction
+        refs: [FBD-100317, FBD-100318]
+        objective: This test is to confirm a successful single-use validation on the POS posts a CloudFare event and is not sent to MERIT.
+        steps: |-
+          **GIVEN** a POS validated a single-use barcode successfully
+          **AND** single-use validations are audited as events, whereas multiple-use validations (not accepted on the POS) would be BarcodeUsage zero-fare transactions
+          **AND** example: a redeemed type B barcode for product 640 carrying its Unique ID
+          **WHEN** the validation record reaches CloudFare
+          **THEN** the record is posted as an event in the Activity Log
+          **AND** the barcode Unique ID is searchable in the event Message field
+          **AND** the event is not synced to MERIT
+        expected: A successful single-use validation posts a searchable CloudFare event and is not reported to MERIT, unlike a multi-use BarcodeUsage zero-fare transaction.
+      - title: Barcode — a failed validation is audited as an event carrying the Unique ID and reason
+        refs: [FBD-100167, FBD-100318]
+        objective: This test is to confirm a failed barcode validation on the POS posts an event carrying the Unique ID and the failure reason.
+        steps: |-
+          **GIVEN** a POS attempted to validate a single-use barcode that failed validation
+          **AND** example: a type B barcode presented after its expiry, rejected on screen with a red cross
+          **WHEN** the failed-validation record reaches CloudFare
+          **THEN** the record is posted as an event
+          **AND** the event carries the barcode Unique ID
+          **AND** the event carries the failure reason
+        expected: A failed validation posts a CloudFare event carrying the barcode Unique ID and the failure reason.
+      - title: Barcode — a damaged barcode is validated by keying its 12-digit BRID
+        refs: [FBD-100317]
+        objective: This test is to confirm the operator can validate a single-use ticket by keying the 12-digit BRID when the barcode is unreadable.
+        steps: |-
+          **GIVEN** a POS is signed on with a live connection to Corethree
+          **AND** a BRID is a 12-digit fallback whose first two digits give the source (12 = Being, 13 = MMT, 99 = Test)
+          **AND** example: a damaged type B ticket with BRID 120428500786 (source 12, Being)
+          **WHEN** the operator keys the 12-digit BRID instead of scanning
+          **THEN** the ticket is validated online by its BRID
+          **AND** a green tick is shown
+          **AND** a success tone is played
+        expected: A damaged single-use ticket is validated by keying its 12-digit BRID (source 12, Being) rather than scanning.
+
+  # ───────────────────── Fare Look-Up (Fare-Stage selection) ─────────────────────
+  - path: [Functional, Fare Look-Up]
+    cases:
+      - title: Fare-Stage Selection — the POS shows and prints the Fare Stage name, not the stop name
+        refs: [FBD-100207]
+        objective: This test is to confirm the POS displays and prints the Fare Stage name rather than the individual stop name.
+        steps: |-
+          **GIVEN** an operator is signed on to a POS building a bus fare
+          **AND** the POS presents fares by Fare Stage, not by individual stop
+          **AND** example: on route 72b the boarding stop Moygashel Busby Shop belongs to a Fare Stage (Fare Stage name taken from the fare triangle — confirm against the fares export)
+          **WHEN** the operator selects the boarding and alighting stages and issues the ticket
+          **THEN** the result screen shows the Fare Stage name, not the stop name
+          **AND** the printed ticket shows the Fare Stage name, not the stop name
+        expected: The POS shows and prints the Fare Stage name rather than the underlying stop name.
+      - title: Fare-Stage Selection — a zero-fare stage combination blocks ticket issue
+        refs: [FBD-100207]
+        objective: This test is to confirm the POS cannot issue a ticket for a stage combination whose fare is zero.
+        steps: |-
+          **GIVEN** an operator is signed on to a POS building a bus fare
+          **AND** a zero fare for a stage combination means no ticket can be issued for it
+          **AND** example: on route 72b a boarding/alighting stage combination whose fare-triangle cell is a legitimate zero
+          **WHEN** the operator selects that zero-fare stage combination
+          **THEN** the POS does not issue a ticket for the combination
+          **AND** the operator is prevented from completing the sale
+        expected: A zero-fare stage combination cannot be sold; the POS blocks ticket issue.
+      - title: Fare-Stage Selection — the operator can reach a fare by keying the Fare Stage ID
+        refs: [FBD-100207]
+        objective: This test is to confirm the operator can select a stage by entering its Fare Stage ID on the numeric keypad, as an alternative to scrolling Key Stops.
+        steps: |-
+          **GIVEN** an operator is signed on to a POS building a bus fare
+          **AND** a stage can be selected either by scrolling Key Stops with the arrows or by keying the Fare Stage ID on the numeric keypad
+          **AND** example: on route 72b keying the boarding Fare Stage ID on the numeric keypad instead of scrolling
+          **WHEN** the operator keys the Fare Stage ID
+          **THEN** the corresponding Fare Stage is selected
+          **AND** its fare is displayed for the ticket
+        expected: Keying a Fare Stage ID selects that stage and shows its fare, matching the arrow-scroll selection path.
+
+  # ───────────────────── Comms & Status (heartbeat) ─────────────────────
+  - path: [Functional, Comms & Status]
+    cases:
+      - title: Heartbeat — a signed-off POS refreshes Last Communication every 15 minutes via the Staff List check
+        refs: [FBD-100266]
+        objective: This test is to confirm the POS keeps its CloudFare Last Communication fresh via the 15-minute Staff List check even when signed off with no sales.
+        steps: |-
+          **GIVEN** a POS is signed off with no ticket transactions
+          **AND** every device performs a Staff List Refresh check every 15 minutes regardless of state
+          **AND** example: a POS at the Ulsterbus Omagh depot (device home OM) left signed off
+          **WHEN** the 15-minute Staff List check calls in to CloudFare
+          **THEN** a StaffList message updates the device Last Communication time
+          **AND** Hours Since Last Communication is reset to zero
+          **AND** the update flows into Asset Manager
+        expected: A signed-off POS with no sales still refreshes Last Communication every 15 minutes via the StaffList check, resetting Hours Since Last Communication to zero.
+
+  # ───────────────────── Revenue Allocation (MERIT) ─────────────────────
+  # NOTE: the PM/PR/PU location mapping is applied in CloudFare/BOS; the POS's part is
+  # emitting the route mode on the transaction. The end-to-end allocation is arguably
+  # better verified in the BOS/ABT suite (30279) — flagged for the parent to place.
+  - path: [Functional, Revenue Allocation]
+    cases:
+      - title: Revenue Allocation — a rail ticket sold on an Ulsterbus POS carries the rail route for NIR allocation
+        refs: [FBD-100341]
+        objective: This test is to confirm a rail-mode sale on an Ulsterbus POS emits the rail route so CloudFare allocates the revenue to NIR, not the device home location.
+        steps: |-
+          **GIVEN** an operator is signed on to a POS whose device home is the Ulsterbus Omagh depot (OM)
+          **AND** MERIT revenue location is derived from the transaction route mode/company, not the device home location
+          **AND** example: selling an NIR rail single on this Ulsterbus POS
+          **WHEN** the rail ticket is sold and the transaction reaches CloudFare
+          **THEN** the transaction carries the rail route reference for its NIR sale
+          **AND** CloudFare maps the POS rail sale to the PR (NIR) revenue location
+          **AND** the revenue is not allocated to the Ulsterbus device home location
+        expected: A rail sale on an Ulsterbus POS is allocated to NIR (PR) by route, not to the Ulsterbus device home location.

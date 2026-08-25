@@ -1,0 +1,441 @@
+# Merit + Merit Web Reporter (BOS reporting engine).
+# Consolidated from old suite 14441 (~255 cases): Summary/Detailed/with-without-Grouping
+# and Direction-of-Travel presentation variants folded to one case per distinct report;
+# Merit Web Reporter (a viewer of the same reports) folded to viewer cases; Staff
+# Synchronisation import variants folded. devtype [151]. Single-predicate THENs.
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [151]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  - path: [Merit, Functional, Administration]
+    cases:
+      - title: Date Editor — period, roll-over time and start of week
+        objective: This test is to confirm that an administrator can edit the period, roll-over time and start of week in the Date Editor.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Date Editor
+          **WHEN** the administrator edits the period, roll-over time and start of week
+          **THEN** the date settings are saved
+        expected: The period, roll-over time and start of week are saved in the Date Editor.
+      - title: Timeband Editor
+        objective: This test is to confirm that an administrator can configure timebands in the Timeband Editor.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Timeband Editor
+          **WHEN** the administrator configures a timeband
+          **THEN** the timeband is saved
+        expected: A timeband is configured and saved.
+      - title: Staff Editor
+        objective: This test is to confirm that an administrator can edit staff and operator details in the Staff Editor.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Staff Editor
+          **WHEN** the administrator edits a staff member's details and operator details
+          **THEN** the staff details are saved
+        expected: Staff and operator details are saved in the Staff Editor.
+      - title: Class Type and Class Group Editors
+        objective: This test is to confirm that an administrator can edit class types and class groups, including a product class assigned to more than one class group.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Class Type and Class Group Editors
+          **WHEN** the administrator edits class types and class groups, assigning a product class to more than one group
+          **THEN** the class type and class group settings are saved
+        expected: Class types and class groups are saved, including multi-group product classes.
+      - title: Location, Location Group and Location Restrictions Editors
+        objective: This test is to confirm that an administrator can edit locations, location groups and location restrictions.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Location editors
+          **WHEN** the administrator edits a location, a location group and location restrictions
+          **THEN** the location settings are saved
+        expected: Locations, location groups and location restrictions are saved.
+      - title: Route Group Editor
+        objective: This test is to confirm that an administrator can edit route groups, including a route assigned to more than one route group.
+        steps: |-
+          **GIVEN** an administrator is in the Merit Route Group Editor
+          **WHEN** the administrator edits a route group, assigning a route to more than one group
+          **THEN** the route group settings are saved
+        expected: Route groups are saved, including multi-group routes.
+      - title: Route Revenue Editor
+        objective: This test is to confirm that an administrator can configure route revenue allocation (pass revenue, generation factor, rail and BRT mileage and journey allocation).
+        steps: |-
+          **GIVEN** an administrator is in the Merit Route Revenue Editor
+          **WHEN** the administrator configures pass revenue, generation factor, and rail and BRT mileage and journey allocation
+          **THEN** the route revenue settings are saved
+        expected: Route revenue allocation settings are saved.
+
+  - path: [Merit, Functional, Analysis Reports]
+    cases:
+      - title: Sales Breakdown reports
+        objective: This test is to confirm that the Sales Breakdown reports (by driver, class, value, value/location, route/class) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs a Sales Breakdown report (by driver, class, value, value/location or route/class)
+          **THEN** the selected Sales Breakdown report is generated
+          **AND** the report can be exported
+        expected: The Sales Breakdown reports generate and export.
+      - title: Sales Analysis by Class report
+        objective: This test is to confirm that the Sales Analysis by Class report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Sales Analysis by Class report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Sales Analysis by Class report generates and exports.
+      - title: Origin and Destination reports
+        objective: This test is to confirm that the Origin, Destination and Origin/Destination reports (including by class, direction of travel, rail and mileage) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs an Origin, Destination or Origin/Destination report (by class, direction of travel, rail or mileage)
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Origin and Destination report family generates and exports.
+      - title: Bus Loading by Route/Journey report
+        objective: This test is to confirm that the Bus Loading by Route/Journey report, including direction of travel, generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Bus Loading by Route/Journey report, including by direction of travel
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Bus Loading by Route/Journey report generates and exports.
+      - title: Route/Stage reports
+        objective: This test is to confirm that the Route/Stage and Route/Stage Analysis Detailed reports generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Route/Stage report or the Route/Stage Analysis Detailed report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Route/Stage reports generate and export.
+      - title: Journey Analysis reports
+        objective: This test is to confirm that the Journey Analysis and Journey Analysis Detailed reports, including direction of travel, generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Journey Analysis or Journey Analysis Detailed report, including by direction of travel
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Journey Analysis reports generate and export.
+      - title: Stage Timeband report
+        objective: This test is to confirm that the Stage Timeband report, including direction of travel, generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Stage Timeband report, including by direction of travel
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Stage Timeband report generates and exports.
+      - title: Patronage Timeband report
+        objective: This test is to confirm that the Patronage Timeband report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Patronage Timeband report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Patronage Timeband report generates and exports.
+      - title: Revenue and Revenue by Stop reports
+        objective: This test is to confirm that the Revenue report and Revenue by Stop report generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Revenue report or the Revenue by Stop report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Revenue and Revenue by Stop reports generate and export.
+      - title: Class Breakdown and Route Breakdown reports
+        objective: This test is to confirm that the Class Breakdown, Class Breakdown by Device, Route Breakdown and Route Breakdown by Class Group reports generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs a Class Breakdown or Route Breakdown report (including by device or by class group)
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Class and Route Breakdown reports generate and export.
+      - title: POS Revenue report
+        objective: This test is to confirm that the POS Revenue report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the POS Revenue report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The POS Revenue report generates and exports.
+      - title: Duty Comparison and Driver Shift reports
+        objective: This test is to confirm that the Duty Comparison report and Driver Shift report generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Duty Comparison report or the Driver Shift report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Duty Comparison and Driver Shift reports generate and export.
+      - title: Bus Serviceability Final Defects report
+        objective: This test is to confirm that the Bus Serviceability Final Defects report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Bus Serviceability Final Defects report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Bus Serviceability Final Defects report generates and exports.
+      - title: GPS reports
+        objective: This test is to confirm that the GPS report and GPS Stage Change Failure reports (by bus, by stage and detailed) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the GPS report or a GPS Stage Change Failure report (by bus, by stage or detailed)
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The GPS reports generate and export.
+      - title: Route Purchase report
+        objective: This test is to confirm that the Route Purchase report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Route Purchase report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Route Purchase report generates and exports.
+      - title: Pay-In Reconciliation report
+        objective: This test is to confirm that the Pay-In Reconciliation report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Analysis Reports with audit data processed
+          **WHEN** the administrator runs the Pay-In Reconciliation report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Pay-In Reconciliation report generates and exports.
+
+  - path: [Merit, Functional, Revenue Performance Reports]
+    cases:
+      - title: Translink Class Revenue Performance report
+        objective: This test is to confirm that the Translink Class Revenue Performance report (summary and detailed, with and without grouping) generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Translink Reports with audit data processed
+          **WHEN** the administrator runs the Class Revenue Performance report in summary or detailed form, with or without grouping
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The Translink Class Revenue Performance report generates and exports in all forms.
+      - title: Translink Route Revenue Performance report
+        objective: This test is to confirm that the Translink Route Revenue Performance report (summary and detailed, with and without grouping) generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Translink Reports with audit data processed
+          **WHEN** the administrator runs the Route Revenue Performance report in summary or detailed form, with or without grouping
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The Translink Route Revenue Performance report generates and exports in all forms.
+      - title: Translink Period Trend Analysis reports
+        objective: This test is to confirm that the Translink Period Trend Analysis by Class and by Route reports (summary and detailed, with and without grouping) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Translink Reports with audit data processed
+          **WHEN** the administrator runs the Period Trend Analysis by Class or by Route report in any form
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The Translink Period Trend Analysis reports generate and export in all forms.
+      - title: Tickets By Operator report
+        objective: This test is to confirm that the Translink Tickets By Operator report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Translink Reports with audit data processed
+          **WHEN** the administrator runs the Tickets By Operator report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Tickets By Operator report generates and exports.
+      - title: NIR Revenue Performance reports
+        objective: This test is to confirm that the NIR Class and Route Revenue Performance reports (summary and detailed, with and without grouping) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit NIR Revenue Reports with audit data processed
+          **WHEN** the administrator runs the NIR Class or Route Revenue Performance report in any form
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The NIR Revenue Performance reports generate and export in all forms.
+      - title: NIR Period Trend Analysis reports
+        objective: This test is to confirm that the NIR Period Trend Analysis by Class and by Route reports (summary and detailed, with and without grouping) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit NIR Revenue Reports with audit data processed
+          **WHEN** the administrator runs the NIR Period Trend Analysis by Class or by Route report in any form
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The NIR Period Trend Analysis reports generate and export in all forms.
+      - title: BRT Revenue Performance reports
+        objective: This test is to confirm that the BRT Class and Route Revenue Performance reports (summary and detailed, with and without grouping) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit BRT Reports with audit data processed
+          **WHEN** the administrator runs the BRT Class or Route Revenue Performance report in any form
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The BRT Revenue Performance reports generate and export in all forms.
+      - title: Glider Revenue Performance reports
+        objective: This test is to confirm that the Glider Route and Class Revenue Performance reports (summary and detailed, with and without grouping) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Glider Only Reports with audit data processed
+          **WHEN** the administrator runs the Glider Route or Class Revenue Performance report in any form
+          **THEN** the report is generated for the selected form
+          **AND** the report can be exported
+        expected: The Glider Revenue Performance reports generate and export in all forms.
+      - title: Ticketing Reports including timebands
+        objective: This test is to confirm that the Ticketing Reports (Class and Route Revenue Performance and Period Trend Analysis, including NIR, with timebands) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Ticketing Reports with audit data processed
+          **WHEN** the administrator runs a Class or Route Revenue Performance or Period Trend Analysis report including timebands, including the NIR variants
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Ticketing Reports including timebands generate and export.
+
+  - path: [Merit, Functional, Concessionary Reports]
+    cases:
+      - title: Revenue Foregone reports
+        objective: This test is to confirm that the Revenue Foregone reports (by group and class, by operator by eligible route, and detailed) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Concessionary Reports with audit data processed
+          **WHEN** the administrator runs a Revenue Foregone report (by group and class, by operator by eligible route, or detailed)
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Revenue Foregone reports generate and export.
+      - title: Concessionary Class Summary reports
+        objective: This test is to confirm that the Concessionary Class Summary reports (by group and class, and by date/route group/class) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Concessionary Reports with audit data processed
+          **WHEN** the administrator runs a Concessionary Class Summary report
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Concessionary Class Summary reports generate and export.
+      - title: ENTCS Passenger and Revenue reports
+        objective: This test is to confirm that the ENTCS Passenger, ENTCS Revenue and ENTCS Revenue Foregone (summary and detailed) reports generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Concessionary Reports with audit data processed
+          **WHEN** the administrator runs an ENTCS Passenger, ENTCS Revenue or ENTCS Revenue Foregone report
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The ENTCS reports generate and export.
+      - title: Fare Foregone reports
+        objective: This test is to confirm that the Fare Foregone Summary report and Fare Foregone by Fare Band report generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Concessionary Reports with audit data processed
+          **WHEN** the administrator runs the Fare Foregone Summary report or the Fare Foregone by Fare Band report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Fare Foregone reports generate and export.
+
+  - path: [Merit, Functional, Daily Reports]
+    cases:
+      - title: Daily Summary report
+        objective: This test is to confirm that the Daily Summary report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Daily Summary report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Daily Summary report generates and exports.
+      - title: Daily Audit reports
+        objective: This test is to confirm that the Daily Audit report and Daily Audit by Module report generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Daily Audit report or the Daily Audit by Module report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Daily Audit reports generate and export.
+      - title: Class Audit and Route Audit reports
+        objective: This test is to confirm that the Class Audit report and Route Audit report (summary and detailed) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Class Audit report or the Route Audit report in summary or detailed form
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Class Audit and Route Audit reports generate and export.
+      - title: Annulled Tickets report
+        objective: This test is to confirm that the Annulled Tickets report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Annulled Tickets report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Annulled Tickets report generates and exports.
+      - title: Inspectors report
+        objective: This test is to confirm that the Inspectors report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Inspectors report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Inspectors report generates and exports.
+      - title: Outstanding Duties report
+        objective: This test is to confirm that the Outstanding Duties report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Outstanding Duties report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Outstanding Duties report generates and exports.
+      - title: Stage List report
+        objective: This test is to confirm that the Stage List report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Daily Reports with audit data processed
+          **WHEN** the administrator runs the Stage List report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Stage List report generates and exports.
+
+  - path: [Merit, Functional, Distance Reports]
+    cases:
+      - title: Origin and Destination Distance reports
+        objective: This test is to confirm that the Origin and Destination Distance reports (including by class and direction of travel) generate and export.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Distance Reports with audit data processed
+          **WHEN** the administrator runs an Origin and Destination Distance report (including by class or direction of travel)
+          **THEN** the selected report is generated
+          **AND** the report can be exported
+        expected: The Origin and Destination Distance reports generate and export.
+      - title: Route Distance Analysis report
+        objective: This test is to confirm that the Route Distance Analysis report generates and exports.
+        steps: |-
+          **GIVEN** an administrator is on the Merit Distance Reports with audit data processed
+          **WHEN** the administrator runs the Route Distance Analysis report
+          **THEN** the report is generated
+          **AND** the report can be exported
+        expected: The Route Distance Analysis report generates and exports.
+
+  - path: [Merit, Functional, Stored Procedures]
+    cases:
+      - title: Ulsterbus revenue stored procedures
+        objective: This test is to confirm that the Ulsterbus bus revenue stored procedures return correct revenue by payment type and operational payment type.
+        steps: |-
+          **GIVEN** Merit has processed Ulsterbus audit data
+          **WHEN** the Ulsterbus bus revenue stored procedures are run, including by payment type and operational payment type
+          **THEN** the stored procedures return the correct Ulsterbus revenue
+        expected: The Ulsterbus revenue stored procedures return correct revenue by payment type.
+      - title: Metro revenue stored procedures
+        objective: This test is to confirm that the Metro bus revenue stored procedures return correct revenue by payment type and operational payment type.
+        steps: |-
+          **GIVEN** Merit has processed Metro audit data
+          **WHEN** the Metro bus revenue stored procedures are run, including by payment type and operational payment type
+          **THEN** the stored procedures return the correct Metro revenue
+        expected: The Metro revenue stored procedures return correct revenue by payment type.
+      - title: NIR rail revenue stored procedures
+        objective: This test is to confirm that the NIR rail revenue stored procedures return correct revenue by payment type and operational payment type.
+        steps: |-
+          **GIVEN** Merit has processed NIR rail audit data
+          **WHEN** the NIR rail revenue stored procedures are run, including by payment type and operational payment type
+          **THEN** the stored procedures return the correct NIR rail revenue
+        expected: The NIR rail revenue stored procedures return correct revenue by payment type.
+
+  - path: [Merit, Functional, Synchronisation & Tools]
+    cases:
+      - title: Synchronise staff into Merit
+        objective: This test is to confirm that staff changes synchronise into Merit (add, modify, disable, modify ID, home and working location), including via Import Staff.
+        steps: |-
+          **GIVEN** staff records exist in CloudFare
+          **WHEN** staff are added, modified, disabled, have their ID or locations changed, or are imported via Import Staff
+          **THEN** the corresponding staff changes are synchronised into Merit
+        expected: Staff add, modify, disable, ID and location changes synchronise into Merit, including via import.
+      - title: Browse audit data with Client Tools
+        objective: This test is to confirm that a user can browse audit data using the Merit Client Tools.
+        steps: |-
+          **GIVEN** a user has the Merit Client Tools available
+          **WHEN** the user browses the audit data
+          **THEN** the audit data is displayed
+        expected: Audit data can be browsed with the Client Tools.
+
+  - path: [Merit Web Reporter, Functional, Report Viewer]
+    cases:
+      - title: View the available reports in the Merit Web Reporter
+        objective: This test is to confirm that the Merit Web Reporter lists the available reports.
+        steps: |-
+          **GIVEN** a user is signed into the Merit Web Reporter
+          **WHEN** the user views the available reports
+          **THEN** the list of available reports is displayed
+        expected: The Merit Web Reporter lists the available reports.
+      - title: View and export a report in the Merit Web Reporter
+        objective: This test is to confirm that a user can view and export a report in the Merit Web Reporter (audit, sales, breakdown, reconciliation, duty, driver and inspector reports).
+        steps: |-
+          **GIVEN** a user is signed into the Merit Web Reporter
+          **WHEN** the user opens and exports a report (Daily Audit, Daily Audit by Module, Daily Audit by Trip, Daily Summary, Class Audit, Route Audit, Annulled Tickets, Sales Analysis by Class, Sales Breakdown by Class, Route/Class or Driver, Operator Activity, Inspector's, Duty Comparison, Driver Shift, Pay-In Reconciliation, Class Breakdown or Route Breakdown)
+          **THEN** the selected report is displayed
+          **AND** the report can be exported
+        expected: Reports can be viewed and exported in the Merit Web Reporter.

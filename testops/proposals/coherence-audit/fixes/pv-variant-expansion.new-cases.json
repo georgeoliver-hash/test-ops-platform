@@ -1,0 +1,1345 @@
+[
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Blind Concession SmartPass",
+    "refs": "FBD-100250, FBD-100335",
+    "preface": "This test is to confirm a Blind Concession SmartPass validates when valid and is rejected with the correct reason when invalid.",
+    "preconds": "**GIVEN** the axio4-PMV Platform Validator is in service showing the Present SmartCard or Barcode screen\n**AND** you have the seeded Blind Concession SmartPass test cards to hand — a valid one and an expired one\n**AND** you can verify back-office records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Blind SmartPass to the reader",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired Blind Concession SmartPass",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Blind Concession SmartPasses validate (Tag successful) when valid and reject with the specific reason when invalid, recorded in CloudFare/MERIT/SmartTrack. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Senior Concession SmartPass",
+    "refs": "FBD-100250, FBD-100335",
+    "preface": "This test is to confirm a Senior Concession SmartPass validates when valid and is rejected with the correct reason when invalid.",
+    "preconds": "**GIVEN** the axio4-PMV Platform Validator is in service showing the Present SmartCard or Barcode screen\n**AND** you have the seeded Senior Concession SmartPass test cards to hand — a valid one and an expired one\n**AND** you can verify back-office records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Senior SmartPass to the reader",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired Senior Concession SmartPass",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Senior Concession SmartPasses validate (Tag successful) when valid and reject with the specific reason when invalid, recorded in CloudFare/MERIT/SmartTrack. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a ROI Senior Concession SmartPass",
+    "refs": "FBD-100250, FBD-100335",
+    "preface": "This test is to confirm a ROI Senior Concession SmartPass validates when valid and is rejected with the correct reason when invalid.",
+    "preconds": "**GIVEN** the axio4-PMV Platform Validator is in service showing the Present SmartCard or Barcode screen\n**AND** you have the seeded ROI Senior Concession SmartPass test cards to hand — a valid one and an expired one\n**AND** you can verify back-office records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid ROI Senior SmartPass to the reader",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired ROI Senior Concession SmartPass",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "ROI Senior Concession SmartPasses validate (Tag successful) when valid and reject with the specific reason when invalid, recorded in CloudFare/MERIT/SmartTrack. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a War Pensioner Concession SmartPass",
+    "refs": "FBD-100250, FBD-100335",
+    "preface": "This test is to confirm a War Pensioner Concession SmartPass validates when valid and is rejected with the correct reason when invalid.",
+    "preconds": "**GIVEN** the axio4-PMV Platform Validator is in service showing the Present SmartCard or Barcode screen\n**AND** you have the seeded War Pensioner Concession SmartPass test cards to hand — a valid one and an expired one\n**AND** you can verify back-office records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid War Pensioner SmartPass to the reader",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired War Pensioner Concession SmartPass",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "War Pensioner Concession SmartPasses validate (Tag successful) when valid and reject with the specific reason when invalid, recorded in CloudFare/MERIT/SmartTrack. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Learning Disability Half-Fare SmartPass",
+    "refs": "FBD-100250, gap-register Q12",
+    "preface": "This test is to confirm a Learning Disability Half-Fare SmartPass validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Learning Disability Half-Fare SmartPass and a Half-Fare SmartPass that is not valid at this location\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Learning Disability Half-Fare SmartPass",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the Half-Fare SmartPass that is not valid here",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Learning Disability Half-Fare SmartPasses validate when valid and reject with the specific reason when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a No Driving Licence Half-Fare SmartPass",
+    "refs": "FBD-100250, gap-register Q12",
+    "preface": "This test is to confirm a No Driving Licence Half-Fare SmartPass validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid No Driving Licence Half-Fare SmartPass and a Half-Fare SmartPass that is not valid at this location\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid No Driving Licence Half-Fare SmartPass",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the Half-Fare SmartPass that is not valid here",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "No Driving Licence Half-Fare SmartPasses validate when valid and reject with the specific reason when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a PIPS Half-Fare SmartPass",
+    "refs": "FBD-100250, gap-register Q12",
+    "preface": "This test is to confirm a PIPS Half-Fare SmartPass validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid PIPS Half-Fare SmartPass and a Half-Fare SmartPass that is not valid at this location\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid PIPS Half-Fare SmartPass",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the Half-Fare SmartPass that is not valid here",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "PIPS Half-Fare SmartPasses validate when valid and reject with the specific reason when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Partially Sighted Half-Fare SmartPass",
+    "refs": "FBD-100250, gap-register Q12",
+    "preface": "This test is to confirm a Partially Sighted Half-Fare SmartPass validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Partially Sighted Half-Fare SmartPass and a Half-Fare SmartPass that is not valid at this location\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Partially Sighted Half-Fare SmartPass",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the Half-Fare SmartPass that is not valid here",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Partially Sighted Half-Fare SmartPasses validate when valid and reject with the specific reason when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Inner-zone Metro Multi-Journey smartcard",
+    "refs": "FBD-100261, FBD-100277, FBD-100271",
+    "preface": "This test is to confirm a Inner-zone Metro Multi-Journey smartcard validates in its zone (deducting a journey) and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen, configured for the Metro Inner zone\n**AND** you have a Inner-zone Adult Metro Multi-Journey card with journeys remaining, and the same product configured for the City zone (out of zone here)\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the Inner-zone Multi-Journey card within its zone",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone (City) Multi-Journey card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Metro Multi-Journey (Inner zone) validates within its zone (one journey deducted, passback applied) and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Extended-zone Metro Multi-Journey smartcard",
+    "refs": "FBD-100261, FBD-100277, FBD-100271",
+    "preface": "This test is to confirm a Extended-zone Metro Multi-Journey smartcard validates in its zone (deducting a journey) and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen, configured for the Metro Extended zone\n**AND** you have a Extended-zone Adult Metro Multi-Journey card with journeys remaining, and the same product configured for the City zone (out of zone here)\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the Extended-zone Multi-Journey card within its zone",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone (City) Multi-Journey card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Metro Multi-Journey (Extended zone) validates within its zone (one journey deducted, passback applied) and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate an iLink Zone 1 smartcard",
+    "refs": "FBD-100250, FBD-100271",
+    "preface": "This test is to confirm an iLink Zone 1 smartcard validates in its zone and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** a Rail PV within iLink Zone 1 is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid iLink Zone 1 smartcard and an iLink card whose zone does not cover this station\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid in-zone iLink card",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone iLink card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "iLink (Zone 1) validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate an iLink Zone 2 smartcard",
+    "refs": "FBD-100250, FBD-100271",
+    "preface": "This test is to confirm an iLink Zone 2 smartcard validates in its zone and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** a Rail PV within iLink Zone 2 is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid iLink Zone 2 smartcard and an iLink card whose zone does not cover this station\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid in-zone iLink card",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone iLink card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "iLink (Zone 2) validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate an iLink Zone 3 smartcard",
+    "refs": "FBD-100250, FBD-100271",
+    "preface": "This test is to confirm an iLink Zone 3 smartcard validates in its zone and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** a Rail PV within iLink Zone 3 is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid iLink Zone 3 smartcard and an iLink card whose zone does not cover this station\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid in-zone iLink card",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone iLink card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "iLink (Zone 3) validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate an iLink NW smartcard",
+    "refs": "FBD-100250, FBD-100271",
+    "preface": "This test is to confirm an iLink NW-zone smartcard validates in its zone and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** a Rail PV within the iLink NW zone is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid iLink NW smartcard and an iLink card whose zone does not cover this station\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid in-zone iLink NW card",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone iLink card",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "iLink (NW zone) validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Belfast Visitor Pass",
+    "refs": "FBD-100250, FBD-100271",
+    "preface": "This test is to confirm a Belfast Visitor Pass validates in its zone and is rejected out of zone or when invalid.",
+    "preconds": "**GIVEN** a Rail PV within the Belfast Visitor Pass zone is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Belfast Visitor Pass and one whose zone does not cover this station\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid in-zone Belfast Visitor Pass",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the out-of-zone Belfast Visitor Pass",
+        "expected": "**THEN** the PV shows the Not Valid At This Location reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Belfast Visitor Pass validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a 24+ smartcard",
+    "refs": "FBD-100236,FBD-100250",
+    "preface": "This test is to confirm a 24+ smartcard validates while within its concessionary period and is rejected once expired (a date-based expiry, not an intraday time-of-day band).",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid 24+ smartcard within its concessionary period, and one whose concessionary-period expiry date has passed\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the 24+ card after its concessionary-period expiry date",
+        "expected": "**THEN** the PV rejects it as an expired product (Product Expired) — resolved 2026-07-22: expiry is date-based only (end of the concessionary period), per FBD-100236 para 328 (\"the expiry date is expected to be set to the end of the concessionary period\"); no intraday time-of-day band exists for this product, confirmed by the total absence of any such case across the old suite's (10047) otherwise exhaustive coverage (hotlist/passback/days-left/zone), unlike the genuinely time-banded EA Pupil Smartpass / EA Bus Further Education products (old-suite cases confirm Mon-Fri/weekend/school-holiday time restrictions for those, a different product family)."
+      }
+    ],
+    "expected": "24+ smartcards validate while within their concessionary period and are rejected (Product Expired) once the concessionary-period expiry date has passed — a date-based expiry, not a time-of-day band (gap Q25 resolved 2026-07-22: FBD-100236 para 328; old-suite 10047 absence of any 24+ time-of-day case). Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Staff Partner Translink Employee smartcard",
+    "refs": "FBD-100250",
+    "preface": "This test is to confirm a Translink Staff Partner employee smartcard validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Staff Partner employee smartcard and an expired/withdrawn Staff Partner employee smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Staff Partner smartcard",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired/withdrawn Staff Partner employee smartcard",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Staff Partner employee smartcards validate when valid and reject when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Retired Staff Translink Employee smartcard",
+    "refs": "FBD-100250",
+    "preface": "This test is to confirm a Translink Retired Staff employee smartcard validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Retired Staff employee smartcard and an expired/withdrawn Retired Staff employee smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Retired Staff smartcard",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired/withdrawn Retired Staff employee smartcard",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Retired Staff employee smartcards validate when valid and reject when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a External Staff Translink Employee smartcard",
+    "refs": "FBD-100250",
+    "preface": "This test is to confirm a Translink External Staff employee smartcard validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid External Staff employee smartcard and an expired/withdrawn External Staff employee smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid External Staff smartcard",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired/withdrawn External Staff employee smartcard",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "External Staff employee smartcards validate when valid and reject when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate a Dependents Pass Translink Employee smartcard",
+    "refs": "FBD-100250",
+    "preface": "This test is to confirm a Translink Dependents Pass employee smartcard validates when valid and is rejected when invalid.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid Dependents Pass employee smartcard and an expired/withdrawn Dependents Pass employee smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Dependents Pass smartcard",
+        "expected": "**THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you present the expired/withdrawn Dependents Pass employee smartcard",
+        "expected": "**THEN** the PV shows the Product Expired reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "Dependents Pass employee smartcards validate when valid and reject when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Smartcard Validation"
+    ],
+    "title": "Validate an EA Further Education Smartpass",
+    "refs": "FBD-100250, coherence-audit/pv.findings.md",
+    "preface": "This test is to confirm an EA Further Education Smartpass validates within its valid times and is rejected outside them.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid EA Further Education Smartpass presented on a school-term weekday within its valid time\n**AND** you have the same pass to present at a weekend or during a school holiday\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the EA Further Education Smartpass within its valid time on a school day",
+        "expected": "**THEN** the PV shows the Tag successful screen"
+      },
+      {
+        "content": "**WHEN** you present it at a weekend or during a school holiday",
+        "expected": "**THEN** the PV shows the Invalid Time Of Day reject screen"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted presentation",
+        "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"
+      }
+    ],
+    "expected": "EA Further Education Smartpasses validate within valid times and reject outside them (before start, after expiry, outside time, weekend, school holiday). Run for EA Bus (Glider) and EA Rail.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Rail-specific"
+    ],
+    "title": "Rail — NIR transfer validation (Belfast Visitor)",
+    "refs": "FBD-100271",
+    "preface": "This test is to confirm NIR transfer validation on a Rail PV for the Belfast Visitor product.",
+    "preconds": "**GIVEN** a Rail (NIR) PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a transfer-eligible Belfast Visitor smartcard that has just made a first NIR journey (inside its transfer window) and a non-eligible smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the transfer-eligible Belfast Visitor card for the connecting NIR journey inside the transfer window",
+        "expected": "**THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)"
+      },
+      {
+        "content": "**WHEN** you present the non-eligible card for the transfer",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the transfer",
+        "expected": "**THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack"
+      }
+    ],
+    "expected": "NIR transfers validate for an eligible Belfast Visitor smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Rail-specific"
+    ],
+    "title": "Rail — NIR transfer validation (Staff Smartpass)",
+    "refs": "FBD-100271",
+    "preface": "This test is to confirm NIR transfer validation on a Rail PV for the Staff Smartpass product.",
+    "preconds": "**GIVEN** a Rail (NIR) PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a transfer-eligible Staff Smartpass smartcard that has just made a first NIR journey (inside its transfer window) and a non-eligible smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the transfer-eligible Staff Smartpass card for the connecting NIR journey inside the transfer window",
+        "expected": "**THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)"
+      },
+      {
+        "content": "**WHEN** you present the non-eligible card for the transfer",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the transfer",
+        "expected": "**THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack"
+      }
+    ],
+    "expected": "NIR transfers validate for an eligible Staff Smartpass smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Rail-specific"
+    ],
+    "title": "Rail — NIR transfer validation (aLink)",
+    "refs": "FBD-100271",
+    "preface": "This test is to confirm NIR transfer validation on a Rail PV for the aLink product.",
+    "preconds": "**GIVEN** a Rail (NIR) PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a transfer-eligible aLink smartcard that has just made a first NIR journey (inside its transfer window) and a non-eligible smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the transfer-eligible aLink card for the connecting NIR journey inside the transfer window",
+        "expected": "**THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)"
+      },
+      {
+        "content": "**WHEN** you present the non-eligible card for the transfer",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the transfer",
+        "expected": "**THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack"
+      }
+    ],
+    "expected": "NIR transfers validate for an eligible aLink smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Rail-specific"
+    ],
+    "title": "Rail — NIR transfer validation (EA Pupil)",
+    "refs": "FBD-100271",
+    "preface": "This test is to confirm NIR transfer validation on a Rail PV for the EA Pupil product.",
+    "preconds": "**GIVEN** a Rail (NIR) PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a transfer-eligible EA Pupil smartcard that has just made a first NIR journey (inside its transfer window) and a non-eligible smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the transfer-eligible EA Pupil card for the connecting NIR journey inside the transfer window",
+        "expected": "**THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)"
+      },
+      {
+        "content": "**WHEN** you present the non-eligible card for the transfer",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the transfer",
+        "expected": "**THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack"
+      }
+    ],
+    "expected": "NIR transfers validate for an eligible EA Pupil smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Rail-specific"
+    ],
+    "title": "Rail — NIR transfer validation (EA Further Education)",
+    "refs": "FBD-100271",
+    "preface": "This test is to confirm NIR transfer validation on a Rail PV for the EA Further Education product.",
+    "preconds": "**GIVEN** a Rail (NIR) PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a transfer-eligible EA Further Education smartcard that has just made a first NIR journey (inside its transfer window) and a non-eligible smartcard\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the transfer-eligible EA Further Education card for the connecting NIR journey inside the transfer window",
+        "expected": "**THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)"
+      },
+      {
+        "content": "**WHEN** you present the non-eligible card for the transfer",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the transfer",
+        "expected": "**THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack"
+      }
+    ],
+    "expected": "NIR transfers validate for an eligible EA Further Education smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "ABT — Visa Credit contactless tap validation",
+    "refs": "knowledge/flows/pv-flow-annotations.md,FBD-100651 para 201",
+    "preface": "This test is to confirm a valid Visa Credit contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid Visa Credit contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the valid Visa Credit contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "expected": "A valid Visa Credit contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "ABT — Mastercard Debit contactless tap validation",
+    "refs": "knowledge/flows/pv-flow-annotations.md,FBD-100651 para 201",
+    "preface": "This test is to confirm a valid Mastercard Debit contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid Mastercard Debit contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the valid Mastercard Debit contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "expected": "A valid Mastercard Debit contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "ABT — Mastercard Credit contactless tap validation",
+    "refs": "knowledge/flows/pv-flow-annotations.md,FBD-100651 para 201",
+    "preface": "This test is to confirm a valid Mastercard Credit contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid Mastercard Credit contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the valid Mastercard Credit contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "expected": "A valid Mastercard Credit contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "ABT — Maestro contactless tap validation",
+    "refs": "knowledge/flows/pv-flow-annotations.md,FBD-100651 para 201",
+    "preface": "This test is to confirm a valid Maestro contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid Maestro contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the valid Maestro contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "expected": "A valid Maestro contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "ABT — mobile wallet contactless tap validation",
+    "refs": "knowledge/flows/pv-flow-annotations.md,FBD-100651 para 201",
+    "preface": "This test is to confirm a valid mobile wallet contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid mobile wallet contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you tap the valid mobile wallet contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "expected": "A valid mobile wallet contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Child)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Child multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Child multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Child multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Child barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Child multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Child — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Child multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (3 Day Select)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a 3 Day Select multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid 3 Day Select multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid 3 Day Select multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the 3 Day Select barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid 3 Day Select multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for 3 Day Select — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "3 Day Select multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (1/3 Off Day Return)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a 1/3 Off Day Return multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid 1/3 Off Day Return multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid 1/3 Off Day Return multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the 1/3 Off Day Return barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid 1/3 Off Day Return multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for 1/3 Off Day Return — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "1/3 Off Day Return multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (24+)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a 24+ multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid 24+ multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid 24+ multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the 24+ barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid 24+ multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for 24+ — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "24+ multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Ylink)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Ylink multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Ylink multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Ylink multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Ylink barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Ylink multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Ylink — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Ylink multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Concession)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Concession multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Concession multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Concession multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Concession barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Concession multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Concession — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Concession multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Half Fare)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Half Fare multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Half Fare multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Half Fare multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Half Fare barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Half Fare multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Half Fare — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Half Fare multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Day Tracker)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Day Tracker multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Day Tracker multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Day Tracker multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Day Tracker barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Day Tracker multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Day Tracker — double (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Day Tracker multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "Barcodes"
+    ],
+    "title": "Barcode — multi-use validation (Unemployed Day Return)",
+    "refs": "TIBU-27324, FBD-100167",
+    "preface": "This test is to confirm a Unemployed Day Return multi-use barcode validates and tracks its remaining uses, HHD-produced only, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Unemployed Day Return multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Unemployed Day Return multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Unemployed Day Return barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Unemployed Day Return multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Unemployed Day Return — single (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Unemployed Day Return multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD-produced only. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: card not read",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for card not read shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the card not read decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the card not read condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for card not read shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: unsupported scheme (AMEX or Diners)",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for unsupported scheme shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the unsupported scheme decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the unsupported scheme condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for unsupported scheme shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: expired",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for expired card shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the expired card decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the expired card condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for expired card shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: ODA fail",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for ODA (offline data authentication) fail shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the ODA (offline data authentication) fail decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the ODA (offline data authentication) fail condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for ODA (offline data authentication) fail shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: on BIN list",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for card on the BIN list shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the card on the BIN list decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the card on the BIN list condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for card on the BIN list shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: on Deny list",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for card on the Deny list shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the card on the Deny list decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the card on the Deny list condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for card on the Deny list shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  {
+    "section_path": [
+      "Functional",
+      "ABT (Glider)"
+    ],
+    "title": "cEMV — decline reason: card clash",
+    "refs": "TIBU-22322,FBD-100651,knowledge/flows/pv-flow-annotations.md",
+    "preface": "This test is to confirm a cEMV tap declined for card clash shows Please Try Again with that specific reason.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a card seeded for the card clash decline condition — restored 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow annotation for screen `1.3.3 Invalid Card`)\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** you present the card that hits the card clash condition",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with that specific reason"
+      },
+      {
+        "content": "**WHEN** you check the back office for the declined tap",
+        "expected": "**THEN** the decline is recorded in the CloudFare activity log"
+      }
+    ],
+    "expected": "A cEMV tap declined for card clash shows Please Try Again with the specific reason, recorded in CloudFare.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "priority_id": 1,
+    "custom_devtypes": [
+      10
+    ]
+  }
+]

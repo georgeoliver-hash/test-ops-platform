@@ -1,0 +1,106 @@
+suite_id: 30284
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [6]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Payments - Cash]
+    cases:
+      - title: "Cash Payment — no more cash accepted stops the transaction"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM stops accepting cash and shows the no-more-cash-accepted
+          message once no further cash of any type can be accepted for the transaction.
+        steps: |
+          **GIVEN** the TVM cash payment screen is accepting coins and notes for a ticket purchase
+          **WHEN** the TVM reaches the point where no more cash of any type is accepted
+          **THEN** the "No more cash accepted" message is displayed
+        expected: "The TVM shows the No more cash accepted message and stops accepting cash."
+
+      - title: "Payment Cancelled — Back returns to Select Payment Type"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Back on the Payment Cancelled message returns to the
+          Select Payment Type screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled" message with Back or Cancel options
+          **WHEN** the customer selects Back
+          **THEN** the TVM returns to the "Select Payment Type" screen
+        expected: "Selecting Back on the Payment Cancelled message returns to Select Payment Type."
+
+      - title: "Payment Cancelled Please Wait — Cancel returns to the Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Cancel on the Payment Cancelled Please Wait message
+          returns to the Home Screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled Please Wait" message with Back or
+          Cancel options
+          **WHEN** the customer selects Cancel
+          **THEN** the TVM returns to the Home Screen
+        expected: "Selecting Cancel on Payment Cancelled Please Wait returns to the Home Screen."
+
+      - title: "Payment Cancelled Please Wait — Back returns to Select Payment Type"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Back on the Payment Cancelled Please Wait message
+          returns to the Select Payment Type screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled Please Wait" message with Back or
+          Cancel options
+          **WHEN** the customer selects Back
+          **THEN** the TVM returns to the "Select Payment Type" screen
+        expected: "Selecting Back on Payment Cancelled Please Wait returns to Select Payment Type."
+
+      - title: "Change Returned — Try Again or Back returns to Select Payment Type"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Try Again or Back on the Payment Cancelled - Change
+          Returned message returns to the Select Payment Type screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled - Change returned" message with Try
+          Again, Back or Cancel options
+          **WHEN** the customer selects Try Again or Back
+          **THEN** the TVM returns to the "Select Payment Type" screen
+        expected: "Selecting Try Again or Back on Change Returned returns to Select Payment Type."
+
+      - title: "Change Returned — Cancel returns to the Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting Cancel on the Payment Cancelled - Change Returned
+          message returns to the Home Screen.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled - Change returned" message with Try
+          Again, Back or Cancel options
+          **WHEN** the customer selects Cancel
+          **THEN** the TVM returns to the Home Screen
+        expected: "Selecting Cancel on Change Returned returns to the Home Screen."
+
+      - title: "Change Returned — change failing to return shows Payment Cancelation Failure"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the TVM shows the Payment Cancelation Failure message when
+          change fails to return during a cancelled cash payment.
+        steps: |
+          **GIVEN** the TVM is showing the "Payment Cancelled - Change returned" message following
+          a cancelled cash payment
+          **WHEN** the change fails to return to the customer
+          **THEN** the "Payment Cancelation Failure" message is displayed
+        expected: "A failed change return during cancellation shows the Payment Cancelation Failure message."
+
+  - path: [Functional, Payments - EMV & Contactless]
+    cases:
+      - title: "Card Payment — payment failure prompts card removal"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a failed card payment shows the Payment Failed message followed
+          by the prompt to take the card.
+        steps: |
+          **GIVEN** the TVM is processing a card payment
+          **WHEN** the customer presses Cancel on the PIN pad, or removes the card without
+          completing the transaction
+          **THEN** the "Payment Failed" message is displayed
+          **AND** the "Please take your card" message is displayed
+        expected: "A cancelled or incomplete card payment shows Payment Failed then prompts the customer to take their card."

@@ -1,0 +1,1968 @@
+[
+  {
+    "id": 4103100,
+    "title": "Sales Breakdown reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Sales Breakdown reports (by Driver, by Route/Class, by Class). **UNCONFIRMED** — the \"by value\" and \"by value/location\" variants named in the original are NOT among the FBD-100306 report set; confirm on the live viewer before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a Sales Breakdown report (by Driver, by Route/Class or by Class)",
+        "expected": "**THEN** the selected Sales Breakdown report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 216 (6.6 Sales Breakdown by Driver)",
+      "FBD-100306 para 218 (6.7 Sales Breakdown by Route/Class)",
+      "FBD-100306 para 220 (6.8 Sales Breakdown by Class)"
+    ],
+    "change_note": "Report name confirmed for by-Driver/by-Route-Class/by-Class. Dropped invented 'by value' and 'by value/location' variants from the asserted set and flagged them UNCONFIRMED (not in FBD-100306's 18-report catalogue).",
+    "gaps": [
+      "Do 'Sales Breakdown by value' and 'by value/location' reports exist in the live Merit Web viewer? Not in FBD-100306 sections 6.1-6.18."
+    ]
+  },
+  {
+    "id": 4103101,
+    "title": "Sales Analysis by Class report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Sales Analysis by Class report.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Sales Analysis by Class report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 222 (6.9 Sales Analysis by Class)"
+    ],
+    "change_note": "Report name confirmed against FBD-100306 6.9. Tightened title and grounded preconditions to the Merit Web viewer.",
+    "gaps": []
+  },
+  {
+    "id": 4103102,
+    "title": "Origin and Destination reports",
+    "preface": "**UNCONFIRMED** — Origin, Destination and Origin/Destination reports (incl. by class, direction of travel, rail, mileage) are NOT in the FBD-100306 Merit Web report catalogue (18 reports, 6.1-6.18) nor in any of the seven governing ABT/BOS reporting specs. Likely legacy Merit 5 reports outside this scope; confirm the report exists and its variants before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs an Origin, Destination or Origin/Destination report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope limited to the contractually-agreed Merit Web reports)",
+      "FBD-100306 paras 202-241 (the 18 named reports; Origin/Destination not among them)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED; not rewritten. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines Origin/Destination reports and their by-class / direction / rail / mileage variants? Not in the 7 governing specs."
+    ]
+  },
+  {
+    "id": 4103103,
+    "title": "Bus Loading by Route/Journey report",
+    "preface": "**UNCONFIRMED** — the Bus Loading by Route/Journey report (incl. direction of travel) is NOT in FBD-100306's report catalogue nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Bus Loading by Route/Journey report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100306 paras 202-241 (18 named reports; not among them)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Bus Loading by Route/Journey report? Not in the 7 governing specs."
+    ]
+  },
+  {
+    "id": 4103104,
+    "title": "Route/Stage reports",
+    "preface": "**UNCONFIRMED** — the Route/Stage and Route/Stage Analysis Detailed reports are NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Route/Stage report or the Route/Stage Analysis Detailed report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100306 paras 202-241 (not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines Route/Stage and Route/Stage Analysis Detailed reports?"
+    ]
+  },
+  {
+    "id": 4103105,
+    "title": "Journey Analysis reports",
+    "preface": "**UNCONFIRMED** — the Journey Analysis and Journey Analysis Detailed reports (incl. direction of travel) are NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Journey Analysis or Journey Analysis Detailed report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100306 paras 202-241 (not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines Journey Analysis reports?"
+    ]
+  },
+  {
+    "id": 4103106,
+    "title": "Stage Timeband report",
+    "preface": "**UNCONFIRMED** — the Stage Timeband report (incl. direction of travel) is NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Stage Timeband report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100306 paras 202-241 (not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. (Note: FBD-100306 supports Timebands as a parameter, not a report of this name.). Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines a 'Stage Timeband' report? Timebands are a report parameter in FBD-100306, not a report."
+    ]
+  },
+  {
+    "id": 4103107,
+    "title": "Patronage Timeband report",
+    "preface": "**UNCONFIRMED** — the Patronage Timeband report is NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Patronage Timeband report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100306 paras 202-241 (not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines a 'Patronage Timeband' report?"
+    ]
+  },
+  {
+    "id": 4103108,
+    "title": "Revenue and Revenue by Stop reports",
+    "preface": "**UNCONFIRMED** — a 'Revenue' report and a 'Revenue by Stop' report of these names are NOT in FBD-100306 nor any of the seven governing specs. (Revenue measures exist in the DWH per FBD-100356, but not as these named reports.) Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Revenue report or the Revenue by Stop report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100356 (DWH holds revenue measures but not these named reports)"
+    ],
+    "change_note": "Report names not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the 'Revenue' and 'Revenue by Stop' reports?"
+    ]
+  },
+  {
+    "id": 4103109,
+    "title": "Class Breakdown and Route Breakdown reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Class Breakdown and Route Breakdown reports. **GAP** — the 'Class Breakdown by Device' and 'Route Breakdown by Class Group' variants named in the original are not separately listed in FBD-100306; confirm they exist as distinct variants.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Class Breakdown report or the Route Breakdown report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 207 (6.3 Class Breakdown, Translink version of Class Audit)",
+      "FBD-100306 para 213 (6.5 Route Breakdown, Translink version of Route Audit)"
+    ],
+    "change_note": "Base report names confirmed (6.3, 6.5). Removed the unverified 'by Device' / 'by Class Group' variants from the asserted set and flagged as GAP. Note: FBD-100306 6.3/6.5 offer Summary/Detailed and class-group / route-group toggles as sub-options, not separate 'by Device' reports.",
+    "gaps": [
+      "Are 'Class Breakdown by Device' and 'Route Breakdown by Class Group' distinct reports, or sub-options of 6.3/6.5? FBD-100306 6.3/6.5 describe class/route vs class-group/route-group toggles, not a 'by Device' breakdown."
+    ]
+  },
+  {
+    "id": 4103110,
+    "title": "POS Revenue report",
+    "preface": "**UNCONFIRMED** — a Merit 'POS Revenue' report of this name is NOT in FBD-100306 nor any of the seven governing specs. (FBD-100341 defines POS revenue apportionment/allocation mechanisms but does not name a 'POS Revenue' report.) Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the POS Revenue report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope; not among the 18 reports)",
+      "FBD-100341 (defines POS revenue apportionment, not a named 'POS Revenue' report)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines a 'POS Revenue' report? FBD-100341 covers POS revenue apportionment but names no such report."
+    ]
+  },
+  {
+    "id": 4103111,
+    "title": "Duty Comparison and Driver Shift reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Duty Comparison and Driver Shift reports.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Duty Comparison report or the Driver Shift report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 237 (6.16 Duty Comparison)",
+      "FBD-100306 para 235 (6.15 Driver Shift)"
+    ],
+    "change_note": "Both report names confirmed (6.16, 6.15). Tightened title; grounded preconditions to the Merit Web viewer.",
+    "gaps": []
+  },
+  {
+    "id": 4103112,
+    "title": "Bus Serviceability Final Defects report",
+    "preface": "**UNCONFIRMED** — the Bus Serviceability Final Defects report is NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Bus Serviceability Final Defects report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope; not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Bus Serviceability Final Defects report?"
+    ]
+  },
+  {
+    "id": 4103113,
+    "title": "GPS reports",
+    "preface": "**UNCONFIRMED** — the GPS report and GPS Stage Change Failure reports (by bus, by stage, detailed) are NOT in FBD-100306 nor any of the seven governing specs. (GPS/schedule-adherence data is covered by FBD-100347, but not as reports of these names.) Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the GPS report or a GPS Stage Change Failure report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope)",
+      "FBD-100347 (schedule-adherence report family; no 'GPS Stage Change Failure' report named)"
+    ],
+    "change_note": "Report names not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the GPS and GPS Stage Change Failure reports?"
+    ]
+  },
+  {
+    "id": 4103114,
+    "title": "Route Purchase report",
+    "preface": "**UNCONFIRMED** — the Route Purchase report is NOT in FBD-100306 nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Route Purchase report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 para 79 (scope; not among the 18 reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Route Purchase report?"
+    ]
+  },
+  {
+    "id": 4103115,
+    "title": "Pay-In Reconciliation report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Pay-In Reconciliation report. Note per FBD-100306: the location filter is present but not useful in the new system (no pay-in location).",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Pay-In Reconciliation report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 202 (6.1 Pay-In Reconciliation)",
+      "FBD-100341 paras 157-159 (CloudFare Reporting Pay-In Reconciliation report by device home location)"
+    ],
+    "change_note": "Report name confirmed (FBD-100306 6.1; also the CloudFare Reporting variant in FBD-100341). Tightened title.",
+    "gaps": []
+  },
+  {
+    "id": 4103116,
+    "title": "Class Revenue Performance report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Class Revenue Performance report. **GAP** — the summary/detailed and with/without-grouping forms are asserted but their exact structure is not detailed in FBD-100341; confirm the available forms on the live report.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Class Revenue Performance report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100341 para 124 (references Class and Route Revenue Performance reports using the new route/depot revenue split)"
+    ],
+    "change_note": "Report name confirmed as referenced in FBD-100341 para 124. Removed 'Translink' prefix (not part of the report name in-spec) and flagged the summary/detailed/grouping forms as GAP (not detailed in the governing spec).",
+    "gaps": [
+      "What are the exact summary/detailed and grouping forms of the Class Revenue Performance report? FBD-100341 para 124 names the report but does not specify its forms."
+    ]
+  },
+  {
+    "id": 4103117,
+    "title": "Route Revenue Performance report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Route Revenue Performance report. **GAP** — the summary/detailed and with/without-grouping forms are asserted but not detailed in FBD-100341; confirm on the live report.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Route Revenue Performance report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100341 para 124 (references Route Revenue Performance reports)"
+    ],
+    "change_note": "Report name confirmed as referenced in FBD-100341 para 124. Removed 'Translink' prefix; flagged forms as GAP.",
+    "gaps": [
+      "Exact summary/detailed/grouping forms of the Route Revenue Performance report are not detailed in FBD-100341."
+    ]
+  },
+  {
+    "id": 4103118,
+    "title": "Period Trend Analysis reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Period Trend Analysis by Class and by Route reports. **GAP** — the summary/detailed/grouping forms are asserted but not detailed in FBD-100341; confirm on the live report.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Period Trend Analysis by Class report or by Route report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100341 para 124 (references Period Trend by Class and Route reports)"
+    ],
+    "change_note": "Report name confirmed as referenced in FBD-100341 para 124 ('Period Trend by Class and Route reports'). Removed 'Translink' prefix; flagged forms as GAP.",
+    "gaps": [
+      "Exact forms of Period Trend Analysis reports are not detailed in FBD-100341."
+    ]
+  },
+  {
+    "id": 4103119,
+    "title": "Tickets By Operator report",
+    "preface": "**UNCONFIRMED** — a 'Tickets By Operator' report is NOT named in FBD-100341 (which only references Class/Route Revenue Performance and Period Trend reports) nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Tickets By Operator report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (names only Class/Route Revenue Performance + Period Trend reports)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Removed 'Translink' prefix. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the 'Tickets By Operator' report?"
+    ]
+  },
+  {
+    "id": 4103120,
+    "title": "NIR Revenue Performance reports",
+    "preface": "**UNCONFIRMED** — NIR-specific Class/Route Revenue Performance reports are NOT named in any of the seven governing specs. (FBD-100341 para 124 names the generic Class/Route Revenue Performance reports; the NIR variant is not specified.) Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the NIR Class or Route Revenue Performance report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (generic Revenue Performance reports; no NIR-specific variant named)"
+    ],
+    "change_note": "NIR-specific variant not confirmed in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines NIR-specific Revenue Performance reports as distinct from the generic ones?"
+    ]
+  },
+  {
+    "id": 4103121,
+    "title": "NIR Period Trend Analysis reports",
+    "preface": "**UNCONFIRMED** — NIR-specific Period Trend Analysis reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the NIR Period Trend Analysis by Class or by Route report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (generic Period Trend reports; no NIR-specific variant named)"
+    ],
+    "change_note": "NIR-specific variant not confirmed. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines NIR-specific Period Trend Analysis reports?"
+    ]
+  },
+  {
+    "id": 4103122,
+    "title": "BRT Revenue Performance reports",
+    "preface": "**UNCONFIRMED** — BRT-specific Class/Route Revenue Performance reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the BRT Class or Route Revenue Performance report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (generic Revenue Performance reports; no BRT-specific variant named)"
+    ],
+    "change_note": "BRT-specific variant not confirmed. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines BRT-specific Revenue Performance reports?"
+    ]
+  },
+  {
+    "id": 4103123,
+    "title": "Glider Revenue Performance reports",
+    "preface": "**UNCONFIRMED** — Glider-specific Route/Class Revenue Performance reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Glider Route or Class Revenue Performance report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (generic Revenue Performance reports; no Glider-specific variant named)"
+    ],
+    "change_note": "Glider-specific variant not confirmed. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines Glider-specific Revenue Performance reports?"
+    ]
+  },
+  {
+    "id": 4103124,
+    "title": "Ticketing Reports including timebands",
+    "preface": "**UNCONFIRMED** — a 'Ticketing Reports' grouping combining Revenue Performance and Period Trend reports with timebands (incl. NIR variants) is NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a Revenue Performance or Period Trend Analysis report including timebands",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 124 (Revenue Performance/Period Trend reports; timeband grouping not specified)"
+    ],
+    "change_note": "The 'Ticketing Reports' grouping and its timeband forms are not confirmed in any governing spec. Marked UNCONFIRMED. (Note: FBD-100306 supports Timebands as a report parameter, not as a distinct 'Ticketing Reports' set.). Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the 'Ticketing Reports' grouping with timebands? FBD-100306 treats Timebands as a parameter."
+    ]
+  },
+  {
+    "id": 4103125,
+    "title": "Revenue Foregone reports",
+    "preface": "**UNCONFIRMED** — Revenue Foregone reports (by group and class, by operator by eligible route, detailed) are NOT named in any of the seven governing specs. (FBD-100341 para 181 mentions reallocating concessionary fare recovery, but names no 'Revenue Foregone' report.) Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a Revenue Foregone report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 181 (concessionary fare recovery reallocation; no 'Revenue Foregone' report named)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Revenue Foregone reports and their variants?"
+    ]
+  },
+  {
+    "id": 4103126,
+    "title": "Concessionary Class Summary reports",
+    "preface": "**UNCONFIRMED** — Concessionary Class Summary reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a Concessionary Class Summary report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 181 (concessionary recovery; no such report named)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Concessionary Class Summary reports?"
+    ]
+  },
+  {
+    "id": 4103127,
+    "title": "ENTCS Passenger and Revenue reports",
+    "preface": "**UNCONFIRMED** — ENTCS Passenger, ENTCS Revenue and ENTCS Revenue Foregone reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs an ENTCS Passenger, ENTCS Revenue or ENTCS Revenue Foregone report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 181 (concessionary recovery; ENTCS reports not named)"
+    ],
+    "change_note": "Report names not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the ENTCS Passenger / Revenue / Revenue Foregone reports?"
+    ]
+  },
+  {
+    "id": 4103128,
+    "title": "Fare Foregone reports",
+    "preface": "**UNCONFIRMED** — the Fare Foregone Summary and Fare Foregone by Fare Band reports are NOT named in any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Fare Foregone Summary report or the Fare Foregone by Fare Band report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100341 para 181 (concessionary recovery; Fare Foregone reports not named)"
+    ],
+    "change_note": "Report names not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Fare Foregone reports?"
+    ]
+  },
+  {
+    "id": 4103129,
+    "title": "Daily Summary report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Daily Summary report.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Daily Summary report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 231 (6.13 Daily Summary)"
+    ],
+    "change_note": "Report name confirmed (6.13). Tightened title; grounded preconditions to the Merit Web viewer.",
+    "gaps": []
+  },
+  {
+    "id": 4103130,
+    "title": "Daily Audit reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Daily Audit report and Daily Audit by Module report. (FBD-100306 also provides a Daily Audit By Trip report, 6.11, not currently covered.)",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Daily Audit report or the Daily Audit by Module report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 225 (6.10 Daily Audit Report)",
+      "FBD-100306 para 229 (6.12 Daily Audit by Module Report)",
+      "FBD-100306 para 227 (6.11 Daily Audit By Trip — not yet covered)"
+    ],
+    "change_note": "Both report names confirmed (6.10, 6.12). Tightened title; noted the uncovered Daily Audit By Trip (6.11) as a coverage gap.",
+    "gaps": [
+      "Daily Audit By Trip (FBD-100306 6.11, para 227) exists but has no case — consider adding."
+    ]
+  },
+  {
+    "id": 4103131,
+    "title": "Class Audit and Route Audit reports — generate and export",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Class Audit and Route Audit reports.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Class Audit report or the Route Audit report",
+        "expected": "**THEN** the selected report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 204 (6.2 Class Audit)",
+      "FBD-100306 para 210 (6.4 Route Audit)"
+    ],
+    "change_note": "Both report names confirmed (6.2, 6.4). Tightened title. Note: summary/detailed drill is the Report Type mechanism (FBD-100306 5.8), applied across reports.",
+    "gaps": []
+  },
+  {
+    "id": 4103132,
+    "title": "Annulled Tickets report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Annulled Tickets report.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Annulled Tickets report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 239 (6.17 Annulled Tickets)"
+    ],
+    "change_note": "Report name confirmed (6.17). Tightened title.",
+    "gaps": []
+  },
+  {
+    "id": 4103133,
+    "title": "Inspector's Report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Merit Web Inspector's Report.",
+    "preconds": "**GIVEN** the user is signed into the Merit Web Reports Viewer\n**AND** audit data has been processed for the selected period",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Inspector's Report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100306 para 241 (6.18 Inspector's Report)"
+    ],
+    "change_note": "Report name confirmed (6.18). Corrected title to the spec's singular possessive 'Inspector's Report'.",
+    "gaps": []
+  },
+  {
+    "id": 4103134,
+    "title": "Outstanding Duties report",
+    "preface": "**UNCONFIRMED** — an 'Outstanding Duties' report is NOT in FBD-100306's report catalogue nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Outstanding Duties report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 paras 202-241 (18 named reports; Outstanding Duties not among them)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Outstanding Duties report?"
+    ]
+  },
+  {
+    "id": 4103135,
+    "title": "Stage List report",
+    "preface": "**UNCONFIRMED** — a 'Stage List' report is NOT in FBD-100306's report catalogue nor any of the seven governing specs. Confirm before running.",
+    "preconds": "**GIVEN** the user is signed into the Merit reporting system",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Stage List report",
+        "expected": "**THEN** the report is generated\n**AND** the report can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100306 paras 202-241 (18 named reports; Stage List not among them)"
+    ],
+    "change_note": "Report name not found in any governing spec. Marked UNCONFIRMED. Re-grounding pass: checked the CloudFare ABT Portal spec (PSPEC-0015), the CloudFare User Manual (Translink, Dashboard/Events & Alerts/Reports modules), FBD-100377, and the Manuel Reporting - Laval.docx (a different Flowbird deployment's generic CloudFare ABT reporting-module manual) — none of these cover Merit-Web-side reports of this kind. A full filename search of the local requirements library also found no separate 'Merit 5 FRS' document to re-ground against (only FBD-100306 Merit Web Specification, FBD-100300, FBD-100347, FBD-100356 and FBD-100387 mention 'Merit' in their titles, and FBD-100306 was already one of the 7 specs used in the first pass). Confirmed absent from every spec available in the library — genuinely unconfirmed, not merely unchecked.",
+    "gaps": [
+      "Which spec defines the Stage List report?"
+    ]
+  },
+  {
+    "id": 4103055,
+    "title": "Dashboard — summary tiles show their metrics",
+    "preface": "This test is to confirm the CloudFare Dashboard shows configured summary tiles with their metrics. The CloudFare User Manual (Translink) confirms the tile mechanism in detail (add/resize/move/remove/filter/expand a tile) and gives a concrete second example beyond 'Hours since last communication' (FBD-100263): a 'Quarantined Transactions' count tile that expands to show more detail. Per the manual, the list of available tiles 'is configured at the point of delivery of CloudFare, in line with the features and data present within the wider ticketing system scope' — i.e. there is no fixed, spec-wide tile catalogue by design, not by omission.",
+    "preconds": "**GIVEN** a Dashboard has been configured with summary tiles\n**AND** the user is signed into CloudFare",
+    "steps": [
+      {
+        "content": "**WHEN** the user views the Dashboard",
+        "expected": "**THEN** the 'Hours since last communication' tile shows its metric"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §3 Dashboard (tile add/resize/move/remove/filter/expand mechanism; 'Quarantined Transactions' tile example)",
+      "FBD-100263 (Exceptions: 'Hours since last communication' dashboard tile with Company filter, Location/Fleet ID and Depot columns)"
+    ],
+    "change_note": "Upgraded from UNCONFIRMED: the tile mechanism itself, and a second concrete tile example ('Quarantined Transactions'), are now grounded in the CloudFare User Manual. The manual also states the tile catalogue is deployment-configured, which explains (rather than merely asserts) why no fixed universal tile list exists in any spec — this is now a confirmed characteristic, not an open gap. A narrower gap remains only for the specific set of tiles enabled in this environment.",
+    "gaps": [
+      "Which specific tiles are enabled for this Translink environment? Per the CloudFare User Manual this is a per-deployment configuration choice, not a fixed spec-wide list — confirm the live/configured tile set for this test environment."
+    ]
+  },
+  {
+    "id": 4103056,
+    "title": "Create, clone, favourite and delete a dashboard",
+    "preface": "This test is to confirm the operator can create, clone, favourite (star) and delete a CloudFare dashboard. The CloudFare User Manual (Translink) confirms all of these: 'Create dashboard' (name it, click Create), 'Clone current dashboard' (independent copy), 'Delete current dashboard' (removed from the list, cannot be reversed), 'Select different dashboard', and 'Favourite dashboard(s)' (star one dashboard as default, auto-selected on login).",
+    "preconds": "**GIVEN** the user is signed into CloudFare on the dashboard homepage",
+    "steps": [
+      {
+        "content": "**WHEN** the user creates, clones, favourites or deletes a dashboard",
+        "expected": "**THEN** each change is applied to the user's dashboards"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §3 Dashboard: Create dashboard / Clone current dashboard / Delete current dashboard / Select different dashboard / Favourite dashboard(s)"
+    ],
+    "change_note": "Fully confirmed — the CloudFare User Manual documents this exact function set. Reworded from UNCONFIRMED to reword, with the manual's own wording for each action (including the 'cannot be reversed' delete warning and the one-default-dashboard-at-a-time rule for favouriting).",
+    "gaps": []
+  },
+  {
+    "id": 4103057,
+    "title": "Add and remove dashboard tiles",
+    "preface": "This test is to confirm the operator can add and remove tiles on a CloudFare dashboard. The CloudFare User Manual (Translink) confirms: tiles are added via the ellipsis next to 'Add Tile' and a tile picker (the available tile list is configured per deployment); tiles can be resized, moved, and filtered; tiles are removed via the red X in the top-left of the tile.",
+    "preconds": "**GIVEN** the user is signed into CloudFare with a dashboard created",
+    "steps": [
+      {
+        "content": "**WHEN** the user adds and removes tiles",
+        "expected": "**THEN** the dashboard reflects the tile changes"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §3 Dashboard: Add Tile / tile resize / tile move / tile filter / tile removal (red X)"
+    ],
+    "change_note": "Fully confirmed — the CloudFare User Manual documents the add/remove tile mechanism in detail (plus resize/move/filter, not previously asserted). Reworded from UNCONFIRMED to reword.",
+    "gaps": []
+  },
+  {
+    "id": 4103058,
+    "title": "View a dashboard full screen",
+    "preface": "**UNCONFIRMED** — a dashboard full-screen view is NOT described anywhere in the CloudFare User Manual's Dashboard section (§3), which was checked in full for this pass alongside FBD-100347. Confirm on the live system before running.",
+    "preconds": "**GIVEN** a dashboard with tiles is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user selects full screen",
+        "expected": "**THEN** the dashboard is shown full screen"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §3 Dashboard (checked in full; no 'full screen' feature described)",
+      "FBD-100347 (Dashboard REQ-3585/3586, 'subject to detailed design')"
+    ],
+    "change_note": "Checked the full CloudFare User Manual Dashboard section (§3) specifically for a full-screen/expand-to-fullscreen feature — not mentioned anywhere (only per-tile resize/expand is described, not a whole-dashboard full-screen mode). Confirmed absent from the manual; sharpened the note but kept UNCONFIRMED.",
+    "gaps": [
+      "Which spec defines a whole-dashboard full-screen view? The CloudFare User Manual's Dashboard section describes per-tile resize/expand but no full-screen mode for the whole dashboard."
+    ]
+  },
+  {
+    "id": 4103063,
+    "title": "Depot Location Report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Assets Depot Location Report (assets seen at a location within a date range). Export is .xlsx; date range capped at 31 consecutive days.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu\n**AND** device audit data has been processed for the selected date range",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Depot Location Report for a location and date range",
+        "expected": "**THEN** the Depot Location Report is generated\n**AND** it can be downloaded as .xlsx"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100263 para 57 (scope: Depot Location Report)",
+      "FBD-100263 para 105 (REQ-2499.1 Depot Location Report)",
+      "FBD-100263 para 97 (Assets sub-menu)",
+      "FBD-100263 para 120 (.xlsx download, one entry per home location)"
+    ],
+    "change_note": "Report name and Assets sub-menu location confirmed. Grounded export as .xlsx and the 31-day cap; corrected preconds from generic 'Assets sub-page' to the spec's 'Assets sub-menu'.",
+    "gaps": []
+  },
+  {
+    "id": 4103064,
+    "title": "Devices Last Seen Report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Devices Last Seen Report (per-device comms summary). Note: this report takes a single date/time, not a range, and exports as .xlsx.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu\n**AND** device audit data has been processed",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Devices Last Seen Report for a single date/time",
+        "expected": "**THEN** the Devices Last Seen Report is generated\n**AND** it can be downloaded as .xlsx"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100263 para 57 (scope: Devices Last Seen Report)",
+      "FBD-100263 (REQ-2499.3 Devices Last Seen; single date/time not a range; annulments count as transactions)",
+      "FBD-100263 para 97 (Assets sub-menu)"
+    ],
+    "change_note": "Report name confirmed. Grounded the single-instant (not range) behaviour and .xlsx export.",
+    "gaps": []
+  },
+  {
+    "id": 4103065,
+    "title": "Software Versions Report",
+    "preface": "This test is to confirm the operator can generate and download a 4th Assets-category report beyond the three named in FBD-100263 (Depot Location, Staff Activity, Devices Last Seen). The CloudFare User Manual (Translink) confirms the Reports module's Assets sub-page currently lists 4 assets-related reports (one more than FBD-100263 names) — consistent with a Software Versions report, though this exact name is not spelled out in the manual's text (only shown in an unextracted screenshot).",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Software Versions Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Assets ('Shown below currently are the 4 assets related reports...')",
+      "FBD-100263 para 57 (names only 3: Depot Location, Operator/Staff Activity, Devices Last Seen)"
+    ],
+    "change_note": "Upgraded from 'not a standalone report' — the CloudFare User Manual confirms the live Assets reports sub-page has 4 reports, one more than FBD-100263's named 3, which is consistent with a distinct Software Versions report. The manual's report list is a screenshot, not extractable text, so the 4th report's exact name is not textually confirmed.",
+    "gaps": [
+      "Confirm the 4th Assets report (beyond Depot Location, Staff Activity, Devices Last Seen) is literally named 'Software Versions Report' on the live portal — the CloudFare User Manual shows the count (4) but not the names as extractable text."
+    ]
+  },
+  {
+    "id": 4103066,
+    "title": "Staff Activity Report — generates and exports",
+    "preface": "This test is to confirm the user can generate and export the Staff Activity Report (staff-to-device interactions; formerly the Operator Report, REQ-2499.2). Filters cascade Company to Staff Home Location to Staff ID; export is .xlsx.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page under the Assets sub-menu\n**AND** staff/device interaction data has been processed",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Staff Activity Report for a company, staff home location and staff ID",
+        "expected": "**THEN** the Staff Activity Report is generated\n**AND** it can be downloaded as .xlsx"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100263 para 201 (REQ-2499.2 Operator Report = Staff Activity Report, staff-device interactions)",
+      "FBD-100263 para 57 (scope)",
+      "FBD-100263 para 97 (Assets sub-menu)"
+    ],
+    "change_note": "Report name confirmed (v3.0 rename of the Operator Report, REQ-2499.2). Grounded the cascading filters and .xlsx export; corrected sub-menu name.",
+    "gaps": []
+  },
+  {
+    "id": 4103067,
+    "title": "Engineer Visits Report",
+    "preface": "This test is to confirm the operator can generate and download an Engineer Visits report from a Reports > Staff sub-page. The CloudFare User Manual (Translink) confirms the Reports module DOES have a 'Staff' sub-page, currently listing 2 staff-related reports — contradicting the earlier finding that no Staff sub-page exists.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Engineer Visits Report for a TVM, PV or GV",
+        "expected": "**THEN** the report is generated for the selected device type\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Staff ('Shown below currently are the 2 staff related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Staff sub-page DOES exist (CloudFare User Manual, Reports module structure: Cash/Staff/Events & Alerts/Assets/Topology), with 2 reports currently listed. The manual's report list is a screenshot, so the 2 report names are not extractable as text — 'Engineer Visits' remains unconfirmed as one of those 2 by exact name.",
+    "gaps": [
+      "Confirm 'Engineer Visits Report' is one of the 2 reports on the Reports > Staff sub-page — the CloudFare User Manual confirms the sub-page and count but the report names are only shown in a screenshot, not extractable text."
+    ]
+  },
+  {
+    "id": 4103068,
+    "title": "Revenue Inspector's Report",
+    "preface": "This test is to confirm the operator can generate and download a Revenue Inspector's report from a Reports > Staff sub-page. The CloudFare User Manual (Translink) confirms a 'Staff' sub-page exists under Reports with 2 reports currently listed — contradicting the earlier finding that no Staff sub-page exists. Do not conflate with the Merit Web Inspector's Report (FBD-100306 §6.18), a different surface.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Revenue Inspector's Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Staff ('Shown below currently are the 2 staff related reports...')",
+      "FBD-100306 para 241 (Inspector's Report is a Merit Web report, different surface)"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Staff sub-page DOES exist with 2 reports. The manual's report list is a screenshot, so the exact names are not extractable as text — 'Revenue Inspector's Report' remains unconfirmed as one of those 2 by exact name.",
+    "gaps": [
+      "Confirm 'Revenue Inspector's Report' is one of the 2 reports on the Reports > Staff sub-page — names not extractable from the manual's screenshot."
+    ]
+  },
+  {
+    "id": 4103069,
+    "title": "TVM cash collection reports",
+    "preface": "This test is to confirm the operator can generate and export a TVM cash-collection report from the Reports > Cash sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists, currently listing 12 cash-related reports — contradicting the earlier finding that no such spec/sub-page exists.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a TVM cash collection report",
+        "expected": "**THEN** the selected cash collection report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Cash ('Shown below currently are the 12 cash related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Cash sub-page DOES exist with 12 reports. The manual's report list is a screenshot, so the specific report names (coin/note totals, refloat, etc.) are not extractable as text.",
+    "gaps": [
+      "Confirm which of the 12 Cash reports match the case's asserted variants (total coins/notes from vaults, coin refloat and residual hopper total, float balances by hopper/vault, coin acceptance recycling, no-change-available, almost-full exceptions) — names not extractable from the manual's screenshot."
+    ]
+  },
+  {
+    "id": 4103070,
+    "title": "TVM cash revenue reports",
+    "preface": "This test is to confirm the operator can generate and export a TVM cash-revenue report from the Reports > Cash sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists, currently listing 12 cash-related reports.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs a cash revenue report",
+        "expected": "**THEN** the selected cash revenue report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Cash ('Shown below currently are the 12 cash related reports...')",
+      "FBD-100276 (Operator Totals API provides per-shift cash totals via JSON — a related but distinct API, not these UI reports)"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Cash sub-page DOES exist with 12 reports (shared sub-page with 4103069). Report names again not extractable from the manual's screenshot.",
+    "gaps": [
+      "Confirm which of the 12 Cash reports match 'cash ticket sales revenue, change to customer, summary totals by driver' — names not extractable from the manual's screenshot."
+    ]
+  },
+  {
+    "id": 4103071,
+    "title": "Rules List Export",
+    "preface": "This test is to confirm the operator can export a Rules List from the Reports > Topology sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists with 5 topology-related reports (matching the 5 items in this group); the Fares and Topology Manager spec (PSPEC-0014) separately confirms a 'Rules List' screen — the fare-rule management list that this export would draw from.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Rules List Export",
+        "expected": "**THEN** the Rules List Export is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Topology ('Shown below currently are the 5 topology related reports...')",
+      "PSPEC-0014 - Product Specification - CloudFare - Fares and Topology Manager v2.3, §16.1 Rules List"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Topology sub-page DOES exist with 5 reports (matching this group's count exactly), and the underlying Rules List screen is confirmed in PSPEC-0014 §16.1.",
+    "gaps": [
+      "Confirm 'Rules List Export' is the on-screen name for one of the 5 Topology reports — the Reports module screenshot doesn't give extractable text, though the underlying Rules List screen (PSPEC-0014 §16.1) is confirmed."
+    ]
+  },
+  {
+    "id": 4103072,
+    "title": "Concise Area & Reference Fare Report",
+    "preface": "This test is to confirm the operator can export a Concise Area & Reference Fare report from the Reports > Topology sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists with 5 topology-related reports; the Fares and Topology Manager spec (PSPEC-0014) describes 'Automatic Reference Fare Management' (§9.1) as a related but not identically-named concept.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Concise Area & Reference Fare Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Topology ('Shown below currently are the 5 topology related reports...')",
+      "PSPEC-0014 - Product Specification - CloudFare - Fares and Topology Manager v2.3, §9.1 Automatic Reference Fare Management (conceptually related, not a literal name match)"
+    ],
+    "change_note": "Correction to the previous pass: the Topology reports sub-page is now confirmed to exist (5 reports). The literal report title 'Concise Area & Reference Fare' is still not found verbatim — the closest concept is 'Automatic Reference Fare Management' (PSPEC-0014 §9.1). Kept a narrower gap on the exact title.",
+    "gaps": [
+      "The literal title 'Concise Area & Reference Fare Report' is not found in any spec text (only the Topology sub-page's existence and report count are confirmed) — confirm the exact on-screen name."
+    ]
+  },
+  {
+    "id": 4103073,
+    "title": "Route List Export",
+    "preface": "This test is to confirm the operator can export a Route List from the Reports > Topology sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists with 5 topology-related reports, matching this group's count; the exact report title is not given as extractable text.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Route List Export",
+        "expected": "**THEN** the Route List Export is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Topology ('Shown below currently are the 5 topology related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: the Topology reports sub-page is confirmed to exist with 5 reports (matching this group's count). No literal 'Route List Export' title was found in PSPEC-0014's Fares & Topology Manager text — count-only evidence, gap retained for the exact name.",
+    "gaps": [
+      "The literal title 'Route List Export' is not found in any spec text — only the Topology sub-page's existence and matching report count (5) are confirmed. Confirm the exact on-screen name."
+    ]
+  },
+  {
+    "id": 4103074,
+    "title": "Product to Ticket Assignment Report",
+    "preface": "This test is to confirm the operator can export a Product to Ticket Assignment report from the Reports > Topology sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists with 5 topology-related reports, matching this group's count.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Product to Ticket Assignment Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Topology ('Shown below currently are the 5 topology related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: the Topology reports sub-page is confirmed to exist with 5 reports. No literal 'Product to Ticket Assignment' title found in spec text — count-only evidence, gap retained.",
+    "gaps": [
+      "The literal title 'Product to Ticket Assignment Report' is not found in any spec text — only the Topology sub-page's existence and matching report count (5) are confirmed. Confirm the exact on-screen name."
+    ]
+  },
+  {
+    "id": 4103075,
+    "title": "Product List Report",
+    "preface": "This test is to confirm the operator can export a Product List from the Reports > Topology sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists with 5 topology-related reports, matching this group's count.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Product List Report",
+        "expected": "**THEN** the Product List Report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Topology ('Shown below currently are the 5 topology related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: the Topology reports sub-page is confirmed to exist with 5 reports. No literal 'Product List' title found in spec text — count-only evidence, gap retained.",
+    "gaps": [
+      "The literal title 'Product List Report' is not found in any spec text — only the Topology sub-page's existence and matching report count (5) are confirmed. Confirm the exact on-screen name."
+    ]
+  },
+  {
+    "id": 4103076,
+    "title": "Events & Alerts Report",
+    "preface": "This test is to confirm the operator can generate and export an Events & Alerts report from the Reports > Events & Alerts sub-page. The CloudFare User Manual (Translink) confirms this sub-page exists, currently listing 2 events & alerts related reports.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Events & Alerts Report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, Reports > Events & Alerts ('Shown below currently are the 2 events & alerts related reports...')"
+    ],
+    "change_note": "Correction to the previous pass: a Reports > Events & Alerts sub-page DOES exist with 2 reports. Report names not extractable from the manual's screenshot.",
+    "gaps": [
+      "Confirm the exact names of the 2 Events & Alerts reports — not extractable from the manual's screenshot."
+    ]
+  },
+  {
+    "id": 4103077,
+    "title": "Vehicle Check Report",
+    "preface": "**UNCONFIRMED** — a 'Vehicle Check Report' is NOT among the CloudFare Reports module's 5 documented sub-pages (Cash: 12 reports, Staff: 2, Events & Alerts: 2, Assets: 4, Topology: 5 — 25 reports total per the CloudFare User Manual). Confirm before running.",
+    "preconds": "**GIVEN** the user is on the CloudFare Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Vehicle Check Report",
+        "expected": "**THEN** the Vehicle Check Report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §9.2 Reports (full sub-page structure: Cash/Staff/Events & Alerts/Assets/Topology — no 'Vehicle Check' category)"
+    ],
+    "change_note": "Checked the CloudFare User Manual's full Reports module structure (5 named sub-pages, 25 reports total) — no 'Vehicle Check' category or report. Confirmed absent from the manual; genuinely not specified.",
+    "gaps": [
+      "Which spec/sub-page defines a 'Vehicle Check Report'? Not among the CloudFare Reports module's 5 documented sub-pages (Cash/Staff/Events & Alerts/Assets/Topology)."
+    ]
+  },
+  {
+    "id": 4103078,
+    "title": "CloudFare Usage Report",
+    "preface": "**UNCONFIRMED** — a 'CloudFare Usage Report' auditing user actions is NOT among the CloudFare Reports module's 5 documented sub-pages. Two adjacent-but-distinct features exist: the Activity Log module (FBD-100358, device-reported operational activity, not portal-user actions) and the ABT Audit Report (PSPEC-0015 §3.15.4, ABT-system changes by authorised operators, not a CloudFare-wide usage log). Confirm before running.",
+    "preconds": "**GIVEN** user actions have been performed on the environment\n**AND** the CloudFare Reporting module is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs, filters and downloads the CloudFare Usage Report",
+        "expected": "**THEN** the report shows the audited user actions for the filter\n**AND** it can be downloaded"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "Cloudfare - User Manual (Translink).docx, §9.2 Reports (5 sub-pages: Cash/Staff/Events & Alerts/Assets/Topology — no 'Usage' category)",
+      "Cloudfare - User Manual (Translink).docx, §8.3 Activity Log (device-reported operational activity, not portal-user actions)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.4 Audit Report (ABT-system changes by authorised operators, not CloudFare-wide)"
+    ],
+    "change_note": "Checked the CloudFare User Manual's Reports module structure and its Activity Log module, plus the ABT Audit Report — none matches a CloudFare-wide 'Usage Report' auditing all user actions across modules. Confirmed absent; genuinely not specified, though two narrower adjacent features exist.",
+    "gaps": [
+      "Which spec defines a CloudFare-wide 'Usage Report'? Not among the Reports module's 5 sub-pages; Activity Log (device activity) and the ABT Audit Report (ABT operator changes) are narrower, distinct, confirmed features."
+    ]
+  },
+  {
+    "id": 4103079,
+    "title": "Reports — audit data flows end to end into a report",
+    "preface": "This test is to confirm device audit data flows end to end into a CloudFare/Merit report. Per FBD-100387 only COMPLETED journeys sync to Merit/DWH; per FBD-100356 the SSIS load runs on a schedule (default every 10 minutes), so expect near-real-time but non-zero latency between the device write and report availability.",
+    "preconds": "**GIVEN** a controlled device transaction/completed journey has been generated\n**AND** it has been processed and synced to Merit/the Data Warehouse",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the corresponding report after the sync window",
+        "expected": "**THEN** the report reflects the processed audit data"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100387 (only completed journeys are synced to Merit + Merit DWH for reporting)",
+      "FBD-100356 (SSIS load default every 10 min; only validated data extracted)"
+    ],
+    "change_note": "This is a meta end-to-end flow, not a named report. Grounded it in the completed-journey sync rule (FBD-100387) and the DWH load latency (FBD-100356) so it is executable; kept the assertion to observed report content.",
+    "gaps": [
+      "Which specific report should this end-to-end case exercise? Pick one grounded report (e.g. a Merit Web report from FBD-100306) so the flow is concrete."
+    ]
+  },
+  {
+    "id": 4103165,
+    "title": "Run the Action List reports (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Action List report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Active Action List, Inactive Action List or daily action list report",
+        "expected": "**THEN** the selected Action List report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Action List report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103166,
+    "title": "Run the Liability and Scheme Liability reports (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Liability / Scheme Liability report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Liability report (summary or detailed) or the Scheme Liability report",
+        "expected": "**THEN** the selected report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Liability / Scheme Liability report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103167,
+    "title": "Run the Default Payment report (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Default Payment report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Default Payment report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Default Payment report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103168,
+    "title": "Run the Delivery report (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Delivery report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Delivery report (summary or detailed)",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Delivery report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103169,
+    "title": "Run the Refund report (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Refund report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Refund report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Refund report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103170,
+    "title": "Run the Decommission Card report (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack Decommission Card report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the Decommission Card report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack Decommission Card report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4103171,
+    "title": "Run the POS Revenue Analysis report (Smartrack)",
+    "preface": "**UNCONFIRMED** — the Smartrack POS Revenue Analysis report is NOT specified anywhere in the local requirements library (checked FBD-100377, PSPEC-0015, and the CloudFare User Manual in full — 'Smartrack' does not appear in any of them). Confirm the Smartrack reporting surface exists before running.",
+    "preconds": "**GIVEN** the user is on the Smartrack Reports page",
+    "steps": [
+      {
+        "content": "**WHEN** the user runs the POS Revenue Analysis report",
+        "expected": "**THEN** the report is generated\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "FBD-100377 - Service Classification Configuration & Reporting Specification V1.00 (checked in full; covers Passenger Journey/Revenue/Schedule Adherence reports, not Smartrack)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 (checked in full; no 'Smartrack' reference)",
+      "CloudFare User Manual (Translink).docx (checked in full; no 'Smartrack' reference)"
+    ],
+    "change_note": "Re-grounding pass: checked FBD-100377 (Service Classification Configuration & Reporting Specification V1.00) in full — it defines Passenger Journey, Revenue and Schedule Adherence reports grouped by service-classification tag, NOT Smartrack reports. Also checked PSPEC-0015 (CloudFare ABT v4.2.1) and the CloudFare User Manual (Translink) in full: the word 'Smartrack' does not appear in either document, nor anywhere else in the local requirements library. Confirmed absent from all specs consulted — genuinely not specified; Smartrack may be a different, unlisted system or an informal/legacy name.",
+    "gaps": [
+      "Which spec governs the Smartrack POS Revenue Analysis report? Confirmed absent from FBD-100377, PSPEC-0015 and the CloudFare User Manual — Smartrack does not appear anywhere in the local requirements library."
+    ]
+  },
+  {
+    "id": 4102883,
+    "title": "Account Status Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Account Status Report on the Operator Web Portal (Reports module). It shows total new verified/unverified customers for the period along with total customer numbers.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Account Status Report for a date range",
+        "expected": "**THEN** the Account Status Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1 Account Status Report (p.87)"
+    ],
+    "change_note": "Report name and description confirmed in the CloudFare ABT product spec's Operator Web Portal report catalogue (§3.15.1). Removed the UNCONFIRMED marker.",
+    "gaps": []
+  },
+  {
+    "id": 4102884,
+    "title": "Action List Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Action List Report on the Operator Web Portal. It provides the number of entries by day on the deny list along with a daily total.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Action List Report",
+        "expected": "**THEN** the Action List Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.2 Action List Report (p.88)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.2).",
+    "gaps": []
+  },
+  {
+    "id": 4102885,
+    "title": "Action List — Negative List Report",
+    "preface": "This test is to confirm the operator can view a negative/deny-list summary via the Operator Web Portal. Table 1 of PSPEC-0015 (p.84-85, 'Customers on action list') describes a summary-and-detail view of customers currently on the deny list or negative list; whether this is a distinct 'Negative List Report' or a view within the Action List Report is not spelled out.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Action List Negative List Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 Table 1, 'Customers on action list' row (p.84-85)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.2 Action List Report (p.88)"
+    ],
+    "change_note": "Fixed mojibake in the title (em-dash) as before. The underlying concept (customers on deny/negative list, summary and detail) is confirmed in Table 1 of the CloudFare ABT product spec; whether it surfaces as a separate 'Negative List Report' or as a mode of the Action List Report (§3.15.2) is not stated explicitly, so a narrower GAP remains.",
+    "gaps": [
+      "Is the negative-list view a separate report or a summary/detail mode of the Action List Report (§3.15.2)? PSPEC-0015 describes the concept (Table 1) but not a distinct 'Negative List Report' title."
+    ]
+  },
+  {
+    "id": 4102886,
+    "title": "Aftercare Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Aftercare Report on the Operator Web Portal. It provides details on all aftercare requests and any operator notes, coupled with the status of the query.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Aftercare Report",
+        "expected": "**THEN** the Aftercare Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.3 Aftercare Report (p.88)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.3).",
+    "gaps": []
+  },
+  {
+    "id": 4102887,
+    "title": "Audit Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Audit Report on the Operator Web Portal. It provides a detailed summary of changes made within the ABT system; where a change was made by an authorised operator, their details are shown.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Audit Report",
+        "expected": "**THEN** the Audit Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.4 Audit Report (p.89)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.4).",
+    "gaps": []
+  },
+  {
+    "id": 4102888,
+    "title": "Authorisation Failures Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Authorisation Failure Report on the Operator Web Portal. It shows the number of initial authorisations that failed each day, split by scheme type.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Authorisation Failures Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.5 Authorisation Failure Report (p.89)"
+    ],
+    "change_note": "Report name confirmed as 'Authorisation Failure Report' (singular 'Failure') per §3.15.5; the case title used the plural 'Failures' — kept as the commonly-used name but noted the spec's exact wording.",
+    "gaps": []
+  },
+  {
+    "id": 4102889,
+    "title": "Cancelled Tap Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Cancelled Tap Report on the Operator Web Portal. It shows all taps that have been cancelled by the driver. Per the spec this report is not applicable for TOTO (Tap On Tap Off) systems.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Cancelled Tap Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.6 Cancelled Tap Report (p.90)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.6), including the TOTO-not-applicable note.",
+    "gaps": []
+  },
+  {
+    "id": 4102890,
+    "title": "Debt Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Debt Report on the Operator Web Portal. It shows how much debt exists over the specified date range — travel where payment was not taken due to declined authorisation.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Debt Report",
+        "expected": "**THEN** the Debt Report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.7 Debt Report (p.91)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.7).",
+    "gaps": []
+  },
+  {
+    "id": 4102891,
+    "title": "Declined Taps Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Declined Card Taps report on the Operator Web Portal. It shows taps from declined cards (cEMV and Smartcard) to give a wider understanding of card use.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Declined Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.15 Declined Card Taps"
+    ],
+    "change_note": "Report confirmed under the spec's title 'Declined Card Taps' (§3.15.15) — the case's 'Declined Taps' title is the commonly-used shorthand.",
+    "gaps": []
+  },
+  {
+    "id": 4102892,
+    "title": "Deny List Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Deny List Report on the Operator Web Portal. It shows the total additions to the deny list and a summary of changes on a daily basis.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Deny List Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.9 Deny List Report (p.92)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.9).",
+    "gaps": []
+  },
+  {
+    "id": 4102893,
+    "title": "Duplicate Taps Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Duplicate Taps Report on the Operator Web Portal. It shows the number of duplicate taps received by the back office from the same location within the configured same-location time.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Duplicate Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.8 Duplicate Taps Report (p.92)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.8).",
+    "gaps": []
+  },
+  {
+    "id": 4102894,
+    "title": "EMV Summary Report",
+    "preface": "This test is to confirm the operator can generate, view and export the EMV Report on the Operator Web Portal. It provides a view of the Open Payment summary showing current revenue and declined transactions by decline reason. A related 'EMV Transactions' report shows all Open Payment/ePurse top-up transactions with accept/decline result.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the EMV Summary Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.10 EMV Report (p.93)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.11 EMV Transactions (p.93)"
+    ],
+    "change_note": "Confirmed under the spec's title 'EMV Report' (§3.15.10); the case's 'EMV Summary' is the commonly-used shorthand. Also cited the related EMV Transactions report (§3.15.11).",
+    "gaps": []
+  },
+  {
+    "id": 4102895,
+    "title": "ePurse Balance Report",
+    "preface": "This test is to confirm the operator can generate, view and export the ePurse Balance report on the Operator Web Portal. It provides the total balance held by all customers on ePurse accounts, so the operator can understand their liability exposure.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the ePurse Balance Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.22 ePurse Balance (p.100)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.22).",
+    "gaps": []
+  },
+  {
+    "id": 4102896,
+    "title": "Exception Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Exception Report on the Operator Web Portal. It provides details of any exceptions received through processing of taps.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Exception Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 Table 1 — Report Summary, 'Exception Report' row (p.84)"
+    ],
+    "change_note": "Report name and description confirmed in the CloudFare ABT report summary table (p.84); this report is listed there but does not get its own numbered §3.15.x subsection in the spec (unlike most others).",
+    "gaps": []
+  },
+  {
+    "id": 4102897,
+    "title": "Expired Tap Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Expired Taps report on the Operator Web Portal. It identifies taps which have arrived into the system later than 14 days after they were originally tapped by the customer — useful to identify equipment issues.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Expired Tap Report",
+        "expected": "**THEN** the report is generated\n**AND** it displays expired card taps\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.12 Expired Taps (p.93)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.12). Note: the spec's own body text for this section opens 'The late taps report identifies...' — see 4102904 (Late Taps), which is the same report under its alternate in-spec name.",
+    "gaps": []
+  },
+  {
+    "id": 4102898,
+    "title": "Fare Band Report",
+    "preface": "**UNCONFIRMED** — a 'Fare Band Report' is NOT among the 23 named Operator Web Portal ABT reports in PSPEC-0015 §3.15.1-3.15.23, nor in the CloudFare User Manual (Translink), FBD-100387, or FBD-100377. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Fare Band Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 and Table 1 (p.84-104) — full 23-report catalogue checked; not present"
+    ],
+    "change_note": "Checked the CloudFare ABT Portal spec's complete 23-report catalogue (PSPEC-0015 §3.15.1-3.15.23 and its Table 1 summary), the CloudFare User Manual (Translink), FBD-100387 and FBD-100377 — none name a 'Fare Band Report'. Confirmed absent from all specs consulted; genuinely not specified.",
+    "gaps": [
+      "Which spec/portal screen defines a 'Fare Band Report'? Not in the CloudFare ABT Portal's 23-report catalogue (PSPEC-0015) or any of the other governing specs checked."
+    ]
+  },
+  {
+    "id": 4102899,
+    "title": "Initial Taps by Brand Report",
+    "preface": "**UNCONFIRMED** — an 'Initial Taps by Brand Report' is NOT among the 23 named Operator Web Portal ABT reports in PSPEC-0015, nor in the CloudFare User Manual (Translink), FBD-100387, or FBD-100377. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Initial Taps by Brand Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 and Table 1 (p.84-104) — full 23-report catalogue checked; not present"
+    ],
+    "change_note": "Checked the CloudFare ABT Portal spec's complete 23-report catalogue and the CloudFare User Manual (Translink) — no 'Initial Taps by Brand' report. Confirmed absent; genuinely not specified.",
+    "gaps": [
+      "Which spec defines an 'Initial Taps by Brand Report'? Not in the CloudFare ABT Portal's 23-report catalogue or any other governing spec checked."
+    ]
+  },
+  {
+    "id": 4102900,
+    "title": "Inspection Details Report",
+    "preface": "This test is to confirm the operator can view detailed inspection records via the Revenue Inspection Report on the Operator Web Portal. Per the spec, this report 'also provides a detailed view of every inspection made and any penalty applied', in addition to its summary totals.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Inspection Details Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.19 Revenue Inspection Report (p.99), and Table 1 description (p.84)"
+    ],
+    "change_note": "'Inspection Details' is not a standalone report — it is the detailed-view mode of the Revenue Inspection Report (§3.15.19), which the spec explicitly describes as providing both a summary AND 'a detailed view of every inspection made and any penalty applied'. Reworded to reference the correct report and its detail mode.",
+    "gaps": [
+      "Confirm the exact UI label for the detailed-view mode (e.g. a 'Detail' toggle) on the live Revenue Inspection Report — not spelled out beyond the prose description."
+    ]
+  },
+  {
+    "id": 4102901,
+    "title": "Journey Summary Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Journey Summary report on the Operator Web Portal. It provides a summary of the number of journeys and revenue by day.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journey Summary Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.14 Journey Summary (p.95)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.14).",
+    "gaps": []
+  },
+  {
+    "id": 4102902,
+    "title": "Journeys by Card Scheme Report",
+    "preface": "**UNCONFIRMED** — a 'Journeys by Card Scheme Report' is NOT among the 23 named Operator Web Portal ABT reports. The closest confirmed fact is that the Authorisation Failure Report (§3.15.5) is split by card scheme — a dimension of that report, not a separate report of this name. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journeys by Card Scheme Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.5 Authorisation Failure Report (p.89) — split by scheme type, not a separate 'Journeys by Card Scheme' report",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 (full catalogue checked; no match)"
+    ],
+    "change_note": "No report literally named 'Journeys by Card Scheme' exists in the 23-report catalogue; the nearest fact is that Authorisation Failure Report results are split by card scheme (a filter/dimension, not a distinct report). Sharpened the change note; kept UNCONFIRMED.",
+    "gaps": [
+      "Which spec defines a 'Journeys by Card Scheme' report? Card scheme is a dimension of the Authorisation Failure Report (§3.15.5), not evidence of a separate report by this name."
+    ]
+  },
+  {
+    "id": 4102903,
+    "title": "Journeys by Service/Route Report",
+    "preface": "**UNCONFIRMED** — a 'Journeys by Service/Route Report' is NOT among the 23 named Operator Web Portal ABT reports, nor in the CloudFare User Manual, FBD-100387 or FBD-100377. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Journeys by Service/Route Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 and Table 1 (p.84-104) — full 23-report catalogue checked; not present"
+    ],
+    "change_note": "Checked the full CloudFare ABT Portal report catalogue and the other governing specs — no 'Journeys by Service/Route' report. Confirmed absent; genuinely not specified.",
+    "gaps": [
+      "Which spec defines a 'Journeys by Service/Route' report? Not in the CloudFare ABT Portal's 23-report catalogue or any other governing spec checked."
+    ]
+  },
+  {
+    "id": 4102904,
+    "title": "Late Taps Report",
+    "preface": "This test is to confirm the operator can generate, view and export the late taps report on the Operator Web Portal. Per the spec's own body text this is the same report titled 'Expired Taps' (§3.15.12) in the section heading — its body opens 'The late taps report identifies taps which have arrived into the system later than 14 days after they were originally tapped'.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Late Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.12 Expired Taps (p.93) — body text names it 'the late taps report'"
+    ],
+    "change_note": "'Late Taps' is confirmed as the CloudFare ABT product spec's OWN alternate/body-text name for the report headed 'Expired Taps' (§3.15.12) — this is a naming inconsistency inside the spec itself, not an invented report. Grounded and reworded; noted the duplication with 4102897.",
+    "gaps": [
+      "4102897 (Expired Tap) and 4102904 (Late Taps) are the same report under two names used interchangeably within PSPEC-0015 §3.15.12 — candidate to consolidate into one case."
+    ]
+  },
+  {
+    "id": 4102905,
+    "title": "Lost Tap Data Report",
+    "preface": "This test is to confirm the operator can access a report of devices showing gaps in the tap message sequence numbers ('lost data'), used to identify equipment for further investigation. Per the spec: 'lost data is identified through gaps in the unique sequence number which is sent in every tap message. A report will be provided to the operator showing devices with gaps in the sequence numbers.'",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Lost Tap Data Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.17.4 Lost Data (p.104)"
+    ],
+    "change_note": "Confirmed via §3.17.4 'Lost Data' — the spec explicitly describes a report showing devices with sequence-number gaps, matching 'Lost Tap Data'. Reworded from UNCONFIRMED.",
+    "gaps": [
+      "The exact UI report title (e.g. whether it is literally called 'Lost Tap Data Report' on the live portal) is not given verbatim in §3.17.4 — confirm the on-screen name."
+    ]
+  },
+  {
+    "id": 4102906,
+    "title": "PSP Technical Errors Report",
+    "preface": "**UNCONFIRMED** — a 'PSP Technical Errors Report' is NOT among the 23 named Operator Web Portal ABT reports, nor in the CloudFare User Manual, FBD-100387 or FBD-100377. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the PSP Technical Errors Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 and Table 1 (p.84-104) — full 23-report catalogue checked; not present"
+    ],
+    "change_note": "Checked the full CloudFare ABT Portal report catalogue and the other governing specs — no 'PSP Technical Errors' report (the nearest concept, Authorisation Failure Report §3.15.5, covers scheme-level declines, not PSP technical errors). Confirmed absent; genuinely not specified.",
+    "gaps": [
+      "Which spec defines a 'PSP Technical Errors Report'? Not in the CloudFare ABT Portal's 23-report catalogue; Authorisation Failure Report (§3.15.5) covers declines by scheme, not PSP technical errors specifically."
+    ]
+  },
+  {
+    "id": 4102907,
+    "title": "Refunds Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Refunds Report on the Operator Web Portal. It shows both cEMV refunds and ePurse credits along with the operator who approved the refund.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Refunds Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.17 Refunds Reports (p.97)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.17).",
+    "gaps": []
+  },
+  {
+    "id": 4102908,
+    "title": "Retail Debt Report",
+    "preface": "**UNCONFIRMED** — a 'Retail Debt Report' distinct from the ABT Debt Report is NOT among the 23 named Operator Web Portal ABT reports. The confirmed Debt Report (§3.15.7) covers debt from declined ABT/EMV authorisation, not retail-specific debt. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Retail Debt Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.7 Debt Report (p.91) — covers declined-authorisation debt, not a separate 'Retail Debt' report",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 (full catalogue checked; no match)"
+    ],
+    "change_note": "The catalogue has one Debt Report (§3.15.7, ABT/EMV declined-authorisation debt); no separate 'Retail Debt' report is named alongside the confirmed Retail Transaction / Summary Retail Transaction reports (§3.15.18/3.15.20). Sharpened the change note; kept UNCONFIRMED.",
+    "gaps": [
+      "Is 'Retail Debt' a real, separate report, or does the case mean the existing Debt Report (§3.15.7) applied to retail transactions? Not named as a distinct report in PSPEC-0015."
+    ]
+  },
+  {
+    "id": 4102909,
+    "title": "Retail Transactions Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Retail Transaction Report and the Summary Retail Transaction Report on the Operator Web Portal. These provide a summary of all retail transactions, and a summary of retail transactions by day and value, respectively.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Retail Transactions Report or the Summary Retail Transaction Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.18 Retail Transaction Report (p.98)",
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.20 Summary Retail Transaction Report (p.99)"
+    ],
+    "change_note": "Both report names and descriptions confirmed (§3.15.18, §3.15.20).",
+    "gaps": []
+  },
+  {
+    "id": 4102910,
+    "title": "Revenue Apportionment Report",
+    "preface": "This test is to confirm revenue apportionment reporting is available to the operator. Per the spec, revenue apportionment is the process of reporting fares (net of capping/discounts) shared across modes/operators over a period; the ABT system pushes net revenue data (post-capping) into the Merit reporting system, and all business/financial data is also sent to the Data Warehouse for the operator's own reporting/analytics. This is a reporting capability, not confirmed as a single named 'Revenue Apportionment Report' screen.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue Apportionment Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 'Revenue Apportionment' section (p.101)",
+      "FBD-100341 (Revenue Apportionment & Reporting; Pay-In Reconciliation report, paras 157-159)"
+    ],
+    "change_note": "The revenue-apportionment MECHANISM and reporting/analytics feed are confirmed (PSPEC-0015 p.101; FBD-100341). No single Operator Web Portal report literally titled 'Revenue Apportionment Report' is named in either spec — reworded to describe the confirmed capability while keeping a narrower gap on the exact screen/report name.",
+    "gaps": [
+      "Is there a single Operator Web Portal report titled 'Revenue Apportionment Report', or does the case mean the Pay-In Reconciliation report (FBD-100341 paras 157-159) or the general DWH/BI analytics feed (PSPEC-0015 p.101)? Confirm on the live portal."
+    ]
+  },
+  {
+    "id": 4102911,
+    "title": "Revenue by Business Rule Report",
+    "preface": "**UNCONFIRMED** — a 'Revenue by Business Rule Report' is NOT among the 23 named Operator Web Portal ABT reports, nor in the CloudFare User Manual, FBD-100387 or FBD-100377. Confirm before running.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue by Business Rule Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "unconfirmed",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.1-3.15.23 and Table 1 (p.84-104) — full 23-report catalogue checked; not present"
+    ],
+    "change_note": "Checked the full CloudFare ABT Portal report catalogue and the other governing specs — no 'Revenue by Business Rule' report. Confirmed absent; genuinely not specified.",
+    "gaps": [
+      "Which spec defines a 'Revenue by Business Rule Report'? Not in the CloudFare ABT Portal's 23-report catalogue or any other governing spec checked."
+    ]
+  },
+  {
+    "id": 4102912,
+    "title": "Revenue by MID Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Revenue by MID report on the Operator Web Portal. For operators who split their revenue by a range of MIDs, this report provides a summary by MID.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue by MID Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.16 Revenue by MID (p.96)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.16).",
+    "gaps": []
+  },
+  {
+    "id": 4102913,
+    "title": "Revenue Inspection Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Revenue Inspection Report on the Operator Web Portal. It provides details on the number of inspections by service and total penalty fares applied, whether due to incorrect tap or inspection.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Revenue Inspection Report or the Revenue Inspectors Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.19 Revenue Inspection Report (p.99)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.19). Do not conflate with the different Merit Web Inspector's Report (FBD-100306 §6.18) — different surface.",
+    "gaps": []
+  },
+  {
+    "id": 4102914,
+    "title": "Shared Liability Report",
+    "preface": "This test is to confirm the operator can generate, view and export a liability-protection report on the Operator Web Portal. The nearest confirmed report is 'Force Settle (Liability Protection) Report' (§3.15.13), which shows transactions declined but settled under issuer liability protection (country specific) — likely the report the case calls 'Shared Liability', though the exact title differs.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Shared Liability Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.13 Force Settle (Liability Protection) Report (p.94)"
+    ],
+    "change_note": "Confirmed a probable match — the CloudFare ABT spec's issuer-liability-protection report (§3.15.13, titled 'Force Settle (Liability Protection) Report') is the closest named report to 'Shared Liability'. Reworded from UNCONFIRMED but flagged the title mismatch as a residual gap rather than asserting an exact match.",
+    "gaps": [
+      "Confirm on the live portal whether 'Shared Liability' is the on-screen name for the Force Settle (Liability Protection) Report (§3.15.13), or a different report."
+    ]
+  },
+  {
+    "id": 4102915,
+    "title": "Tap Reconciliation Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Tap Reconciliation Report on the Operator Web Portal. It reconciles taps received from devices right through the system to settlement at the bank and revenue apportionment (taps sent from reader -> constructed into journeys -> fares with caps -> payments -> bank -> revenue apportionment), to ensure nothing is missed or lost through each step.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** some ABT taps have been performed on an ETM",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Tap Reconciliation Report",
+        "expected": "**THEN** the report is generated\n**AND** it reconciles the taps\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 Table 1 — Report Summary, 'Tap Reconciliation Report' row (p.84)"
+    ],
+    "change_note": "Report name and full description confirmed in the CloudFare ABT report summary table (p.84), including the exact 6-step reconciliation chain. Removed the 'reconciles the taps' vague predicate and replaced with the spec's own description.",
+    "gaps": []
+  },
+  {
+    "id": 4102916,
+    "title": "Transaction Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Transaction Report on the Operator Web Portal. It provides a detail of all of the transactions in the system.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Transaction Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.21 Transaction Report (p.99)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.21).",
+    "gaps": []
+  },
+  {
+    "id": 4102917,
+    "title": "Unique Taps Report",
+    "preface": "This test is to confirm the operator can generate, view and export the Unique Taps Report on the Operator Web Portal. It shows the total number of unique Open Payment taps and associated revenue.",
+    "preconds": "**GIVEN** an operator is signed into the Operator Web Portal\n**AND** the Reports page is displayed",
+    "steps": [
+      {
+        "content": "**WHEN** the operator runs the Unique Taps Report",
+        "expected": "**THEN** the report is generated\n**AND** it is displayed\n**AND** it can be exported"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "PSPEC-0015 CloudFare ABT v4.2.1 §3.15.23 Unique Taps Report (p.100)"
+    ],
+    "change_note": "Report name and description confirmed (§3.15.23).",
+    "gaps": []
+  }
+]

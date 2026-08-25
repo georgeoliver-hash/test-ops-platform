@@ -1,0 +1,114 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Smartcards & ABT]
+    cases:
+      - title: "Smartcard Rail Sales — valid Discount card opens Discount Sales screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting a valid, not-previously-presented Discount smartcard at
+          the Sales screen opens the Discount - Sales mode - Rail screen.
+        steps: |
+          **GIVEN** the HHD is on the 2.0 Sales screen
+          **AND** a valid Discount smartcard not previously presented and validated this session is
+          available
+          **WHEN** the operator presents the Discount smartcard
+          **THEN** the 2.6.1 Discount - Sales mode - Rail screen is displayed
+        expected: "Presenting a valid, not-previously-presented Discount smartcard opens the Discount - Sales mode - Rail screen."
+
+      - title: "Smartcard Rail Sales — valid Concessionary card opens Concessionary Sales screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting a valid, not-previously-presented Concessionary
+          smartcard at the Sales screen opens the Concessionary Card - Sales mode - Rail screen.
+        steps: |
+          **GIVEN** the HHD is on the 2.0 Sales screen
+          **AND** a valid Concessionary smartcard not previously presented and validated this session
+          is available
+          **WHEN** the operator presents the Concessionary smartcard
+          **THEN** the 2.6.5.1 Concessionary Card - Sales mode - Rail screen is displayed
+        expected: "Presenting a valid, not-previously-presented Concessionary smartcard opens the Concessionary Card - Sales mode - Rail screen."
+
+      - title: "Smartcard Rail Sales — clearing the Discount basket returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping Clear Basket on the Discount Summary - Rail screen returns
+          the HHD to the Sales screen.
+        steps: |
+          **GIVEN** the HHD is showing the 2.6.2.1 Discount - Summary - Rail screen with a product in
+          the basket
+          **WHEN** the operator taps Clear Basket
+          **THEN** the 2.0 Sales screen is displayed
+          **AND** the basket contents are cleared
+        expected: "Clear Basket on the Discount Summary - Rail screen returns to Sales with the basket cleared."
+
+      - title: "Smartcard Rail Sales — clearing the Concessionary basket returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping Clear Basket on the Concessionary Summary screen returns
+          the HHD to the Sales screen.
+        steps: |
+          **GIVEN** the HHD is showing the 2.6.6 Concessionary - Summary screen with a product in the
+          basket
+          **WHEN** the operator taps Clear Basket
+          **THEN** the 2.0 Sales screen is displayed
+          **AND** the basket contents are cleared
+        expected: "Clear Basket on the Concessionary Summary screen returns to Sales with the basket cleared."
+
+      - title: "Smartcard Rail Sales — previously-presented card shows Error - Passback"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm presenting a smartcard already presented and validated this
+          session shows the Error - Passback screen.
+        steps: |
+          **GIVEN** the HHD is on the 2.0 Sales screen
+          **AND** a smartcard already presented and validated this session is available
+          **WHEN** the operator presents the same smartcard again
+          **THEN** the 2.5.4.2 Error - Passback screen is displayed
+        expected: "Re-presenting an already-presented-and-validated smartcard shows Error - Passback."
+
+      - title: "Smartcard Rail Sales — invalid card critical error retries to a card presentation screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping Retry on the Invalid Card - Generic Error screen for an
+          invalid smartcard returns to a card presentation screen.
+        steps: |
+          **GIVEN** the HHD is showing the 4.1.3 Critical Error - Invalid Card - Generic Error screen
+          for an invalid smartcard presented at Sales
+          **WHEN** the operator taps Retry
+          **THEN** **GAP** — the transcription captures two possible Retry targets (Concessionary
+          Card - Sales mode screen or Sales mode screen) with no stated condition selecting between
+          them — not in requirements; confirm before running
+        expected: "Retry on the invalid-card Generic Error screen returns to a card presentation screen — exact target GAP, confirm before running."
+
+      - title: "Smartcard Rail Sales — invalid card critical error cancel returns to Sales"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping Cancel on the Invalid Card - Generic Error screen for an
+          invalid smartcard returns to the Sales screen.
+        steps: |
+          **GIVEN** the HHD is showing the 4.1.3 Critical Error - Invalid Card - Generic Error screen
+          for an invalid smartcard presented at Sales
+          **WHEN** the operator taps Cancel
+          **THEN** the 2.0 Sales screen is displayed
+        expected: "Cancel on the invalid-card Generic Error screen returns to Sales."
+
+      - title: "Smartcard Rail Sales — read/write fail retry returns to card validation"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm tapping Retry on the Error - Read/Write Fail screen re-attempts
+          smartcard validation.
+        steps: |
+          **GIVEN** the HHD is showing the 3.3 Error - Read/Write Fail screen for a smartcard
+          presented at Sales
+          **WHEN** the operator taps Retry
+          **THEN** **GAP** — the transcription's connection label ("Go to 'Card validation success?'
+          check above") does not match any decision node captured on this board by that name; the
+          source treats this as an inference onto the Valid Smartcard? check, not a transcribed fact —
+          not in requirements; confirm before running
+        expected: "Retry on Error - Read/Write Fail re-attempts card validation — exact target node GAP, confirm before running."

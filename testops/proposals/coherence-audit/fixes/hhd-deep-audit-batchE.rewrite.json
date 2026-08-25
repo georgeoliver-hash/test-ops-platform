@@ -1,0 +1,69 @@
+[
+  {
+    "id": 4103970,
+    "action": "reword",
+    "refs": "FBD-100317,FBD-100483",
+    "preface": "This test is to confirm whether a Glider HHD can redeem a legacy Old Barcode Redemption (BRS) barcode. **GAP** — no governing spec found for a BRS/legacy redemption flow on Glider HHD; FBD-100483 states Glider HHD does not use single-use barcode functionality; confirm this capability exists before running.",
+    "expected": "**GAP** — no spec confirms an Old Barcode Redemption (BRS) flow on Glider HHD. FBD-100317's device matrix and the \"Barcode Acceptance on TFTS Devices\" table show Glider HHD validates multi-use (Flowbird) barcodes offline only and rejects all single-use barcode classes; FBD-100483 explicitly states Glider HHD does not use single-use functionality. No document in the requirements library mentions \"BRS\" or an \"Old Barcode Redemption\" flow. Confirm with the engineer whether this capability exists before running or retaining this case.\n\n[Automatable: Partial]",
+    "change_note": "Deep-grounding check: searched the full reqs library (--find \"BRS\", \"barcode redemption\", \"Old Barcode\", \"legacy\") and the governing barcode specs (FBD-100167, FBD-100317, FBD-100318, FBD-100483) plus the 'Barcode Acceptance on TFTS Devices' matrix doc — none mention a BRS acronym or an Old Barcode Redemption flow on Glider HHD. FBD-100317's device matrix and FBD-100483 both state Glider HHD does NOT validate single-use barcodes (multi-use offline only). Confirms and escalates the prior coherence-audit flag to a full GAP — this case asserts a capability with no supporting spec. Refs corrected from FBD-100167 (unrelated — multi-use only) to the two docs actually checked and found to contradict the claim."
+  },
+  {
+    "id": 4103971,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "change_note": "Ref FBD-100651 was wrong for this section — that spec is the Glider cEMV bank-card Tap-On-Only spec, unrelated to iLink/period-pass smartcard inspection (a different technology entirely). Corrected across all 7 Smartcard Inspection cases (4103971-4103977) to the two local docs that actually ground the general capability: Smartcard Use Matrix.xlsx (confirms iLink validated on HHD) and the HHD Inspection and Validation Design Note (NIR Inspection + Validation section covers commercial-smartcard inspection reusing the Validation flow). Body unchanged — claims here (Inspector Mode, IN-direction route, assumed-knowledge \"configurable time\" precondition, successful result) are already correctly framed and generically supported."
+  },
+  {
+    "id": 4103972,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "steps": [
+      {
+        "content": "**WHEN** the operator inspects the smartcard",
+        "expected": "**THEN** the inspection screen shows the adult colour for the pass\n**UNCONFIRMED** — pass-type colour coding on the inspection screen is not documented in any requirement found; confirm on the live system before running"
+      }
+    ],
+    "expected": "An adult iLink pass inspection is expected to show a distinct adult colour indicator. **UNCONFIRMED** — no spec documents pass-type colour coding on this screen; verify live.\n\n[Automatable: Partial]",
+    "change_note": "Ref corrected (see 4103971 note). Searched FBD-100236 (DESFire ABT card format), FBD-100250 (pre-printed smartcard format), the HHD Inspection Design Note and Smartcard Use Matrix for any colour-coding rule by passenger type on the HHD inspection screen — none found (design note only says \"wording varies depending on smartcard\", no colour scheme). Marked UNCONFIRMED at the exact claim rather than inventing screen behaviour."
+  },
+  {
+    "id": 4103973,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "steps": [
+      {
+        "content": "**WHEN** the operator inspects the smartcard",
+        "expected": "**THEN** the inspection screen shows the child colour for the pass\n**UNCONFIRMED** — pass-type colour coding on the inspection screen is not documented in any requirement found; confirm on the live system before running"
+      }
+    ],
+    "expected": "A child iLink pass inspection is expected to show a distinct child colour indicator, different from adult. **UNCONFIRMED** — no spec documents pass-type colour coding on this screen; verify live.\n\n[Automatable: Partial]",
+    "change_note": "Same finding as 4103972 — no colour-coding rule found in any checked spec. Ref corrected; claim marked UNCONFIRMED rather than invented."
+  },
+  {
+    "id": 4103974,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation); EA Smartpass Logic",
+    "change_note": "Ref corrected (see 4103971 note). The general claim (an expired pass fails inspection) is not spelled out verbatim but is safely supported: the Design Note explicitly defers error/failure screens to a separate UX doc (\"For error scenarios see UX\") — confirming a failure path exists without detailing its exact wording — and EA Smartpass Logic / FBD-100250 both establish that validity is fare/expiry-gated. Case already states only a generic \"unsuccessful inspection result\", not an invented screen name, so this is the correct 'unknown how, not unknown what' treatment — no marker needed, just the citation fix."
+  },
+  {
+    "id": 4103975,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "preconds": "**GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route\n**AND** the tester knows the currently configured smartcard revalidation window\n**AND** a Multi-Journey smartcard validated inside that window is presented",
+    "change_note": "Ref corrected (see 4103971 note). The hard-coded \"20 minutes ago... 90-minute window\" values could not be traced to any spec — the only \"~90 minute\" figure found anywhere in the reqs library is the Glider/NIR cEMV inspection Maximum Journey Time in FBD-100651/FBD-100716, a different mechanism (bank-card inspection charging window, not smartcard revalidation). Reusing that number here looks like cross-contamination between the two inspection flows. Reframed per gherkin-standard's \"unknown configured value\" rule: the behaviour (a window exists) is real and known, but the number is not confirmed for this mechanism, so it's now an assumed-knowledge precondition instead of an invented figure."
+  },
+  {
+    "id": 4103976,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "preconds": "**GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route\n**AND** the tester knows the currently configured smartcard revalidation window\n**AND** a Multi-Journey smartcard last validated outside that window is presented",
+    "change_note": "Same finding and fix as 4103975 — \"over 90 minutes\" is unconfirmed for the smartcard revalidation mechanism (the only 90-min figure found belongs to the unrelated cEMV inspection MJT). Reframed as an assumed-knowledge precondition; ref corrected."
+  },
+  {
+    "id": 4103977,
+    "action": "reword",
+    "refs": "Smartcard Use Matrix; HHD Inspection & Validation Design Note (NIR Inspection + Validation)",
+    "preconds": "**GIVEN** the HHD is signed on in break mode\n**AND** a valid period-pass smartcard is presented\n**GAP** — no CR78 spec found confirming break-mode smartcard inspection is supported; confirm on the live system before running",
+    "change_note": "Ref corrected (see 4103971 note) and CR78 could not be found anywhere in the requirements library (--find \"CR78\", \"break mode\", \"break\" all came up empty except an unrelated ETM config file). The existence of a distinct 'break mode' sign-on state and whether smartcard inspection is available in it is unconfirmed — marked GAP rather than asserted, per the no-gap-filling rule."
+  }
+]

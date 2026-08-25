@@ -1,0 +1,11 @@
+[
+  {"id": 4103901, "refs": "REQ-0056.0,REQ-0056.1,REQ-0396.2,gap-register Q45 (partially resolved)"},
+  {"id": 4103902, "refs": "REQ-0056.0,gap-register Q45 (partially resolved)"},
+  {"id": 4103905, "refs": "REQ-0050.3,REQ-0396.2,gap-register Q45 (partially resolved)"},
+  {"id": 4103906, "refs": "REQ-0056.0,REQ-0056.1,REQ-0276.0,gap-register Q45 (partially resolved)"},
+  {"id": 4103909, "refs": "REQ-0396.2,gap-register Q45 (partially resolved)"},
+  {"id": 4103910, "refs": "gap-register Q45 (partially resolved — auto-signoff period real generically, HHD-specific figure still open)"},
+  {"id": 4103911, "refs": "REQ-1478.0,REQ-0384.1,gap-register Q45 (partially resolved)"},
+  {"id": 4103916, "refs": "REQ-0299.0,REQ-0350.2,gap-register Q47 (partially resolved)"},
+  {"id": 4103917, "refs": "REQ-2452.1,gap-register Q47 (partially resolved — layout numbers still open)"}
+]

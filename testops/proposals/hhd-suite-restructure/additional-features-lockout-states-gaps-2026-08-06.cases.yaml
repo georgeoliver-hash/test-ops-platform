@@ -1,0 +1,47 @@
+suite_id: 30285
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [7]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Non-Functional, Resilience, Comms / SaaS / Heartbeat]
+    cases:
+      - title: "Additional Features — HHD shows Device Out of Service on a critical issue"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the HHD defaults to the Device Out of Service screen and stays
+          unusable after hitting a critical issue on start-up or during use.
+        steps: |
+          **GIVEN** the HHD encounters a critical issue on start-up or during use
+          **WHEN** the operator views the HHD screen
+          **THEN** the "Device Out of Service" screen is displayed
+          **AND** the HHD is unusable until a technician or other stated action resolves the issue
+        expected: "The HHD defaults to Device Out of Service and remains unusable until resolved."
+
+      - title: "Additional Features — HHD shows Remotely Locked state"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the HHD shows the Remotely Locked screen when placed into a
+          remotely locked state.
+        steps: |
+          **GIVEN** the HHD has been placed into a remotely locked state
+          **WHEN** the operator views the HHD screen
+          **THEN** the "Remotely Locked" screen is displayed
+          **AND** **GAP** — the trigger and clearing mechanism for Remotely Locked — not in
+          requirements; confirm before running
+        expected: "The HHD shows the Remotely Locked screen; trigger/clearing mechanism is a GAP — confirm before running."
+
+      - title: "Additional Features — HHD shows Remotely Out of Service state"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the HHD shows the Remotely Out of Service screen when marked out
+          of service remotely.
+        steps: |
+          **GIVEN** the HHD has been marked remotely out of service
+          **WHEN** the operator views the HHD screen
+          **THEN** the "Remotely Out of Service" screen is displayed
+          **AND** **GAP** — the trigger and clearing mechanism for Remotely Out of Service — not in
+          requirements; confirm before running
+        expected: "The HHD shows the Remotely Out of Service screen; trigger/clearing mechanism is a GAP — confirm before running."

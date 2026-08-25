@@ -1,0 +1,534 @@
+# ABT Tap Correction — executable walk-through rewrite (BOS & ABT Suite, 30279)
+# Authored 2026-07-17. UPDATES the 34 existing "Tap Correction" cases IN PLACE
+# (verbatim titles → push --update matches by title). Behaviour under test is
+# unchanged; each case is re-cut as a procedure a tester can follow start to finish:
+#   GIVEN = the full concrete setup (seeded test cEMV card, both portals, the cap
+#   values that matter, the journeys already made with route/stop/fare/time),
+#   WHEN  = the real ordered actions (tap / correct the stop in the Operator Portal /
+#   run EndOfDay settlement / open Journey History),
+#   THEN  = what you observe and WHERE (Operator Portal Journey History, the tap row,
+#   the day total, the CloudFare settlement/refund record) with the value.
+# Concrete journeys/fares are grounded in knowledge/ABT/ABT_FARE_REFERENCE.md
+# (FBD-100389/100334/100698/100229/100658, UB-TOO tracker). Where the reference flags
+# a route/stop as ambiguous or blocked (e.g. 10b Zone 1 = Metro overlap), the case says
+# "confirm in the portal" rather than inventing a value.
+# Single-predicate THEN/AND lines throughout. No @tags, no [Automatable] line.
+suite_id: 30279
+defaults:
+  template_id: 1
+  custom_devtypes: [200]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ═════════════════════════ Metro Daily Cap ═════════════════════════
+  - path: [ABT, Tap Correction, Metro Daily Cap]
+    cases:
+      - title: Same-fare correction holds the Metro cap
+        refs: [CR122]
+        objective: This test is to confirm that a same-fare alighting correction leaves the Metro daily cap in place with no settlement or refund.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card, registered to the Translink test account in CloudFare env5
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify the customer-facing view
+          **AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap: 10A (IN) Casement Park → City Hall at 09:00 charged £2.30, then 10A (IN) Slievegallion Drive → Falls Park at 12:00 charged £1.70 to complete the cap, day total £4.00
+          **WHEN** in the Operator Portal you correct the 12:00 tap's alighting stop to another Metro stage of equal £2.30 single fare
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History still shows the £4.00 Metro cap applied to the day
+          **AND** the corrected 12:00 tap still shows £1.70
+          **AND** the day total is still £4.00
+          **AND** no auto-settlement is raised in CloudFare
+          **AND** no refund is raised in CloudFare
+        expected: The Metro cap still applies; the corrected tap stays £1.70 and the day total stays £4.00 with no settlement or refund.
+      - title: Correction outside the Metro zone removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap to a stop outside the Metro zone removes the Metro cap and collects the higher fare.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20)
+          **AND** the card has two Metro-zone taps that settle under the cap: 10A (IN) Casement Park → City Hall at 09:00 charged £2.30, then 10A (IN) Slievegallion Drive → Falls Park at 12:00 charged £1.70, day total £4.00
+          **WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a stop outside the Metro Network Zone at a higher single fare (an Ulsterbus ref.70 £5.10 stage — confirm the exact route/stop in the portal, as the UB-TOO tracker notes Metro-zone stops sit at the end of 10b (IN))
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Metro cap is no longer applied
+          **AND** the corrected tap is charged its higher single fare (£5.10)
+          **AND** an auto-settlement in CloudFare collects the difference
+          **AND** the day total rises above £4.00
+        expected: The Metro cap is removed; the corrected tap is charged the higher fare and the difference is auto-settled above £4.00.
+      - title: Correction into the Metro zone applies the cap and refunds the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap into the Metro zone brings the day under the £4.00 cap and refunds the overcharge.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20)
+          **AND** the card has one Metro tap 10A (IN) Casement Park → City Hall at 09:00 (£2.30) and one Ulsterbus tap outside the Metro zone at 12:00 charged its higher single fare, day total above £4.00
+          **WHEN** in the Operator Portal you correct the Ulsterbus tap's alighting to a stop inside the Metro Network Zone (a £2.30 Metro stage)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows both taps under the £4.00 Metro cap
+          **AND** the day total is £4.00
+          **AND** an auto-refund in CloudFare returns the difference to the account
+        expected: Both taps fall under the £4.00 Metro cap; the day total is £4.00 and the overcharge is auto-refunded.
+      - title: Correcting a settled free (capped) tap keeps it at £0.00
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the stop on a settled capped Metro tap does not recalculate its fare.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap with three taps: Casement Park → City Hall 09:00 £2.30, Slievegallion Drive → Falls Park 12:00 £1.70, and Falls Park → City Hall 15:00 charged £0.00 (capped), day total £4.00
+          **WHEN** in the Operator Portal you correct the alighting stop on the settled £0.00 15:00 tap to another Metro stage
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected 15:00 tap still charged £0.00
+          **AND** the tap is not recalculated to the full £2.30
+          **AND** the day total stays £4.00
+          **AND** the corrected tap remains marked settled
+        expected: The settled capped tap stays at £0.00, is not recalculated to £2.30, and the day total stays £4.00.
+      - title: Correcting a settled partially-capped tap keeps it at £1.70
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the stop on a settled partially-capped tap preserves its reduced fare.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap: Casement Park → City Hall 09:00 £2.30, then Slievegallion Drive → Falls Park 12:00 reduced to £1.70 to complete the cap, day total £4.00
+          **WHEN** in the Operator Portal you correct the alighting stop on the settled £1.70 12:00 tap to another Metro stage
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected 12:00 tap still charged £1.70
+          **AND** the tap is not recalculated to the full £2.30
+          **AND** the day total stays £4.00
+          **AND** the corrected tap remains marked settled
+        expected: The settled partially-capped tap stays at £1.70, is not recalculated to £2.30, and the day total stays £4.00.
+      - title: A correction never pushes the day total over the Metro cap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a stop correction on a capped Metro tap cannot overcharge the card beyond the daily cap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap (Casement Park → City Hall £2.30, Slievegallion Drive → Falls Park £1.70, Falls Park → City Hall £0.00)
+          **WHEN** in the Operator Portal you correct the alighting stop on one of the capped taps to another Metro stage
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the day total charged on the card does not exceed £4.00
+        expected: After the correction the day total charged never exceeds the £4.00 Metro cap.
+      - title: A corrected capped tap stays settled and free
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a settled capped Metro tap keeps its settled status and £0.00 charge after a correction.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap, with the 15:00 Falls Park → City Hall tap charged £0.00 (capped)
+          **WHEN** in the Operator Portal you correct the alighting stop on the £0.00 capped tap to another Metro stage
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap still marked settled
+          **AND** the Metro cap is still shown as retained on that tap
+          **AND** the tap is still charged £0.00
+          **AND** the day total stays £4.00
+        expected: The capped tap stays settled with the cap retained, still charged £0.00, and the day total stays £4.00.
+      - title: Correcting the first full-fare tap leaves its charge unchanged
+        refs: [TODEV-24096]
+        objective: This test is to confirm that correcting the first (non-capped) Metro tap does not disturb its full fare.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap, with the first tap 10A (IN) Casement Park → City Hall at 09:00 charged the full £2.30
+          **WHEN** in the Operator Portal you correct the alighting stop on the first 09:00 tap to another Metro stage of equal fare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the first tap still charged £2.30
+          **AND** the day total stays £4.00
+        expected: The first Metro tap stays charged £2.30 and the day total stays £4.00.
+      - title: Correcting an unsettled capped tap re-evaluates and stays free
+        refs: [TODEV-24096]
+        objective: This test is to confirm that an unsettled capped Metro tap re-evaluates to £0.00 when corrected before settlement.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has made three Metro taps that reach the cap but EndOfDay settlement has NOT yet run: Casement Park → City Hall 09:00, Slievegallion Drive → Falls Park 12:00, Falls Park → City Hall 15:00
+          **WHEN** in the Operator Portal you correct the alighting stop on the third (would-be-free) 15:00 tap to another Metro stage
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected 15:00 tap charged £0.00
+          **AND** the day total is £4.00
+        expected: The unsettled capped tap re-evaluates to £0.00 at settlement and the day total is £4.00.
+      - title: A declined journey is not treated as a settled capped tap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that the correction guard keys off settled status only, so a declined journey is not treated as a settled capped tap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the card has one Metro journey that was declined at the reader (e.g. the test card in a declined/hotlisted state), shown in Journey History as declined
+          **WHEN** in the Operator Portal you correct the alighting stop on the declined journey
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the journey still handled as declined
+          **AND** the journey is not treated as a settled capped journey
+          **AND** no settled-cap charge is produced for it
+        expected: The declined journey stays handled as declined; no settled-cap charge is produced.
+      - title: Re-running settlement after a correction does not re-charge the capped tap
+        refs: [TODEV-24096]
+        objective: This test is to confirm that a further settlement run after a correction leaves an already-settled capped Metro tap untouched.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20)
+          **AND** the card has settled a Metro day at the £4.00 cap and one £0.00 capped tap has already had its alighting stop corrected
+          **WHEN** you run the EndOfDay settlement process again in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected capped tap still charged £0.00
+          **AND** no additional charge is raised in CloudFare
+          **AND** the day total stays £4.00
+          **AND** the tap remains marked settled
+        expected: A repeat settlement raises no fresh charge; the capped tap stays £0.00, settled, and the day total stays £4.00.
+
+  # ═════════════════════════ Zonal Cap ═════════════════════════
+  - path: [ABT, Tap Correction, Zonal Cap]
+    cases:
+      - title: Higher-fare correction within the zone holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that raising a tap to a higher fare still within the same iLink zone leaves the zone cap unchanged.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap is £11.00
+          **AND** the card has reached the cap on 105a (IN) Zone 2 taps: Dundrod → Beechdene Drive 09:00 £4.50, Tullyrusk Road → Beechdene Drive 12:00 £4.50, a third Zone 2 tap 15:00 charged £2.00 to complete the £11.00 cap
+          **WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage still within Zone 2 (e.g. → Park Gates)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Zone 2 cap still applied at £11.00
+          **AND** the day total stays £11.00
+          **AND** no auto-settlement is raised in CloudFare
+          **AND** no refund is raised in CloudFare
+        expected: The Zone 2 cap holds at £11.00; the total is unchanged with no settlement or refund.
+      - title: Higher-fare correction outside the zone removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap to a stage outside the iLink zone removes the zone cap and collects the higher fare.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap is £11.00, reached on 105a (IN) Zone 2 taps (Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.00)
+          **WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage outside Zone 2 (e.g. onto 10b (IN) into Zone 3 at £5.90)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Zone 2 cap is no longer applied
+          **AND** the corrected tap is charged its higher fare (£5.90)
+          **AND** an auto-settlement in CloudFare collects the difference, or a higher zone cap applies if reached
+          **AND** the day total rises above £11.00
+        expected: The Zone 2 cap is removed; the higher fare is charged and the difference is auto-settled above £11.00.
+      - title: Lower-fare correction within the zone keeps the day above cap and holds
+        refs: [CR122]
+        objective: This test is to confirm that lowering a tap within the iLink zone, while the day stays above cap, leaves the cap in place.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap is £11.00, reached on 105a (IN) Zone 2 taps whose uncapped aggregate is well above £11.00 (Dundrod → Beechdene Drive £4.50 ×2, plus a third £4.50 Zone 2 tap = £13.50 uncapped)
+          **WHEN** in the Operator Portal you correct one tap's alighting to a lower-fare Zone 2 stage, keeping the uncapped aggregate above £11.00
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Zone 2 cap still applied
+          **AND** the day total is unchanged at £11.00
+          **AND** no auto-refund is raised in CloudFare
+          **AND** no auto-settlement is raised in CloudFare
+        expected: The Zone 2 cap holds; the day total stays £11.00 with no refund or settlement.
+      - title: Lower-fare correction drops the day below cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that lowering a tap so the day falls below the iLink zone cap removes the cap and refunds the difference.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap is £11.00, reached on 105a (IN) Zone 2 taps whose uncapped aggregate only just exceeds it: Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.90 (uncapped £11.90, capped to £11.00)
+          **WHEN** in the Operator Portal you correct one £4.50 tap's alighting to a lower Zone 2 fare (£2.30) so the uncapped aggregate drops to £9.70, below £11.00
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Zone 2 cap no longer applied
+          **AND** the day total reduces to the new aggregate £9.70
+          **AND** an auto-refund in CloudFare returns the £1.30 difference
+        expected: The Zone 2 cap is removed; the total reduces to £9.70 and the £1.30 difference is auto-refunded.
+      - title: Zone 4 correction within the highest band holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that a higher-fare correction outside Zone 4 but within the highest band keeps the £19.00 Zone 4 cap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 4 cap is £19.00 (the highest band)
+          **AND** the card has reached the cap on 100b (IN) Zone 4 taps (the tracker's approved Zone 4 route): Ardstraw Road → Londonderry (Transfer) at 09:00, 12:00 and 15:00, £6.90 each (ref.85), uncapped £20.70 capped to £19.00
+          **WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage outside Zone 4 but still within the £19.00 band (e.g. Castlederg → Londonderry (Transfer), ref 1.05, £9.40)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the Zone 4 cap still applied
+          **AND** the account stays at £19.00
+          **AND** no auto-settlement is raised in CloudFare
+        expected: The Zone 4 cap holds at £19.00; no settlement is raised.
+      - title: Correction into a capped zone audits a free tap under the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting a tap into a zone whose cap is reached audits a £0.00 tap under the zonal cap, not the reference cap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps (£4.50 + £4.50 + £2.00)
+          **AND** the card also has one extra 10b (IN) tap that alighted at a Zone 1 stop (e.g. Ulster Hospital) and was charged under the Zone 1 cap — confirm in the portal that this tap is assigned to Zone 1, as the UB-TOO tracker notes 10b (IN) Zone 1 stops also carry Metro codes
+          **WHEN** in the Operator Portal you correct that Zone 1 tap's alighting to a Zone 2 stop (e.g. 10b (IN) Layby)
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap audited as a £0.00 free tap under the Zone 2 cap
+          **AND** the corrected tap is not charged the reference fare
+          **AND** the day total stays at the £11.00 cap
+        expected: The corrected tap is free under the £11.00 Zone 2 cap; no reference-fare charge is made and the total stays £11.00.
+      - title: A correction into a capped zone does not increase the account total
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a zonal correction at the cap leaves the aggregated account total unchanged.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps, and the aggregated account total for the day is noted as £11.00
+          **AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)
+          **WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the aggregated account total for the day has not increased above £11.00
+          **AND** the corrected tap is audited at £0.00
+        expected: The account total stays at £11.00; the corrected tap is audited at £0.00.
+      - title: The cap shown after a correction is the zonal cap, not a reference cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a corrected tap reports under the zonal cap rather than a reference cap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps
+          **AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)
+          **WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap audited at £0.00 because the Zone 2 cap was reached
+          **AND** the corrected tap is not charged the reference fare
+        expected: The corrected tap reports under the £11.00 Zone 2 cap; no reference fare is applied.
+      - title: Correcting into a zone below cap charges toward the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting into a zone whose cap is not yet reached charges toward the zonal cap, not the reference cap.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap is £11.00 and only one Zone 2 journey has been made (105a (IN) Dundrod → Beechdene Drive, £4.50), so the cap is not yet reached
+          **AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)
+          **WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap charged toward the Zone 2 cap and never above £11.00
+          **AND** the corrected tap is not charged under the reference cap
+        expected: The corrected tap charges toward the £11.00 Zone 2 cap, never exceeding it, with no reference charge.
+      - title: A journey with no zonal cap still uses the reference cap correctly
+        refs: [TODEV-24348]
+        objective: This test is to confirm that reference capping still governs where no zonal cap applies after the fix.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is not enabled for these journeys, so the reference cap governs the day
+          **AND** the ref.60 cap of £7.20 is reached on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00 to complete the cap
+          **WHEN** in the Operator Portal you correct a ref.60 tap's alighting to another ref.60 stage (e.g. Greys Farm → Armagh Bus Centre)
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap audited as a £0.00 free tap under the ref.60 cap
+          **AND** the £7.20 reference cap still governs the day
+        expected: With no zonal cap, the £7.20 reference cap still governs and the corrected tap is free under it.
+      - title: Correcting to another stop in the same zone keeps the zonal cap
+        refs: [TODEV-24348]
+        objective: This test is to confirm that correcting to another stop within the same iLink zone leaves the zonal cap in place.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 1 cap of £6.00 is reached on Zone 1 taps — confirm a Zone 1 route/stop pair in the portal, as the UB-TOO tracker flags that 10b (IN) Zone 1 stops also carry Metro codes and cap at Metro £4.00
+          **WHEN** in the Operator Portal you correct one tap's alighting to another Zone 1 stop
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap audited as a £0.00 free tap
+          **AND** the day's Zone 1 total stays at the £6.00 cap
+        expected: The corrected tap is free; the Zone 1 total stays at the £6.00 cap.
+      - title: Re-running settlement after a zonal correction adds no charge
+        refs: [TODEV-24348]
+        objective: This test is to confirm that a repeat settlement after a zonal correction keeps the cap and raises no charge.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap of £11.00 is reached and a Zone 1 tap has already been corrected to a Zone 2 stop and settled
+          **WHEN** you run the EndOfDay settlement process again in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap still audited at £0.00 with the Zone 2 cap applied
+          **AND** no additional charge is raised in CloudFare
+        expected: A repeat settlement keeps the corrected tap at £0.00 under the Zone 2 cap with no further charge.
+      - title: The zonal cap applies after a correction regardless of transport mode
+        refs: [TODEV-24348]
+        objective: This test is to confirm that the iLink zonal cap (Transport Mode All) governs a corrected tap across mixed modes.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the iLink Zone 2 cap of £11.00 is reached across mixed transport modes (the iLink zone cap is Transport Mode = All)
+          **AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)
+          **WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop
+          **AND** you run the EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the corrected tap audited as a £0.00 free tap under the Zone 2 cap
+          **AND** the reference cap is not applied regardless of transport mode
+        expected: The £11.00 zonal cap governs across modes; the corrected tap is free with no reference charge.
+
+  # ═════════════════════════ Reference Fare Cap ═════════════════════════
+  - path: [ABT, Tap Correction, Reference Fare Cap]
+    cases:
+      - title: Correction to a higher ref removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting one tap to a higher reference fare breaks the same-ref cap and collects the difference.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is disabled so the reference cap governs
+          **AND** the ref.60 cap of £7.20 is reached on two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00 to complete the cap, day total £7.20
+          **WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a higher reference-fare stop (e.g. Dungannon Bus Station → Armagh Bus Centre, ref.70, £5.10)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the reference cap no longer applied, as the taps no longer share a ref
+          **AND** both taps are charged their uncapped fares (£4.50 and £5.10)
+          **AND** an auto-settlement in CloudFare collects the difference above the former £7.20 cap
+        expected: The reference cap is removed; both taps are charged uncapped (£4.50 + £5.10) and the difference above £7.20 is auto-settled.
+      - title: Correction to a lower ref below the cap removes it and refunds
+        refs: [CR122]
+        objective: This test is to confirm that lowering one tap so the aggregate falls below the cap removes the reference cap and refunds.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is disabled so the reference cap governs
+          **AND** two ref.60 taps are capped at £7.20: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre £4.50 at 09:00 and £2.70 at 12:00
+          **WHEN** in the Operator Portal you correct the 09:00 tap's alighting to a lower fare on a different ref (e.g. a ref.20 £2.30 stage) so the uncapped aggregate falls to £6.80, below £7.20
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the reference cap no longer applied
+          **AND** the charge is the lower aggregate £6.80
+          **AND** an auto-refund in CloudFare returns the £0.40 difference
+        expected: The reference cap is removed; the charge drops to £6.80 and the £0.40 difference is refunded.
+      - title: Correction to a lower ref still above the cap charges the extra
+        refs: [CR122]
+        objective: This test is to confirm that lowering one tap to a different ref, with the aggregate still above the cap, removes the cap and charges the extra.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is disabled so the reference cap governs
+          **AND** two ref.60 taps are capped at £7.20 (uncapped £4.50 + £4.50 = £9.00): 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:00 and Greys Farm → Armagh Bus Centre at 12:00
+          **WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a lower fare on a different ref (e.g. ref.55, £4.00, Greys Farm → Allens Corner (Dark Lane)), leaving the aggregate at £8.50, above £7.20
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the reference cap no longer applied
+          **AND** the charge is the uncapped aggregate £8.50
+          **AND** an auto-settlement in CloudFare collects the £1.30 above the former £7.20 cap
+        expected: The reference cap is removed; the uncapped aggregate £8.50 is charged and the £1.30 extra is auto-settled.
+
+  # ═════════════════════════ Uncapped & Single Taps ═════════════════════════
+  - path: [ABT, Tap Correction, Uncapped & Single Taps]
+    cases:
+      - title: Single uncapped tap raised to a higher fare charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a single uncapped tap to a higher fare collects the additional balance.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Grange Brigde at 09:00, ref.10, £1.90
+          **WHEN** in the Operator Portal you correct the tap's alighting to a higher-fare stop (e.g. Greys Farm → Armagh Bus Centre, ref.60, £4.50)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the amended alighting stop charged at the higher fare £4.50
+          **AND** an auto-settlement in CloudFare collects the £2.60 additional balance
+        expected: The corrected tap is charged the higher fare £4.50 and the £2.60 difference is auto-settled.
+      - title: Single uncapped tap lowered refunds the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a single uncapped tap to a lower fare refunds the difference.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Armagh Bus Centre at 09:00, ref.60, £4.50
+          **WHEN** in the Operator Portal you correct the tap's alighting to a lower-fare stop (e.g. Greys Farm → Grange Brigde, ref.10, £1.90)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the amended alighting stop charged at the lower fare £1.90
+          **AND** an auto-refund in CloudFare returns the £2.60 difference
+        expected: The corrected tap is charged the lower fare £1.90 and the £2.60 difference is refunded.
+      - title: Aligning two different-ref taps to the same ref applies the cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting two different-ref taps onto the same ref brings the reference cap into play and refunds.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is disabled
+          **AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Armagh Bus Centre (ref.60, £4.50) and Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00), charged £8.50 in total
+          **WHEN** in the Operator Portal you correct the ref.55 tap's alighting so both taps share ref.60 (e.g. → Armagh Bus Centre, £4.50)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the ref.60 cap now applied
+          **AND** the total is the capped £7.20
+          **AND** an auto-refund in CloudFare returns the £1.30 above the cap
+        expected: The shared ref.60 cap applies; the total is capped at £7.20 and the £1.30 difference is refunded.
+      - title: Lowering the higher-ref tap to match applies the lower cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting the higher-ref tap down to match the other applies the lower reference cap and refunds.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** zonal capping is disabled
+          **AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00) and Greys Farm → Armagh Bus Centre (ref.60, £4.50), charged £8.50 in total
+          **WHEN** in the Operator Portal you correct the higher-fare ref.60 tap down to match the other's ref.55 (e.g. → Allens Corner (Dark Lane), £4.00)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the lower ref.55 cap now applied
+          **AND** the total is the ref.55 cap of £6.40
+          **AND** an auto-refund in CloudFare returns the £2.10 difference
+        expected: The lower ref.55 cap applies; the total is capped at £6.40 and the £2.10 difference is refunded.
+
+  # ═════════════════════════ Town Service Cap ═════════════════════════
+  - path: [ABT, Tap Correction, Town Service Cap]
+    cases:
+      - title: Correction within the town service zone holds the cap
+        refs: [CR122]
+        objective: This test is to confirm that an alighting correction within the town service zone leaves the town service cap unchanged.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Bangor town service cap is £2.50 (Bus mode)
+          **AND** the card has reached the cap on 203b (IN) Bangor TS taps: Groomsport Roundabout → Gransha Road Roundabout at 09:00 (£2.30) and Carolhill/ Dixon Rd → Kilcooley at 12:00 (£2.90), capped to £2.50, day total £2.50
+          **WHEN** in the Operator Portal you correct one tap's alighting to another stop within the Bangor TS zone (e.g. Groomsport Roundabout → Kilcooley, £3.10)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the town service cap still applied
+          **AND** the day total stays £2.50
+          **AND** no auto-settlement is raised in CloudFare
+          **AND** no refund is raised in CloudFare
+        expected: The £2.50 Bangor town service cap holds; the total stays £2.50 with no settlement or refund.
+      - title: Correction outside the town to a higher fare removes the cap and charges the difference
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap outside the town area to a higher fare removes the town service cap and charges the difference.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Bangor town service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps (Groomsport Roundabout → Gransha Road Roundabout £2.30 and Carolhill/ Dixon Rd → Kilcooley £2.90, capped to £2.50)
+          **WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stop outside the Bangor TS zone (e.g. Groomsport Roundabout → City Hall, ref.70, £5.10)
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the town service cap no longer applied, as both taps are no longer in-zone
+          **AND** the corrected tap is charged the higher fare £5.10
+          **AND** an auto-settlement in CloudFare collects the difference
+          **AND** the day total rises above £2.50
+        expected: The town service cap is removed; the higher fare £5.10 is charged and the difference is auto-settled above £2.50.
+      - title: Correction outside the town to a lower fare removes the cap and refunds
+        refs: [CR122]
+        objective: This test is to confirm that correcting a tap outside the town area to a lower fare removes the town service cap and refunds the difference.
+        steps: |-
+          **GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)
+          **AND** you are signed in to the Operator Portal, with the Passenger Portal open to verify
+          **AND** the Bangor town service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps
+          **AND** a stop just outside the Bangor TS zone exists at a single fare below £2.50 — confirm the exact stop in the portal, as the reference's listed 203b (IN) out-of-zone pairs are all £4.50 or higher
+          **WHEN** in the Operator Portal you correct one tap's alighting to that lower-fare stop outside the town area
+          **AND** you run the overnight EndOfDay settlement in CloudFare
+          **AND** you open the card's Journey History in the Operator Portal
+          **THEN** Journey History shows the town service cap no longer applied
+          **AND** the corrected tap is charged the lower fare
+          **AND** an auto-refund in CloudFare returns the difference
+        expected: The town service cap is removed; the lower fare is charged and the difference is refunded.

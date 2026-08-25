@@ -1,0 +1,208 @@
+# POS Barcode / Metro / Ulsterbus Top-Up / Issue Card — clarity pass (suite 30253)
+# UPDATES 11 existing cases in place. Titles are verbatim (push --update matches by exact title).
+# Same behaviour tested — only clarity improved: POS wording (no ETM as the device under test),
+# fuller "This test is to confirm…" objective, grounded preconditions (a concrete barcode type /
+# product / mode / amount), one predicate per THEN/AND line, no compound THEN. Each case keeps the
+# back-office verification steps it already had (CloudFare / MERIT / SmartTrack) so nothing is added
+# to or removed from what it tests. The [Automatable] line is stripped from Expected per instruction.
+# Scope covered here: Functional/Barcode Scanning; Metro/Payment & Validation; Metro/Top Up;
+# Ulsterbus/Top Up; and the Issue Card (Issue from Blank) cases not covered by an earlier clarity
+# pass. NOT here: Functional/Barcode Validation — those 8 cases (ids 4103570–4103577, >= 4103473)
+# are George's new grounded cases and are left untouched; ZZ_DELETE_REVIEW cases are skipped.
+# Worked-example barcode types / products / zones are grounded in the specs (single-use POS matrix
+# FBD-100317; Metro & Ulsterbus Multi-Journey flows FBD-100261); swap for seeded values on the rig.
+# Push with --update; do NOT create new cases.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+sections:
+  # ============================================================ BARCODE SCANNING
+  - path: [Functional, Barcode Scanning]
+    cases:
+      - title: Barcode — print barcode
+        refs: [TIBU-13180]
+        objective: This test is to confirm the POS can print a scannable single-use barcode on a ticket that is configured to carry one (the POS prints single-use barcodes per ticket-type configuration).
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** a ticket type configured to carry a barcode is available to issue
+          **AND** the POS is communicating with CloudFare
+          **AND** example: a Rail Adult Single whose ticket type has 'print barcode' enabled, paid by cash
+          **WHEN** the operator issues the ticket
+          **THEN** a scannable barcode is printed on the ticket
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: "The POS prints a scannable single-use barcode on tickets configured to carry one (regression: TIBU-13180)."
+      - title: Barcode — scan barcode
+        objective: This test is to confirm the POS can scan a single-use barcode and recognise the corresponding action or product (the POS scans single-use barcodes only, not multiple-use).
+        steps: |-
+          **GIVEN** an operator is signed on to the POS on a screen that accepts a barcode scan
+          **AND** a valid single-use barcode that the POS accepts is available to scan
+          **AND** the POS is communicating with CloudFare
+          **AND** example: a Rail single-use barcode (type B) scanned at the barcode-scan screen
+          **WHEN** the operator scans the valid barcode
+          **THEN** the barcode is read
+          **AND** the corresponding action or product is recognised
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: The POS reads a scanned single-use barcode and acts on it correctly.
+      - title: Barcode — validate a ticket by barcode
+        objective: This test is to confirm an operator can scan a ticket barcode from the Barcode Reference screen to validate it, with the information shown matching that barcode type for the operator's visual check.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** the operator has opened Barcode Reference from the Operator Menu
+          **AND** a printed ticket carrying a single-use barcode is available to scan
+          **AND** example: a Rail single-use ticket barcode scanned from the Barcode Reference screen
+          **WHEN** the operator scans the ticket barcode
+          **THEN** the ticket validation screen shows the information for that barcode type
+          **AND** any Notes for that barcode type are shown
+          **AND** pressing any key (or a 3-second timeout) returns to the fare-look-up screen
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Scanning a ticket barcode from Barcode Reference shows the type-appropriate validation information (including Notes) for the operator's visual check, then returns to the fare-look-up screen.
+      - title: Barcode — offline validations stored until reconnect
+        objective: This test is to confirm single-use barcodes validated while the POS is offline are stored on the device and synced back to CloudFare/Corethree once the connection is re-established, guarding against reuse.
+        steps: |-
+          **GIVEN** the POS is offline with no connection to CloudFare/Corethree
+          **AND** single-use barcodes at or below the offline Ceiling Limit are available to validate
+          **AND** example: two Rail single-use barcodes validated while offline, then the POS reconnects
+          **WHEN** the operator validates the barcodes offline
+          **THEN** the offline validations are stored in a list on the device
+          **WHEN** the connection to CloudFare/Corethree is re-established
+          **THEN** the stored validations are synced
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: Offline single-use barcode validations are queued on the device and synced to CloudFare/Corethree on reconnect.
+  # ============================================================ METRO — PAYMENT & VALIDATION
+  - path: [Metro, Payment & Validation]
+    cases:
+      - title: Metro — payment is cash only
+        objective: This test is to confirm that in Metro mode the POS offers cash payment only — bank card and warrant are not available (card and warrant are NIR and Ulsterbus only).
+        steps: |-
+          **GIVEN** an operator is signed on to the POS in Metro mode
+          **AND** a Metro fare is ready for payment
+          **AND** the POS is communicating with CloudFare
+          **AND** example: a Metro Multi-Journey top-up reaching the payment options
+          **WHEN** the operator reaches the payment options
+          **THEN** only the Cash option is offered
+          **AND** Bank Card is not offered
+          **AND** Warrant is not offered
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: In Metro mode the POS offers cash only; bank card and warrant are not available.
+      - title: Metro — no smartcard validation
+        objective: This test is to confirm the POS in Metro mode does not perform smartcard validation — presenting a smartcard leads to the Metro top-up / smartcard menu instead (validation is NIR and Ulsterbus only).
+        steps: |-
+          **GIVEN** an operator is signed on to the POS in Metro mode
+          **AND** a smartcard is available to present
+          **AND** the POS is communicating with CloudFare
+          **AND** example: a Metro Multi-Journey smartcard presented in Metro mode
+          **WHEN** a smartcard is presented
+          **THEN** no validation is performed
+          **AND** the Metro top-up / smartcard menu behaviour applies instead
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: In Metro mode the POS performs no smartcard validation; presenting a card leads to the Metro top-up / smartcard menu instead.
+  # ============================================================ METRO — TOP UP
+  - path: [Metro, Top Up]
+    cases:
+      - title: Top Up — Metro Multi-Journey
+        refs: [TIBU-21133, TIBU-21992, TIBU-25081]
+        objective: This test is to confirm a Metro Multi-Journey smartcard can be topped up through its zone-then-journeys flow — journeys are added and shown, the maximum permitted journeys is enforced, and the mini-statement expiry text is correct.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS in Metro mode
+          **AND** a pre-encoded Metro Multi-Journey (Smartlink) smartcard is presented
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Metro Multi-Journey, Metro Inner zone, add 10 journeys, paid by cash
+          **WHEN** the operator selects the zone and journeys and takes payment
+          **THEN** the journeys are added to the card
+          **AND** the added journeys are shown
+          **AND** the card cannot exceed its maximum permitted journeys
+          **AND** the mini-statement expiry text is correct
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+        expected: "A Metro Multi-Journey top-up adds and shows journeys via the zone-then-journeys flow, enforces the maximum and shows the correct expiry (regression: TIBU-21133, TIBU-21992, TIBU-25081). Data variations: payment by Cash / Card (Warrant is not available on Metro)."
+  # ============================================================ ULSTERBUS — TOP UP
+  - path: [Ulsterbus, Top Up]
+    cases:
+      - title: Top Up — Ulsterbus Multi-Journey
+        refs: [TIBU-26861, TIBU-21133]
+        objective: This test is to confirm an Ulsterbus Multi-Journey smartcard can be topped up through its card-reference-then-journeys flow — journeys are added and shown, and the maximum permitted journeys is enforced.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS in Ulsterbus mode
+          **AND** an Ulsterbus Multi-Journey smartcard is presented
+          **AND** the POS is communicating with CloudFare
+          **AND** example: Ulsterbus Multi-Journey, select the card's reference number, add 10 journeys, paid by cash
+          **WHEN** the operator selects the card reference and journeys and takes payment
+          **THEN** the journeys are added to the card
+          **AND** the added journeys are shown
+          **AND** the card cannot exceed its maximum permitted journeys
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+          **WHEN** the smartcard record is reviewed in SmartTrack
+          **THEN** the updated smartcard record appears in SmartTrack
+        expected: "An Ulsterbus Multi-Journey top-up adds and shows journeys via the card-reference-then-journeys flow and enforces the maximum (regression: TIBU-26861, TIBU-21133). Data variations: payment by Cash / Warrant / Card."
+  # ============================================================ ISSUE CARD — ISSUE FROM BLANK
+  - path: [Functional, Issue Card, Issue from Blank]
+    cases:
+      - title: Issue Card — issue from blank
+        refs: [TIBU-26845, TIBU-21266, TIBU-26760, TIBU-21208, TIBU-24715, TIBU-25890]
+        objective: This test is to confirm an operator can issue a product onto a blank smartcard, take payment, and have the issued product recognised when the card is used (the POS is the device that issues these smartcard products).
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** a blank smartcard is presented
+          **AND** the POS is communicating with CloudFare
+          **AND** example: issue a Metro Multi-Journey onto a blank Smartlink, Metro Inner zone, 10 journeys, paid by cash
+          **WHEN** the operator selects the product, takes payment and issues it to the card
+          **THEN** the product is written to the card at the correct price
+          **AND** a receipt is printed
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: A product issues onto a blank card at the correct price with a receipt, and is recognised on use. Run across products — Metro Multi-Journey, Multi-Journey, DayLink, iLink, Metro Travelcard, Belfast Visitor Pass, Ulsterbus Multi-Journey, Town Service Travelcard.
+      - title: Issue Card — recognised by other devices
+        refs: [TIBU-21446, TIBU-22603, TIBU-23996, TIBU-26721, TIBU-26722]
+        objective: This test is to confirm a smartcard created from blank on the POS is recognised as valid by other devices (ETM/TVM) and can subsequently be topped up on the POS.
+        steps: |-
+          **GIVEN** an operator has created a new smartcard from blank on the POS
+          **AND** the POS is communicating with CloudFare
+          **AND** example: a Multi-Journey card issued on the POS, presented to an ETM, then returned to the POS for top-up
+          **WHEN** the card is presented to another device (ETM/TVM) and then back to the POS for top-up
+          **THEN** the card is recognised as valid
+          **AND** it can be topped up
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: "A card created from blank on the POS is recognised by other devices and can be topped up (regression: TIBU-21446, TIBU-22603, TIBU-23996, TIBU-26721, TIBU-26722)."
+      - title: Issue Card — blank card options
+        refs: [TIBU-23963]
+        objective: This test is to confirm that placing an Adult BVP or iLink Zone 1 blank card and selecting the Adult Belfast Visitors option offers the correct Belfast Visitors card options and does not show the iLink Zone options.
+        steps: |-
+          **GIVEN** an operator is signed on to the POS
+          **AND** an Adult BVP or iLink Zone 1 blank card is placed on the POS
+          **AND** the POS is communicating with CloudFare
+          **AND** example: an Adult BVP blank card, selecting the Adult Belfast Visitors option
+          **WHEN** the operator selects the Adult Belfast Visitors option
+          **THEN** the correct Belfast Visitors options are offered
+          **AND** the iLink Zone card options are not shown
+          **WHEN** the CloudFare activity log is checked
+          **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+          **WHEN** the data is reviewed in MERIT
+          **THEN** the transaction appears in MERIT
+        expected: "Selecting Adult Belfast Visitors on a blank BVP / iLink Zone 1 card shows the correct Belfast Visitors options, not the iLink Zone options (regression: TIBU-23963)."

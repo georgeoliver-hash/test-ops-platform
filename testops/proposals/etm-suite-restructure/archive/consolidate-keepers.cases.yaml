@@ -1,0 +1,314 @@
+# ETM consolidation pass — enriched "keeper" flow tests that absorb folded cases (per
+# consolidation-audit.md). Each uses `match` (old title) -> new broader title + enriched steps.
+# ONE-SHOT spec (match titles exist only before the first run). Paired with consolidate-bin-2.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Fare Look-Up / Navigation
+    cases:
+      - title: FLU — navigate and select products
+        match: FLU — product pages and toggle groups
+        objective: This test is to confirm the FLU product navigation — toggle groups, preset and menu-type products, journey-type toggle, and the selection timeout.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU Home screen
+          **WHEN** the Driver views a product group with more than one product
+          **THEN** up to four toggle pips are shown for the first four products
+          **AND** a '+' icon is shown when the group holds more than four, highlighted when an extended product is chosen
+          **WHEN** the Driver selects a preset or menu-type product
+          **THEN** the selected product is applied with the correct toggle-group indication
+          **WHEN** the Driver toggles the journey type
+          **THEN** the fare-based, favourite and transfer journeys can each be viewed
+          **WHEN** an FLU selection is left idle for 60 seconds
+          **THEN** the ETM clears the selection and returns to the default FLU page
+        expected: FLU product navigation works — toggle pips/'+', preset & menu-type selection, journey-type toggle (fare-based/favourite/transfer), and a 60s idle reset to default.
+      - title: FLU — set boarding and alighting stages
+        match: FLU — alighting stage selection and paging
+        objective: This test is to confirm setting the boarding and alighting stages, including the GPS/speed gating and stage paging.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen for a known route
+          **WHEN** the Driver changes the boarding stage while outside the GPS footprint and below 20kph
+          **THEN** the boarding stage is updated
+          **WHEN** the bus is inside the GPS footprint or above 20kph
+          **THEN** manual boarding-stage change is unavailable
+          **WHEN** the Driver views and pages the alighting stages
+          **THEN** up to five are shown with the fifth always the route's last stage, paging with no timeout
+          **WHEN** the Driver selects an alighting stage
+          **THEN** the selected stage is applied to the sale
+        expected: Boarding stage changes only when outside GPS footprint and below 20kph (or by stage ID); alighting stages page five-at-a-time with the last stage always reachable.
+
+  - path: Functional / Fare Look-Up / Sales
+    cases:
+      - title: FLU — numeric entry, change and last transaction
+        match: FLU — numeric entry, change and stage by ID
+        objective: This test is to confirm numeric entry for change and stage-by-ID, the error-bar messages, and the last-transaction display.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver enters an amount tendered
+          **THEN** the change due is calculated
+          **AND** the change due is displayed
+          **WHEN** the Driver enters a stage ID to set the boarding or alighting stage
+          **THEN** the matching stage is set
+          **WHEN** an entry cannot be completed
+          **THEN** the relevant error-bar message is shown
+          **AND** the input is cleared, and 'C' clears one character
+          **WHEN** a sale completes
+          **THEN** a success confirmation shows for three seconds with the last transaction in the bottom-right of FLU
+        expected: Numeric entry calculates change and sets stages by ID; invalid entries show the error-bar message and clear ('C' clears a char); completed sales show a 3s success plus the last transaction.
+      - title: FLU — ticket type selection, change and default reversion
+        match: FLU — ticket type selection and change
+        objective: This test is to confirm selecting and changing the ticket type with the fare updating, and reversion to the default class on timeout.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects a ticket type
+          **THEN** the fare for that ticket type is displayed
+          **WHEN** the Driver changes the ticket type
+          **THEN** the fare display updates to the new ticket type
+          **WHEN** a non-default ticket class is left idle for the configured timeout
+          **THEN** the ticket class reverts to the default
+        expected: Selecting/changing the ticket type updates the fare; a non-default class reverts to default after the inactivity timeout.
+
+  - path: Functional / Ticket Issue
+    cases:
+      - title: Ticket Issue — annulment (last ticket, timeout and refusal)
+        match: Ticket Issue — annul the last issued ticket
+        objective: This test is to confirm annulling the last issued ticket, the unconfirmed-timeout behaviour, and refusal where annulment is not permitted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has just issued a ticket
+          **WHEN** the Driver annuls the last issued ticket
+          **THEN** the transaction is annulled
+          **AND** an annulment is recorded against the shift
+          **WHEN** the annul prompt is left unconfirmed past its timeout
+          **THEN** the annulment is abandoned
+          **AND** the original ticket remains valid
+          **WHEN** the Driver attempts to annul a non-annullable transaction
+          **THEN** the annulment is refused with the reason shown
+        expected: The last ticket can be annulled (single or basket); an unconfirmed annul times out leaving the ticket valid; annulment is refused with a reason for boarding-stage-changed, MJ-validated, pass-validated and concession-pass cases. Run Adult and Child.
+      - title: Ticket Issue — issue a single ticket
+        match: Ticket Issue — issue a single ticket
+        objective: This test is to confirm building a ticket via fare look-up, taking payment and issuing it, including a change receipt when change is due.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver selects a product and alighting stage and takes payment
+          **THEN** the ticket is issued at the correct fare
+          **AND** a ticket is printed
+          **AND** a success confirmation is shown and the last transaction is updated
+          **WHEN** change is due on the sale
+          **THEN** a change receipt is printed and can itself be annulled
+        expected: A ticket builds, pays and issues with a printed ticket; when change is due a change receipt prints (and is annullable). Run Adult and Child; representative products — Metro Single, Day Return, Month Return, iLink Single, Gateway, Jobseeker, Warrant Return, ME Rugby Day.
+
+  - path: Functional / Ticket Issue / Promo Menu
+    cases:
+      - title: Promo Menu — issue a promo product
+        match: Promo Menu — issue a promo product
+        objective: This test is to confirm issuing a Promo Menu product, including adding an additional child to a family product.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver opens the Promo Menu, selects a product and takes payment
+          **THEN** the promo product is issued at the correct fare
+          **AND** a ticket is printed
+          **WHEN** the product is a Family & Friends or Metro Family Day product and an additional child is added
+          **THEN** the additional child is included at the correct fare
+        expected: A Promo Menu product issues and prints; family products can add an additional child. Run Adult and Child; products — Bus Rambler, Metro Day/Evening/Family Day, Family & Friends Day, Park & Ride, ME Rugby Day.
+
+  - path: Functional / Basket Mode
+    cases:
+      - title: Basket Mode — limits and line-item quantity
+        match: Basket Mode — nine-item limit and Basket Full error
+        objective: This test is to confirm the nine-item basket limit, the Basket Full error, and line-item quantity changes.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has nine items in the basket
+          **WHEN** the Driver attempts to add another from the FLU or basket screen
+          **THEN** the Basket Full error is shown and no item is added
+          **WHEN** the Driver removes an item
+          **THEN** a new item can be added
+          **WHEN** the Driver adjusts a line-item quantity with the '+' or '-' keys
+          **THEN** the quantity changes, or a relevant error is shown for two seconds when it cannot
+        expected: The basket caps at nine with a Basket Full error; removing frees a slot; line-item quantity adjusts with +/- (2s error when it cannot change).
+      - title: Basket Mode — clear, add more and basket tracker
+        match: Basket Mode — clear basket and add more
+        objective: This test is to confirm the Clear Basket and Add More options and that the basket tracker persists across screens including Promo sub-menus.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has items in the basket
+          **WHEN** the Driver selects Add More to Basket
+          **THEN** the ETM returns to FLU with the basket retained
+          **WHEN** the Driver navigates into a Promo Menu sub-menu
+          **THEN** the basket tracker remains displayed and functional
+          **WHEN** the Driver selects Clear Basket
+          **THEN** the ETM returns to FLU
+          **AND** the basket is emptied and the product reverts to default
+        expected: Add More keeps the basket; the basket tracker persists across screens incl. Promo sub-menus; Clear Basket empties it and reverts to default.
+
+  - path: Functional / Smartcards / Validation
+    cases:
+      - title: Smartcard — validation and passback rules
+        match: Smartcard — validation and passback
+        objective: This test is to confirm smartcard validation and the passback rules for same versus different direction and within versus outside the transfer period.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** a customer presents a valid smartcard
+          **THEN** the card is validated for the journey with a success indication
+          **WHEN** the same card is presented again in the same direction within the transfer period
+          **THEN** passback applies and no second fare is taken
+          **WHEN** the card is presented in a different direction within the transfer period
+          **THEN** the validation is handled per the transfer rules
+          **WHEN** the card is presented outside the transfer period
+          **THEN** a new journey is validated and charged
+        expected: A valid card validates with passback within the transfer period; direction and outside-transfer rules apply. Run Adult/Child across products and Metro & Ulsterbus MJ.
+
+  - path: Functional / Smartcards / Top-Up
+    cases:
+      - title: Smartcard top-up — successful, maximum and expired-journey rules
+        match: Smartcard top-up — successful with auto-validation
+        objective: This test is to confirm a successful smartcard top-up with auto-validation, the maximum-journey cap, and removal of expired journeys.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a customer presents a topp-able smartcard and the Driver selects Top-Up
+          **WHEN** the Driver takes payment and confirms the top-up
+          **THEN** the card is topped up
+          **AND** a top-up receipt is printed
+          **AND** the card is auto-validated for the current journey
+          **WHEN** a Multi-Journey top-up would exceed 50 journeys
+          **THEN** the top-up is capped at the 50-journey maximum
+          **WHEN** the card has expired journeys at top-up
+          **THEN** the expired journeys are removed with a removal receipt where applicable
+        expected: Top-up succeeds (receipt + auto-validate); MJ caps at 50 journeys; expired journeys are removed (incl. top-up on expiry). Variation by product — DayLink/iLink/Travelcard periods, MJ journeys.
+
+  - path: Functional / ABT
+    cases:
+      - title: ABT — successful tap, passback and mobile wallet
+        match: ABT — successful tap-on
+        objective: This test is to confirm a successful ABT tap, second-tap passback, and mobile wallet acceptance.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** ABT taps are enabled and the ETM is at the FLU screen
+          **WHEN** a customer taps a valid contactless card or device
+          **THEN** the tap is accepted for the journey
+          **AND** a success tone is played
+          **AND** the passenger display shows "Success"
+          **WHEN** the same card is tapped again
+          **THEN** the ETM enters passback mode for the additional passenger
+          **WHEN** the customer taps a mobile wallet
+          **THEN** the wallet tap is accepted as for a contactless card
+        expected: A valid ABT tap is accepted (success tone, "Success"); a second tap enters passback; mobile wallets are accepted — Visa, Mastercard, Apple/Google/Samsung Pay, phone and watch.
+      - title: ABT — declined, error and EMV validation failures
+        match: ABT — declined or error tap
+        objective: This test is to confirm declined and errored ABT taps and the EMV validation-failure screens.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** ABT taps are enabled and the ETM is at the FLU screen
+          **WHEN** a customer taps a card that is declined, expired, deny/BIN-listed, or that mis-reads
+          **THEN** the error tone is played
+          **AND** a declined receipt is printed
+          **AND** the passenger display shows "See Driver"
+          **WHEN** an EMV validation fails
+          **THEN** the matching EMV validation-failure screen is shown for the reason
+        expected: Declined/errored taps give the error tone, declined receipt and "See Driver"; the correct EMV validation-failure screen shows for tap-error, expired, declined and already-validated.
+
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver options — view information screens
+        match: Driver options — duty and journey totals
+        objective: This test is to confirm the Driver can view the information screens — totals, ticket history, messages, Word & Colour and paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views the duty and journey totals
+          **THEN** the totals are displayed
+          **WHEN** the Driver views the ticket history and last ticket issued
+          **THEN** the tickets are listed with annulled ones marked
+          **AND** the last ticket detail is shown
+          **WHEN** the Driver views Messages and the Word and Colour of the Day
+          **THEN** each is displayed, with an Unavailable state when it cannot be retrieved
+          **WHEN** the Driver views Paper Status
+          **THEN** the current paper status is displayed
+        expected: Driver options shows totals, ticket history/last ticket (annulled marked), Messages, Word & Colour (Unavailable fallback) and paper status.
+      - title: Driver options — device actions
+        match: Driver options — soft reboot
+        objective: This test is to confirm the Driver-option device actions — soft reboot, reboot card reader, and report faulty reader.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver selects Soft Reboot
+          **THEN** the ETM restarts on the Driver on Break screen with the Driver still signed in
+          **WHEN** the Driver selects Reboot Card Reader
+          **THEN** the card reader is rebooted
+          **WHEN** the Driver reports the card reader as faulty
+          **THEN** a notification is sent to the back office
+          **AND** the faulty-device icon shows in the header until the ETM is rebooted
+        expected: Soft reboot keeps the Driver signed in (returns to on-break); the card reader can be rebooted; reporting a faulty reader notifies the back office and shows the faulty icon until reboot.
+
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: Supervisor — view information (versions, serial, GPS)
+        match: Supervisor — view and print versions
+        objective: This test is to confirm a Supervisor can view and print versions and serial numbers, and view GPS information.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Supervisor is at the Supervisor Menu
+          **WHEN** the Supervisor opens Versions and views software versions, configuration versions and serial numbers
+          **THEN** the version and serial information is displayed and can be printed
+          **WHEN** the Supervisor views GPS Information
+          **THEN** the current GPS information is displayed, with an error state when it cannot be obtained
+        expected: A Supervisor can view/print versions and serial numbers and view GPS information (with an error state).
+
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — device status and versions
+        match: Technician — device status
+        objective: This test is to confirm a Technician can view device status (other devices, GPS, card reader, paper) and the software/configuration versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Device Status screen
+          **WHEN** the Technician views other devices, GPS, the card reader and paper status
+          **THEN** the corresponding status detail is displayed
+          **WHEN** a smartcard is presented at the card reader screen
+          **THEN** the card status is displayed
+          **AND** the reader can be rebooted there
+          **WHEN** the Technician opens Versions
+          **THEN** the software versions, configuration versions and serial numbers are displayed and can be printed
+        expected: A Technician can view device status (other-devices/GPS/card-reader/paper) and view/print versions and serial numbers.
+
+  - path: Functional / Barcode Scanning
+    cases:
+      - title: Barcode — online validation (pass and fail)
+        match: Barcode — online validation successful
+        objective: This test is to confirm barcode online validation passes for a valid ticket and is rejected with the correct reason when it fails.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and barcode scanning is available
+          **WHEN** a valid barcode ticket is scanned and validated online
+          **THEN** the ticket is accepted with the correct validity detail shown
+          **WHEN** a barcode fails online validation
+          **THEN** the transaction is cancelled with the failure reason shown
+        expected: Valid barcodes validate online with the validity detail; failures cancel with the reason — decryption failed, not valid, already used, wrong date, expired, exceeds offline limit, invalid product, visual inspection not passed. Printed copy and mobile phone.
+
+  - path: Functional / Location
+    cases:
+      - title: GPS — notifications and tracking
+        match: GPS — lock and new-location notifications
+        objective: This test is to confirm GPS lock, new-location, arrival, departure and look-ahead behaviour.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on with GPS active on a route
+          **WHEN** the ETM acquires a GPS lock or detects a new location
+          **THEN** the matching notification is shown
+          **WHEN** the bus arrives at or departs a stop
+          **THEN** the arrival and departure are detected
+          **WHEN** the bus approaches the next stop
+          **THEN** the ETM looks ahead and updates the current stage
+        expected: GPS lock/new-location notifications show; arrival and departure are detected; look-ahead updates the current stage.

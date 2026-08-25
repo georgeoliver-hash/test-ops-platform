@@ -1,0 +1,23 @@
+# POS — back-office audit-event assertion for the one transactional gap the check found that genuinely
+# fires an event (a smartcard validation outcome). Keyed on LIVE title (no `match:`) so --update hits
+# the current case without resurrecting the consolidation-renamed original. The other gap-check hits
+# were capability/visual-check/read-only cases (no back-office event) or already carry their sync
+# assertion. Smartcard validation -> CloudFare + MERIT + SmartTrack. Re-run enrichment after this.
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Top Up & Validation", "Validation"]
+    cases:
+      - title: "Validation — outside time band"
+        objective: "This test is to confirm presenting a card outside its valid time band is handled per the Outside Time Band rules."
+        steps: |
+          **GIVEN** a smartcard is presented outside its valid time band
+          **WHEN** the card is read
+          **THEN** the Outside Time Band handling is applied
+          **AND** the validation outcome is recorded in the back office (CloudFare, MERIT and SmartTrack)
+        expected: "Cards presented outside the valid time band are handled per the rules."

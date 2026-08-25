@@ -1,0 +1,106 @@
+# Refinement wave 1 — CRITICAL mode corrections from annotation-coverage.md.
+# Metro = cash-only + no validation; card payment = NIR/Ulsterbus + PCD + real EMV flow; XB = rail-only.
+suite: GG - POS - Claude Suite
+suite_id: 30253
+
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: ["Functional", "Basket & Payment", "Card Payment"]
+    cases:
+      - title: "Card Payment — pay by card"
+        match: "Card — pay a basket"
+        refs: ["TIBU-24777", "TIBU-24834"]
+        objective: "This test is to confirm a transaction can be paid by bank card via the payment card device, by contactless, chip & PIN or swipe. Applies to NIR + Ulsterbus only (Metro is cash-only); requires a PCD attached."
+        steps: |
+          **GIVEN** a payment card device (PCD) is attached and the POS is in NIR or Ulsterbus mode
+          **AND** the basket/fare is ready for payment
+          **WHEN** the operator selects Bank Card and the customer pays by contactless, chip & PIN, or swipe
+          **THEN** the payment terminal authorises the transaction
+          **AND** the ticket is printed as soon as the transaction succeeds
+          **AND** the customer is offered an optional payment receipt
+          **AND** the POS returns to the Bus/Rail FLU screen
+        expected: "Bank Card payment authorises and prints the ticket (receipt optional), via contactless/chip&PIN/swipe. NIR + Ulsterbus only; the Bank Card option is hidden if no PCD is attached (regression: TIBU-24777, TIBU-24834)."
+      - title: "Card Payment — declined, cancelled or error"
+        objective: "This test is to confirm card payment error paths are handled correctly (declined, cancelled, wrong PIN, value too big, signature mismatch)."
+        steps: |
+          **GIVEN** the customer is paying by bank card
+          **WHEN** the card is declined
+          **THEN** a declined message is shown
+          **AND** a declined receipt is printed
+          **WHEN** the customer cancels on the PIN pad before entering the PIN
+          **THEN** the transaction is cancelled with no cancelled-payment receipt
+          **WHEN** the PIN is entered incorrectly too many times, or the amount is too big for a card, or the signature does not match
+          **THEN** the matching error message (driven by the M020/PCD) is shown
+          **AND** the POS returns to the payment screen
+        expected: "Each card error path shows the correct message: declined (with receipt), cancelled-before-PIN (no receipt), too many PIN attempts, value too big, signature mismatch — then returns to payment."
+      - title: "Card Payment — back from payment"
+        match: "Card — Back from payment"
+        refs: ["TIBU-24876"]
+        objective: "This test is to confirm pressing Back on the payment screen returns the operator with state intact."
+        steps: |
+          **GIVEN** the operator is on the payment screen for a single ticket
+          **WHEN** the operator presses Back
+          **THEN** the operator is returned to the basket/fare with its state intact
+        expected: "Back from the payment screen returns cleanly with state intact (regression: TIBU-24876)."
+
+  - path: ["Metro", "Payment & Validation"]
+    cases:
+      - title: "Metro — payment is cash only"
+        objective: "This test is to confirm that in Metro mode only cash payment is offered — bank card and warrant are not available."
+        steps: |
+          **GIVEN** an operator is signed on in Metro mode with a fare ready for payment
+          **WHEN** the operator reaches the payment options
+          **THEN** only the Cash option is offered
+          **AND** Bank Card is not offered
+          **AND** Warrant is not offered
+        expected: "Metro offers cash only; bank card and warrant are not available (card/warrant are NIR + Ulsterbus only)."
+      - title: "Metro — no smartcard validation"
+        objective: "This test is to confirm the Metro POS does not perform smartcard validation (validation is NIR + Ulsterbus only)."
+        steps: |
+          **GIVEN** an operator is signed on in Metro mode
+          **WHEN** a smartcard is presented
+          **THEN** no validation is performed
+          **AND** the Metro top-up / smartcard menu behaviour applies instead
+        expected: "Metro POS performs no smartcard validation — validation behaviour is NIR + Ulsterbus only."
+
+  - path: ["Functional", "Top Up & Validation", "Validation"]
+    cases:
+      - title: "Validation — entitlement smartcard sets the ticket type"
+        objective: "This test is to confirm presenting an entitlement smartcard (Senior/Blind/War Pensioner/yLink/24+/Half-Fare/Dependants) sets the matching ticket type, validates per transaction, and cannot be basketed."
+        steps: |
+          **GIVEN** an operator is selling a fare in NIR or Ulsterbus mode
+          **WHEN** the operator presents an entitlement smartcard (e.g. Senior, Blind, War Pensioner, yLink, 24+, Half-Fare, Dependants)
+          **THEN** the matching ticket type is set (e.g. "60+ Single", "Half Fare Single")
+          **AND** the fare must be validated per transaction (it cannot be added to a basket)
+          **AND** the operator can still change the boarding or alighting station
+          **AND** on Rail, cross-border variants are selectable via the L4/R4 keys
+        expected: "An entitlement smartcard sets its ticket type, requires per-transaction validation (no basketing), allows boarding/alighting change, and offers XB variants on Rail. NIR + Ulsterbus only."
+      - title: "Validation — error mid-transaction voids the payment"
+        objective: "This test is to confirm that when a validation error occurs during a paid transaction, no cash/warrant is recorded and any card payment is auto-voided, with a diagnostic event."
+        steps: |
+          **GIVEN** a fare is being validated as part of a paid transaction
+          **WHEN** a validation error occurs
+          **THEN** any cash or warrant payment is not recorded in the POS audit data
+          **AND** any card transaction is automatically voided by the POS
+          **AND** a diagnostic event is recorded to audit the error
+        expected: "A mid-transaction validation error records no cash/warrant, auto-voids any card payment, and audits a diagnostic event."
+
+  - path: ["NIR (Rail)", "Fare Look-Up"]
+    cases:
+      - title: "Rail FLU — cross-border ticket & currency toggle"
+        refs: ["TIBU-19374"]
+        objective: "This test is to confirm cross-border (XB) ticket types are offered when a cross-border station is selected on Rail, with the correct price and a GBP/euro currency toggle. (XB is Rail-only.)"
+        steps: |
+          **GIVEN** an operator is building a rail fare with a cross-border boarding or alighting station
+          **WHEN** the operator views the ticket types
+          **THEN** cross-border ticket types are shown with the correct price
+          **WHEN** the operator presses the price button
+          **THEN** the currency toggles to euro
+          **WHEN** the operator presses it again
+          **THEN** the currency toggles back to GBP
+        expected: "Cross-border journeys show XB ticket types at the correct price with a working GBP↔euro toggle; XB is available on Rail only (regression: TIBU-19374)."

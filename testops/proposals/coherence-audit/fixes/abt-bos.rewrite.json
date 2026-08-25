@@ -1,0 +1,890 @@
+[
+  {
+    "id": 4102757,
+    "title": "Metro cap — same-fare alighting correction holds the cap",
+    "preface": "This test is to confirm that an alighting-stop correction to an equal-fare Metro stage leaves the Metro daily cap in place, with no auto-charge or refund at settlement.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap: 10A (IN) Casement Park → City Hall 09:00 charged £2.30, then 10A (IN) Slievegallion Drive → Falls Park 12:00 charged £1.70 to complete the cap, day total £4.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to another Metro stage of equal £2.30 single fare\n**AND** you run the overnight end-of-operating-day settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the £4.00 Metro cap is still applied to the day\n**AND** the corrected 12:00 tap still shows £1.70\n**AND** the day total is still £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102758,
+    "title": "Metro cap — correction outside the Metro zone removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a Metro tap's alighting to a stop outside the Metro zone removes the Metro cap and collects the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has two Metro-zone taps that settled at the cap: 10A (IN) Casement Park → City Hall 09:00 £2.30, then 10A (IN) Slievegallion Drive → Falls Park 12:00 £1.70, day total £4.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a stop outside the Metro Network Zone at a higher single fare (**GAP** — the tracker does not name a confirmed out-of-zone stop/fare for a 10A/10b Metro tap; confirm the exact route/stop/fare in the portal before running)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Metro cap is no longer applied\n**AND** the corrected tap is charged its higher single fare\n**AND** the day total rises above £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102759,
+    "title": "Metro cap — correction into the Metro zone applies the cap and refunds the difference",
+    "preface": "This test is to confirm that correcting an out-of-zone tap's alighting into the Metro zone brings the day under the £4.00 cap and refunds the overcharge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro daily cap is £4.00 and the Metro single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has one Metro tap 10A (IN) Casement Park → City Hall 09:00 (£2.30) and one tap that alighted outside the Metro zone at 12:00 charged its higher single fare, day total above £4.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the out-of-zone tap's alighting to a stop inside the Metro Network Zone (a £2.30 Metro stage)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the difference to the account"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** both taps are under the £4.00 Metro cap\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102760,
+    "title": "Metro cap — correcting a settled free (capped) tap keeps it at £0.00",
+    "preface": "This test is to confirm that correcting the alighting stop on a settled, capped (£0.00) Metro tap does not recalculate it to a full fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap with three taps: Casement Park → City Hall 09:00 £2.30, Slievegallion Drive → Falls Park 12:00 £1.70, and Falls Park → City Hall 15:00 £0.00 (capped), day total £4.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the settled £0.00 15:00 tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 15:00 tap is still charged £0.00\n**AND** it is not recalculated to the full £2.30\n**AND** it remains marked settled"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102761,
+    "title": "Metro cap — correcting a settled partially-capped tap keeps it at £1.70",
+    "preface": "This test is to confirm that correcting the alighting stop on a settled, partially-capped Metro tap preserves its reduced fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap: Casement Park → City Hall 09:00 £2.30, then Slievegallion Drive → Falls Park 12:00 reduced to £1.70 to complete the cap, day total £4.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the settled £1.70 12:00 tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 12:00 tap is still charged £1.70\n**AND** it is not recalculated to the full £2.30\n**AND** it remains marked settled"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102762,
+    "title": "Metro cap — a correction never pushes the day over the cap",
+    "preface": "This test is to confirm that an alighting correction on a capped Metro tap cannot charge the card beyond the daily cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap (Casement Park → City Hall £2.30, Slievegallion Drive → Falls Park £1.70, Falls Park → City Hall £0.00)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on one of the capped taps to another Metro stage\n**AND** you run the overnight settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the day total charged on the card does not exceed £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102763,
+    "title": "Metro cap — a corrected capped tap stays settled and free",
+    "preface": "This test is to confirm that a settled capped Metro tap keeps its settled status and £0.00 charge after an alighting correction.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap, with the 15:00 Falls Park → City Hall tap charged £0.00 (capped)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the £0.00 capped tap to another Metro stage\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is still marked settled\n**AND** it is still charged £0.00 under the cap"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102764,
+    "title": "Metro cap — correcting the first full-fare tap leaves its charge unchanged",
+    "preface": "This test is to confirm that correcting the first (non-capped) Metro tap to an equal-fare stage does not disturb its full fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap, with the first tap 10A (IN) Casement Park → City Hall 09:00 charged the full £2.30\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the first 09:00 tap to another Metro stage of equal fare\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the first tap is still charged £2.30\n**AND** the day total stays £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102765,
+    "title": "Metro cap — correcting an unsettled capped tap re-evaluates and stays free",
+    "preface": "This test is to confirm that an unsettled capped Metro tap re-evaluates to £0.00 when its alighting is corrected before settlement.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has made three Metro taps that reach the cap but end-of-day settlement has NOT yet run: Casement Park → City Hall 09:00, Slievegallion Drive → Falls Park 12:00, Falls Park → City Hall 15:00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the alighting stop on the third (would-be-free) 15:00 tap to another Metro stage\n**AND** you run the overnight settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected 15:00 tap is charged £0.00\n**AND** the day total is £4.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102766,
+    "title": "Metro cap — a declined journey is not treated as a settled capped tap",
+    "preface": "This test is to confirm that a declined Metro journey is not treated as a settled capped tap and produces no cap charge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has one Metro journey that was declined at the reader (e.g. the card in a deny-listed state, Declined Reason 2), shown in Journey History as declined\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you attempt to correct the alighting stop on the declined journey\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the journey is still handled as declined\n**AND** it is not treated as a settled capped journey\n**AND** no cap charge is produced for it"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102767,
+    "title": "Metro cap — re-running settlement after a correction does not re-charge the capped tap",
+    "preface": "This test is to confirm that a further settlement run after a correction leaves an already-settled capped Metro tap untouched.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Metro cap is £4.00 and the single fare is £2.30 (ref.20) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has settled a Metro day at the cap and one £0.00 capped tap has already had its alighting stop corrected\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** you run the end-of-day settlement process again",
+        "expected": "**THEN** no additional charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the corrected capped tap is still charged £0.00\n**AND** the day total stays £4.00\n**AND** the tap remains marked settled"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102768,
+    "title": "Zonal cap — higher-fare correction within the zone holds the cap",
+    "preface": "This test is to confirm that raising a tap to a higher fare still within the same iLink zone leaves the zone cap unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card has reached the cap on 105a (IN) Zone 2 taps: Dundrod → Beechdene Drive 09:00 £4.50, Tullyrusk Road → Beechdene Drive 12:00 £4.50, a third Zone 2 tap 15:00 £2.00 to complete the £11.00 cap\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage still within Zone 2 (e.g. → Park Gates)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is still applied at £11.00\n**AND** the day total stays £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102769,
+    "title": "Zonal cap — higher-fare correction outside the zone removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a tap to a stage outside the iLink zone removes the zone cap and collects the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the cap is reached on 105a (IN) Zone 2 taps (Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.00)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage outside Zone 2 (e.g. into Zone 3)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference, unless a higher zone cap is itself reached"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is no longer applied\n**AND** the corrected tap is charged its higher fare\n**AND** the day total rises above £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102770,
+    "title": "Zonal cap — lower-fare correction within the zone, day still above cap, holds",
+    "preface": "This test is to confirm that lowering a tap within the iLink zone, while the uncapped aggregate stays above cap, leaves the cap in place.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the cap is reached on 105a (IN) Zone 2 taps whose uncapped aggregate is well above £11.00 (Dundrod → Beechdene Drive £4.50 ×2 plus a third £4.50 Zone 2 tap = £13.50 uncapped)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a lower-fare Zone 2 stage, keeping the uncapped aggregate above £11.00\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-refund is raised\n**AND** no auto-charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is still applied\n**AND** the day total is unchanged at £11.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102771,
+    "title": "Zonal cap — lower-fare correction drops the day below cap and refunds",
+    "preface": "This test is to confirm that lowering a tap so the uncapped aggregate falls below the iLink zone cap removes the cap and refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the cap is reached on 105a (IN) Zone 2 taps whose uncapped aggregate only just exceeds it: Dundrod → Beechdene Drive £4.50, Tullyrusk Road → Beechdene Drive £4.50, a third Zone 2 tap £2.90 (uncapped £11.90, capped to £11.00)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one £4.50 tap's alighting to a lower Zone 2 fare (£2.30) so the uncapped aggregate drops to £9.70\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £1.30 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 2 cap is no longer applied\n**AND** the day total reduces to the new aggregate £9.70"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102772,
+    "title": "Zonal cap — Zone 4 correction within the highest band holds the cap",
+    "preface": "This test is to confirm that a higher-fare correction that stays within the highest iLink band keeps the £19.00 Zone 4 cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 4 cap is £19.00 (the highest band) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the cap is reached on 100b (IN) Zone 4 taps: Ardstraw Road → Londonderry (Transfer) at 09:00, 12:00 and 15:00, £6.90 each (ref.85), uncapped £20.70 capped to £19.00\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stage still within the £19.00 band (e.g. Castlederg → Londonderry (Transfer), ref 1.05, £9.40)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the Zone 4 cap is still applied\n**AND** the account stays at £19.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102773,
+    "title": "Zonal cap — correction into a capped zone audits a free tap under the zonal cap",
+    "preface": "This test is to confirm that correcting a tap into a zone whose cap is reached audits a £0.00 tap under the zonal cap, not the reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps (£4.50 + £4.50 + £2.00) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card also has one 10b (IN) tap that alighted at a Zone 1 stop and was charged under the Zone 1 cap (confirm in the portal that this tap is assigned to Zone 1)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct that Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap\n**AND** it is not charged the reference fare"
+      },
+      {
+        "content": "**WHEN** you check the day's total in Journey History",
+        "expected": "**THEN** the day total stays at the £11.00 cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102774,
+    "title": "Zonal cap — a correction into a capped zone does not increase the account total",
+    "preface": "This test is to confirm that a zonal correction at the cap leaves the aggregated account total unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps and the aggregated account total for the day is £11.00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the aggregated account total for the day has not increased above £11.00\n**AND** the corrected tap is audited at £0.00"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102775,
+    "title": "Zonal cap — a corrected tap reports under the zonal cap, not a reference cap",
+    "preface": "This test is to confirm that a corrected tap reports under the zonal cap rather than a reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is already reached on 105a (IN) Zone 2 taps — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited at £0.00 because the Zone 2 cap was reached\n**AND** it is not charged the reference fare"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102776,
+    "title": "Zonal cap — correcting into a zone below cap charges toward the zonal cap",
+    "preface": "This test is to confirm that correcting into a zone whose cap is not yet reached charges toward the zonal cap, not the reference cap.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap is £11.00 and only one Zone 2 journey has been made (105a (IN) Dundrod → Beechdene Drive, £4.50), so the cap is not yet reached — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is charged toward the Zone 2 cap and never above £11.00\n**AND** it is not charged under the reference cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102777,
+    "title": "Reference cap — a journey with no zonal cap still uses the reference cap",
+    "preface": "This test is to confirm that reference-fare capping still governs where no zonal cap applies.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is not enabled for these journeys, so the reference cap governs the day\n**AND** the ref.60 cap of £7.20 is reached on 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00 to complete the cap — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct a ref.60 tap's alighting to another ref.60 stage (e.g. Greys Farm → Armagh Bus Centre)\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the ref.60 cap\n**AND** the £7.20 reference cap still governs the day"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102778,
+    "title": "Zonal cap — correcting to another stop in the same zone keeps the cap",
+    "preface": "This test is to confirm that correcting to another stop within the same iLink zone leaves the zonal cap in place.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 1 cap of £6.00 is reached on Zone 1 taps (confirm a Zone 1 route/stop pair in the portal) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to another Zone 1 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap\n**AND** the day's Zone 1 total stays at the £6.00 cap"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102779,
+    "title": "Zonal cap — re-running settlement after a correction adds no charge",
+    "preface": "This test is to confirm that a repeat settlement after a zonal correction keeps the cap and raises no charge.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is reached and a Zone 1 tap has already been corrected to a Zone 2 stop and settled — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** you run the end-of-day settlement process again",
+        "expected": "**THEN** no additional charge is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is still audited at £0.00 with the Zone 2 cap applied"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102780,
+    "title": "Zonal cap — the cap applies after a correction regardless of transport mode",
+    "preface": "This test is to confirm that the iLink zonal cap (Transport Mode = All) governs a corrected tap across mixed transport modes.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the iLink Zone 2 cap of £11.00 is reached across mixed transport modes (the iLink zone cap is Transport Mode = All) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the card also has a 10b (IN) tap charged under the Zone 1 cap (confirm the Zone 1 assignment in the portal)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the Zone 1 tap's alighting to a Zone 2 stop\n**AND** you run the settlement\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the corrected tap is audited as a £0.00 free tap under the Zone 2 cap\n**AND** the reference cap is not applied regardless of transport mode"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102781,
+    "title": "Reference cap — correction to a higher ref removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting one tap to a higher reference fare breaks the same-ref cap and collects the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** the ref.60 cap of £7.20 is reached on two 72b (IN) Moygashel Busby Shop → Armagh Bus Centre taps: £4.50 at 09:00 then £2.70 at 12:00, day total £7.20 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a higher reference-fare stop (e.g. Dungannon Bus Station → Armagh Bus Centre, ref.70, £5.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference above the former £7.20 cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied, as the taps no longer share a ref\n**AND** both taps are charged their uncapped fares (£4.50 and £5.10)"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102782,
+    "title": "Reference cap — correction to a lower ref below the cap removes it and refunds",
+    "preface": "This test is to confirm that lowering one tap so the aggregate falls below the cap removes the reference cap and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** two ref.60 taps are capped at £7.20: 72b (IN) Moygashel Busby Shop → Armagh Bus Centre £4.50 at 09:00 and £2.70 at 12:00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 09:00 tap's alighting to a lower fare on a different ref (e.g. a ref.20 £2.30 stage) so the uncapped aggregate falls to £6.80\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £0.40 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied\n**AND** the charge is the lower aggregate £6.80"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102783,
+    "title": "Reference cap — correction to a lower ref still above the cap charges the extra",
+    "preface": "This test is to confirm that lowering one tap to a different ref, with the aggregate still above the cap, removes the cap and charges the extra.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled so the reference cap governs\n**AND** two ref.60 taps are capped at £7.20 (uncapped £4.50 + £4.50 = £9.00): 72b (IN) Moygashel Busby Shop → Armagh Bus Centre at 09:00 and Greys Farm → Armagh Bus Centre at 12:00 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the 12:00 tap's alighting to a lower fare on a different ref (e.g. ref.55, £4.00, Greys Farm → Allens Corner (Dark Lane)), leaving the aggregate at £8.50\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the £1.30 above the former £7.20 cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the reference cap is no longer applied\n**AND** the charge is the uncapped aggregate £8.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102784,
+    "title": "Uncapped tap — single tap raised to a higher fare charges the difference",
+    "preface": "This test is to confirm that correcting a single uncapped tap to a higher fare collects the additional balance.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Grange Brigde at 09:00, ref.10, £1.90 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the tap's alighting to a higher-fare stop (e.g. Greys Farm → Armagh Bus Centre, ref.60, £4.50)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the £2.60 additional balance"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the amended alighting stop is charged at the higher fare £4.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102785,
+    "title": "Uncapped tap — single tap lowered refunds the difference",
+    "preface": "This test is to confirm that correcting a single uncapped tap to a lower fare refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the card has a single settled tap to which no cap applies: 72b (IN) Greys Farm → Armagh Bus Centre at 09:00, ref.60, £4.50 — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the tap's alighting to a lower-fare stop (e.g. Greys Farm → Grange Brigde, ref.10, £1.90)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £2.60 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the amended alighting stop is charged at the lower fare £1.90"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102786,
+    "title": "Reference cap — aligning two different-ref taps to the same ref applies the cap and refunds",
+    "preface": "This test is to confirm that correcting two different-ref taps onto the same reference fare brings the reference cap into play and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled\n**AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Armagh Bus Centre (ref.60, £4.50) and Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00), charged £8.50 in total — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the ref.55 tap's alighting so both taps share ref.60 (e.g. → Armagh Bus Centre, £4.50)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £1.30 above the cap"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the ref.60 cap is now applied\n**AND** the total is the capped £7.20"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102787,
+    "title": "Reference cap — lowering the higher-ref tap to match applies the lower cap and refunds",
+    "preface": "This test is to confirm that correcting the higher-ref tap down to match the other applies the lower reference cap and refunds.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** zonal capping is disabled\n**AND** the card has two taps on different reference fares, so no cap applies at settlement: 72b (IN) Greys Farm → Allens Corner (Dark Lane) (ref.55, £4.00) and Greys Farm → Armagh Bus Centre (ref.60, £4.50), charged £8.50 in total — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct the higher-fare ref.60 tap down to match the other's ref.55 (e.g. → Allens Corner (Dark Lane), £4.00)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the £2.10 difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the lower ref.55 cap is now applied\n**AND** the total is the ref.55 cap of £6.40"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102788,
+    "title": "Town service cap — correction within the town zone holds the cap",
+    "preface": "This test is to confirm that an alighting correction within the town-service zone leaves the town-service cap unchanged.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the cap is reached on 203b (IN) Bangor TS taps, both boarding and alighting inside the Bangor town-service zone: Groomsport Roundabout → Gransha Road Roundabout 09:00 (£2.30) and Carolhill/ Dixon Rd → Kilcooley 12:00 (£2.90), capped to £2.50\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to another stop within the Bangor TS zone (e.g. Groomsport Roundabout → Kilcooley, £3.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** no auto-charge is raised\n**AND** no refund is raised"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is still applied\n**AND** the day total stays £2.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102789,
+    "title": "Town service cap — correction outside the town to a higher fare removes the cap and charges the difference",
+    "preface": "This test is to confirm that correcting a tap's alighting outside the town zone removes the town-service cap and charges the higher fare.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps (Groomsport Roundabout → Gransha Road Roundabout £2.30 and Carolhill/ Dixon Rd → Kilcooley £2.90, capped to £2.50) — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to a higher-fare stop outside the Bangor TS zone (e.g. Groomsport Roundabout → City Hall, ref.70, £5.10)\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-charge collects the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is no longer applied, as the alighting is now out of zone\n**AND** the corrected tap is charged the higher fare £5.10\n**AND** the day total rises above £2.50"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102790,
+    "title": "Town service cap — correction outside the town to a lower fare removes the cap and refunds",
+    "preface": "This test is to confirm that correcting a tap's alighting outside the town zone to a lower fare removes the town-service cap and refunds the difference.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card on the Translink test account (CloudFare env5)\n**AND** you are signed in to the ABT Operator Portal to view Journey History\n**AND** the Bangor town-service cap is £2.50 (Bus mode), reached on 203b (IN) Bangor TS taps — *example per current ABT pricing config (back-end configurable); verify the charge matches the configured ABT pricing rule*\n**AND** a stop just outside the Bangor TS zone at a single fare below £2.50 (**GAP** — the tracker's listed 203b out-of-zone pairs are all £4.50+; no confirmed sub-£2.50 out-of-zone stop exists — confirm on the live portal before running)\n**AND** the portal alighting-stop adjustment (CR122) is confirmed live in the Operator Portal test environment — George (live-system confirmation), 2026-07-21 (mechanism per FBD-100662 §5.6, paras 691, 693, 271).",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you correct one tap's alighting to that lower-fare stop outside the town area\n**AND** you run the overnight settlement",
+        "expected": "**THEN** an auto-refund returns the difference"
+      },
+      {
+        "content": "**WHEN** you open the card's Journey History",
+        "expected": "**THEN** the town-service cap is no longer applied\n**AND** the corrected tap is charged the lower fare"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 271",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED marker and re-grounded the correction mechanism as confirmed live: George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction (CR122) is live and usable in the test environment. Stripped the leading '[UNCONFIRMED]' title marker. No other wording changed (fare/cap values remain framed as 'example per current ABT pricing config' per the existing Q14 reframe; any pre-existing GAP markers on stop/fare specifics are untouched).",
+    "gaps": []
+  },
+  {
+    "id": 4102825,
+    "title": "Journey History — correcting the alighting stop on a cancelled tap keeps it visible (CR122)",
+    "preface": "This test is to confirm the alighting-stop correction leaves a cancelled tap visible and still cancelled. NOTE: the correction feature is CR122 — confirmed live in the Operator Portal test environment (George, live-system confirmation, 2026-07-21); the exact screen mechanics are not pinned in the spec, so this case defers the *how* to the tester's knowledge of the live UI.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) Metro tap exists for today (e.g. 10b (IN) High School → Cherry Hill, ref.20)\n**AND** you know how to change a journey's alighting stop in the Operator Portal (ABT alighting-stop correction, CR122 — confirmed live in the Operator Portal test environment, George (live-system confirmation), 2026-07-21; the name \"Update Stop list\" is not a spec term and the exact screen/filter mechanics are not pinned — FBD-100662 §5.6 paras 691, 693 state only that selectable stops are those after the boarding stop on the same route).",
+    "steps": [
+      {
+        "content": "**WHEN** you change the cancelled journey's alighting stop to another onward stop on the same route (CR122 alighting-stop correction) and confirm",
+        "expected": "**THEN** the journey's alighting stop shows the corrected stop"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you re-open the card's Journey History",
+        "expected": "**THEN** Journey History shows a single journey with the corrected stop\n**AND** it is still marked cancelled — **UNCONFIRMED** exact \"**\" indicator / retention representation is not in the requirement specs; confirm on the live system before running (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 204",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED framing — George (live-system confirmation), 2026-07-21 confirmed the Operator Portal alighting-stop correction is live and usable in the test environment. Per the gherkin standard's 'unknown how, not unknown what' rule, the exact screen/filter mechanics (still not pinned in the spec) are now an assumed-tester-knowledge step ('you change the journey's alighting stop') rather than a hard UNCONFIRMED block. Left the separate, still-open '**' cancelled-indicator / retention-representation gap (Q21) marked UNCONFIRMED — that question is unanswered and distinct from the CR122-is-live question this fix resolves. Stripped the '[UNCONFIRMED]' title prefix.",
+    "gaps": [
+      "Q21: exact \"**\" cancelled indicator / retain-after-correction representation is not in the requirement specs — confirm live (still open, not resolved by this fix)."
+    ]
+  },
+  {
+    "id": 4102826,
+    "title": "Journey History — a zero-fare correction on a cancelled tap leaves one visible row (CR122)",
+    "preface": "This test is to confirm the alighting-stop correction that recalculates a cancelled tap to £0.00 does not hide or duplicate the row. NOTE: correction is CR122 — confirmed live in the Operator Portal test environment (George, live-system confirmation, 2026-07-21); the exact screen mechanics are not pinned in the spec.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a cancelled (ETM-annulled) Metro tap exists for today\n**AND** you know how to change a journey's alighting stop in the Operator Portal (ABT alighting-stop correction, CR122 — confirmed live in the Operator Portal test environment, George (live-system confirmation), 2026-07-21; \"Update Stop list\" is not a spec term and the exact mechanics are not pinned — FBD-100662 §5.6 paras 691, 693).",
+    "steps": [
+      {
+        "content": "**WHEN** you change the alighting stop (CR122 correction) so the recalculated fare is £0.00\n**AND** you confirm the change",
+        "expected": "**THEN** the correction is accepted for the cancelled journey"
+      },
+      {
+        "content": "**WHEN** you run the EndOfDay settlement for the operating day\n**AND** you re-open the card's Journey History",
+        "expected": "**THEN** Journey History still shows a single cancelled journey for that tap\n**AND** exactly one journey row exists for it — **UNCONFIRMED** the no-duplicate-row retention behaviour is not in the requirement specs; confirm on the live system before running (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "FBD-100662 para 691",
+      "FBD-100662 para 693",
+      "FBD-100662 para 204",
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Removed the CR122 'proposal, UX to be determined' UNCONFIRMED framing — George (live-system confirmation), 2026-07-21 confirmed the correction mechanism is live and usable. Screen mechanics kept as an assumed-tester-knowledge step, not invented. Left the separate no-duplicate-row retention gap (Q21) marked UNCONFIRMED — unresolved by this fix. Stripped the '[UNCONFIRMED]' title prefix.",
+    "gaps": [
+      "Q21: no-duplicate-row retention behaviour on a zero-fare correction is not in the requirement specs — confirm live (still open, not resolved by this fix)."
+    ]
+  },
+  {
+    "id": 4102830,
+    "title": "Transaction History — refunding a processed journey payment requires authorisation",
+    "preface": "This test is to confirm that a processed (settled) journey payment can be refunded from Transaction History in the ABT Operator Web Portal, and that the refund requires authorisation (an approval step) before it completes.",
+    "preconds": "**GIVEN** the seeded ABT test cEMV card and its account exist in CloudFare env5\n**AND** you are signed into the ABT Operator Web Portal (env5) on that card's account\n**AND** a settled Metro journey charged £2.30 exists (e.g. 10b (IN) High School → Cherry Hill, ref.20), visible as a processed payment in the account's Transaction History\n**AND** the refund mechanism is confirmed live — George (live-system confirmation), 2026-07-21: on ABT you can refund a processed payment from Transaction History, and that refund must then be authorised before it completes. There is no separate portal \"cancel the journey\" action — the refund is raised against the processed payment in Transaction History, not against the journey record.",
+    "steps": [
+      {
+        "content": "**WHEN** in the Operator Portal you open the settled journey's processed payment in Transaction History\n**AND** you initiate a refund against that payment",
+        "expected": "**THEN** the refund is raised in a pending-authorisation state — it does not complete immediately"
+      },
+      {
+        "content": "**WHEN** the refund is authorised (approved)\n**AND** you open the card's Journey History",
+        "expected": "**THEN** the £2.30 refund is recorded on the account's transactions\n**AND** the journey is retained as a single record in Journey History, shown as refunded — **UNCONFIRMED** the exact retention/indicator representation is not in the requirement specs; confirm on the live system before running (gap Q21)"
+      }
+    ],
+    "action": "reword",
+    "citations": [
+      "George (live-system confirmation), 2026-07-21"
+    ],
+    "change_note": "Fully reground the case: the previous wording (\"cancelling a charged journey refunds it\") was wrong — confirmed with George (live-system confirmation), 2026-07-21 that there is no portal 'cancel a settled journey' action. The real mechanism is: locate the settled/processed journey payment in Transaction History, initiate a refund against it, and the refund requires authorisation/approval before it completes. Rewrote title, preface, preconditions, and steps around Transaction History + refund + authorisation rather than 'cancel'. Left the exact post-refund Journey-History indicator/retention representation as an open UNCONFIRMED gap (Q21) — not resolved by this fix. Stripped the '[UNCONFIRMED]' title prefix; this case is no longer unconfirmed as to mechanism, only as to the cosmetic indicator.",
+    "gaps": [
+      "Q21: exact Journey-History retention/indicator representation of a refunded settled journey is not in the requirement specs — confirm live (still open, not resolved by this fix)."
+    ]
+  }
+]

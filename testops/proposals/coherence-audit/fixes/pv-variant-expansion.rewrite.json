@@ -1,0 +1,113 @@
+[
+  {
+    "id": 4100981,
+    "title": "Validate a 60+ Concession SmartPass",
+    "expected": "60+ Concession SmartPasses validate (Tag successful) when valid and reject with the specific reason when invalid, recorded in CloudFare/MERIT/SmartTrack. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate a Concession SmartPass' carrying a 'Variation — 60+, Blind, Senior, ROI Senior, War Pensioner' line. Retitled to the specific sub-type already tested in the body (60+); the other 4 sub-types are now their own cases (C4101109-4101112) in this same section."
+  },
+  {
+    "id": 4100982,
+    "title": "Validate a DLA Half-Fare SmartPass",
+    "expected": "DLA Half-Fare SmartPasses validate when valid and reject with the specific reason when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate a Half-Fare SmartPass' carrying 'Variation — DLA, Learning Disability, No Driving Licence, PIPS, Partially Sighted'. Retitled to the sub-type already tested (DLA); the other 4 are now their own cases in this section."
+  },
+  {
+    "id": 4100984,
+    "title": "Validate a City-zone Metro Multi-Journey smartcard",
+    "expected": "Metro Multi-Journey (City zone) validates within its zone (one journey deducted, passback applied) and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate a Metro Multi-Journey smartcard' carrying 'Variation — City, Inner, Extended zones'. Retitled to the zone already tested (City); Inner and Extended zones are now their own cases. Adult/Child left as the existing secondary age-tier axis (scope decision, see changelog) — not a distinct product/entitlement code."
+  },
+  {
+    "id": 4100987,
+    "title": "Validate an iLink Zone 4 smartcard",
+    "expected": "iLink (Zone 4) validates within its zone and rejects out-of-zone/invalid. Run for Adult and Child, under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate an iLink smartcard' carrying 'Variation — Zones 1-4 and NW, plus Belfast Visitor Pass'. Retitled to the zone already tested (Zone 4, Botanic worked example kept). Zones 1-3, NW and Belfast Visitor Pass are now their own cases, using the same generic zone-level phrasing as the existing 'Rail — zone validation' case (C4100997) since no specific station is cited in FBD-100271 for those zones — not inventing a station name."
+  },
+  {
+    "id": 4100989,
+    "title": "Validate a yLink smartcard",
+    "preface": "This test is to confirm a yLink smartcard validates while within its concessionary period and is rejected once expired (a date-based expiry, not an intraday time-of-day band).",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid yLink smartcard within its concessionary period, and one whose concessionary-period expiry date has passed\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {
+        "content": "**WHEN** you present the yLink card after its concessionary-period expiry date",
+        "expected": "**THEN** the PV rejects it as an expired product (Product Expired) — resolved 2026-07-22: expiry is date-based only (end of the concessionary period), per FBD-100236 para 328 (\"the expiry date is expected to be set to the end of the concessionary period\"); no intraday time-of-day band exists for this product, confirmed by the total absence of any such case across the old suite's (10047) otherwise exhaustive coverage (hotlist/passback/days-left/zone), unlike the genuinely time-banded EA Pupil Smartpass / EA Bus Further Education products (old-suite cases confirm Mon-Fri/weekend/school-holiday time restrictions for those, a different product family)."
+      }
+    ],
+    "expected": "yLink smartcards validate while within their concessionary period and are rejected (Product Expired) once the concessionary-period expiry date has passed — a date-based expiry, not a time-of-day band (gap Q25 resolved 2026-07-22: FBD-100236 para 328; old-suite 10047 absence of any yLink time-of-day case). Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate a yLink or 24+ smartcard' bundling both products behind an 'or'. Retitled/rebodied to yLink only; 24+ is now its own case in this section."
+  },
+  {
+    "id": 4100990,
+    "title": "Validate a Staff Translink Employee smartcard",
+    "expected": "Staff employee smartcards validate when valid and reject when invalid. Run under Glider and Rail.\n\n[Automatable: No · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate a Translink Employee smartcard' carrying 'Variation — Staff, Staff Partner, Retired Staff, External Staff, Dependents Pass'. Retitled to the sub-type already tested (Staff); the other 4 are now their own cases."
+  },
+  {
+    "id": 4100991,
+    "title": "Validate an EA Pupil Smartpass",
+    "expected": "EA Pupil Smartpasses validate within valid times and reject outside them (before start, after expiry, outside time, weekend, school holiday). Run for EA Bus (Glider) and EA Rail.\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Validate an EA Smartpass (Pupil and Further Education)' — both sub-types bundled directly in the title. Retitled to the sub-type already tested (Pupil); Further Education is now its own case. EA Bus (Glider)/EA Rail left as the existing Glider/Rail Configuration axis, out of scope per the task."
+  },
+  {
+    "id": 4100996,
+    "title": "Rail — NIR transfer validation (iLink)",
+    "expected": "NIR transfers validate for an eligible iLink smartcard (recorded as a transfer) and reject otherwise. Run for Adult and Child. (Rail mode.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Rail — NIR transfer validation' carrying 'Variation — iLink, Belfast Visitor, Staff Smartpass, aLink, EA Pupil/FE'. Retitled to the product already tested (iLink); Belfast Visitor, Staff Smartpass, aLink, EA Pupil and EA Further Education are now their own cases (EA Pupil/FE further split into 2, matching the EA Smartpass family split above)."
+  },
+  {
+    "id": 4100998,
+    "title": "ABT — Visa Debit contactless tap validation",
+    "preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid Visa Debit contactless payment card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "expected": "A valid Visa Debit contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT.\n\n[Automatable: No · Cross-check: CloudFare / MERIT]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'ABT — contactless tap validation' carrying a 'Data variations: Visa Debit, Visa Credit, Mastercard Debit, Mastercard Credit, Maestro, mobile wallet' line. Retitled to one scheme (Visa Debit); the other 5 are now their own cases in this section."
+  },
+  {
+    "id": 4101006,
+    "title": "Barcode — multi-use validation (Adult)",
+    "preface": "This test is to confirm an Adult multi-use barcode validates and tracks its remaining uses, HHD- and TVM-produced, with the correct audible beep pattern.",
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid Adult multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "steps": [
+      {
+        "content": "**WHEN** you present the valid Adult multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the Adult barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      },
+      {
+        "content": "**WHEN** a valid Adult multi-use barcode is presented",
+        "expected": "**THEN** the audible validation beep pattern is correct for Adult — single (pins TIBU-27324; migrated from old-suite C4091912)"
+      }
+    ],
+    "expected": "Adult multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT, HHD- and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "change_note": "Variant-expansion (George, 2026-07-24): was 'Barcode — multi-use validation' carrying 'Variation — HHD-produced and TVM-produced; product types Adult, Child, 3 Day Select, 1/3 Off Day Return, 24+, Ylink, Concession, Half Fare, Day Tracker (TVM + HHD), plus Unemployed Day Return (HHD only)'. Retitled to Adult; the other 8 TVM+HHD product types and the HHD-only Unemployed Day Return are now their own cases, each carrying its own already-cited audible beep-pattern fact (TIBU-27324) instead of a shared enumeration line. HHD/TVM device-produced axis kept inside each case (both are already tested per product in the old suite; not treated as a distinct entitlement axis for this expansion)."
+  },
+  {
+    "id": 4101088,
+    "title": "cEMV — route-type enablement and passback distinctness",
+    "preface": "This test is to confirm cEMV taps enable per route type, are disabled where they should be, and that a passback re-tap is handled distinctly from a decline.",
+    "preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** a card can be re-presented within the configured ABT Passback window\n**AND** you can verify records in the CloudFare activity log",
+    "steps": [
+      {
+        "content": "**WHEN** the route is \"Tap On Only (Flat Fare)\" or \"Tap On Tap Off\"",
+        "expected": "**THEN** cEMV taps are enabled for that route type"
+      },
+      {
+        "content": "**WHEN** no valid fare is found or the boarding location is outside the configured area",
+        "expected": "**THEN** cEMV taps are disabled"
+      },
+      {
+        "content": "**WHEN** a card is re-presented within the configured ABT Passback window",
+        "expected": "**THEN** the PV shows the Passback outcome, not a decline error\n**AND** no second fare is taken for the re-presented card (pins TIBU-22322)"
+      }
+    ],
+    "expected": "cEMV enables for Tap-On-Only and Tap-On-Tap-Off routes; disables on no-fare / out-of-area; a passback re-tap is distinct from a decline (pins TIBU-22322).\n\n[Automatable: Partial · Cross-check: CloudFare / MERIT]",
+    "change_note": "Variant-expansion (George, 2026-07-24), found via comprehensive sweep beyond the known list: the case bundled 7 named decline conditions (card not read, unsupported scheme e.g. AMEX or Diners, expired, ODA fail, on BIN list, on Deny list, card clash) behind ONE generic WHEN/THEN step ('present a card that hits one of those decline conditions') — exactly the anti-pattern (a failure can be reason-specific; only one example ever actually gets executed). Split each decline reason into its own case (C-new below); this case keeps the 3 remaining, genuinely-distinct behaviours (route enablement, route disablement, passback-vs-decline) that were already correctly tested as one flow, retitled to match."
+  }
+]

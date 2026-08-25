@@ -1,0 +1,252 @@
+# ETM — Non-Functional / Resilience (@mode(all))
+# Power, Paper/Printer, Displays-LEDs-Audio, Communications (the in-scope ETM<->BOS interaction),
+# Time, and System/Performance. Grounded in the Power Interruption (5 notes), Displays LEDs & Audio
+# Tones (29 screens), and the old System Management cases. Ticket-issue-during-print recovery lives
+# in the Ticket Issue area. Excludes author-flagged "Paper Almost Low *to be removed" and pure-BV.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Non-Functional / Power
+    cases:
+      - title: Power interruption — minor versus major outage
+        objective: This test is to confirm the ETM handles a momentary power interruption versus a prolonged one, saving state safely before shutdown.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/power-interruption/11_0_0 - Power Interruption.png
+        steps: |
+          **Given** the ETM is in service
+          **WHEN** power is interrupted momentarily
+          **THEN** the ETM returns the user to the screen they were originally on
+          **WHEN** power is interrupted for a prolonged period
+          **THEN** the ETM saves its state and shuts down once the backup period is reached
+        expected: A momentary outage restores the previous screen; a prolonged outage saves state and shuts down safely within the backup window.
+      - title: Power loss recovery — within and outside the recovery period
+        objective: This test is to confirm the ETM recovers to the signed-in state after a power loss within the recovery period, and does not after it.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and in service
+          **WHEN** power is lost and restored within the recovery period
+          **THEN** the ETM recovers to the signed-in state
+          **WHEN** power is lost and restored outside the recovery period
+          **THEN** the ETM does not recover the signed-in state and returns to idle
+          **WHEN** the power loss occurs in break mode
+          **THEN** the ETM recovers to the break state appropriately
+        expected: Recovery to the signed-in state happens within the recovery period only; outside it the ETM returns to idle; break mode recovers appropriately.
+      - title: Power — charging state on boot
+        objective: This test is to confirm the ETM shows the charging screen on boot until it has enough charge to safely save state on a future interruption.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/startup/11_2_0 - Charging.png
+        steps: |
+          **Given** the ETM is booting with low charge
+          **WHEN** the ETM does not yet have enough charge to guarantee a safe state-save
+          **THEN** the charging screen is displayed until sufficient charge is reached
+        expected: The charging screen holds boot until there is enough charge to safely save state on a power interruption.
+      - title: Power Saving Mode — entering and leaving
+        objective: This test is to confirm the ETM enters and leaves Power Saving Mode correctly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is idle and configured for power saving
+          **WHEN** the conditions to enter Power Saving Mode are met
+          **THEN** the ETM enters Power Saving Mode
+          **WHEN** the ETM is woken
+          **THEN** the ETM leaves Power Saving Mode and returns to its prior state
+        expected: The ETM enters Power Saving Mode when idle and leaves it on wake.
+      - title: Scheduled Maintenance — suspend and idle
+        objective: This test is to confirm the ETM handles scheduled maintenance, coming out of suspend and returning to idle.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a scheduled maintenance window applies
+          **WHEN** the ETM is in idle mode during the window
+          **THEN** the scheduled maintenance is performed
+          **WHEN** the ETM comes out of suspend
+          **THEN** the ETM resumes to idle ready for service
+        expected: Scheduled maintenance runs in idle mode and the ETM resumes cleanly when coming out of suspend.
+
+  - path: Non-Functional / Printer and Paper
+    cases:
+      - title: Paper management — low, jam, out and replacement
+        objective: This test is to confirm the ETM warns on low and out-of-paper, handles a jam with reverse feed, and recovers when the roll is replaced.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_2 - Main Screen - FLU - Paper Low.png
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** the paper falls below the low threshold after printing a ticket
+          **THEN** the Paper Low warning is shown for five seconds and returns to FLU Home
+          **WHEN** the paper jams
+          **THEN** the jam is reported with a reverse-paper-feed option
+          **WHEN** the paper runs out
+          **THEN** the Paper Out condition is shown
+          **WHEN** the paper roll is replaced
+          **THEN** printing is restored
+        expected: Paper low warns (5s, after a print), jams offer reverse feed, paper-out is flagged, and replacing the roll restores printing.
+      - title: Printer — out of service error
+        objective: This test is to confirm the ETM shows an Out of Service error when the printer cannot print.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/flu/07_0_3 - Out of Service Error.png
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** the printer cannot complete a print and is out of service
+          **THEN** the Out of Service error is displayed
+        expected: A printer that cannot print shows the Out of Service error.
+      - title: Printer — firmware update download
+        objective: This test is to confirm the ETM can download a printer firmware update.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a printer firmware update is available from the back office
+          **WHEN** the ETM downloads the printer firmware files
+          **THEN** the printer firmware is updated
+        expected: The ETM downloads and applies a printer firmware update.
+
+  - path: Non-Functional / Displays, LEDs and Audio
+    cases:
+      - title: Card reader — LED state indication
+        objective: This test is to confirm the card reader LEDs indicate the correct states.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM card reader is active
+          **WHEN** the reader is in each of its operating states
+          **THEN** the card reader LEDs indicate the matching state
+          **WHEN** the reader is inactive
+          **THEN** the LEDs show the inactive state
+        expected: The card reader LEDs correctly indicate active and inactive states.
+      - title: Audio tones — success and error
+        objective: This test is to confirm the ETM plays the correct audio tone for success and error outcomes.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM has audio enabled
+          **WHEN** a transaction succeeds
+          **THEN** the success tone is played
+          **WHEN** a transaction errors or is declined
+          **THEN** the error tone is played
+        expected: A success tone plays on success and an error tone on error/decline.
+      - title: Passenger Information Display — shows current state
+        objective: This test is to confirm the passenger information display reflects the current transaction and information states.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a customer-facing passenger information display is connected
+          **WHEN** the ETM is selling, issuing, validating a smartcard, accepting an ABT tap, or showing information
+          **THEN** the passenger display reflects the matching state
+          **AND** information states such as See Driver, Please Wait, Out of Service and Boarding are shown as applicable
+        expected: The passenger display shows the matching state for selection / ticket-pass-basket issue / smartcard / ABT success, plus See Driver, Please Wait, Out of Service, Boarding and Transaction Success.
+
+  - path: Non-Functional / Communications
+    cases:
+      - title: Force communications — CloudFare initiated
+        objective: This test is to confirm a CloudFare-initiated forced communication is handled by the ETM.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is in service and communicating with the back office
+          **WHEN** CloudFare initiates a forced communication
+          **THEN** the ETM communicates with the back office for downloads and uploads
+        expected: A CloudFare-initiated forced comms triggers the ETM to exchange data with the back office.
+      - title: Communications — comms lock, interruption and restore
+        objective: This test is to confirm the ETM locks communications after the configured period without comms, handles interruptions, and recovers when comms are restored.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM has not communicated with the back office for the configured period
+          **WHEN** the comms-lock threshold is reached
+          **THEN** communications are locked and indicated to the Driver
+          **WHEN** communications are interrupted mid-exchange
+          **THEN** the interruption is handled without data loss
+          **WHEN** communications are restored
+          **THEN** the comms lock clears and pending data is exchanged
+        expected: Comms lock after the configured no-comms period; interruptions handled without data loss; the lock clears and data flows when comms restore.
+      - title: ETM continues working when the BOS connection is lost
+        objective: This test is to confirm the ETM keeps operating and queues data exchange when the back-office connection is lost.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on and the ETM is working
+          **WHEN** the back-office connection is lost
+          **THEN** the ETM continues to operate and queues data to send to the back office
+          **AND** data due to download from the back office is retrieved once the connection returns
+        expected: The ETM keeps working with the BOS connection lost, queuing uploads and catching up downloads when it returns.
+      - title: Download configuration files from the back office
+        objective: This test is to confirm the ETM downloads configuration files for immediate and future activation, and rejects corrupt files.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the back office has configuration files for the ETM
+          **WHEN** the ETM downloads a configuration file for immediate activation
+          **THEN** the configuration is applied
+          **WHEN** the configuration has a future activation date
+          **THEN** the configuration is stored and activated on the future date
+          **WHEN** a corrupt configuration file is downloaded
+          **THEN** the corrupt file is rejected
+          **AND** the current configuration is retained
+        expected: Config downloads apply immediately or on a future activation date; corrupt files are rejected without disrupting the live config.
+      - title: Software distribution and fare-mode transition
+        objective: This test is to confirm the ETM transitions from the current to a future fare mode following a software/configuration distribution.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the back office has distributed a future fare mode to the ETM
+          **WHEN** the activation point is reached
+          **THEN** the ETM transitions from the current fare mode to the future fare mode
+        expected: The ETM transitions current-to-future fare mode at the distributed activation point.
+      - title: Upload audit files and data to the back office
+        objective: This test is to confirm the ETM uploads audit files and operational data to the back office.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM has audit files and data to send
+          **WHEN** the ETM communicates with the back office
+          **THEN** the audit files are uploaded
+          **AND** the operational data is uploaded
+        expected: The ETM uploads audit files and operational data to the back office.
+
+  - path: Non-Functional / System and Performance
+    cases:
+      - title: Time change — GMT and BST transitions
+        objective: This test is to confirm the ETM applies the GMT-to-BST and BST-to-GMT clock changes correctly.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM clock is approaching a daylight-saving transition
+          **WHEN** the GMT-to-BST change occurs
+          **THEN** the ETM clock advances correctly and fares/records use the new time
+          **WHEN** the BST-to-GMT change occurs
+          **THEN** the ETM clock falls back correctly
+        expected: The ETM applies GMT↔BST transitions correctly for the clock and time-stamped records.
+      - title: Status bar — cellular network status
+        objective: This test is to confirm the status bar reflects the cellular network status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM uses a cellular connection
+          **WHEN** the cellular network status changes
+          **THEN** the status bar reflects the current cellular status
+        expected: The status bar shows the current cellular network status.
+      - title: Auto sign-off
+        objective: This test is to confirm the ETM automatically signs the Driver off under the configured auto sign-off conditions.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** the configured auto sign-off condition is met
+          **THEN** the Driver is automatically signed off
+          **AND** the sign-off is audited
+        expected: The ETM auto-signs-off the Driver under the configured conditions and audits it.
+      - title: MIFARE card type validation on the ETM
+        objective: This test is to confirm the ETM validates the supported MIFARE card types.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on
+          **WHEN** a MIFARE Classic 1K or MIFARE Classic EV1 card is presented
+          **THEN** the ETM reads and validates the card per its type
+        expected: The ETM validates the supported MIFARE card types (Classic 1K, Classic EV1) on the ETM.
+      - title: Smartcard and EMV transaction timings
+        objective: This test is to confirm smartcard presentation/validation timing, noting EMV hardware timings need a defined performance measure.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is in service
+          **WHEN** a smartcard is presented for validation
+          **THEN** the presentation and validation complete within the acceptable timing
+          **WHEN** EMV hardware and transaction timing is assessed
+          **THEN** the timing is recorded against the defined performance measure
+        expected: Smartcard presentation/validation meets the timing target. NOTE — EMV hardware/transaction timing is currently observational and needs a defined performance measure before it is objectively pass/fail (old C2448294 flagged "potentially untestable").
+      - title: Interface with other on-vehicle third-party equipment
+        objective: This test is to confirm the ETM interfaces correctly with other on-vehicle third-party equipment.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is installed alongside other on-vehicle third-party equipment
+          **WHEN** the ETM interacts with that equipment
+          **THEN** the interface behaves as specified without disrupting ETM operation
+        expected: The ETM interfaces with other on-vehicle third-party equipment without disruption.

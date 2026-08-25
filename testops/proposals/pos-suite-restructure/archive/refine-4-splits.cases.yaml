@@ -1,0 +1,80 @@
+# Re-apply the 5 compound-Then splits to the ORIGINAL cases (match = current live title).
+suite: GG - POS - Claude Suite
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+sections:
+  - path: ["Functional", "Basket & Payment", "Cash Payment"]
+    cases:
+      - title: "Cash — pay a basket"
+        match: "Cash — pay a basket"
+        refs: ["TIBU-19336", "TIBU-7379"]
+        objective: "This test is to confirm a basket can be paid by cash and that subsequent baskets (incl. different routes) also complete without freezing."
+        steps: |
+          **GIVEN** the basket has one or more items
+          **WHEN** the operator takes cash payment and completes the transaction
+          **THEN** the transaction completes
+          **AND** the basket is issued
+          **WHEN** the operator builds and cash-pays a further basket on a different route
+          **THEN** that transaction also completes without the device freezing
+        expected: "Cash payment completes for a basket and subsequent baskets/routes without freezing (regression: TIBU-19336, TIBU-7379)."
+  - path: ["Functional", "Basket & Payment", "Annulment"]
+    cases:
+      - title: "Annulment — newly issued smartcard"
+        match: "Annulment — newly issued smartcard"
+        refs: ["TIBU-24334", "TIBU-23949", "TIBU-26760"]
+        objective: "This test is to confirm a newly issued smartcard can be annulled with the correct outcome and receipt."
+        steps: |
+          **GIVEN** the operator has just issued a new smartcard
+          **WHEN** the operator annuls that smartcard issue
+          **THEN** the issue is annulled successfully
+          **AND** the annulment is recorded
+          **AND** its receipt prints
+        expected: "A newly issued smartcard annuls with the correct outcome and printed ticket (regression: TIBU-24334, TIBU-23949, TIBU-26760)."
+  - path: ["Functional", "Top Up & Validation", "Top Up"]
+    cases:
+      - title: "Top Up — Belfast Visitor Pass"
+        match: "Top Up — Belfast Visitor Pass"
+        refs: ["TIBU-22546", "TIBU-26858"]
+        objective: "This test is to confirm a Belfast Visitor Pass tops up per its flow, including expired passes and the Back button."
+        steps: |
+          **GIVEN** the operator presents a Belfast Visitor Pass
+          **WHEN** the operator tops it up
+          **THEN** the top up completes per its flow
+          **AND** an expired pass is handled correctly
+          **AND** the Back button is handled correctly
+        expected: "Belfast Visitor Pass tops up per flow, handling expiry and Back (regression: TIBU-22546, TIBU-26858)."
+  - path: ["Functional", "Top Up & Validation", "Faulty Card"]
+    cases:
+      - title: "Faulty Card — options"
+        match: "Faulty Card — options"
+        refs: ["TIBU-25818", "TIBU-21256"]
+        objective: "This test is to confirm a faulty smartcard offers Charge Full Fare, Issue Ticket and Select Card Type, can be cancelled, and Issue Receipt works."
+        steps: |
+          **GIVEN** the operator presents a faulty smartcard
+          **WHEN** the faulty smartcard screen is shown
+          **THEN** Charge Full Fare, Issue Ticket and Select Card Type are offered
+          **AND** a Cancel option is available
+          **WHEN** the operator chooses Issue Ticket then Issue Receipt
+          **THEN** a ticket is produced
+          **AND** its receipt is produced
+        expected: "A faulty smartcard offers the options with a working Cancel and Issue Receipt (regression: TIBU-25818, TIBU-21256)."
+  - path: ["Functional", "Issue Card", "Issue from Blank"]
+    cases:
+      - title: "Issue Card — issue from blank"
+        match: "Issue Card — issue from blank"
+        refs: ["TIBU-26845", "TIBU-21266", "TIBU-26760", "TIBU-21208", "TIBU-24715", "TIBU-25890"]
+        objective: "This test is to confirm the operator can issue a new card from blank: select card type, create the product with correct price, take payment, write the card and print a receipt, without sticking on 'Please wait' or 'Card Write Failed'."
+        steps: |
+          **GIVEN** an operator is signed on and presents a blank smartcard
+          **WHEN** the operator selects the card type and creates the product
+          **THEN** the product is created with the correct price
+          **AND** the Top-Up option text is not cut short
+          **WHEN** the operator takes payment
+          **THEN** the card is written
+          **AND** a receipt is printed
+          **AND** the device does not get stuck on 'Please wait' or 'Card Write Failed'
+        expected: "A blank card is issued end-to-end with correct pricing, written card, receipt and no stuck screens (regression: TIBU-26845, TIBU-21266, TIBU-26760, TIBU-21208, TIBU-24715, TIBU-25890)."

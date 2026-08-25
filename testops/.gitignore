@@ -1,0 +1,53 @@
+# Generated output — never committed
+reports/
+
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Tooling / venv
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Large flow reference assets — keep in a shared store / Git LFS, not the repo.
+# The DERIVED text (flow-annotations.md, transcribed flow maps, *.cases.yaml) IS committed.
+knowledge/flows/**/*.png
+knowledge/flows/**/*.webp
+knowledge/flows/**/*.jpg
+knowledge/flows/**/*.jpeg
+knowledge/flows/**/*.zip
+knowledge/bos/**/*.png
+knowledge/bos/**/*.webp
+knowledge/bos/**/*.jpg
+knowledge/bos/**/*.jpeg
+knowledge/bos/**/*.zip
+knowledge/flows/overflow_data.json
+knowledge/flows/ETMoverflow_data.json
+knowledge/flows/PVoverflow_data.json
+
+# Source trackers / spreadsheets can contain real test card PANs or other sensitive
+# data — keep raw files in a shared store; commit only the DERIVED *.cases.yaml.
+knowledge/**/*.xlsx
+knowledge/**/*.xls
+knowledge/**/*.csv
+
+# Full requirement-spec dumps stay local, never committed (see CLAUDE.md).
+/fbd*.txt
+/*_full.txt
+
+# One-off scratch/working files at repo root — never committed. Real deliverables
+# live under proposals/, tools/, docs/, knowledge/ with real names, not "scratch"/"dump".
+/scratch_*
+/*_dump*
+/*_scheme.txt
+/bos_move_ids.json
+/correction_limits_dump.txt

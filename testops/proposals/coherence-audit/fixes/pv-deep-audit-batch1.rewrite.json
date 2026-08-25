@@ -1,0 +1,185 @@
+[
+  {
+    "id": 4100981,
+    "refs": "FBD-100250, FBD-100335",
+    "citations": ["FBD-100250 §4.1 Fare Foregone Smartpasses (Senior, War Pensioner, Blind, ROI Senior, 60+ — matches case variation list exactly)", "FBD-100335 para 8 (\"Free/Half-fare Concession Smartpasses\" confirms Concession as a real umbrella term, not invented)"],
+    "change_note": "Refs were blank. Verified the 'Concession' variation list (60+, Blind, Senior, ROI Senior, War Pensioner) against FBD-100250's Fare Foregone card group exactly. Backfilled Refs; no wording change needed."
+  },
+  {
+    "id": 4100982,
+    "refs": "FBD-100250, gap-register Q12",
+    "citations": ["FBD-100250 Funded Passes section (Partially Sighted, No DL, Learning Disability, DLA, PIPS, yLink, 24 Plus)", "gap-register Q12 (George confirms 'Half-Fare' is the real product name; 'Concession' elsewhere was a duplicate)"],
+    "change_note": "Refs were blank. Variation list (DLA, Learning Disability, No Driving Licence, PIPS, Partially Sighted) matches FBD-100250's Funded Passes group. Backfilled Refs; no wording change needed."
+  },
+  {
+    "id": 4100983,
+    "refs": "FBD-100250, FBD-100277",
+    "citations": ["FBD-100250 §4.3 SmartLink/iLink/Ulsterbus Town Service & DayLink (Metro DayLink real product)", "FBD-100277 lookup numbers 20/21 (DayLink Adult/Child)"],
+    "change_note": "Refs were blank. Product name and expiry-reject behaviour confirmed against FBD-100250/277. No wording change needed."
+  },
+  {
+    "id": 4100984,
+    "refs": "FBD-100261, FBD-100277, FBD-100271",
+    "citations": ["FBD-100261 Metro Multi-Journey zone config (Inner/City/Extended)", "FBD-100277 card-reference zone/alighting lookup", "FBD-100271 Multi-Journey transfer/passback scope"],
+    "change_note": "Refs were blank. Zone-based validation and passback claims are grounded in FBD-100261/100277/100271. No wording change needed."
+  },
+  {
+    "id": 4100985,
+    "refs": "FBD-100250, FBD-100260",
+    "citations": ["FBD-100250 §4.3 SmartLink/iLink/UTS/DayLink (Metro Travelcard)", "FBD-100260 para 133 (Travelcard smartcards incl. Metro Travelcard)"],
+    "change_note": "Refs were blank. Product name confirmed real in both specs. No wording change needed."
+  },
+  {
+    "id": 4100986,
+    "refs": "FBD-100250, FBD-100261, FBD-100277",
+    "citations": ["FBD-100250 §4.3 (Ulsterbus Multi-Journey)", "FBD-100261 Ulsterbus MJ card-ref issue flow", "FBD-100277 lookup 09/10 Ulsterbus MJ Adult/Child"],
+    "steps": [
+      {"content": "**WHEN** you present the card with journeys remaining", "expected": "**THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied"},
+      {"content": "**WHEN** you present the card with no journeys left", "expected": "**THEN** the PV shows the reject screen for exhausted journeys (**GAP** — exact screen name unconfirmed against the approved design set; confirm before running)"},
+      {"content": "**WHEN** you check the back office for the accepted presentation", "expected": "**THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"}
+    ],
+    "change_note": "Product grounded (backfilled Refs). Per coherence-audit findings.md, the 'No Journeys Left' screen name is not in the enumerated approved-screen set (same issue as sibling C4101090) — added a GAP marker on the exact wording rather than asserting an unconfirmed string. Drafted a new gap-register question (see final report)."
+  },
+  {
+    "id": 4100987,
+    "refs": "FBD-100250, FBD-100271",
+    "citations": ["FBD-100250 §4.3 (iLink zones 1-4+NW; Belfast Visitor Pass = same product as iLink)", "FBD-100271 Rail Smartcard transfer scope (iLink incl. Belfast Visitor Pass)"],
+    "change_note": "Refs were blank. iLink / Belfast Visitor Pass equivalence confirmed real in FBD-100250. No wording change needed."
+  },
+  {
+    "id": 4100988,
+    "refs": "FBD-100250, FBD-100271",
+    "citations": ["FBD-100250 §4.3 (aLink — personalised, non-personalised group)", "FBD-100271 Rail Smartcard transfer scope (aLink included)"],
+    "change_note": "Refs were blank. aLink confirmed a real product in FBD-100250. No wording change needed."
+  },
+  {
+    "id": 4100989,
+    "refs": "FBD-100236, FBD-100250",
+    "citations": ["FBD-100236 (yLink/24+ personalised, date-based expiry = end of concessionary period, no time-of-day band documented)", "FBD-100250 Funded Passes (yLink, 24 Plus date-expiry rules)"],
+    "steps": [
+      {"content": "**WHEN** you present the yLink/24+ card outside its valid time", "expected": "**THEN** the PV rejects it (**UNCONFIRMED** — yLink/24+ intraday time-of-day restriction vs. simple date expiry not established in the specs reviewed; confirm the real mechanism and reject screen before running)"}
+    ],
+    "change_note": "Every other date-window product in this section (Daylink, Travelcard, aLink, Employee) rejects with 'Product Expired', a pure date check per FBD-100236/250. Only this case asserts an intraday 'Invalid Time Of Day' band for yLink/24+, and no source establishes that band exists distinct from ordinary date expiry — this looks like the EA Smartpass time-band pattern (C4100991) may have been copied across by mistake. Marked UNCONFIRMED rather than asserting or silently 'fixing' to Product Expired. Drafted a new gap-register question (see final report)."
+  },
+  {
+    "id": 4100990,
+    "refs": "FBD-100250",
+    "citations": ["FBD-100250 Staff and Dependants Passes section (Staff, Staff Spouse, Dependants, Retired Staff, External — matches 'Staff Partner'≈Staff Spouse, 'Dependents Pass'≈Dependants)"],
+    "change_note": "Refs were blank. Variation list matches FBD-100250's Corporate/Staff-and-Dependants group closely enough to ground as real (naming is a paraphrase of the spec's exact labels, not invented). No wording change needed."
+  },
+  {
+    "id": 4100991,
+    "refs": "FBD-100250, coherence-audit/pv.findings.md",
+    "citations": ["FBD-100250 EA Pupil/FE date rules (start always 1 Sept, expiry always 30 June — a date/expiry check, distinct from weekday/holiday time-of-day banding)"],
+    "preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** you have a valid EA Pupil Smartpass presented on a school-term weekday within its valid time\n**AND** you have the same pass to present at a weekend or during a school holiday\n**AND** you can verify records in the CloudFare activity log, MERIT and SmartTrack",
+    "steps": [
+      {"content": "**WHEN** you present the EA Smartpass within its valid time on a school day", "expected": "**THEN** the PV shows the Tag successful screen"},
+      {"content": "**WHEN** you present it at a weekend or during a school holiday", "expected": "**THEN** the PV shows the Invalid Time Of Day reject screen"},
+      {"content": "**WHEN** you check the back office for the accepted presentation", "expected": "**THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack"}
+    ],
+    "citations_note": null,
+    "change_note": "Per pv.findings.md (Med): the single expected outcome ('Invalid Time Of Day') did not correspond to all seeded conditions (before-start/after-expiry are date checks yielding a different reason, per FBD-100250's academic-year rule). Narrowed the case to the time-of-day dimension only (weekend/holiday/outside band); before-start/after-expiry now belong to C4100992's expiry-reason coverage."
+  },
+  {
+    "id": 4101090,
+    "refs": "FBD-100261, FBD-100271",
+    "citations": ["FBD-100261/271 (multi-device product state is shared via CloudFare/MERIT back office, so a top-up elsewhere is visible to the PV)"],
+    "steps": [
+      {"content": "**WHEN** you present the last-day-of-travel card and the no-days-remaining card", "expected": "**THEN** the PV accepts the last-valid-day card (Tag successful)\n**AND** the PV shows the reject screen for an exhausted product (**GAP** — exact screen name unconfirmed against the approved design set; confirm before running)"}
+    ],
+    "change_note": "Per pv.findings.md (Low): the 'No Days Left' screen name is not in the enumerated approved-screen set (same issue as sibling C4100986's 'No Journeys Left'). Replaced the asserted screen name with a GAP marker rather than a plausible-but-unverified string. Backfilled Refs for the cross-device product-state claim."
+  },
+  {
+    "id": 4100992,
+    "refs": "FBD-100250, FBD-100277",
+    "citations": ["FBD-100250 (Product Expired = date-expiry rule per card type)", "FBD-100277 (Not Valid At This Location = zone/alighting lookup miss)"],
+    "change_note": "Refs were blank. The reason-screen taxonomy in this summary case aligns with the per-product reject reasons already grounded in the sibling smartcard cases; backfilled the two most load-bearing citations."
+  },
+  {
+    "id": 4100993,
+    "refs": "FBD-100271",
+    "citations": ["FBD-100271 (\"Passback always applies\" — confirms passback as a real, distinct mechanism from the transfer window)"],
+    "change_note": "Refs were blank. Passback as a concept is grounded in FBD-100271 (stated in the rail-transfer context but describing passback generally). The specific screen names 'Passback Journeys Left'/'Passback Days Left' are not independently confirmed in the specs reviewed but are consistent with the suite's established vocabulary; not blocking."
+  },
+  {
+    "id": 4102428,
+    "refs": "TIBU-25444, FBD-100167",
+    "citations": ["FBD-100167 CR116 rule: expiry 00:00-04:00 shows previous day, no time (exact worked examples in spec match this case's claim)"],
+    "change_note": "Added the FBD-100167 citation (the CR116 rule was already correctly described but only cited via the TIBU ticket, not the underlying spec)."
+  },
+  {
+    "id": 4101006,
+    "refs": "TIBU-27324, FBD-100167",
+    "citations": ["FBD-100167 (multi-use validate/decrement/reject-when-exhausted mechanism)"],
+    "change_note": "Added FBD-100167 as a supporting citation for the general multi-use validation mechanism (the beep-pattern regression detail remains correctly pinned to TIBU-27324 / old-suite C4091912)."
+  },
+  {
+    "id": 4100996,
+    "refs": "FBD-100271",
+    "citations": ["FBD-100271 Rail Smartcard transfer scope: iLink, Belfast Visitor Pass, aLink, Staff & Spouse, EA Pupil/FE — matches the case's variation list exactly"],
+    "change_note": "Refs were blank. Variation list (iLink, Belfast Visitor, Staff Smartpass, aLink, EA Pupil/FE) is an exact match to FBD-100271's defined Rail Smartcard transfer scope — strong grounding, no wording change needed."
+  },
+  {
+    "id": 4100997,
+    "refs": "FBD-100167, FBD-100277",
+    "citations": ["FBD-100167 zone-validity encoding", "FBD-100277 zone/alighting lookup"],
+    "change_note": "Refs were blank. Zone-based accept/reject behaviour is grounded generically in the zone-encoding/lookup specs; no product-specific claim to verify further."
+  },
+  {
+    "id": 4102429,
+    "refs": "coherence-audit/pv.findings.md",
+    "citations": ["Design C4101036 \"ABT Tag successful - Rail\" (screen exists; exact label text not confirmed in specs reviewed)"],
+    "steps": [
+      {"content": "**WHEN** you tap the valid contactless card and it is accepted", "expected": "**THEN** the PV shows the ABT Tag successful screen\n**AND** the success screen displays an additional Northern-Ireland-only travel line (**UNCONFIRMED** — exact label text not verified against the approved design; confirm against C4101036 before running)"}
+    ],
+    "change_note": "Per pv.findings.md (Low): the literal string \"Northern Ireland Travel Only\" is not confirmed against the approved screen design. Replaced the asserted literal string with an UNCONFIRMED marker naming the outcome (an NI-only travel line exists) without asserting unverified exact wording. Drafted a new gap-register question (see final report)."
+  },
+  {
+    "id": 4103562,
+    "citations": ["FBD-100720 Phase 2 (Enable Pilot List=True + ABT-enabled topology via ABT Type route attribute; enrolled FEIG token -> normal cEMV flow + audit)"],
+    "change_note": "Already correctly cited (FBD-100720); added precise citation pointer to the Phase 2 section confirming every clause. No wording change."
+  },
+  {
+    "id": 4103563,
+    "citations": ["FBD-100720 Phase 2 (non-enrolled FEIG token -> standard rejection screen, NO auditing — exact match)"],
+    "change_note": "Already correctly cited (FBD-100720, TIBU-28805); added precise citation pointer. No wording change."
+  },
+  {
+    "id": 4103564,
+    "citations": ["FBD-100720 Phase 1 (registration file uploaded as a zip to CloudFare Device Log Manager once per day at End-of-Day, not real-time — exact match)"],
+    "change_note": "Already correctly cited (FBD-100720); added precise citation pointer. No wording change."
+  },
+  {
+    "id": 4101007,
+    "refs": "FBD-100250, FBD-100271",
+    "citations": ["FBD-100250 (legacy Mifare journey/time-based product taxonomy)", "FBD-100271 (transfer/journey decrement logic applies to the same legacy products)"],
+    "change_note": "Refs were blank. This is a summary case over the already-grounded legacy product set; backfilled the two anchor citations."
+  },
+  {
+    "id": 4101008,
+    "refs": "FBD-100250, FBD-100236, FBD-100690",
+    "citations": ["FBD-100250 (Mifare legacy card format)", "FBD-100236 (DESFire ABT card format)", "FBD-100690 (FEIG is the confirmed reader hardware referenced for PV cEMV/token reads)"],
+    "change_note": "Refs were blank. MIFARE and DESFire are both real, spec-defined card technologies (FBD-100250/236); FEIG as the reading hardware is corroborated by FBD-100690's FEIG-token references. No wording change needed."
+  },
+  {
+    "id": 4101009,
+    "refs": "FBD-100271",
+    "citations": ["FBD-100271 (\"Passback always applies\" — general passback mechanism, product-rule governed)"],
+    "change_note": "Refs were blank. Same grounding basis as C4100993. No wording change needed."
+  },
+  {
+    "id": 4103566,
+    "citations": ["FBD-100271 Rail Smartcard transfers: PV uses PRODUCT Transfer Time property; WTS SmartTransfer on pass; example matches iLink Zone 4/Botanic/Lanyon Place scenario exactly"],
+    "change_note": "Already correctly cited (FBD-100271); confirmed the PRODUCT-property claim and the WTS SmartTransfer audit name are an exact match to the spec. Added precise citation pointer, no wording change."
+  },
+  {
+    "id": 4103567,
+    "citations": ["FBD-100271 Rail Smartcard transfers: outside LastValidated+TransferTime -> WTS SmartUse journey charge — exact match"],
+    "change_note": "Already correctly cited (FBD-100271); confirmed exact match. Added precise citation pointer, no wording change."
+  },
+  {
+    "id": 4103565,
+    "citations": ["FBD-100658 (paymentType=ABT, revenue=0, TotoTap/Location structure)", "FBD-100690 (product id 6000 = NIR TOTO travel product, resolved via TMS 'ABT Tap Product Name')"],
+    "change_note": "Already correctly cited (FBD-100690, FBD-100658); confirmed every asserted field (TotoTap/Location, product id 6000, paymentType ABT, revenue 0) against both specs exactly. Added precise citation pointers, no wording change."
+  }
+]

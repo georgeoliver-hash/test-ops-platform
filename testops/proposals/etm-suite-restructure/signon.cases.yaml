@@ -1,0 +1,222 @@
+# ETM — Sign On & Session (Functional, @mode(all): Metro + Ulsterbus)
+# Consolidates the 28 old AA-ETM-Acceptance Test sign-on/off cases (Driver/Supervisor/Technician)
+# grounded in the "Driver Sign On" Overflow flow annotations + screens. House lock-out rule: the
+# failed-attempt threshold is TMS/config-driven (do NOT hard-code 3). Abandon after Duty entry
+# records End-of-Shift + prints a Driver Waybill. Idle timeouts: 30s during sign-on, 60s supervisor.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Sign On & Session / Driver
+    cases:
+      - title: Driver Sign On — Manual, first use
+        objective: This test is to confirm that aDriver can sign on to an ETM with a valid ID and PIN through the full first-use flow, and that the shift is audited to CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_2_0 - Sign On Details Entered - First Use Safety Check.png
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **AND** the ETM is communicating with CloudFare
+          **WHEN** the Enter key is pressed and a valid Staff ID (4–6 digits) and PIN are entered, confirming each with Enter
+          **THEN** the ETM authenticates the operator against the authorised user list
+          **AND** each PIN digit is masked with a '*' on entry
+          **AND** the First Use Safety Check screen is displayed
+          **WHEN** the Driver confirms the bus has been safety checked and answers the Any Defects prompt
+          **THEN** the Duty Number entry screen is displayed
+          **WHEN** an invalid duty number is entered, then a valid duty number is entered and confirmed
+          **THEN** the invalid duty is rejected before the valid one advances to route selection
+          **WHEN** the Driver selects a route by letters or number, with inbound and outbound journeys filtered
+          **THEN** the matching route is selected
+          **WHEN** the Driver selects the journey, an invalid journey number is rejected, and the Route Summary is confirmed
+          **THEN** the Message of the Day screen is presented, or its Unavailable fallback after the 5-second timeout
+          **WHEN** the Driver confirms the Message of the Day
+          **THEN** the Word and Colours of the Day screen is presented, or its Unavailable fallback after the 5-second timeout
+          **WHEN** the Driver confirms the Word and Colours of the Day
+          **THEN** the FLU screen is displayed
+          **AND** the start of shift is audited
+          **AND** the running total is recorded
+          **WHEN** the shift is reviewed in CloudFare
+          **THEN** the staff activity, shift details and defect record can be identified
+        expected: The Driver reaches the FLU screen signed on, and the start of shift (with defect record) is auditable in CloudFare.
+      - title: Driver Sign On — Smartcard, first use
+        objective: This test is to confirm that aDriver can sign on by presenting a Staff pass, which pre-populates the Staff ID.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **AND** the ETM is communicating with CloudFare
+          **WHEN** the Driver presents a Staff pass carrying a Staff ID
+          **THEN** the operator sign-on screen is displayed with the Staff ID pre-populated
+          **AND** the PIN field is highlighted for entry
+          **WHEN** a valid PIN is entered and confirmed with Enter
+          **THEN** the ETM authenticates the operator and displays the First Use Safety Check screen
+          **WHEN** the Staff pass is removed
+          **THEN** the ETM remains on the First Use Safety Check screen and sign-on continues as normal
+        expected: The Staff pass pre-populates the ID; after a valid PIN the Driver proceeds through the first-use flow.
+      - title: Driver Sign On — first use with defects recorded
+        objective: This test is to confirm that aDriver can record vehicle defects during first-use sign-on and that the defect record is audited.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver is at the Any Defects screen during first-use sign-on
+          **WHEN** the Driver selects Yes to record that the bus has defects and enters the defect detail
+          **THEN** the defect is recorded against the shift
+          **AND** sign-on continues to the Duty Number entry screen
+          **WHEN** the shift is reviewed in CloudFare
+          **THEN** the defect record can be identified against the Driver and vehicle
+        expected: Recorded defects are captured against the shift and visible in CloudFare.
+      - title: Driver Sign On — subsequent use
+        objective: This test is to confirm that subsequent-use sign-on, including when a First Use Safety Check is or is not required on board, and when it is overridden.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen and a first-use safety check has already been performed for the vehicle today
+          **WHEN** the Driver signs on with a valid ID and PIN
+          **THEN** the ETM authenticates the operator
+          **AND** the First Use Safety Check is skipped when already satisfied on board, or presented/overridden per configuration
+          **WHEN** the Driver completes duty, route and journey selection
+          **THEN** the FLU screen is displayed
+          **AND** the shift is audited
+        expected: Subsequent-use sign-on honours the on-board safety-check state and reaches FLU.
+      - title: Driver Sign On — incorrect PIN locks the device after the configured attempts
+        objective: This test is to confirm that theETM blocks sign-on after the configured number of failed PIN attempts (manual or Staff pass) and audits the lock-out.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_1_5 - Sign On - Device Locked.png
+        steps: |
+          **Given** the ETM is in idle mode prompting for sign-on
+          **AND** a configurable failed-attempt threshold is set in the TMS
+          **WHEN** an invalid PIN is entered for a valid Staff ID, by manual entry and by Staff pass
+          **THEN** the Sign On Failed screen is displayed after each attempt
+          **WHEN** the failed attempts reach the configured threshold
+          **THEN** the device is locked against further sign-on
+          **AND** the lock-out is audited
+        expected: After the configured number of failed PIN attempts the device locks and the event is audited.
+      - title: Driver Sign On — communications locked / not communicating with CloudFare
+        objective: This test is to confirm that sign-on behaviour when the ETM has not communicated with CloudFare within the configured period.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_0_1 - Communications Locked.png
+        steps: |
+          **Given** the ETM has not communicated with CloudFare for the configured number of hours
+          **WHEN** the idle screen is shown
+          **THEN** a bad-comms indicator is displayed and communications are locked
+          **WHEN** the Driver attempts to sign on
+          **THEN** sign-on proceeds in the not-communicating state per design
+          **AND** the not-communicating condition is made clear to the Driver
+        expected: A comms-locked ETM signals bad comms and handles sign-on per the not-communicating design.
+      - title: Driver Sign On — abandon
+        objective: This test is to confirm that abandoning sign-on; abandoning before route selection records no shift, while abandoning after Duty entry records an End-of-Shift and prints a Driver Waybill.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver is mid sign-on
+          **WHEN** the 'P' key is pressed to reach the Sign Off prompt before route selection
+          **THEN** sign-on is abandoned with no shift recorded
+          **WHEN** sign-on is abandoned after Duty Number entry (Route Selection onwards)
+          **THEN** an End-of-Shift record is recorded
+          **AND** a Driver Waybill is printed
+        expected: Abandon before route = no shift; abandon after duty = End-of-Shift recorded and Waybill printed.
+      - title: Driver Sign On — idle timeout returns to idle
+        objective: This test is to confirm that with no key press during sign-on the ETM times out to the idle screen after 30 seconds, signing the Driver out if signed in.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver is mid sign-on
+          **WHEN** no button is pressed for 30 seconds
+          **THEN** the ETM returns to the Idle screen
+          **AND** if the Driver was signed in they are signed out
+        expected: A 30-second inactivity timeout returns the ETM to idle and signs out any signed-in Driver.
+      - title: Driver Sign On — correct topology and fares data presented for the route
+        objective: This test is to confirm that theETM presents the correct topology/fares data for the signed-on route.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the Driver signs on to a known route in Metro mode
+          **WHEN** sign-on completes and the FLU screen is displayed
+          **THEN** the topology and fares data presented match the configured data for that route and mode
+        expected: The FLU presents topology/fares matching the route's configured data. (Run against Metro and Ulsterbus configurations.)
+      - title: Driver Sign Off
+        objective: This test is to confirm that aDriver can sign off and that the sign-off is audited.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        attach: knowledge/flows/etm/driver-sign-on/01_1_6 - Sign Off.png
+        steps: |
+          **Given** the Driver is signed on with the FLU screen displayed
+          **WHEN** the Driver signs off
+          **THEN** the ETM returns to the Idle screen
+          **AND** the operator sign-off is audited
+        expected: The Driver signs off, the ETM returns to idle, and the sign-off is audited.
+
+  - path: Functional / Sign On & Session / Supervisor
+    cases:
+      - title: Supervisor Sign On — Manual
+        objective: This test is to confirm that aSupervisor can sign on manually with a valid ID and PIN to reach the Supervisor menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **WHEN** a Supervisor signs on with a valid ID and PIN
+          **THEN** the Supervisor menu is displayed
+        expected: A valid Supervisor manual sign-on reaches the Supervisor menu.
+      - title: Supervisor Sign On — Smartcard
+        objective: This test is to confirm that aSupervisor can sign on by presenting a Staff card to reach the Supervisor menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **WHEN** a Supervisor presents a valid Staff card and enters a valid PIN
+          **THEN** the Supervisor menu is displayed
+        expected: A valid Supervisor smartcard sign-on reaches the Supervisor menu.
+      - title: Supervisor Sign On — device locks after the configured attempts
+        objective: This test is to confirm that theETM locks against Supervisor sign-on after the configured number of failed PIN attempts.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is prompting for sign-on with a configured failed-attempt threshold
+          **WHEN** a Supervisor enters an invalid PIN up to the configured threshold
+          **THEN** the device is locked against further sign-on
+          **AND** the lock-out is audited
+        expected: Supervisor sign-on locks after the configured failed-attempt threshold and is audited.
+      - title: Supervisor — unlock a PIN-locked device
+        objective: This test is to confirm that aSupervisor can unlock a PIN-locked device with their Staff card, and that the unlock is auditable in CloudFare.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** an operator has PIN-locked the device
+          **WHEN** the Supervisor signs in with their Staff card
+          **THEN** the Supervisor menu is displayed
+          **AND** the device is no longer PIN-locked
+          **WHEN** the Activity Log for the device is filtered in CloudFare Estate Management
+          **THEN** an Unlocked entry for the device is shown for the time of the action
+        expected: A Supervisor Staff-card sign-in clears the PIN lock; the unlock is visible in the CloudFare Activity Log.
+      - title: Supervisor Sign Off — manual and idle timeout
+        objective: This test is to confirm that aSupervisor can exit Supervisor mode manually, and that a 60-second idle timeout returns to idle, auditing the sign-off in both cases.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the Supervisor menu
+          **WHEN** the Supervisor signs off manually
+          **THEN** the ETM returns to idle
+          **AND** the sign-off is audited
+          **WHEN** no buttons are pressed for 60 seconds instead
+          **THEN** the ETM returns to idle mode
+          **AND** the operator sign-off is audited
+        expected: Supervisor mode exits on manual sign-off or after a 60s idle timeout, auditing the sign-off.
+
+  - path: Functional / Sign On & Session / Technician
+    cases:
+      - title: Technician Sign On — Manual
+        objective: This test is to confirm that aTechnician can sign on manually with a valid ID and PIN to reach the Technician menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **WHEN** a Technician signs on with a valid ID and PIN
+          **THEN** the Technician menu is displayed
+        expected: A valid Technician manual sign-on reaches the Technician menu.
+      - title: Technician Sign On — Smartcard
+        objective: This test is to confirm that aTechnician can sign on by presenting a Staff card to reach the Technician menu.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is displaying the idle screen
+          **WHEN** a Technician presents a valid Staff card and enters a valid PIN
+          **THEN** the Technician menu is displayed
+        expected: A valid Technician smartcard sign-on reaches the Technician menu.
+      - title: Technician Sign On — device locks after the configured attempts
+        objective: This test is to confirm that theETM locks against Technician sign-on after the configured number of failed PIN attempts.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** the ETM is prompting for sign-on with a configured failed-attempt threshold
+          **WHEN** a Technician enters an invalid PIN up to the configured threshold
+          **THEN** the device is locked against further sign-on
+          **AND** the lock-out is audited
+        expected: Technician sign-on locks after the configured failed-attempt threshold and is audited.

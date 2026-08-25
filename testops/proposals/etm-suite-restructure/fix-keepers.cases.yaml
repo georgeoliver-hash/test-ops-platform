@@ -1,0 +1,79 @@
+# Surgical fix: split the 5 compound THENs in 4 consolidated keepers (matched by CURRENT title).
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Fare Look-Up / Sales
+    cases:
+      - title: FLU — numeric entry, change and last transaction
+        match: FLU — numeric entry, change and last transaction
+        objective: This test is to confirm numeric entry for change and stage-by-ID, the error-bar messages, and the last-transaction display.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver is signed on at the FLU screen
+          **WHEN** the Driver enters an amount tendered
+          **THEN** the change due is calculated
+          **AND** the change due is displayed
+          **WHEN** the Driver enters a stage ID to set the boarding or alighting stage
+          **THEN** the matching stage is set
+          **WHEN** an entry cannot be completed
+          **THEN** the relevant error-bar message is shown
+          **AND** the input is cleared, and 'C' clears one character
+          **WHEN** a sale completes
+          **THEN** a success confirmation shows for three seconds with the last transaction in the bottom-right of FLU
+        expected: Numeric entry calculates change and sets stages by ID; invalid entries show the error-bar message and clear ('C' clears a char); completed sales show a 3s success plus the last transaction.
+  - path: Functional / Ticket Issue
+    cases:
+      - title: Ticket Issue — annulment (last ticket, timeout and refusal)
+        match: Ticket Issue — annulment (last ticket, timeout and refusal)
+        objective: This test is to confirm annulling the last issued ticket, the unconfirmed-timeout behaviour, and refusal where annulment is not permitted.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has just issued a ticket
+          **WHEN** the Driver annuls the last issued ticket
+          **THEN** the transaction is annulled
+          **AND** an annulment is recorded against the shift
+          **WHEN** the annul prompt is left unconfirmed past its timeout
+          **THEN** the annulment is abandoned
+          **AND** the original ticket remains valid
+          **WHEN** the Driver attempts to annul a non-annullable transaction
+          **THEN** the annulment is refused with the reason shown
+        expected: The last ticket can be annulled (single or basket); an unconfirmed annul times out leaving the ticket valid; annulment is refused with a reason for boarding-stage-changed, MJ-validated, pass-validated and concession-pass cases. Run Adult and Child.
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver options — view information screens
+        match: Driver options — view information screens
+        objective: This test is to confirm the Driver can view the information screens — totals, ticket history, messages, Word & Colour and paper status.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Driver has opened Driver options
+          **WHEN** the Driver views the duty and journey totals
+          **THEN** the totals are displayed
+          **WHEN** the Driver views the ticket history and last ticket issued
+          **THEN** the tickets are listed with annulled ones marked
+          **AND** the last ticket detail is shown
+          **WHEN** the Driver views Messages and the Word and Colour of the Day
+          **THEN** each is displayed, with an Unavailable state when it cannot be retrieved
+          **WHEN** the Driver views Paper Status
+          **THEN** the current paper status is displayed
+        expected: Driver options shows totals, ticket history/last ticket (annulled marked), Messages, Word & Colour (Unavailable fallback) and paper status.
+  - path: Functional / Technician Menu
+    cases:
+      - title: Technician — device status and versions
+        match: Technician — device status and versions
+        objective: This test is to confirm a Technician can view device status (other devices, GPS, card reader, paper) and the software/configuration versions and serial numbers.
+        overflow: https://overflow.io/s/NDLGF6NF/
+        steps: |
+          **Given** a Technician is at the Device Status screen
+          **WHEN** the Technician views other devices, GPS, the card reader and paper status
+          **THEN** the corresponding status detail is displayed
+          **WHEN** a smartcard is presented at the card reader screen
+          **THEN** the card status is displayed
+          **AND** the reader can be rebooted there
+          **WHEN** the Technician opens Versions
+          **THEN** the software versions, configuration versions and serial numbers are displayed and can be printed
+        expected: A Technician can view device status (other-devices/GPS/card-reader/paper) and view/print versions and serial numbers.

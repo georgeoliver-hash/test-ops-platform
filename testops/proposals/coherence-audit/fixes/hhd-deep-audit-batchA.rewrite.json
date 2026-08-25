@@ -1,0 +1,170 @@
+[
+  {
+    "id": 4103804,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "FBD-100373 is Refund-on-POS only (verified via extract_req --terms decline/timeout/cancel/etc — zero hits outside refund flow); dropped as a mismatched citation for a card-SALE case. FBD-100183 §Miura M020 confirms EMV L1/L2 + P2PE certification and chip-and-PIN keypad, grounding the sale capability. FBD-100320 kept for the TID/Terminal-Group facts."
+  },
+  {
+    "id": 4103805,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103804: FBD-100373 (refund-only) replaced with FBD-100183 (M020 EMV L1/L2/P2PE cert, chip-and-PIN)."
+  },
+  {
+    "id": 4103806,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix: FBD-100373 (refund-only, no contactless content) replaced with FBD-100183, which confirms the M020's ISO 14443 A/B contactless EMV support."
+  },
+  {
+    "id": 4103807,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "FBD-100183 explicitly names \"major mobile wallet contactless support\" for the M020 — a direct citation for this case; FBD-100373 (refund-only) removed."
+  },
+  {
+    "id": 4103808,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "FBD-100373 has no decline/EMV-flow content (confirmed by targeted search — only refund text). No dedicated M020 sale/decline-flow spec exists in the library; FBD-100183 (EMV L1/L2/P2PE cert) is the best available grounding for the base capability. Wording is already generic (\"a decline message\", not an invented exact string) so no GAP marker needed — the outcome (no ticket without approved payment) is basic commerce logic, not device-specific invention."
+  },
+  {
+    "id": 4103809,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103808 (expired-card decline variant)."
+  },
+  {
+    "id": 4103810,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103808 (blocked-card decline variant)."
+  },
+  {
+    "id": 4103811,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103808 (EMV timeout variant)."
+  },
+  {
+    "id": 4103812,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103808 (cancel-before-card-presented variant)."
+  },
+  {
+    "id": 4103813,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "change_note": "Same fix as C4103808 (cancel-refused-after-card-presented variant)."
+  },
+  {
+    "id": 4103820,
+    "action": "reword",
+    "refs": "FBD-100250,FBD-100389",
+    "change_note": "FBD-100271 is Legacy Smartcard Transfer (Metro Transfer Zone / passback-vs-transfer logic only — confirmed no zone-acceptance content by search); wrong-context citation, removed. FBD-100389 (ABT Scenarios) §2.2 states taps are permitted \"for the current boarding location... in the correct zone\" — the actual accept-in-zone business rule. FBD-100250 kept for the iLink zone-bitmap card-format basis."
+  },
+  {
+    "id": 4103821,
+    "action": "reword",
+    "refs": "FBD-100250,FBD-100389",
+    "change_note": "Added FBD-100389 (ABT Scenarios §2.2, zone-acceptance rule) alongside FBD-100250 (zone-bitmap format) to ground the reject-outside-zone outcome symmetrically with C4103820."
+  },
+  {
+    "id": 4103823,
+    "action": "reword",
+    "refs": "FBD-100250,FBD-100658",
+    "change_note": "FBD-100250 only grounds the card's expiry-date encoding, not the validator's reject decision. Added FBD-100658 DeclinedReason enum value 1 = \"Card Expired\" to ground the rejection/audit outcome itself."
+  },
+  {
+    "id": 4103824,
+    "action": "reword",
+    "refs": "FBD-100250,FBD-100658",
+    "change_note": "Added FBD-100658 DeclinedReason enum value 2 = \"On Deny List\" to ground the rejection outcome. Note: the requirement docs use \"Deny List\", not \"hotlist\" — but \"hotlist\" is confirmed established Translink terminology elsewhere (knowledge/devices/etm.md old-suite section names; FBD-100340 distilled note REQ-0910.0 uses \"hotlisted\" directly), so the case wording is fine as-is; only the citation was thin."
+  },
+  {
+    "id": 4103827,
+    "action": "reword",
+    "refs": "FBD-100271,FBD-100658",
+    "change_note": "Added FBD-100658 DeclinedReason enum value 20 = \"Passback\" to ground the audit-side outcome alongside FBD-100271's passback-priority-over-transfer business rule."
+  },
+  {
+    "id": 4103828,
+    "action": "reword",
+    "refs": "FBD-100658,FBD-100307",
+    "change_note": "FBD-100658 (message structure) doesn't itself state CloudFare forwards to Merit. Added FBD-100307 (ABT Data Flow) §3.1.2/2.2, which states explicitly: \"Tap information from the device is sent to the CloudFare ABT module for processing... and forwarding on to Merit\" — direct grounding for the \"communicated on to Merit\" claim."
+  },
+  {
+    "id": 4103814,
+    "action": "reword",
+    "steps": [
+      {
+        "content": "**WHEN** the Operator retries card payment after communications are re-established",
+        "expected": "**THEN** the card-payment option becomes available again\n**GAP** — payment resume-after-comms-restore behaviour not in requirements; confirm before running"
+      }
+    ],
+    "change_note": "Searched FBD-100320/353/373/183 for comms-outage/restore behaviour — no hits. Nothing in the requirement library documents what happens to M020 card payment after a comms outage is restored; the claim is plausible (live-network dependency for card auth is established elsewhere, e.g. FBD-100373's PSP-timeout rule) but not itself confirmed. Flagged GAP rather than left silently thin. Logged to gap register."
+  },
+  {
+    "id": 4103815,
+    "action": "reword",
+    "refs": "FBD-100658",
+    "steps": [
+      {
+        "content": "**WHEN** the Operator views the printed ticket and receipt",
+        "expected": "**THEN** only a masked PAN is shown\n**AND** the full card number is not printed\n**GAP** — PAN masking on printed HHD ticket/receipt not in requirements; confirm before running"
+      }
+    ],
+    "change_note": "FBD-100373 (dropped — no PAN/masking content at all, confirmed by search). FBD-100658's MaskedPan is a field in the ABT-tap CardDetails audit block (smartcard/ABT context, different from an EMV card-sale printed ticket) — kept as a related-but-not-identical reference. Checked FBD-100183, FBD-100373, and the NIR/Glider HHD ticket-layout docs in Documents from Translink/Ticket Formats — none confirm PAN masking on the printed card-sale receipt. This is industry-standard PCI-DSS practice but not documented in the Translink spec library, so flagged GAP rather than assumed. Logged to gap register."
+  },
+  {
+    "id": 4103817,
+    "action": "reword",
+    "refs": "FBD-100320,FBD-100183",
+    "steps": [
+      {
+        "content": "**WHEN** the passenger completes a card payment on the M020",
+        "expected": "**THEN** the payment is approved\n**AND** the paper ticket is printed\n**GAP** — M020 sale-while-charging behaviour not in requirements; confirm before running"
+      }
+    ],
+    "change_note": "FBD-100373 (refund-only) dropped; FBD-100183 kept for general M020 hardware capability. No spec anywhere addresses whether being on charge/cradle affects M020 payment capability — flagged GAP. Logged to gap register."
+  },
+  {
+    "id": 4103818,
+    "action": "reword",
+    "refs": "FBD-100383",
+    "steps": [
+      {
+        "content": "**WHEN** the Operator selects the station reference number and takes card payment",
+        "expected": "**THEN** the sale is recorded against the selected station reference number\n**AND** the paper ticket is printed\n**GAP** — reference-number-station card-payment keying mechanism not in requirements; confirm before running"
+      }
+    ],
+    "change_note": "FBD-100320 and FBD-100373 (previous refs) contain zero mentions of \"reference number station\"/station reference keying — confirmed by targeted search. Replaced with FBD-100383 (Operator Hierarchy), which confirms Yorkgate as a real HHD-only NIR halt (grounds the worked example) but says nothing about a station-reference-number keying mechanism for card sales. That mechanism itself is unconfirmed anywhere in the library — flagged GAP. Logged to gap register."
+  },
+  {
+    "id": 4103819,
+    "action": "reword",
+    "refs": "FBD-100383",
+    "preconds": "**GIVEN** an Operator is signed on to an HHD in NIR-Rail mode at a reference-number station (e.g. Larne) with the M020 on charge\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+    "steps": [
+      {
+        "content": "**WHEN** the Operator selects the station reference number and takes card payment",
+        "expected": "**THEN** the sale is recorded against the selected station reference number\n**AND** the paper ticket is printed\n**GAP** — reference-number-station keying and M020-on-charge sale behaviour not in requirements; confirm before running"
+      }
+    ],
+    "change_note": "Same reference-number-station gap as C4103818, compounded with the M020-on-charge gap from C4103817. Also swapped the worked example from \"Carrickfergus\" (not found in any HHD-only-halt list) to \"Larne\" (confirmed HHD-only NIR halt per FBD-100383) so the concrete example is actually grounded. Logged to gap register."
+  },
+  {
+    "id": 4103829,
+    "action": "reword",
+    "preconds": "**GIVEN** an Operator is signed on to an HHD\n**AND** a valid Adult iLink smartcard is presented for a £20.00 top-up (example amount, confirm against the product configuration)\n**GAP** — HHD smartcard top-up not confirmed in requirements (FBD-100261 states multi-journey product recharge/issue uses a product-group UI that \"is only used by the POS device as this is the only device that will issue these smartcard products\"); confirm on live system before running",
+    "change_note": "CONFLICT, not resolved: FBD-100261 §5 states plainly the multi-journey product-group UI mechanism (which covers both SmartCreate/issue AND SmartRecharge/top-up, per §5.1/5.2's \"WTS SmartRecharge product for each journey variant\") \"is only used by the POS device as this is the only device that will issue these smartcard products.\" This is consistent with C4103832 in the same batch, which correctly states the HHD does NOT issue smartcards (POS-only) per the same doc. Whether HHD top-up is a genuine capability the spec is silent/stale on, or whether this case wrongly moved a POS-only capability onto the HHD, is a human call — flagged, not resolved. Logged to gap register as a CONFLICT."
+  },
+  {
+    "id": 4103830,
+    "action": "reword",
+    "preconds": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a valid Child iLink smartcard is presented for a £10.00 top-up (example amount, confirm against the product configuration)\n**GAP** — HHD smartcard top-up not confirmed in requirements (FBD-100261 states multi-journey product recharge/issue uses a product-group UI that \"is only used by the POS device as this is the only device that will issue these smartcard products\"); confirm on live system before running",
+    "change_note": "Same CONFLICT as C4103829 (card top-up variant). See that case's note. Logged to gap register as a CONFLICT (one shared gap entry covers both C4103829 and C4103830)."
+  }
+]

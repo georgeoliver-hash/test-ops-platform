@@ -1,0 +1,67 @@
+[
+  {
+    "id": 4104053,
+    "preconds": "**GIVEN** a lane commissioned with the primary app zip on the P microSD and the secondary app zip on the S microSD\n**AND** an example lane at York Street with the current live app pair loaded",
+    "action": "reword",
+    "change_note": "Removed the inline 'per FBD-100654' citation from the precondition text — FBD-100654 is already the case's Refs entry, so the body no longer duplicates it."
+  },
+  {
+    "id": 4104091,
+    "expected": "On mains failure with a user in the aisle the gate remains open. (pending integration)\n\n[Automatable: Yes]",
+    "refs": "FBD-100348 FUN",
+    "action": "reword",
+    "change_note": "Relocated the '(pending integration — FBD-100348 FUN.)' spec-paragraph citation out of the Expected-result prose and into Refs (kept the more specific 'FUN' section pointer); body now reads a bare '(pending integration)' tag."
+  },
+  {
+    "id": 4104092,
+    "expected": "A power loss of two seconds or less is ridden through and the gate resumes without a reboot.\n\n[Automatable: No]",
+    "action": "reword",
+    "change_note": "Dropped the redundant '(Folds TIBU-14160.)' citation from the Expected-result prose — TIBU-14160 is already in Refs."
+  },
+  {
+    "id": 4104093,
+    "expected": "The Emergency Release Button opens the gate and it recovers to its configured mode without a reboot. (pending integration)\n\n[Automatable: No]",
+    "action": "reword",
+    "change_note": "Dropped the redundant '(folds TIBU-16813/18635.)' citation from the Expected-result prose — both TIBU ids are already in Refs. Kept the '(pending integration)' tag."
+  },
+  {
+    "id": 4104094,
+    "expected": "Losing a validator heartbeat for the configured period raises a major fault. (pending integration)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "refs": "FBD-100348 INT,FBD-100266",
+    "action": "reword",
+    "change_note": "Relocated the '(pending integration — FBD-100348 INT.)' spec-paragraph citation out of the Expected-result prose and into Refs (kept the more specific 'INT' section pointer); body now reads a bare '(pending integration)' tag."
+  },
+  {
+    "id": 4104097,
+    "expected": "During a back-office outage the GV keeps validating and queues its audit data locally. (soft-failure)\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "action": "reword",
+    "change_note": "Shortened '(Soft-failure principle, FBD-100359.)' to a bare '(soft-failure)' tag — FBD-100359 is already in Refs."
+  },
+  {
+    "id": 4104098,
+    "expected": "On comms restore the queued audit data uploads to CloudFare with no loss and Last Communication updates.\n\n[Automatable: Yes · Cross-check: CloudFare]",
+    "refs": "FBD-100359,FBD-100263,TIBU-16455,TIBU-17104,TIBU-18566",
+    "action": "reword",
+    "change_note": "Relocated the '(Folds TIBU-16455/17104/18566.)' citation out of the Expected-result prose and into Refs (these three TIBU ids were not previously in Refs — added, not dropped)."
+  },
+  {
+    "id": 4104099,
+    "expected": "A sustained network outage takes the Ethernet GV offline and then to a communication-locked Out of Service state. (hard-failure)\n\n[Automatable: Yes]",
+    "action": "reword",
+    "change_note": "Shortened '(FBD-100359 hard-failure.)' to a bare '(hard-failure)' tag — FBD-100359 is already in Refs."
+  },
+  {
+    "id": 4104100,
+    "expected": "The 15-minute staff-list check updates Last Communication and resets Hours Since Last Communication, even with no validations.\n\n[Automatable: Partial · Cross-check: CloudFare]",
+    "refs": "FBD-100266,TIBU-18310",
+    "action": "reword",
+    "change_note": "Relocated the '(Folds TIBU-18310 spamming theme.)' citation out of the Expected-result prose and into Refs (TIBU-18310 was not previously in Refs — added, not dropped)."
+  },
+  {
+    "id": 4104101,
+    "expected": "Both heads sustain a quick succession of card and barcode validations without dropping or blocking valid taps. (needs-spec throughput)\n\n[Automatable: No]",
+    "refs": "FBD-100348,TIBU-18597,TIBU-21005,TIBU-16221",
+    "action": "reword",
+    "change_note": "Relocated the '(folds TIBU-18597/21005/16221 quick-succession theme.)' citation out of the Expected-result prose and into Refs (TIBU-16221 was not previously listed — added, not dropped); kept the 'needs-spec throughput' tag."
+  }
+]

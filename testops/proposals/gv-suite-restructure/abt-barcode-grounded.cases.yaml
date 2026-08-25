@@ -1,0 +1,476 @@
+# Translink GV (Gate Validator) — NEW consolidated cases, SPEC-GROUNDED areas only.
+# Target: **NEW** GV Test Suite (30286), project 42. Read-only source suite = 14973.
+# Push YAML draft — DO NOT push from this task; DO NOT edit existing cases.
+#
+# Grounded in issued specs:
+#   FBD-100690  NIR Tap On Tap Off (ABT cEMV taps, check order, Declined Reasons, gate-opens,
+#               exit deny-list exception, Gate Direction => Tap On/Off)
+#   FBD-100658  ABT Audit Specification (paymentType ABT, revenue 0, product ids, DeclinedReason enum, TapId)
+#   FBD-100167  Multiple Use Barcodes (result states, passback, gateline Unique-ID share CR105.2,
+#               rail £90 fare-fallback CR105.3, CR116 expiry display, BarcodeUsage zero-fare audit)
+# Old-suite grounding: titles pulled from suite 14973 sections ABT (727540-3), Multi-Use Barcodes
+#   (788254-7), Passback (727539) — the 4x mode clone collapsed to ONE shared tree.
+#
+# ---- SHARED vs DIRECTION decision (per structure.md; direction = TestRail Run Configuration) ----
+# DIRECTION is a Run Configuration {Entry · Exit · Bi-di A->B · Bi-di B->A}. The old 4x mode clone
+# (Entry/Exit/A-to-B/B-to-A, 1,016 cases) collapses to ONE shared tree authored here ONCE.
+# Genuine direction-divergent leaves authored separately (marked "[DIRECTION LEAF]"):
+#   1. Exit / bi-directional ABT deny-list exception (FBD-100690) — gate still opens, invalid audit, debt retry.
+#   2. Gate Direction => tap classification (FBD-100690) — entry gate audits Tap On; exit gate audits Tap Off.
+# (The 3rd known divergence, NIR Transfer direction, is needs-spec and NOT authored here.)
+# Everything else (success->gate opens, declined reasons, barcode validation, passback, audit) is
+# SHARED across all four directions and executed against each direction Run Configuration.
+
+suite: "**NEW** GV Test Suite"
+suite_id: 30286
+
+defaults:
+  template_id: 1
+  custom_devtypes: [15]
+  custom_autoconfirmation: false
+  custom_revstatus: 2
+
+sections:
+  # ============================================================================================
+  - path: [Functional, ABT cEMV Taps]
+    # Shared across all four Direction Run Configurations unless a case is flagged [DIRECTION LEAF].
+    cases:
+      - title: ABT Tap — a valid contactless card tap succeeds and the gate opens
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a passenger's valid contactless bank-card tap is accepted at the GV and the gate opens.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a route whose ABT Type is "Tap On Tap Off"
+          **AND** its home location is within the configured "Northern Ireland Zone"
+          **AND** the "ABT Tap Product Name" product (Product ID 6000) is configured
+          **AND** a valid, in-date Visa Debit card is presented to the reader
+          **WHEN** the passenger taps the card on the GV
+          **THEN** the success screen is displayed
+          **AND** the success beep sounds
+          **AND** the gate opens
+        expected: A valid cEMV tap is accepted, the success screen and beep are given, and the gate opens. Data variations, card scheme, Visa Debit / Visa Credit / Mastercard Debit / Mastercard Credit.
+      - title: ABT Tap — a successful tap posts an ABT audit record with zero revenue
+        refs: [FBD-100658, FBD-100690]
+        objective: This test is to confirm a successful cEMV tap posts a conformant ABT audit record to the back office.
+        steps: |-
+          **GIVEN** an NIR GV head has accepted a valid contactless tap at a rail station gate
+          **AND** the configured travel product is the NIR TOTO product (Product ID 6000)
+          **WHEN** the tap record is sent to the ABT back office
+          **THEN** the record shows paymentType "ABT"
+          **AND** the record shows revenue 0
+          **AND** the record shows CardType "emv"
+          **AND** the record carries the NIR TOTO Product ID 6000
+        expected: The successful tap posts an ABT record with paymentType ABT, zero revenue, CardType emv and the TOTO product id, as the back office calculates the fare.
+      - title: ABT Tap — the TapId is composed of DeviceId, TID and UNIX timestamp
+        refs: [FBD-100658]
+        objective: This test is to confirm the audit TapId is the DeviceId, Terminal ID and UNIX timestamp concatenated.
+        steps: |-
+          **GIVEN** an NIR GV head with DeviceId 0420 and Terminal ID 02201156 has accepted a tap
+          **AND** an example composed TapId of 042002201156881725545715
+          **WHEN** the tap record is sent to the ABT back office
+          **THEN** the TapId is the DeviceId, Terminal ID and UNIX timestamp concatenated
+        expected: The audit TapId concatenates DeviceId, Terminal ID and UNIX timestamp (e.g. 042002201156881725545715).
+      - title: ABT Tap — an expired card is declined with Declined Reason 1
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a card that fails the expiry check is declined and audited with Declined Reason 1.
+        steps: |-
+          **GIVEN** an NIR GV head is in service at a rail station gate
+          **AND** a contactless card whose expiry date has passed is presented
+          **WHEN** the passenger taps the expired card
+          **THEN** the invalid-tap screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 1
+        expected: An expired card is declined, the gate stays closed, and the tap is audited with Declined Reason 1 (Expired).
+      - title: ABT Tap — a card failing ODA is declined with Declined Reason 3
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a card that fails Offline Data Authentication is declined and audited with Declined Reason 3.
+        steps: |-
+          **GIVEN** an NIR GV head is in service at a rail station gate
+          **AND** a contactless card that fails Offline Data Authentication (ODA) is presented
+          **WHEN** the passenger taps the card
+          **THEN** the invalid-tap screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 3
+        expected: A card failing ODA is declined, the gate stays closed, and the tap is audited with Declined Reason 3 (Declined).
+      - title: ABT Tap — a card on the BIN List is declined with Declined Reason 15
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a card whose BIN is on the downloaded BIN List is declined and audited with Declined Reason 15.
+        steps: |-
+          **GIVEN** an NIR GV head has the daily BIN List downloaded from CloudFare
+          **AND** a contactless card whose BIN is on that BIN List is presented
+          **WHEN** the passenger taps the card
+          **THEN** the invalid-tap screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 15
+        expected: A card on the BIN List is declined, the gate stays closed, and the tap is audited with Declined Reason 15 (On BIN List).
+      - title: ABT Tap — a card on the Deny List is rejected in entry mode with Declined Reason 2
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a card on the Deny List is rejected and the gate stays closed when the GV is in an entry-only mode.
+        steps: |-
+          **GIVEN** an NIR GV head is running in an entry-only Direction configuration
+          **AND** the full Deny List and 15-minute delta files are downloaded from CloudFare
+          **AND** a contactless card that appears on the Deny List is presented
+          **WHEN** the passenger taps the deny-listed card
+          **THEN** the invalid-tap screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 2
+        expected: In entry mode a deny-listed card is rejected, the gate stays closed, and the tap is audited with Declined Reason 2 (On Deny List). (Exit/bi-di behaviour differs — see the exit exception case.)
+      - title: ABT Tap — every declined check still posts an audit record
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm each declined card check still emits an audit record carrying the relevant Declined Reason.
+        steps: |-
+          **GIVEN** an NIR GV head is in service at a rail station gate
+          **AND** a card that will fail one of the card checks is presented
+          **WHEN** the passenger taps the card and the check fails
+          **THEN** an audit record is posted for the declined tap
+          **AND** the record carries the Declined Reason for that check
+        expected: A declined tap always produces an audit record carrying its Declined Reason, so no failed tap goes unrecorded. Data variations, Declined Reason 1 Expired / 2 Deny List / 3 Declined / 15 BIN List / 20 Passback.
+      - title: ABT Tap — an offline transaction is accepted and queued for the back office
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a valid tap taken while the GV has no back-office connection is accepted and queued.
+        steps: |-
+          **GIVEN** an NIR GV head is in service with the BIN List and Deny List already downloaded
+          **AND** the connection to the ABT back office is currently unavailable
+          **AND** a valid, in-date contactless card is presented
+          **WHEN** the passenger taps the card
+          **THEN** the success screen is displayed
+          **AND** the gate opens
+          **AND** the tap record is queued for upload when the connection is restored
+        expected: An offline valid tap is accepted against the on-device lists, the gate opens, and the record is queued for later upload.
+      - title: ABT Tap — the reader stays disarmed when the route ABT Type is not Tap On Tap Off
+        refs: [FBD-100690]
+        objective: This test is to confirm the GV reader does not arm when the first route at the home location is not an ABT Tap On Tap Off route.
+        steps: |-
+          **GIVEN** an NIR GV head whose home-location first route has an ABT Type other than "Tap On Tap Off"
+          **WHEN** the GV performs its pre-read route-attribute check
+          **THEN** the cEMV reader does not arm for ABT taps
+        expected: With a non-TOTO route attribute the pre-read check fails and the reader does not arm for ABT taps.
+      - title: ABT Tap — the reader stays disarmed when the home location is outside the Northern Ireland Zone
+        refs: [FBD-100690]
+        objective: This test is to confirm the GV reader does not arm when its home location falls outside the configured Northern Ireland Zone.
+        steps: |-
+          **GIVEN** an NIR GV head whose home location is not within the configured "Northern Ireland Zone"
+          **WHEN** the GV performs its pre-read location check
+          **THEN** the cEMV reader does not arm for ABT taps
+        expected: With a home location outside the Northern Ireland Zone the pre-read location check fails and the reader does not arm.
+      - title: ABT Tap — the reader stays disarmed when the ABT Tap Product is not configured
+        refs: [FBD-100690]
+        objective: This test is to confirm the GV reader does not arm when no product matching the TMS "ABT Tap Product Name" exists.
+        steps: |-
+          **GIVEN** an NIR GV head with no product matching the configured TMS "ABT Tap Product Name"
+          **WHEN** the GV performs its pre-read product check
+          **THEN** the cEMV reader does not arm for ABT taps
+        expected: With no ABT Tap Product configured the pre-read product check fails and the reader does not arm.
+      - title: ABT Tap — an unreadable card presentation gives an error and the gate stays closed
+        refs: [FBD-100690]
+        objective: This test is to confirm an unreadable card presentation is handled without opening the gate.
+        steps: |-
+          **GIVEN** an armed NIR GV head at a rail station gate
+          **AND** a card that cannot be read is presented to the reader
+          **WHEN** the passenger taps the unreadable card
+          **THEN** an error is shown to the passenger
+          **AND** the gate does not open
+        expected: An unreadable card presentation is rejected with an error and the gate stays closed.
+      - title: ABT Tap — a Maestro card is not accepted at the GV
+        refs: [FBD-100690]
+        objective: This test is to confirm the GV accepts Visa and Mastercard schemes only, not Maestro (which is a PV-only scheme).
+        steps: |-
+          **GIVEN** an armed NIR GV head at a rail station gate
+          **AND** a Maestro card is presented to the reader
+          **WHEN** the passenger taps the Maestro card
+          **THEN** the card is not accepted for an ABT tap
+          **AND** the gate does not open
+        expected: The GV validates Visa and Mastercard only; a Maestro tap is not accepted (Maestro is accepted on the PV, not the GV).
+      - title: ABT Tap — an exit-capable gate opens for a deny-listed card but audits the tap invalid  # [DIRECTION LEAF] Exit / Bi-di only
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm that in an exit-capable mode a deny-listed card still opens the gate to let the passenger out while the tap is audited as invalid.
+        steps: |-
+          **GIVEN** an NIR GV head is running in an exit or bi-directional Direction configuration
+          **AND** the Deny List is downloaded and a card on that Deny List is presented
+          **WHEN** the passenger taps the deny-listed card to exit
+          **THEN** the gate opens to let the passenger leave
+          **AND** the screen shows the tap as invalid
+          **AND** the tap is audited as invalid
+          **AND** the invalid tap triggers a debt retry
+        expected: In exit/bi-directional mode a deny-listed card opens the gate to let the passenger out, but the tap is audited invalid and a debt retry is triggered (unlike entry mode, which rejects).
+      - title: ABT Tap — an entry-configured gate audits the tap as a Tap On  # [DIRECTION LEAF] Entry
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a tap on a gate configured for entry is classified as a Tap On in the audit.
+        steps: |-
+          **GIVEN** an NIR GV head running in an entry Direction configuration
+          **AND** a valid contactless card is tapped and accepted
+          **WHEN** the tap record is sent to the ABT back office
+          **THEN** the Gate Direction is "entry"
+          **AND** the tap is classified as a Tap On
+        expected: A tap on an entry-configured gate carries Gate Direction "entry" and is classified as a Tap On.
+      - title: ABT Tap — an exit-configured gate audits the tap as a Tap Off  # [DIRECTION LEAF] Exit
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a tap on a gate configured for exit is classified as a Tap Off in the audit.
+        steps: |-
+          **GIVEN** an NIR GV head running in an exit Direction configuration
+          **AND** a valid contactless card is tapped and accepted
+          **WHEN** the tap record is sent to the ABT back office
+          **THEN** the Gate Direction is "exit"
+          **AND** the tap is classified as a Tap Off
+        expected: A tap on an exit-configured gate carries Gate Direction "exit" and is classified as a Tap Off.
+
+  # ============================================================================================
+  - path: [Functional, Multi-Use Barcode Validation]
+    # Shared across all four Direction Run Configurations. Old 4x mode x TVM/HHD clone collapsed here.
+    cases:
+      - title: Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens
+        refs: [FBD-100167]
+        objective: This test is to confirm a valid multi-use barcode presented at the GV is accepted with a green tick and opens the gate.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid, in-date multi-use barcode for an Adult product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)
+          **WHEN** the passenger presents the barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** a success audio tone sounds
+          **AND** the gate opens
+        expected: A valid multi-use barcode is accepted with a green tick and audio, and the gate opens. Data variations, product, Adult / Child / 3-Day Select / 1-3 Off Day Return / 24+ / Ylink / Concession / Half Fare / Day Tracker / Unemployed Day Return.
+      - title: Barcode — a barcode on a mobile device screen validates the same as a printed one
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode shown on a mobile device screen validates identically to a printed barcode.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid multi-use barcode is shown on a passenger's mobile device screen
+          **WHEN** the passenger presents the on-screen barcode to the reader
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A barcode presented from a mobile device screen validates the same as a printed barcode.
+      - title: Barcode — a TVM-produced barcode validates at the GV
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode printed by a TVM validates at the GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid multi-use barcode ticket printed on a TVM is presented
+          **WHEN** the passenger presents the TVM-produced barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A TVM-produced multi-use barcode validates at the GV and opens the gate.
+      - title: Barcode — an HHD-produced barcode validates at the GV
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode printed by an HHD validates at the GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid multi-use barcode ticket printed on an HHD is presented
+          **WHEN** the passenger presents the HHD-produced barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: An HHD-produced multi-use barcode validates at the GV and opens the gate.
+      - title: Barcode — a route/location-only failure gives a yellow question mark
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode that passes all checks except the route/location step gives a yellow question-mark result.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a barcode valid on time, mode, product and zone but not for this gate's location is presented
+          **WHEN** the passenger presents the barcode
+          **THEN** a yellow question-mark result is displayed
+          **AND** the yellow result is shown for 3 seconds or until the next transaction or keypress
+        expected: A barcode failing only the route/location step gives a yellow question mark shown for 3 seconds or until the next transaction, distinguishing it from a full pass or a hard reject.
+      - title: Barcode — a failed validation gives a red cross with a reason
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode failing a check other than route/location gives a red-cross result with a reason.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a barcode that fails a check other than route/location is presented
+          **WHEN** the passenger presents the barcode
+          **THEN** a red-cross result is displayed
+          **AND** the failure reason is shown
+          **AND** the gate does not open
+        expected: A barcode failing a non-location check gives a red cross with the reason and the gate stays closed.
+      - title: Barcode — an already-validated barcode is rejected
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode already validated is rejected when presented again at the GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a multi-use barcode that has already been validated is presented again
+          **WHEN** the passenger presents the already-validated barcode
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: An already-validated barcode is rejected with a red cross and the gate stays closed.
+      - title: Barcode — an expired barcode is rejected
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode whose expiry has passed is rejected at the GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a multi-use barcode whose encoded expiry time has passed is presented
+          **WHEN** the passenger presents the expired barcode
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: An expired barcode is rejected with a red cross and the gate stays closed.
+      - title: Barcode — a rail barcode failing the location check is treated valid when the fare is at least the £90 fallback
+        refs: [FBD-100167]
+        objective: This test is to confirm the rail fare-fallback (CR105.3) treats a location-failing barcode as valid when the product rule value is at least £90.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a rail barcode whose product carries a TMS rule value of at least £90 fails the rail location check
+          **WHEN** the passenger presents the barcode
+          **THEN** the barcode is treated as valid under the £90 fare-fallback
+          **AND** the gate opens
+        expected: Under CR105.3, a rail barcode that fails the location check but whose product rule value is at least £90 is treated as valid and opens the gate.
+      - title: Barcode — a rail barcode failing the location check is rejected when the fare is below the £90 fallback
+        refs: [FBD-100167]
+        objective: This test is to confirm a location-failing rail barcode below the £90 fallback threshold is not treated as valid.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a rail barcode whose product rule value is below £90 fails the rail location check
+          **WHEN** the passenger presents the barcode
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: A location-failing rail barcode below the £90 fare-fallback threshold is rejected and the gate stays closed.
+      - title: Barcode — a barcode validated on one gate head is rejected on another head of the same gateline
+        refs: [FBD-100167]
+        objective: This test is to confirm the gateline Unique-ID share (CR105.2) rejects a barcode already validated on another head of the same gateline.
+        steps: |-
+          **GIVEN** two NIR GV heads form a single gateline sharing barcode Unique IDs (CR105.2)
+          **AND** a multi-use barcode was already validated on the first head within the passback window
+          **WHEN** the same barcode is presented to the second head of the gateline
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: Under CR105.2 the gateline shares Unique IDs, so a barcode validated on one head is rejected as passback on another head of the same gateline.
+      - title: Barcode — an expiry between midnight and 4am shows the previous day and no time
+        refs: [FBD-100167]
+        objective: This test is to confirm the CR116 expiry display shows the previous day and no time for an expiry between 00:00 and 04:00.
+        steps: |-
+          **GIVEN** an NIR GV head with CR116 enabled is in service
+          **AND** a barcode with an encoded expiry of 20240520-0400 is presented
+          **WHEN** the passenger presents the barcode and the result screen shows the expiry
+          **THEN** the expiry date is displayed as "19/05/2024"
+          **AND** no expiry time is displayed
+        expected: With CR116, an expiry of 04:00 or earlier in the 00:00-04:00 window shows the previous day (19/05/2024) with no time.
+      - title: Barcode — an expiry just after 4am shows the same day with a time
+        refs: [FBD-100167]
+        objective: This test is to confirm the CR116 expiry display shows the same day and a time for an expiry after 04:00.
+        steps: |-
+          **GIVEN** an NIR GV head with CR116 enabled is in service
+          **AND** a barcode with an encoded expiry of 20240520-0401 is presented
+          **WHEN** the passenger presents the barcode and the result screen shows the expiry
+          **THEN** the expiry is displayed as "20/05/24 04:01"
+        expected: With CR116, an expiry after 04:00 shows the same calendar day with its time (20/05/24 04:01).
+      - title: Barcode — the read-to-beep response is within one second
+        refs: [FBD-100167]
+        objective: This test is to confirm the GV gives its result beep within one second of reading a barcode.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid multi-use barcode is presented
+          **WHEN** the GV reads the barcode
+          **THEN** the result beep is given within one second of the read
+        expected: The barcode read-to-beep response is within one second under reasonable conditions.
+      - title: Barcode — a new barcode presented during a result screen is processed immediately
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode presented while a previous result screen is showing is processed immediately without waiting for the timeout.
+        steps: |-
+          **GIVEN** an NIR GV head is showing a barcode result screen
+          **AND** a second valid multi-use barcode is presented before the screen times out
+          **WHEN** the passenger presents the second barcode
+          **THEN** the second barcode is processed immediately
+          **AND** its own result is displayed
+        expected: A barcode presented during a result screen is processed immediately rather than waiting for the previous result to time out.
+      - title: Barcode — a successful validation posts a zero-fare BarcodeUsage transaction
+        refs: [FBD-100167]
+        objective: This test is to confirm a successful barcode validation posts a zero-fare BarcodeUsage transaction to the back office.
+        steps: |-
+          **GIVEN** an NIR GV head has accepted a valid multi-use barcode with a green tick
+          **WHEN** the transaction is sent to CloudFare
+          **THEN** the transaction type is the barcode Product ID
+          **AND** the fare is zero
+          **AND** the payment type is "BarcodeUsage"
+          **AND** the transaction carries the barcode Unique ID
+        expected: A successful barcode validation posts a BarcodeUsage transaction with zero fare, the barcode Product ID and the Unique ID.
+      - title: Barcode — a failed validation posts an event carrying the Unique ID and reason
+        refs: [FBD-100167]
+        objective: This test is to confirm a failed barcode validation posts an event to the back office carrying the Unique ID and failure reason.
+        steps: |-
+          **GIVEN** an NIR GV head has rejected a barcode with a red cross
+          **WHEN** the failure is sent to CloudFare
+          **THEN** an event is posted for the failed validation
+          **AND** the event carries the barcode Unique ID
+          **AND** the event carries the failure reason
+        expected: A failed barcode validation posts an event carrying the barcode Unique ID and the failure reason, viewable in the back-office event viewers.
+      - title: Barcode — the GV validates multi-use barcodes
+        refs: [FBD-100167]
+        objective: This test is to confirm the GV validates multi-use barcodes (unlike POS and TVM, which validate single-use barcodes only).
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a valid multi-use (not single-use) barcode is presented
+          **WHEN** the passenger presents the multi-use barcode
+          **THEN** the barcode is validated as a multi-use barcode
+          **AND** the gate opens
+        expected: The GV validates multi-use barcodes, confirming it is in the multi-use device set (ETM/HHD/GV/PV) rather than the single-use-only set (POS/TVM).
+      - title: Barcode — a 3-Day Select ticket is valid on its start, additional and end dates
+        refs: [FBD-100167]
+        objective: This test is to confirm a 3-Day Select barcode validates only on its start date, an additional-dates offset, or its end date.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a 3-Day Select barcode whose current date equals its Start date is presented
+          **WHEN** the passenger presents the 3-Day Select barcode
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: A 3-Day Select barcode is valid when the current date equals its Start date, an Additional-Dates offset, or its End date. Data variations, current date equals Start / an Additional Date / End.
+      - title: Barcode — a barcode encoded for bus mode only is rejected on a rail gate
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode whose encoded mode does not include rail is rejected on a rail GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a barcode encoded with mode BUS (0001) only is presented
+          **WHEN** the passenger presents the bus-only barcode
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: A barcode encoded for BUS mode only fails the mode check at a rail GV and is rejected; only ALL (FFFF) or RAIL (0002) modes are valid there.
+
+  # ============================================================================================
+  - path: [Functional, Passback]
+    # Shared across all four Direction Run Configurations.
+    cases:
+      - title: Passback — a barcode re-presented within the passback window is rejected
+        refs: [FBD-100167]
+        objective: This test is to confirm a multi-use barcode re-presented within the configured passback window is rejected at the GV.
+        steps: |-
+          **GIVEN** an NIR GV head is in service on a rail route
+          **AND** a multi-use barcode was just validated successfully with a green tick
+          **WHEN** the same barcode is presented again within the passback window
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: A barcode re-presented within the passback window is rejected on its Unique-ID passback check and the gate stays closed.
+      - title: Passback — a barcode re-presented after other transactions is still rejected within the window
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode re-presented within the passback window is rejected even after intervening transactions.
+        steps: |-
+          **GIVEN** an NIR GV head validated a multi-use barcode, then processed other transactions
+          **AND** the original barcode's passback window has not yet elapsed
+          **WHEN** the original barcode is presented again
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: A barcode is still rejected on passback within its window even after other transactions have been processed in between.
+      - title: Passback — a card re-tapped within the passback time is declined with Declined Reason 20
+        refs: [FBD-100690, FBD-100658]
+        objective: This test is to confirm a contactless card re-tapped within the TMS passback time is declined with Declined Reason 20 and a distinct error screen.
+        steps: |-
+          **GIVEN** an NIR GV head accepted a valid contactless tap
+          **AND** the same card is re-tapped within the configured TMS passback time
+          **WHEN** the passenger re-taps the card
+          **THEN** the distinct passback error screen is displayed
+          **AND** the gate does not open
+          **AND** an audit record is posted with Declined Reason 20
+        expected: A card re-tapped within the passback time gives the distinct passback error screen, the gate stays closed, and the tap is audited with Declined Reason 20 (Passback).
+      - title: Passback — a barcode presented on a second gateline head is rejected as passback
+        refs: [FBD-100167]
+        objective: This test is to confirm the gateline Unique-ID share rejects as passback a barcode already validated on another head of the same gateline.
+        steps: |-
+          **GIVEN** two NIR GV heads share barcode Unique IDs as one gateline (CR105.2)
+          **AND** a barcode was validated on the first head within the passback window
+          **WHEN** the same barcode is presented to the second head
+          **THEN** a red-cross result is displayed
+          **AND** the gate does not open
+        expected: The gateline share (CR105.2) means a barcode validated on one head is rejected as passback on the other head of the gateline.
+      - title: Passback — a barcode presented after the passback window elapses is accepted
+        refs: [FBD-100167]
+        objective: This test is to confirm a barcode presented after its passback window has elapsed is accepted (where the product otherwise permits re-use).
+        steps: |-
+          **GIVEN** an NIR GV head validated a multi-use barcode whose product permits re-use
+          **AND** the configured passback window has fully elapsed
+          **WHEN** the barcode is presented again after the window
+          **THEN** a green tick result is displayed
+          **AND** the gate opens
+        expected: Once the passback window has elapsed, a re-usable barcode is accepted again and the gate opens.

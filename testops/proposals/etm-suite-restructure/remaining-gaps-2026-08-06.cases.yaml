@@ -1,0 +1,132 @@
+# ETM — remaining smaller missing-path gaps across 8 flow-maps (driver-menu-options, flu-abt-emv,
+# flu-basket-mode, flu-navigation, flu-printer-travel-mode, flu-promo-numeric, flu-smartcard,
+# supervisor-menu). Grounded strictly in each cited flow-map.
+suite_id: 30254
+defaults:
+  template_id: 1
+  custom_autoconfirmation: false
+  custom_devtypes: [25]
+  custom_revstatus: 2
+
+sections:
+  - path: Functional / Driver Menu & Options
+    cases:
+      - title: Driver options — Start New Journey with scheduling disabled
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm starting a new journey mid-shift with scheduling disabled routes to manual route entry rather than the scheduled Journey Selection screen.
+        steps: |
+          **GIVEN** a Driver mid-shift selects Start New Journey with scheduling disabled
+          **WHEN** you proceed past duty/route selection
+          **THEN** manual route entry (Type Route) is displayed, not the scheduled Journey Selection screen
+        expected: "Starting a new journey mid-shift with scheduling disabled routes to manual route entry."
+
+  - path: Functional / ABT
+    cases:
+      - title: ABT — Ulsterbus driver abandons before selecting alighting stage
+        refs: MODE-ULSTERBUS-ONLY
+        objective: |
+          This test is to confirm a driver can abandon an Ulsterbus ABT-presented tap with 'C' before selecting the alighting stage, recording no ticket or tap.
+        steps: |
+          **GIVEN** a Ulsterbus ABT tap is presented and awaiting driver-selected alighting stage
+          **WHEN** the driver presses 'C' before selecting an alighting stage
+          **THEN** the ETM returns to the mode decision
+          **AND** no ticket or tap is recorded
+        expected: "Pressing 'C' before selecting an alighting stage on an Ulsterbus ABT tap abandons it with nothing recorded."
+
+  - path: Functional / Basket Mode
+    cases:
+      - title: Basket Mode — Bank Card Present cancel and FEIG auto-cancel timeout
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling the Bank Card Present screen returns to Basket Confirmed, and that a card not presented within 30 seconds is auto-cancelled by the FEIG device itself, not an ETM-driven timer.
+        steps: |
+          **GIVEN** a Driver has reached the Bank Card Present screen for a basketed payment
+          **WHEN** the operator cancels
+          **THEN** the ETM returns to Basket Confirmed
+          **WHEN** instead no card is presented for 30 seconds
+          **THEN** the transaction auto-cancels the same way as pressing Cancel/L6, driven by the FEIG device rather than a configurable ETM timer
+        expected: "Cancel on Bank Card Present returns to Basket Confirmed; a 30-second no-card timeout auto-cancels the same way, driven by FEIG rather than an ETM-configurable timer."
+
+  - path: Functional / Fare Look-Up / Navigation
+    cases:
+      - title: FLU — boarding-stage paging limits and unconfigured journey-type toggle
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm attempting to page the boarding stage backward past the route's first stop, or forward past the last stop, shows an error tone and stays on FLU Home, and that the journey-type star key does nothing on a route with no Fare-Based/Favourites/Transfers configured.
+        steps: |
+          **GIVEN** a Driver is signed on to a valid route at the FLU screen
+          **WHEN** you attempt to page the boarding stage backward past the route's first stop
+          **THEN** an error tone plays and FLU Home stays displayed
+          **WHEN** you attempt to page forward past the route's last stop (already at Last Boarding Stage)
+          **THEN** an error tone plays and FLU Home stays displayed
+          **GIVEN** the route has no Fare-Based, Favourites, or Transfers tiers configured
+          **WHEN** you press the star key
+          **THEN** nothing happens and FLU Home stays displayed
+        expected: "Paging past either end of the route's stop list shows an error tone with no navigation; the star key does nothing when no journey-type tiers are configured."
+
+  - path: Non-Functional / Printer and Paper
+    cases:
+      - title: Ticket Issue — repeated print failure and non-ticket print label
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a printer error during ticket issue that fails again on Retry stays on the Printer Error screen, and that printing something other than a ticket (e.g. a Technician Menu version printout) labels the recovery option "Cancel" rather than "Annul Transaction".
+        steps: |
+          **GIVEN** a printer error occurs during ticket issue
+          **WHEN** you press Retry and the print fails again
+          **THEN** the Printer Error screen remains displayed
+          **GIVEN** a printer error occurs printing something other than a ticket (e.g. a Technician Menu version printout)
+          **WHEN** the Printer Error screen is shown
+          **THEN** the recovery option is labelled "Cancel", not "Annul Transaction"
+        expected: "A repeated print failure keeps the Printer Error screen displayed; non-ticket printouts label the recovery option Cancel instead of Annul Transaction."
+
+  - path: Functional / Fare Look-Up / Sales
+    cases:
+      - title: FLU — numeric entry invalid stage IDs, jump-to-alighting-stage, and cancel
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm numeric entry shows the purpose-specific error for an invalid alighting or boarding stage ID, that entering a valid alighting-stage ID jumps directly to it, and that cancelling numeric entry makes no change.
+        steps: |
+          **GIVEN** a Driver is at the FLU screen with numeric entry open
+          **WHEN** you enter an invalid alighting stage ID
+          **THEN** the "Unable to set Alighting Stage" error-bar message is shown
+          **WHEN** you enter an invalid boarding stage ID
+          **THEN** the "Unable to set Boarding Stage" error-bar message is shown
+          **WHEN** you enter a valid alighting stage ID
+          **THEN** the FLU screen jumps directly to that alighting stage
+          **WHEN** you cancel numeric entry instead
+          **THEN** you return to FLU Home with no change made
+        expected: "Invalid alighting/boarding stage IDs show their purpose-specific error messages; a valid alighting-stage ID jumps directly to it; cancelling numeric entry makes no change."
+
+  - path: Functional / Smartcards
+    cases:
+      - title: Smartcard — DayLink same-day recent-bus exemption, yLink basket, and Free Product basket-clear
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a DayLink already tapped today but not on this bus recently succeeds without recharging, a yLink card's R6 key adds to basket instead of issuing immediately, and presenting a Free Product card with an item already in the basket clears the basket with a notification before issuing.
+        steps: |
+          **GIVEN** a valid DayLink smartcard has already been tapped today, but not on this specific bus recently
+          **WHEN** the card is tapped again
+          **THEN** the tap succeeds and is not charged again
+          **GIVEN** a yLink discount smartcard has selected an alighting stage
+          **WHEN** the operator presses R6
+          **THEN** the product is added to the basket instead of being issued immediately
+          **GIVEN** an item is already in the basket
+          **WHEN** a Free Product card (e.g. a senior pass) is presented
+          **THEN** the basket is cleared with a notification shown before the free product issues
+        expected: "A DayLink already tapped today (not on this bus recently) succeeds without recharge; yLink's R6 key baskets instead of issuing immediately; a Free Product card clears an existing basket with notification before issuing."
+
+  - path: Functional / Supervisor Menu
+    cases:
+      - title: Supervisor — Versions and Waybill print-error routing
+        refs: MODE-PRIMARY-ONLY
+        objective: |
+          This test is to confirm a print failure from any Supervisor Versions screen, or from the Waybill Detailed view, routes to the shared FLU printer-error flow.
+        steps: |
+          **GIVEN** a Supervisor is viewing a Versions screen (Serial Numbers, Software Versions, or Configuration Versions)
+          **WHEN** you press Print and the print fails
+          **THEN** the shared FLU printer-error flow is shown
+          **GIVEN** a Supervisor is on the Waybill Detailed view
+          **WHEN** you press Print and the print fails
+          **THEN** the shared FLU printer-error flow is shown
+        expected: "A failed print from any Supervisor Versions screen or from Waybill Detailed both route to the shared FLU printer-error flow."

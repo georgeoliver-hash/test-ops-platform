@@ -1,0 +1,146 @@
+suite_id: 30286
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [25]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Technician Menu]
+    cases:
+      - title: "Technician Sign On — PIN entry back returns to Login Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting back from the Enter PIN screen returns to the Login Screen.
+        steps: |
+          **GIVEN** a Technician is at the Enter PIN screen
+          **WHEN** the Technician selects back
+          **THEN** the Login Screen is displayed
+        expected: "Selecting back from Enter PIN returns to the Login Screen."
+
+      - title: "Technician Menu — Sign Off returns to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm one of Sign Off's two exits returns to the Home Screen.
+        steps: |
+          **GIVEN** a Technician is signed on at the Home Screen
+          **WHEN** the Technician selects Sign Off
+          **THEN** **GAP** — which action on the Sign Off screen returns to the Home Screen, versus the alternate exit to Present SmartCard/Barcode, is not labelled in the source; confirm on the live system before running
+        expected: "GAP — exact Sign Off exit trigger not labelled in source; confirm before running."
+
+      - title: "Location Settings — selecting a Home Location returns to Edit"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting a Home Location from the available list returns to the Edit screen with the new location shown.
+        steps: |
+          **GIVEN** a Technician is in Location Settings - Gate - Edit with the Home Location list available
+          **WHEN** the Technician selects Select Location
+          **AND** selects a Home Location from the list
+          **THEN** the Edit screen is displayed
+          **AND** the selected Home Location is shown
+        expected: "Selecting a Home Location from the list returns to Edit with the new location shown."
+
+      - title: "Location Settings — unavailable Home Location list shows Fail screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Location Settings - Fail screen is shown when the Home Location list is not available, and that retry re-checks availability.
+        steps: |
+          **GIVEN** a Technician is in Location Settings - Gate - Edit with the Home Location list not available
+          **WHEN** the Technician selects Select Location
+          **THEN** the Location Settings - Fail screen is displayed
+          **WHEN** the Technician selects retry
+          **THEN** the Home Location list availability is re-checked
+        expected: "An unavailable Home Location list shows the Fail screen; retry re-checks availability."
+
+      - title: "Location Settings — Edit Cancel returns to Gate"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling out of Location Settings - Gate - Edit returns to Location Settings - Gate.
+        steps: |
+          **GIVEN** a Technician is in Location Settings - Gate - Edit
+          **WHEN** the Technician selects Cancel
+          **THEN** the Location Settings - Gate screen is displayed
+        expected: "Cancel from Edit returns to Location Settings - Gate."
+
+      - title: "Location Settings — entering details into a cleared field returns to Edit"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm entering details into an emptied field on Location Settings - Gate - Edit - Clear returns to the Edit screen.
+        steps: |
+          **GIVEN** a Technician is at Location Settings - Gate - Edit - Clear
+          **WHEN** the Technician enters details into the empty field
+          **THEN** the Edit screen is displayed
+        expected: "Entering details into a cleared field returns to Edit."
+
+      - title: "Location Settings — Edit - Clear Cancel returns to Gate"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling out of Location Settings - Gate - Edit - Clear returns to Location Settings - Gate.
+        steps: |
+          **GIVEN** a Technician is at Location Settings - Gate - Edit - Clear
+          **WHEN** the Technician selects Cancel
+          **THEN** the Location Settings - Gate screen is displayed
+        expected: "Cancel from Edit - Clear returns to Location Settings - Gate."
+
+  - path: [Functional, Technician Menu, Network Settings]
+    cases:
+      - title: "Network Interfaces — Details returns to Network Interfaces"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Details screen is reachable from Network Interfaces and returning from it shows Network Interfaces again.
+        steps: |
+          **GIVEN** a Technician is at the Network Interfaces screen
+          **WHEN** the Technician selects Details
+          **THEN** the Details screen is displayed
+          **WHEN** the Technician selects back
+          **THEN** the Network Interfaces screen is displayed
+        expected: "Details is reachable from Network Interfaces and returns to it."
+
+      - title: "Network Interfaces — FecDetails ChangeIP navigation"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm FecDetails and ChangeIP are reachable from Network Interfaces.
+        steps: |
+          **GIVEN** a Technician is at the Network Interfaces screen
+          **WHEN** the Technician selects FecDetails
+          **THEN** the FecDetails screen is displayed
+          **WHEN** the Technician selects ChangeIP
+          **THEN** the ChangeIP screen is displayed
+          **AND** **GAP** — no return path from ChangeIP back to Network Interfaces is captured in the source; confirm on the live system before running
+        expected: "FecDetails and ChangeIP are reachable from Network Interfaces; GAP — return path from ChangeIP unconfirmed."
+
+      - title: "Network Interfaces — Network Routing Table returns to Network Interfaces"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Network Routing Table screen is reachable from Network Interfaces and returning from it shows Network Interfaces again.
+        steps: |
+          **GIVEN** a Technician is at the Network Interfaces screen
+          **WHEN** the Technician selects Network Routing Table
+          **THEN** the Network Routing Table screen is displayed
+          **WHEN** the Technician selects back
+          **THEN** the Network Interfaces screen is displayed
+        expected: "Network Routing Table is reachable from Network Interfaces and returns to it."
+
+      - title: "Network Interfaces — back returns to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting back from Network Interfaces returns to the Home Screen.
+        steps: |
+          **GIVEN** a Technician is at the Network Interfaces screen
+          **WHEN** the Technician selects back
+          **THEN** the Home Screen is displayed
+        expected: "Back from Network Interfaces returns to the Home Screen."
+
+  - path: [Functional, Technician Menu, Tests & Diagnostics]
+    cases:
+      - title: "Tests and Diagnostics — back returns to Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm selecting back from Tests and Diagnostics returns to the Home Screen.
+        steps: |
+          **GIVEN** a Technician is at the Home Screen
+          **WHEN** the Technician selects Tests and Diagnostics
+          **THEN** the Tests and Diagnostics screen is displayed
+          **WHEN** the Technician selects back
+          **THEN** the Home Screen is displayed
+        expected: "Tests and Diagnostics is reachable from the Home Screen and returns to it."

@@ -1,0 +1,52 @@
+suite_id: 30253
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [5]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Supervisor, Reports & Information]
+    cases:
+      - title: "Sign Out — cancelling from Supervisor Menu Sign Out returns to Supervisor Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm cancelling Sign Out from the Supervisor Menu returns to the Supervisor Menu rather than signing out.
+        steps: |
+          **GIVEN** the operator is at the Supervisor Menu
+          **WHEN** the operator selects Sign Out then cancels
+          **THEN** the Supervisor Menu is displayed
+        expected: "Cancelling Sign Out from the Supervisor Menu returns to the Supervisor Menu."
+
+      - title: "Duty Information — no duties to display shows No Results"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Supervisor Menu shows the Duty Information/No Results screen when there are no duties to display.
+        steps: |
+          **GIVEN** the operator is at the Supervisor Menu with no duties to display
+          **WHEN** the operator selects Duty Information
+          **THEN** the Duty Information/No Results screen is displayed
+        expected: "Selecting Duty Information with no duties to display shows the No Results screen."
+
+      - title: "Sale Breakdown — declining the print confirmation leaves totals unzeroed"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm declining the Print Current Day/Accumulated confirmation on Sale Breakdown leaves the totals unzeroed and returns to Sale Breakdown.
+        steps: |
+          **GIVEN** the operator is at the Sale Breakdown screen with a print-and-zero confirmation displayed
+          **WHEN** the operator declines the confirmation
+          **THEN** the totals are not zeroed
+          **AND** the Sale Breakdown screen is displayed
+        expected: "Declining the print-and-zero confirmation on Sale Breakdown leaves totals unzeroed and returns to Sale Breakdown."
+
+  - path: [Functional, Technician, Device Settings]
+    cases:
+      - title: "Device Settings — Go Back from Device Settings Summary returns to Technician Menu"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm pressing Go Back on the Device Settings Summary screen returns to the Technician Menu.
+        steps: |
+          **GIVEN** the technician is at the Device Settings Summary screen
+          **WHEN** the technician presses Go Back
+          **THEN** the Technician Menu is displayed
+        expected: "Go Back on Device Settings Summary returns to the Technician Menu."

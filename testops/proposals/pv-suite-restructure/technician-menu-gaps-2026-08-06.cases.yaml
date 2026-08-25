@@ -1,0 +1,74 @@
+suite_id: 30255
+defaults:
+  template_id: 1
+  custom_revstatus: 1
+  custom_devtypes: [24]
+  custom_autoconfirmation: false
+
+sections:
+  - path: [Functional, Technician Menu]
+    cases:
+      - title: "Technician Menu — retry after incorrect PIN reaches Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm a Technician can retry PIN entry after an incorrect attempt
+          and reach the Home Screen.
+        steps: |
+          **GIVEN** a Technician's PIN attempt was rejected and the Incorrect Details screen is displayed
+          **WHEN** the Technician retries PIN entry with a valid PIN
+          **THEN** the Home Screen is displayed
+        expected: "Retrying PIN entry with a valid PIN after Incorrect Details reaches the Home Screen."
+
+      - title: "Technician Menu — abandoning at Login Screen returns to card presentment"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm abandoning sign-on at the Login Screen returns to the card
+          presentment screen.
+        steps: |
+          **GIVEN** the Login Screen is displayed with the Technician ID entered
+          **WHEN** the Technician abandons sign-on from the Login Screen
+          **THEN** the Present SmartCard or Barcode screen is displayed
+        expected: "Abandoning sign-on at the Login Screen returns to Present SmartCard or Barcode."
+
+      - title: "Technician Menu — abandoning PIN entry returns to Login Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm abandoning PIN entry returns to the Login Screen.
+        steps: |
+          **GIVEN** the Enter PIN screen is displayed
+          **WHEN** the Technician abandons PIN entry
+          **THEN** the Login Screen is displayed
+        expected: "Abandoning PIN entry returns to the Login Screen."
+
+      - title: "Technician Menu — Sign Off from Home Screen"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the outcome of Sign Off from the Home Screen.
+        steps: |
+          **GIVEN** a Technician is signed on at the Home Screen
+          **WHEN** the Technician selects Sign Off
+          **THEN** **GAP** — whether Sign Off returns to the Home Screen or to Present SmartCard/Barcode is not confirmed; the source lists both connections with no distinguishing trigger label; confirm on the live system before running
+        expected: "GAP — the Sign Off destination from the Home Screen is unconfirmed; confirm on the live system before running."
+
+      - title: "Technician Menu — Location Settings unchanged returns without reboot"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm Location Settings returns without a reboot when the Home
+          Location has not changed.
+        steps: |
+          **GIVEN** the Please Wait screen is displayed following a Location Settings edit
+          **WHEN** the Home Location has not changed
+          **THEN** the Location Settings screen is displayed
+          **AND** the device does not reboot
+        expected: "An unchanged Home Location returns to Location Settings without a reboot."
+
+      - title: "Technician Menu — Location Settings Edit returns without changes"
+        refs: MODE-ALL
+        objective: |
+          This test is to confirm the Location Settings Edit screen can be exited without
+          making changes.
+        steps: |
+          **GIVEN** the Location Settings - Edit screen is displayed
+          **WHEN** the Technician returns from the Edit screen without making changes
+          **THEN** the Location Settings screen is displayed
+        expected: "Exiting Location Settings Edit without changes returns to Location Settings."
