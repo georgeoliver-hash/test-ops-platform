@@ -1,9 +1,13 @@
 # sit-mirror/ sync policy
 
-`sit-mirror/` is a **one-way, read-only mirror** of two things from `flowbird-group/sit`:
+`sit-mirror/` is a **one-way, read-only mirror** of three things from `flowbird-group/sit`:
 
 - `Resources/Common/ConfigSets/<Project>/<ver>/EquipmentTypes.json` — device taxonomy per project/version
 - `Resources/Devices/**/Bindings/*.robot` — the function-keyword vocabulary
+- `Resources/Common/ConfigSets/<Project>/<ver>/ScreenFlow/<Device>/**` — screen graphs
+  (`screenflow_map.jsonc`, `Templates/*.json`, `element_queries.json`), added 2026-08-25 when
+  `model/flows.py` needed a real source instead of a guessed schema. Same tree the
+  EquipmentTypes.json glob already walks, not a scope expansion.
 
 ## The rule
 
@@ -38,9 +42,11 @@ overwrites `sit-mirror/` in place and rewrites the manifest — safe to run any 
 - **A pinned, timestamped, regeneratable copy** is the middle ground: real data, no live coupling, and
   always honest about how fresh it is.
 
-## First sync (2026-08-24/25)
+## Sync history
 
-Mirrored from `flowbird-group/sit` commit `23e29c0fa439c42b41a33b712c6dacb2175ed442` (2026-08-07):
-3 `EquipmentTypes.json` files (Translink, SIT1, NJT), 29 `Bindings/*.robot` files. This local `sit`
-checkout may already be behind `origin/main` — re-sync after a `git pull` in `sit` before treating
-this as current for anything beyond prototyping `model/`.
+- **First sync (2026-08-24/25)**: from commit `23e29c0f` (2026-08-07) — 3 `EquipmentTypes.json`,
+  29 `Bindings/*.robot`. Later found this was pinned to a **feature branch** commit, not `master`.
+- **Re-sync (2026-08-25)**: switched the local `sit` checkout to `master`, pulled (207 commits
+  behind), re-ran the sync — now from `master@b6b27288` (2026-08-25): 3 `EquipmentTypes.json`,
+  32 `Bindings/*.robot`, and (new) 262 `ScreenFlow/**` files across 8 projects. 294 function
+  keywords parsed (up from 267), all `model/` schema + flow tests green against the fresh data.
