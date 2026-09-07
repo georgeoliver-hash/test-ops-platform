@@ -1,18 +1,24 @@
 """Test-Ops Console — the first real (wired-up) version of the front end.
 
-Read-only by design (per George, 2026-09-07): every endpoint here reads real data — the
-mirrored device/function/feature/pipeline model, or a genuinely-generated build-stats /
-gap-register run — and returns it as JSON for the static frontend to render. Nothing here
-writes to TestRail, pushes a case, or calls an AI agent. That's deliberate: this is the
-proving slice before any write path gets wired in.
+Read-only against TestRail by design (per George, 2026-09-07): every data endpoint here
+reads real data — the mirrored device/function/feature/pipeline model, or a genuinely-
+generated build-stats / gap-register run — and returns it as JSON. Nothing here writes to
+TestRail, pushes a case, or calls an AI agent. That boundary is unchanged.
 
-Two data sources, both real, neither faked:
+Separately, this app DOES have real local writes now (2026-09-07): a settings area for
+TestRail credentials (encrypted at rest, see store.py) and user-editable suite mappings.
+That's local app configuration on the machine running the app, not a TestRail write — a
+different trust boundary, same one system-test-ops' own `.env` file already relies on.
+
+Three data sources, all real, none faked:
   - model/{devices,functions,flows,features,pipelines}.py — live, called on every request,
     straight from the mirrored SIT schema + the real .claude/pipelines/*.yaml.
   - webapp/fixtures/*.json — a real `build-stats`/`gap-register` run captured against real
     system-test-ops report data (POS, 2026-08-07 vs 2026-07-23) and committed, since running
-    those commands live needs TestRail credentials this app doesn't have yet. Labelled as
-    fixture data in the API response, not presented as live.
+    those commands live needs TestRail credentials this app doesn't have a live call for
+    yet. Labelled as fixture data in the API response, not presented as live.
+  - webapp/data/console.db (gitignored, local-only) — suite mappings + encrypted TestRail
+    credentials, single-user today (see store.py's module docstring for why).
 
 Run: uvicorn Platform.webapp.app:app --reload --app-dir . (from the repo root)
 """
@@ -25,6 +31,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 _PLATFORM_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_PLATFORM_ROOT))
@@ -40,12 +47,80 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
         os.environ["TESTOPS_CLAUDE_ROOT"] = str(_live_sto)
 
 from model import devices, features, pipelines  # noqa: E402
+from Platform.webapp import store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
 KEEP_DEVICE_TYPES = ["ETM", "POS", "TVM", "GV", "PV", "HHD", "BV"]
 
 app = FastAPI(title="Test-Ops Console API")
+store.init_db()
+
+
+class SuiteMappingIn(BaseModel):
+    project: str
+    device: str
+    old_suite: str
+    new_suite: str
+
+
+class CredentialsIn(BaseModel):
+    testrail_url: str
+    testrail_user: str
+    testrail_api_key: str
+
+
+@app.get("/api/me")
+def get_me():
+    return store.get_current_user()
+
+
+@app.get("/api/suite-mappings")
+def get_suite_mappings():
+    """Real, user-editable old(read-only source)/new(write target) suite pairs, keyed per
+    project+device — never a single global suite. Seeded with the one documented pair
+    (Translink/POS) from system-test-ops' CLAUDE.md; every other combination is absent
+    here until a real person confirms and adds it."""
+    return store.list_suite_mappings()
+
+
+@app.post("/api/suite-mappings")
+def put_suite_mapping(body: SuiteMappingIn):
+    try:
+        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"ok": True}
+
+
+@app.delete("/api/suite-mappings/{project}/{device}")
+def remove_suite_mapping(project: str, device: str):
+    deleted = store.delete_suite_mapping(project, device)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="No such mapping")
+    return {"ok": True}
+
+
+@app.get("/api/credentials/status")
+def get_credentials_status():
+    """Never the API key itself — only whether one is configured, and for which TestRail
+    URL/user. See store.py's module docstring for the encryption-at-rest design."""
+    return store.get_credentials_status()
+
+
+@app.post("/api/credentials")
+def put_credentials(body: CredentialsIn):
+    try:
+        store.save_credentials(body.testrail_url, body.testrail_user, body.testrail_api_key)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return store.get_credentials_status()
+
+
+@app.delete("/api/credentials")
+def remove_credentials():
+    store.delete_credentials()
+    return {"ok": True}
 
 
 @app.get("/api/taxonomy")

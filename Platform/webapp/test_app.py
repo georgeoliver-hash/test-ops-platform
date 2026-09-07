@@ -4,12 +4,22 @@ Every endpoint here is backed by real data (model/ against the live SIT mirror +
 .claude checkout, or a genuinely-generated build-stats/run-health/gap-register fixture) —
 these tests pin that the wiring works, not that the model data itself is correct (see the
 model/ test suites for that).
+
+TESTOPS_WEBAPP_DATA_DIR is set BEFORE importing the app module, since app.py calls
+store.init_db() at import time — without this, running tests would create/mutate the real
+developer's Platform/webapp/data/console.db. Set at module level (not a fixture) because
+the import itself happens at module load, before any pytest fixture could run first.
 """
 from __future__ import annotations
 
-from fastapi.testclient import TestClient
+import os
+import tempfile
 
-from Platform.webapp.app import app
+os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-test-")
+
+from fastapi.testclient import TestClient  # noqa: E402
+
+from Platform.webapp.app import app  # noqa: E402
 
 client = TestClient(app)
 
@@ -96,3 +106,64 @@ def test_logo_asset_served():
     res = client.get("/assets/arrive-logo.png")
     assert res.status_code == 200
     assert res.headers["content-type"] == "image/png"
+
+
+def test_me_returns_seeded_user():
+    res = client.get("/api/me")
+    assert res.status_code == 200
+    assert res.json()["display_name"] == "George Oliver"
+
+
+def test_suite_mappings_seeded_with_real_pair():
+    res = client.get("/api/suite-mappings")
+    assert res.status_code == 200
+    data = res.json()
+    assert any(m["project"] == "Translink" and m["device"] == "POS" for m in data)
+
+
+def test_suite_mapping_upsert_and_delete_roundtrip():
+    res = client.post("/api/suite-mappings", json={
+        "project": "NJT", "device": "ETM", "old_suite": "Old", "new_suite": "New",
+    })
+    assert res.status_code == 200
+    res = client.get("/api/suite-mappings")
+    assert any(m["project"] == "NJT" and m["device"] == "ETM" for m in res.json())
+
+    res = client.delete("/api/suite-mappings/NJT/ETM")
+    assert res.status_code == 200
+    res = client.get("/api/suite-mappings")
+    assert not any(m["project"] == "NJT" and m["device"] == "ETM" for m in res.json())
+
+
+def test_delete_unknown_mapping_is_404():
+    res = client.delete("/api/suite-mappings/DoesNotExist/DEV")
+    assert res.status_code == 404
+
+
+def test_credentials_status_and_save_never_leaks_key():
+    res = client.get("/api/credentials/status")
+    assert res.json()["configured"] is False
+
+    res = client.post("/api/credentials", json={
+        "testrail_url": "https://example.testrail.io",
+        "testrail_user": "george@arrive.com",
+        "testrail_api_key": "top-secret-abc",
+    })
+    assert res.status_code == 200
+    assert "top-secret-abc" not in res.text
+    assert res.json()["configured"] is True
+
+    res = client.get("/api/credentials/status")
+    assert res.json()["configured"] is True
+    assert "top-secret-abc" not in res.text
+
+    res = client.delete("/api/credentials")
+    assert res.status_code == 200
+    assert client.get("/api/credentials/status").json()["configured"] is False
+
+
+def test_credentials_rejects_blank_fields():
+    res = client.post("/api/credentials", json={
+        "testrail_url": "", "testrail_user": "x", "testrail_api_key": "y",
+    })
+    assert res.status_code == 400
