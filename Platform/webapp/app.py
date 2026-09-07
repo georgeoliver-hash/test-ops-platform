@@ -19,6 +19,9 @@ Three data sources, all real, none faked:
     yet. Labelled as fixture data in the API response, not presented as live.
   - webapp/data/console.db (gitignored, local-only) — suite mappings + encrypted TestRail
     credentials, single-user today (see store.py's module docstring for why).
+  - webapp/data/uploads/<project>/<device>/ (gitignored, local-only) — docs dropped via the
+    UI for a future ingest-docs/add-feature run. Storage only — no pipeline reads this
+    folder yet.
 
 Run: uvicorn Platform.webapp.app:app --reload --app-dir . (from the repo root)
 """
@@ -29,7 +32,7 @@ import os
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -120,6 +123,33 @@ def put_credentials(body: CredentialsIn):
 @app.delete("/api/credentials")
 def remove_credentials():
     store.delete_credentials()
+    return {"ok": True}
+
+
+@app.get("/api/docs")
+def list_docs(project: str, device: str):
+    """Files dropped for this project/device pair, ready for a future ingest-docs run to
+    pick up. Storage only today — no pipeline actually consumes this folder yet (that needs
+    the agent-run wiring the 'Run' buttons on pipeline pages are already stubbed out for)."""
+    return store.list_docs(project, device)
+
+
+@app.post("/api/docs")
+async def upload_doc(project: str, device: str, file: UploadFile = File(...)):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No filename given.")
+    content = await file.read()
+    try:
+        store.save_doc(project, device, file.filename, content)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"ok": True}
+
+
+@app.delete("/api/docs/{project}/{device}/{filename}")
+def remove_doc(project: str, device: str, filename: str):
+    if not store.delete_doc(project, device, filename):
+        raise HTTPException(status_code=404, detail="No such file")
     return {"ok": True}
 
 

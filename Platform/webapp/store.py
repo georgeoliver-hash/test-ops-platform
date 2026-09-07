@@ -195,6 +195,48 @@ def delete_credentials(user_id: int = DEFAULT_USER_ID) -> bool:
         return cur.rowcount > 0
 
 
+def _uploads_root() -> Path:
+    return _data_dir() / "uploads"
+
+
+def _uploads_dir(project: str, device: str) -> Path:
+    """One folder per project/device pair — mirrors suite_mappings' keying, so a doc dropped
+    here has an unambiguous target when a future ingest-docs run picks it up."""
+    return _uploads_root() / project / device
+
+
+def list_docs(project: str, device: str) -> list[dict]:
+    d = _uploads_dir(project, device)
+    if not d.is_dir():
+        return []
+    out = []
+    for p in sorted(d.iterdir()):
+        if p.is_file():
+            stat = p.stat()
+            out.append({"filename": p.name, "size_bytes": stat.st_size, "uploaded_at": stat.st_mtime})
+    return out
+
+
+def save_doc(project: str, device: str, filename: str, content: bytes) -> None:
+    """Raw filename only — no path segments allowed, so a crafted name can't escape the
+    project/device folder it was uploaded against."""
+    safe_name = Path(filename).name
+    if not safe_name or safe_name != filename:
+        raise ValueError("Invalid filename.")
+    d = _uploads_dir(project, device)
+    d.mkdir(parents=True, exist_ok=True)
+    (d / safe_name).write_bytes(content)
+
+
+def delete_doc(project: str, device: str, filename: str) -> bool:
+    safe_name = Path(filename).name
+    path = _uploads_dir(project, device) / safe_name
+    if not path.is_file():
+        return False
+    path.unlink()
+    return True
+
+
 def decrypt_api_key(user_id: int = DEFAULT_USER_ID) -> str | None:
     """Server-side only — for the day something actually needs to call TestRail. Never
     call this from a request handler that echoes the result back to the frontend."""

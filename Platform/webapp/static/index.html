@@ -135,6 +135,27 @@
   .tooltip-wrap:hover .tip{visibility:visible;opacity:1;}
   .pipeline-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;}
   .pipeline-detail-head p{color:var(--ink-soft);font-size:13.5px;margin:4px 0 0;max-width:64ch;}
+
+  /* --- Step & variant accordions: a small "what it does" panel under each row --- */
+  .flow-step.clickable{cursor:pointer;}
+  .flow-step.clickable:hover{background:var(--bg);border-radius:6px;}
+  .step-chevron{margin-left:auto;transition:transform .15s;color:var(--ink-soft);flex:none;}
+  .flow-step-wrap.step-open .step-chevron{transform:rotate(90deg);}
+  .step-detail{display:none;padding:2px 0 12px 88px;font-size:12.5px;color:var(--ink-soft);}
+  .flow-step-wrap.step-open .step-detail{display:block;}
+  .step-detail-line{margin-bottom:4px;}
+  .step-detail-line b{color:var(--ink);font-weight:600;margin-right:4px;}
+  .step-detail-line code{font-size:11.5px;background:var(--bg);padding:1px 5px;border-radius:5px;}
+  .step-detail-empty{font-style:italic;}
+
+  .variant-row{cursor:pointer;}
+  .variant-row:hover{background:var(--bg);}
+  .variant-row .chevron{display:inline-block;font-size:11px;}
+  .variant-row.open .chevron{transform:rotate(90deg);}
+  .chevron-cell{width:20px;}
+  .variant-detail-body{padding:8px 2px 6px;}
+  .variant-detail-body p{margin:0 0 8px;color:var(--ink-soft);}
+  .variant-detail-body .step-detail-empty{color:var(--ink-soft);}
 </style>
 
 <div class="shell">
@@ -153,6 +174,11 @@
       <div class="navgroup" id="navBuild"><div class="label">Build</div><span class="navitem skel">Loading…</span></div>
       <div class="navgroup" id="navAudit"><div class="label">Audit</div></div>
       <div class="navgroup" id="navMaintain"><div class="label">Maintain</div></div>
+      <div class="navgroup">
+        <div class="label">Console</div>
+        <button class="navitem" data-view="docs"><span class="dot"></span>Docs</button>
+        <button class="navitem" data-view="settings"><span class="dot"></span>Settings</button>
+      </div>
     </nav>
     <div class="sidebar-foot">
       <div class="avatar">GO</div>
@@ -181,6 +207,18 @@
       <div class="field">
         <label>Suites — old (read-only source) &amp; new (write target)</label>
         <div class="suite-readout" id="suiteReadout"></div>
+        <div id="suiteEditRow" style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn" id="suiteEditBtn" type="button" style="font-size:12px;padding:6px 10px;">Add / edit this pair</button>
+          <button class="btn" id="suiteDeleteBtn" type="button" style="font-size:12px;padding:6px 10px;display:none;">Remove pair</button>
+        </div>
+        <div id="suiteEditForm" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);gap:8px;flex-direction:column;">
+          <div class="field" style="margin:0;"><label>Old suite (read-only source)</label><input type="text" id="editOldSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
+          <div class="field" style="margin:0;"><label>New suite (write target)</label><input type="text" id="editNewSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn" id="suiteEditCancel" type="button" style="font-size:12px;">Cancel</button>
+            <button class="btn primary" id="suiteEditSave" type="button" style="font-size:12px;">Save pair</button>
+          </div>
+        </div>
       </div>
       <label id="approveRow" style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);">
         <input type="checkbox" id="approveCheck" style="margin-top:2px;">
@@ -208,14 +246,73 @@ async function fetchJSON(url) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
+/* ---------------- Shared step renderer: accordion "what it does" panel per step ---------------- */
+function renderStep(s) {
+  const meta = KIND_META[s.kind] || KIND_META.human;
+  const asText = (v) => Array.isArray(v) ? v.join(', ') : v;
+  const lines = [];
+  if (s.note) lines.push(`<div class="step-detail-line"><b>What it does:</b> ${esc(s.note)}</div>`);
+  if (s.command) lines.push(`<div class="step-detail-line"><b>Command:</b> <code>${esc(s.command)}</code></div>`);
+  if (s.agent) lines.push(`<div class="step-detail-line"><b>Agent:</b> ${esc(s.agent)}</div>`);
+  if (s.reviewer) lines.push(`<div class="step-detail-line"><b>Reviewer:</b> ${esc(s.reviewer)}</div>`);
+  if (s.ref_pipeline || s.ref) lines.push(`<div class="step-detail-line"><b>Runs pipeline:</b> ${esc(s.ref_pipeline || s.ref)}</div>`);
+  if (s.produces) lines.push(`<div class="step-detail-line"><b>Produces:</b> ${esc(asText(s.produces))}</div>`);
+  if (s.reads) lines.push(`<div class="step-detail-line"><b>Reads:</b> ${esc(asText(s.reads))}</div>`);
+  if (s.when) lines.push(`<div class="step-detail-line"><b>When:</b> ${esc(s.when)}</div>`);
+  if (s.rule) lines.push(`<div class="step-detail-line"><b>Rule:</b> ${esc(s.rule)}</div>`);
+  if (s.gate) lines.push(`<div class="step-detail-line"><b>Gate:</b> ${esc(s.gate)}</div>`);
+  if (s.must_be) lines.push(`<div class="step-detail-line"><b>Must be:</b> ${esc(s.must_be)}</div>`);
+  if (s.parallel) lines.push(`<div class="step-detail-line"><b>Runs in parallel with:</b> ${esc(asText(s.parallel))}</div>`);
+  if (s.guardrails && s.guardrails.length) lines.push(`<div class="step-detail-line"><b>Guardrails:</b> ${s.guardrails.map(esc).join(', ')}</div>`);
+  const hasDetail = lines.length > 0;
+  return `<div class="flow-step-wrap">
+    <div class="flow-step ${hasDetail ? 'clickable' : ''}">
+      <span class="stepkind pill ${meta.cls}">${meta.label}</span>
+      <span class="stepid">${esc(s.id)}</span>
+      <span class="stepdetail">${esc(s.agent || s.command || s.ref || s.ref_pipeline || '')}</span>
+      ${s.loop ? `<span class="steploop">${esc(s.loop)}</span>` : ''}
+      ${hasDetail ? '<span class="step-chevron chevron">▸</span>' : ''}
+    </div>
+    ${hasDetail ? `<div class="step-detail">${lines.join('')}</div>` : ''}
+  </div>`;
+}
+
+/* Delegated clicks: step accordions + feature-variant accordions, works across all views
+   since content.innerHTML is replaced wholesale on every render (a listener bound directly
+   to a row would be destroyed with it; delegation from the stable `content` element survives). */
+content.addEventListener('click', (e) => {
+  const stepHead = e.target.closest('.flow-step.clickable');
+  if (stepHead) { stepHead.parentElement.classList.toggle('step-open'); return; }
+  const vRow = e.target.closest('.variant-row');
+  if (vRow) {
+    vRow.classList.toggle('open');
+    const detail = vRow.nextElementSibling;
+    if (detail && detail.classList.contains('variant-detail')) {
+      detail.style.display = detail.style.display === 'table-row' ? 'none' : 'table-row';
+    }
+  }
+});
+
 const content = document.getElementById('content');
 function setContent(html) { content.innerHTML = html; }
 function loading() { setContent('<div class="loading">Loading real data…</div>'); }
 function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
 
 /* ---------------- Suite health ---------------- */
+// Every stat here comes from ONE captured fixture (Translink/POS, 2026-08-07). There's no
+// live TestRail call yet and no per-project fixture set -- so rather than silently show
+// POS numbers under whatever project/device happens to be targeted (misleading), say so
+// honestly and point at what's needed (either a fixture for that pair, or wired live creds).
+const HEALTH_FIXTURE_TARGET = {project: 'Translink', device: 'POS'};
 async function renderHealth() {
   loading();
+  const target = window.CURRENT_TARGET || HEALTH_FIXTURE_TARGET;
+  if (target.project !== HEALTH_FIXTURE_TARGET.project || target.device !== HEALTH_FIXTURE_TARGET.device) {
+    setContent(`
+      <div class="page-head"><h1>Suite health — ${esc(target.project)} / ${esc(target.device)}</h1><p>No captured data for this target yet.</p></div>
+      <div class="fixture-note">⚠ Only Translink/POS has a captured build-stats/run-health/gap-register fixture (2026-08-07) — nothing exists yet for ${esc(target.project)}/${esc(target.device)}. Switch target back to Translink/POS to see real data, or capture a fixture / wire live TestRail credentials for this pair first.</div>`);
+    return;
+  }
   try {
     const [bs, rh, gaps] = await Promise.all([
       fetchJSON('/api/build-stats'),
@@ -326,15 +423,7 @@ async function renderPipelines() {
         if (!wasOpen && flowEl.dataset.loaded !== '1') {
           try {
             const detail = await fetchJSON(`/api/pipelines/${row.dataset.id}`);
-            flowEl.innerHTML = detail.steps.map(s => {
-              const meta = KIND_META[s.kind] || KIND_META.human;
-              return `<div class="flow-step">
-                <span class="stepkind pill ${meta.cls}">${meta.label}</span>
-                <span class="stepid">${esc(s.id)}</span>
-                <span class="stepdetail">${esc(s.agent || s.command || s.ref || s.ref_pipeline || '')}</span>
-                ${s.loop ? `<span class="steploop">${esc(s.loop)}</span>` : ''}
-              </div>`;
-            }).join('');
+            flowEl.innerHTML = detail.steps.map(renderStep).join('');
             flowEl.dataset.loaded = '1';
           } catch (e) { flowEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
         }
@@ -356,8 +445,27 @@ async function renderFeatures() {
         <h2>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft)">${esc(feature.key)}</code></h2>
         <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
         <table>
-          <tr><th>Project</th><th>Device</th><th>Variant</th><th>Cited source</th></tr>
-          ${variants.map(v => `<tr><td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td><td><span class="pill code">${esc(v.citation.source_ref)}</span></td></tr>`).join('')}
+          <tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Cited source</th></tr>
+          ${variants.map(v => {
+            const confPill = v.citation.confidence === 'confirmed' ? 'ok' : v.citation.confidence === 'gap' ? 'bad' : 'warn';
+            return `<tr class="variant-row">
+              <td class="chevron-cell"><span class="chevron">▸</span></td>
+              <td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td>
+              <td><span class="pill code">${esc(v.citation.source_ref)}</span></td>
+            </tr>
+            <tr class="variant-detail" style="display:none">
+              <td></td>
+              <td colspan="4">
+                <div class="variant-detail-body">
+                  <p>${v.note ? esc(v.note) : '<span class="step-detail-empty">No description recorded for this variant yet.</span>'}</p>
+                  <div class="legend" style="margin:0;">
+                    <span class="chip"><span class="sw" style="background:var(--code)"></span>${esc(v.citation.source_kind)}</span>
+                    <span class="pill ${confPill}">${esc(v.citation.confidence)}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
         </table>
       </div>`).join('');
     const gapRows = Object.entries(d.gaps).map(([proj, keys]) => keys.length
@@ -398,6 +506,132 @@ async function renderGaps() {
   } catch (e) { errbox('Could not load gap register: ' + e.message); }
 }
 
+/* ---------------- Docs intake (for a future ingest-docs/add-feature run) ---------------- */
+async function renderDocs() {
+  loading();
+  const {project, device} = window.CURRENT_TARGET || {};
+  if (!project || !device) { errbox('No target selected — use "Change target" first.'); return; }
+  try {
+    const docs = await fetchJSON(`/api/docs?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`);
+    const rows = docs.map(d => `
+      <tr>
+        <td>${esc(d.filename)}</td>
+        <td>${(d.size_bytes / 1024).toFixed(1)} KB</td>
+        <td>${new Date(d.uploaded_at * 1000).toLocaleString()}</td>
+        <td><button class="btn" data-del-doc="${esc(d.filename)}" style="font-size:12px;padding:5px 10px;">Remove</button></td>
+      </tr>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Docs — ${esc(project)} / ${esc(device)}</h1><p>Drop requirement specs, UX flows, or defect docs here for this project/device. Storage only today — no pipeline consumes this folder yet; that needs the same agent-run wiring the "Run" buttons on pipeline pages are waiting on.</p></div>
+      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);">ℹ Uploaded here, not yet auto-fed into ingest-docs / add-feature — that pipeline hookup is the next real step, not built yet.</div>
+      <div class="card">
+        <h2>Upload a doc</h2>
+        <input type="file" id="docFileInput" style="margin-bottom:10px;">
+        <button class="btn primary" id="docUploadBtn">Upload</button>
+        <div id="docUploadMsg" style="margin-top:8px;font-size:12.5px;"></div>
+      </div>
+      <div class="card">
+        <h2>Docs on file for this target</h2>
+        ${docs.length ? `<table><tr><th>File</th><th>Size</th><th>Uploaded</th><th></th></tr>${rows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this project/device yet.</p>'}
+      </div>`);
+
+    document.getElementById('docUploadBtn').addEventListener('click', async () => {
+      const input = document.getElementById('docFileInput');
+      const msg = document.getElementById('docUploadMsg');
+      if (!input.files.length) { msg.textContent = 'Choose a file first.'; return; }
+      const fd = new FormData();
+      fd.append('file', input.files[0]);
+      msg.textContent = 'Uploading…';
+      try {
+        const res = await fetch(`/api/docs?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`, {method: 'POST', body: fd});
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        renderDocs();
+      } catch (e) { msg.textContent = 'Upload failed: ' + e.message; }
+    });
+    content.querySelectorAll('[data-del-doc]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          const res = await fetch(`/api/docs/${encodeURIComponent(project)}/${encodeURIComponent(device)}/${encodeURIComponent(btn.dataset.delDoc)}`, {method: 'DELETE'});
+          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+          renderDocs();
+        } catch (e) { alert('Could not remove: ' + e.message); }
+      });
+    });
+  } catch (e) { errbox('Could not load docs: ' + e.message); }
+}
+
+/* ---------------- Settings — TestRail credentials + all suite mappings, real API ---------------- */
+async function renderSettings() {
+  loading();
+  try {
+    const [status, mappings] = await Promise.all([
+      fetchJSON('/api/credentials/status'),
+      fetchJSON('/api/suite-mappings'),
+    ]);
+    const credCard = `
+      <div class="card">
+        <h2>TestRail credentials</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 12px;">Stored locally, encrypted at rest on this machine only — never sent anywhere else, never shown again once saved.</p>
+        ${status.configured
+          ? `<p style="font-size:13.5px;margin:0 0 10px;">Configured for <b>${esc(status.testrail_user)}</b> at <code>${esc(status.testrail_url)}</code> (updated ${esc(status.updated_at)}).</p>
+             <button class="btn" id="credRemoveBtn">Remove credentials</button>`
+          : `<div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
+               <div class="field" style="margin:0;"><label>TestRail URL</label><input type="text" id="credUrl" placeholder="https://yourorg.testrail.io" style="width:100%;font-family:inherit;font-size:13.5px;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></div>
+               <div class="field" style="margin:0;"><label>TestRail user (email)</label><input type="text" id="credUser" style="width:100%;font-family:inherit;font-size:13.5px;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></div>
+               <div class="field" style="margin:0;"><label>API key</label><input type="password" id="credKey" style="width:100%;font-family:inherit;font-size:13.5px;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></div>
+               <button class="btn primary" id="credSaveBtn" style="align-self:flex-start;">Save credentials</button>
+             </div>`}
+        <div id="credMsg" style="margin-top:8px;font-size:12.5px;"></div>
+      </div>`;
+
+    const mapRows = mappings.map(m => `
+      <tr>
+        <td>${esc(m.project)}</td><td>${esc(m.device)}</td>
+        <td>${esc(m.old_suite)}</td><td>${esc(m.new_suite)}</td>
+        <td><button class="btn" data-del-map="${esc(m.project)}|${esc(m.device)}" style="font-size:12px;padding:5px 10px;">Remove</button></td>
+      </tr>`).join('');
+    const mapCard = `
+      <div class="card">
+        <h2>Suite mappings — old (read-only) / new (write target)</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 12px;">Every project/device pair with a documented suite pair. Add or edit a pair from the "Change target" modal — this is a read-only view of the same store.</p>
+        ${mappings.length ? `<table><tr><th>Project</th><th>Device</th><th>Old suite</th><th>New suite</th><th></th></tr>${mapRows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No suite mappings configured yet.</p>'}
+      </div>`;
+
+    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${credCard}${mapCard}`);
+
+    if (!status.configured) {
+      document.getElementById('credSaveBtn').addEventListener('click', async () => {
+        const testrail_url = document.getElementById('credUrl').value.trim();
+        const testrail_user = document.getElementById('credUser').value.trim();
+        const testrail_api_key = document.getElementById('credKey').value.trim();
+        const msg = document.getElementById('credMsg');
+        try {
+          const res = await fetch('/api/credentials', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({testrail_url, testrail_user, testrail_api_key}),
+          });
+          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+          renderSettings();
+        } catch (e) { msg.textContent = 'Could not save: ' + e.message; }
+      });
+    } else {
+      document.getElementById('credRemoveBtn').addEventListener('click', async () => {
+        if (!confirm('Remove stored TestRail credentials?')) return;
+        await fetch('/api/credentials', {method: 'DELETE'});
+        renderSettings();
+      });
+    }
+    content.querySelectorAll('[data-del-map]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const [project, device] = btn.dataset.delMap.split('|');
+        if (!confirm(`Remove the suite mapping for ${project} / ${device}?`)) return;
+        await fetch(`/api/suite-mappings/${encodeURIComponent(project)}/${encodeURIComponent(device)}`, {method: 'DELETE'});
+        await loadSuiteMappings();
+        renderSettings();
+      });
+    });
+  } catch (e) { errbox('Could not load settings: ' + e.message); }
+}
+
 /* ---------------- Single pipeline detail (used by grouped Build/Audit/Maintain nav) ---------------- */
 async function renderPipelineDetail(id) {
   loading();
@@ -407,15 +641,7 @@ async function renderPipelineDetail(id) {
       fetchJSON(`/api/pipelines/${id}`),
     ]);
     const meta = list.find(p => p.id === id) || {};
-    const steps = detail.steps.map(s => {
-      const km = KIND_META[s.kind] || KIND_META.human;
-      return `<div class="flow-step">
-        <span class="stepkind pill ${km.cls}">${km.label}</span>
-        <span class="stepid">${esc(s.id)}</span>
-        <span class="stepdetail">${esc(s.agent || s.command || s.ref || s.ref_pipeline || '')}</span>
-        ${s.loop ? `<span class="steploop">${esc(s.loop)}</span>` : ''}
-      </div>`;
-    }).join('');
+    const steps = detail.steps.map(renderStep).join('');
     setContent(`
       <div class="pipeline-detail-head">
         <div>
@@ -464,24 +690,35 @@ async function populateGroupedNav() {
 }
 populateGroupedNav();
 
-const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps};
+const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings};
+let ACTIVE_VIEW = 'health';
 document.querySelectorAll('.navitem[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => { setActiveNav(btn); VIEWS[btn.dataset.view](); });
+  btn.addEventListener('click', () => { setActiveNav(btn); ACTIVE_VIEW = btn.dataset.view; VIEWS[btn.dataset.view](); });
 });
 renderHealth();
 
-/* ---------------- Target switcher (real taxonomy) ---------------- */
+/* ---------------- Target switcher — real taxonomy + real, API-backed suite mappings ---------------- */
 let TAXONOMY = {};
-fetchJSON('/api/taxonomy').then(t => { TAXONOMY = t; refreshDevices(); }).catch(() => {});
+// Keyed by "project|device" -- every pair has its OWN old (read-only source)/new (write
+// target) suite; never assume one carries over from another combination. Loaded from the
+// real store (/api/suite-mappings) -- never hardcoded here, so adding a pair in the UI is
+// the only source of truth, no code change needed for a new project/device.
+let SUITE_MAPPINGS = {};
+// The console's current working target -- read by other views (e.g. Docs) so an upload or
+// a future pipeline run always lands against the project/device actually selected, not a
+// stale default.
+window.CURRENT_TARGET = {project: 'Translink', device: 'POS', model: 'POS_Way6'};
 
-// Keyed by "project|device" -- every project/device pair has its OWN old (read-only source)
-// and new (write target) suite; never assume one carries over from another combination.
-// Only real, documented pairs go here (system-test-ops CLAUDE.md's hard rule: "For
-// Translink POS the source suite is AA-POS Acceptance Test... target is GG - POS - Claude
-// Suite"). Everything else is honestly "not configured" -- never guessed.
-const KNOWN_SUITES = {
-  "Translink|POS": {old: "AA-POS Acceptance Test", new: "GG - POS - Claude Suite"},
-};
+async function loadSuiteMappings() {
+  try {
+    const rows = await fetchJSON('/api/suite-mappings');
+    SUITE_MAPPINGS = {};
+    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite}; });
+  } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
+}
+
+fetchJSON('/api/taxonomy').then(t => { TAXONOMY = t; refreshDevices(); }).catch(() => {});
+loadSuiteMappings();
 
 const selProject = document.getElementById('selProject');
 const selDevice = document.getElementById('selDevice');
@@ -489,28 +726,36 @@ const selModel = document.getElementById('selModel');
 const suiteReadout = document.getElementById('suiteReadout');
 const approveCheck = document.getElementById('approveCheck');
 const modalApply = document.getElementById('modalApply');
+const suiteEditBtn = document.getElementById('suiteEditBtn');
+const suiteDeleteBtn = document.getElementById('suiteDeleteBtn');
+const suiteEditForm = document.getElementById('suiteEditForm');
+const editOldSuite = document.getElementById('editOldSuite');
+const editNewSuite = document.getElementById('editNewSuite');
 
 function fillSelect(sel, items) { sel.innerHTML = items.map(i => `<option value="${esc(i)}">${esc(i.replace(/_/g,' '))}</option>`).join(''); }
 function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); }
 function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || []); refreshSuiteReadout(); }
 
+function currentPairKey() { return `${selProject.value}|${selDevice.value}`; }
+
 function refreshSuiteReadout() {
-  const key = `${selProject.value}|${selDevice.value}`;
-  const pair = KNOWN_SUITES[key];
+  const pair = SUITE_MAPPINGS[currentPairKey()];
   approveCheck.checked = false;
+  suiteEditForm.style.display = 'none';
+  suiteDeleteBtn.style.display = pair ? '' : 'none';
+  suiteEditBtn.textContent = pair ? 'Edit this pair' : 'Add this pair';
   updateApplyEnabled();
   if (pair) {
     suiteReadout.className = 'suite-readout';
     suiteReadout.innerHTML = `<span class="k">Old (read-only source)</span>${esc(pair.old)}<br><span class="k" style="margin-top:8px;display:block;">New (write target)</span>${esc(pair.new)}`;
   } else {
     suiteReadout.className = 'suite-readout missing';
-    suiteReadout.innerHTML = `<span class="k">Not configured</span>No documented old/new suite pair for ${esc(selProject.value)} / ${esc(selDevice.value)} yet — add it to CLAUDE.md and here before targeting this combination.`;
+    suiteReadout.innerHTML = `<span class="k">Not configured</span>No documented old/new suite pair for ${esc(selProject.value)} / ${esc(selDevice.value)} yet — add it below before targeting this combination.`;
   }
 }
 
 function updateApplyEnabled() {
-  const key = `${selProject.value}|${selDevice.value}`;
-  modalApply.disabled = !(KNOWN_SUITES[key] && approveCheck.checked);
+  modalApply.disabled = !(SUITE_MAPPINGS[currentPairKey()] && approveCheck.checked);
 }
 
 selProject?.addEventListener('change', () => { fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); });
@@ -518,16 +763,48 @@ selDevice?.addEventListener('change', refreshModels);
 selModel?.addEventListener('change', updateApplyEnabled);
 approveCheck.addEventListener('change', updateApplyEnabled);
 
+suiteEditBtn.addEventListener('click', () => {
+  const pair = SUITE_MAPPINGS[currentPairKey()];
+  editOldSuite.value = pair ? pair.old : '';
+  editNewSuite.value = pair ? pair.new : '';
+  suiteEditForm.style.display = 'flex';
+});
+document.getElementById('suiteEditCancel').addEventListener('click', () => { suiteEditForm.style.display = 'none'; });
+document.getElementById('suiteEditSave').addEventListener('click', async () => {
+  const old_suite = editOldSuite.value.trim(), new_suite = editNewSuite.value.trim();
+  if (!old_suite || !new_suite) { alert('Both old and new suite names are required.'); return; }
+  try {
+    const res = await fetch('/api/suite-mappings', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({project: selProject.value, device: selDevice.value, old_suite, new_suite}),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    await loadSuiteMappings();
+    refreshSuiteReadout();
+  } catch (e) { alert('Could not save: ' + e.message); }
+});
+suiteDeleteBtn.addEventListener('click', async () => {
+  if (!confirm(`Remove the suite mapping for ${selProject.value} / ${selDevice.value}?`)) return;
+  try {
+    const res = await fetch(`/api/suite-mappings/${encodeURIComponent(selProject.value)}/${encodeURIComponent(selDevice.value)}`, {method: 'DELETE'});
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    await loadSuiteMappings();
+    refreshSuiteReadout();
+  } catch (e) { alert('Could not remove: ' + e.message); }
+});
+
 const targetModal = document.getElementById('targetModal');
 document.getElementById('changeTargetBtn').addEventListener('click', () => targetModal.classList.add('open'));
 document.getElementById('modalClose').addEventListener('click', () => targetModal.classList.remove('open'));
 document.getElementById('modalCancel').addEventListener('click', () => targetModal.classList.remove('open'));
 modalApply.addEventListener('click', () => {
-  const pair = KNOWN_SUITES[`${selProject.value}|${selDevice.value}`];
+  const pair = SUITE_MAPPINGS[currentPairKey()];
   if (!pair) return; // belt-and-braces; button is disabled in this state anyway
+  window.CURRENT_TARGET = {project: selProject.value, device: selDevice.value, model: selModel.value};
   document.getElementById('targetChip').innerHTML =
     `${esc(selProject.value)} <span class="seg">/</span> ${esc(selDevice.value)} <span class="seg">/</span> ${esc(selModel.value)} ` +
     `<span class="seg">/</span> old: ${esc(pair.old)} <span class="seg">/</span> new: ${esc(pair.new)}`;
   targetModal.classList.remove('open');
+  if (typeof ACTIVE_VIEW !== 'undefined' && VIEWS[ACTIVE_VIEW]) VIEWS[ACTIVE_VIEW]();
 });
 </script>

@@ -167,3 +167,30 @@ def test_credentials_rejects_blank_fields():
         "testrail_url": "", "testrail_user": "x", "testrail_api_key": "y",
     })
     assert res.status_code == 400
+
+
+def test_docs_upload_list_and_delete_roundtrip():
+    res = client.get("/api/docs", params={"project": "NJT", "device": "BV"})
+    assert res.status_code == 200
+    assert res.json() == []
+
+    res = client.post(
+        "/api/docs",
+        params={"project": "NJT", "device": "BV"},
+        files={"file": ("spec.md", b"# a real spec", "text/markdown")},
+    )
+    assert res.status_code == 200
+
+    res = client.get("/api/docs", params={"project": "NJT", "device": "BV"})
+    assert res.status_code == 200
+    names = [d["filename"] for d in res.json()]
+    assert names == ["spec.md"]
+
+    res = client.delete("/api/docs/NJT/BV/spec.md")
+    assert res.status_code == 200
+    assert client.get("/api/docs", params={"project": "NJT", "device": "BV"}).json() == []
+
+
+def test_docs_delete_unknown_is_404():
+    res = client.delete("/api/docs/NoSuch/DEV/missing.md")
+    assert res.status_code == 404
