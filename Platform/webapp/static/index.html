@@ -36,9 +36,9 @@
   @media (max-width:860px){.shell{grid-template-columns:1fr;} .sidebar{display:none;}}
 
   .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;}
-  .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:0 8px 22px;}
-  .sidebar .logo-row img{height:22px;filter:brightness(0) invert(1);display:block;}
-  .sidebar .tool-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sidebar-ink-dim);padding:0 8px 14px;}
+  .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:4px 8px 24px;}
+  .sidebar .logo-row img{height:36px;width:auto;filter:brightness(0) invert(1);display:block;}
+  .sidebar .tool-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sidebar-ink-dim);padding:0 8px 16px;}
   nav.navgroups{flex:1;overflow-y:auto;}
   .navgroup{margin-bottom:18px;}
   .navgroup .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--sidebar-ink-dim);padding:0 10px 6px;}
@@ -57,7 +57,7 @@
   .btn{font-family:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;}
   .btn.primary{background:var(--p1);border-color:var(--p1);color:#fff;}
 
-  .content{padding:26px 28px 60px;max-width:1180px;}
+  .content{padding:26px 28px 60px;width:100%;max-width:1600px;}
   .page-head{margin-bottom:22px;}
   .page-head h1{font-size:22px;margin:0 0 4px;font-weight:600;}
   .page-head p{color:var(--ink-soft);margin:0;font-size:13.5px;}
@@ -162,7 +162,7 @@
 
   <main>
     <div class="topbar">
-      <div class="target-chip" id="targetChip">Translink <span class="seg">/</span> POS <span class="seg">/</span> POS_Way6</div>
+      <div class="target-chip" id="targetChip">Translink <span class="seg">/</span> POS <span class="seg">/</span> POS_Way6 <span class="seg">/</span> old: AA-POS Acceptance Test <span class="seg">/</span> new: GG - POS - Claude Suite</div>
       <div>
         <button class="btn" id="changeTargetBtn">Change target</button>
       </div>
@@ -178,8 +178,16 @@
       <div class="field"><label>Project</label><select id="selProject"></select></div>
       <div class="field"><label>Device</label><select id="selDevice"></select></div>
       <div class="field"><label>Model / build</label><select id="selModel"></select></div>
+      <div class="field">
+        <label>Suites — old (read-only source) &amp; new (write target)</label>
+        <div class="suite-readout" id="suiteReadout"></div>
+      </div>
+      <label id="approveRow" style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);">
+        <input type="checkbox" id="approveCheck" style="margin-top:2px;">
+        <span>I approve pointing this console at the suites shown above. (Today: you are the sole approver — this checkbox is the whole gate. Once writes are wired in, this becomes a real sign-off before anything can be pushed.)</span>
+      </label>
     </div>
-    <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply">Apply target</button></div>
+    <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply" disabled>Approve &amp; apply target</button></div>
   </div>
 </div>
 
@@ -466,22 +474,60 @@ renderHealth();
 let TAXONOMY = {};
 fetchJSON('/api/taxonomy').then(t => { TAXONOMY = t; refreshDevices(); }).catch(() => {});
 
-const KNOWN_SUITES = {"Translink|POS": "GG - POS - Claude Suite"};
+// Keyed by "project|device" -- every project/device pair has its OWN old (read-only source)
+// and new (write target) suite; never assume one carries over from another combination.
+// Only real, documented pairs go here (system-test-ops CLAUDE.md's hard rule: "For
+// Translink POS the source suite is AA-POS Acceptance Test... target is GG - POS - Claude
+// Suite"). Everything else is honestly "not configured" -- never guessed.
+const KNOWN_SUITES = {
+  "Translink|POS": {old: "AA-POS Acceptance Test", new: "GG - POS - Claude Suite"},
+};
+
 const selProject = document.getElementById('selProject');
 const selDevice = document.getElementById('selDevice');
 const selModel = document.getElementById('selModel');
+const suiteReadout = document.getElementById('suiteReadout');
+const approveCheck = document.getElementById('approveCheck');
+const modalApply = document.getElementById('modalApply');
+
 function fillSelect(sel, items) { sel.innerHTML = items.map(i => `<option value="${esc(i)}">${esc(i.replace(/_/g,' '))}</option>`).join(''); }
 function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); }
-function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || []); }
+function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || []); refreshSuiteReadout(); }
+
+function refreshSuiteReadout() {
+  const key = `${selProject.value}|${selDevice.value}`;
+  const pair = KNOWN_SUITES[key];
+  approveCheck.checked = false;
+  updateApplyEnabled();
+  if (pair) {
+    suiteReadout.className = 'suite-readout';
+    suiteReadout.innerHTML = `<span class="k">Old (read-only source)</span>${esc(pair.old)}<br><span class="k" style="margin-top:8px;display:block;">New (write target)</span>${esc(pair.new)}`;
+  } else {
+    suiteReadout.className = 'suite-readout missing';
+    suiteReadout.innerHTML = `<span class="k">Not configured</span>No documented old/new suite pair for ${esc(selProject.value)} / ${esc(selDevice.value)} yet — add it to CLAUDE.md and here before targeting this combination.`;
+  }
+}
+
+function updateApplyEnabled() {
+  const key = `${selProject.value}|${selDevice.value}`;
+  modalApply.disabled = !(KNOWN_SUITES[key] && approveCheck.checked);
+}
+
 selProject?.addEventListener('change', () => { fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); });
 selDevice?.addEventListener('change', refreshModels);
+selModel?.addEventListener('change', updateApplyEnabled);
+approveCheck.addEventListener('change', updateApplyEnabled);
 
 const targetModal = document.getElementById('targetModal');
 document.getElementById('changeTargetBtn').addEventListener('click', () => targetModal.classList.add('open'));
 document.getElementById('modalClose').addEventListener('click', () => targetModal.classList.remove('open'));
 document.getElementById('modalCancel').addEventListener('click', () => targetModal.classList.remove('open'));
-document.getElementById('modalApply').addEventListener('click', () => {
-  document.getElementById('targetChip').innerHTML = `${esc(selProject.value)} <span class="seg">/</span> ${esc(selDevice.value)} <span class="seg">/</span> ${esc(selModel.value)}`;
+modalApply.addEventListener('click', () => {
+  const pair = KNOWN_SUITES[`${selProject.value}|${selDevice.value}`];
+  if (!pair) return; // belt-and-braces; button is disabled in this state anyway
+  document.getElementById('targetChip').innerHTML =
+    `${esc(selProject.value)} <span class="seg">/</span> ${esc(selDevice.value)} <span class="seg">/</span> ${esc(selModel.value)} ` +
+    `<span class="seg">/</span> old: ${esc(pair.old)} <span class="seg">/</span> new: ${esc(pair.new)}`;
   targetModal.classList.remove('open');
 });
 </script>
