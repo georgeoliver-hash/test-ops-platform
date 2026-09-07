@@ -31,6 +31,16 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 def _default_root() -> Path:
+    """Resolved fresh on every call — NOT cached at import time.
+
+    A module-level `CLAUDE_ROOT = _default_root()` global would freeze whichever
+    TESTOPS_CLAUDE_ROOT was set at first import forever, for every caller sharing this
+    cached module (Python only imports a module once per process). That's exactly the bug
+    this used to have: one test file's fixture setting/clearing the env var and reloading
+    the module could silently change what a completely different caller (e.g. the webapp)
+    sees, depending on import order. Recomputing per-call means each caller's own
+    environment always wins, with no reload dance required.
+    """
     override = os.environ.get("TESTOPS_CLAUDE_ROOT")
     if override:
         return Path(override)
@@ -38,8 +48,8 @@ def _default_root() -> Path:
     return Path(__file__).resolve().parent.parent / "testops" / ".claude"
 
 
-CLAUDE_ROOT = _default_root()
-PIPELINES_ROOT = CLAUDE_ROOT / "pipelines"
+def _pipelines_root() -> Path:
+    return _default_root() / "pipelines"
 
 
 class StepKind(str, Enum):
@@ -155,18 +165,20 @@ class GuardrailReferenceError(RuntimeError):
 
 
 def load_shared_guardrails() -> list[Guardrail]:
-    path = PIPELINES_ROOT / "_shared.yaml"
+    root = _pipelines_root()
+    path = root / "_shared.yaml"
     if not path.is_file():
-        raise FileNotFoundError(f"No _shared.yaml under {PIPELINES_ROOT}")
+        raise FileNotFoundError(f"No _shared.yaml under {root}")
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return [Guardrail(**g) for g in data.get("shared_guardrails", [])]
 
 
 def load_pipeline_index() -> list[PipelineIndexEntry]:
-    path = PIPELINES_ROOT / "index.yaml"
+    root = _pipelines_root()
+    path = root / "index.yaml"
     if not path.is_file():
         raise FileNotFoundError(
-            f"No index.yaml under {PIPELINES_ROOT}. Set TESTOPS_CLAUDE_ROOT to point at a real "
+            f"No index.yaml under {root}. Set TESTOPS_CLAUDE_ROOT to point at a real "
             f"testops/.claude checkout (the sandbox's own Platform/testops/ copy is stale and "
             f"doesn't have .claude/pipelines/ yet)."
         )
@@ -179,7 +191,7 @@ def load_pipeline(pipeline_id: str) -> Pipeline:
     entry = index.get(pipeline_id)
     if entry is None:
         raise KeyError(f"Unknown pipeline id '{pipeline_id}'. Known: {sorted(index)}")
-    path = PIPELINES_ROOT / entry.file
+    path = _pipelines_root() / entry.file
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return Pipeline(**data)
 

@@ -1,0 +1,364 @@
+<title>Test-Ops Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --p1:#5F016F; --p1-900:#38003D; --p1-700:#8704AF;
+    --p2:#FF33BB; --p3:#FF80D4; --p4:#FFADE4;
+    --p4-200:#FFC7EC; --p4-100:#FFE5F7;
+    --off-white:#F9F5F4;
+    --n900:#201E1D; --n700:#545050; --n500:#716C6A; --n300:#C3BDBC; --n200:#E3DFDD;
+
+    --bg: var(--off-white); --surface:#FFFFFF;
+    --sidebar-bg: var(--p1-900); --sidebar-ink: var(--p4); --sidebar-ink-dim:#C9A0C7;
+    --sidebar-active-bg: var(--p1);
+    --ink: var(--n900); --ink-soft: var(--n500); --line: var(--n200);
+    --accent: var(--p1); --accent-soft-bg: var(--p4-100); --accent-soft-border: var(--p4-200);
+    --ok:#1F7A3D; --ok-bg:#E4F5E9; --warn:#9A6A00; --warn-bg:#FDF1DC; --bad:#B23A3A; --bad-bg:#FBE4E4;
+    --ai:#8704AF; --ai-bg:#F3E3F7; --code:#0F7A6E; --code-bg:#E1F5F2; --gate:#5C4A8C; --gate-bg:#E9E3F4; --human:#716C6A; --human-bg:#E3DFDD;
+    --shadow: 0 1px 2px rgba(56,0,61,.04), 0 6px 20px rgba(56,0,61,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#201E1D; --surface:#2B2827; --ink:#F9F5F4; --ink-soft:#C3BDBC; --line:#3E3A38;
+      --accent: var(--p4); --accent-soft-bg:#3D2A3B; --accent-soft-border:#5C3E58;
+      --ok:#4FBE72; --ok-bg:#1D3324; --warn:#D9A441; --warn-bg:#332B14; --bad:#E27272; --bad-bg:#3A2323;
+      --ai:#D89AE8; --ai-bg:#3A2A3E; --code:#5FC9B6; --code-bg:#17332E; --gate:#B7A2E4; --gate-bg:#2B2440; --human:#AEB8AE; --human-bg:#2C332C;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:14.5px;line-height:1.5;}
+  h1,h2,h3,.brand-font{font-family:"Poppins","Inter",sans-serif;}
+  .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh;}
+  @media (max-width:860px){.shell{grid-template-columns:1fr;} .sidebar{display:none;}}
+
+  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;}
+  .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:0 8px 22px;}
+  .sidebar .logo-row img{height:22px;filter:brightness(0) invert(1);display:block;}
+  .sidebar .tool-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sidebar-ink-dim);padding:0 8px 14px;}
+  nav.navgroups{flex:1;overflow-y:auto;}
+  .navgroup{margin-bottom:18px;}
+  .navgroup .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--sidebar-ink-dim);padding:0 10px 6px;}
+  .navitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--sidebar-ink);text-decoration:none;cursor:pointer;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+  .navitem:hover{background:rgba(255,255,255,.06);}
+  .navitem.active{background:var(--sidebar-active-bg);color:#fff;font-weight:600;}
+  .navitem .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;flex:none;}
+  .sidebar-foot{border-top:1px solid rgba(255,255,255,.12);padding-top:14px;margin-top:6px;font-size:12px;color:var(--sidebar-ink-dim);display:flex;align-items:center;gap:8px;}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--p2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none;}
+
+  main{padding:0;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5;}
+  .target-chip{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--accent-soft-bg);border:1px solid var(--accent-soft-border);color:var(--accent);padding:6px 12px;border-radius:99px;font-weight:600;}
+  .target-chip .seg{opacity:.55;font-weight:500;margin:0 2px;}
+  .btn{font-family:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;}
+  .btn.primary{background:var(--p1);border-color:var(--p1);color:#fff;}
+
+  .content{padding:26px 28px 60px;max-width:1180px;}
+  .page-head{margin-bottom:22px;}
+  .page-head h1{font-size:22px;margin:0 0 4px;font-weight:600;}
+  .page-head p{color:var(--ink-soft);margin:0;font-size:13.5px;}
+
+  .fixture-note{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--warn);background:var(--warn-bg);padding:4px 10px;border-radius:99px;margin-bottom:16px;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px;}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);}
+  .stat .n{font-family:"Poppins";font-size:24px;font-weight:600;display:block;font-variant-numeric:tabular-nums;}
+  .stat .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
+  .stat.ok .n{color:var(--ok);} .stat.warn .n{color:var(--warn);} .stat.bad .n{color:var(--bad);}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;}
+  .card h2{font-size:15px;margin:0 0 12px;font-weight:600;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+  .pill.ok{background:var(--ok-bg);color:var(--ok);} .pill.warn{background:var(--warn-bg);color:var(--warn);} .pill.bad{background:var(--bad-bg);color:var(--bad);}
+  .pill.ai{background:var(--ai-bg);color:var(--ai);} .pill.code{background:var(--code-bg);color:var(--code);}
+  .pill.gate{background:var(--gate-bg);color:var(--gate);} .pill.human{background:var(--human-bg);color:var(--human);}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  /* --- Pipelines: simplified list + flow-underneath, replacing the dense FigJam board --- */
+  .pipeline-row{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden;background:var(--surface);}
+  .pipeline-row .head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;gap:12px;}
+  .pipeline-row .head:hover{background:var(--bg);}
+  .pipeline-row .head .name{font-weight:600;font-size:14px;}
+  .pipeline-row .head .name code{font-size:11.5px;color:var(--ink-soft);font-weight:400;margin-left:6px;}
+  .pipeline-row .density{display:flex;gap:6px;align-items:center;}
+  .density-chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;}
+  .chevron{transition:transform .15s;color:var(--ink-soft);}
+  .pipeline-row.open .chevron{transform:rotate(90deg);}
+  .pipeline-row .flow{display:none;padding:4px 16px 16px;border-top:1px solid var(--line);}
+  .pipeline-row.open .flow{display:block;}
+  .flow-step{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;position:relative;}
+  .flow-step:not(:last-child){border-bottom:1px dashed var(--line);}
+  .flow-step .stepkind{width:78px;flex:none;}
+  .flow-step .stepid{font-weight:600;}
+  .flow-step .stepdetail{color:var(--ink-soft);font-size:12.5px;}
+  .flow-step .steploop{margin-left:auto;font-size:11px;color:var(--accent);background:var(--accent-soft-bg);padding:2px 8px;border-radius:99px;white-space:nowrap;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .legend .chip{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink-soft);}
+  .legend .chip .sw{width:9px;height:9px;border-radius:3px;flex:none;}
+
+  .activity{list-style:none;margin:0;padding:0;}
+  .activity li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .activity li:last-child{border-bottom:none;}
+
+  .loading{color:var(--ink-soft);font-size:13px;padding:20px 0;}
+  .errbox{color:var(--bad);background:var(--bad-bg);padding:12px 14px;border-radius:8px;font-size:13px;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(32,30,29,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border-radius:14px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(56,0,61,.25);overflow:hidden;}
+  .modal-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .modal-head h3{margin:0;font-size:16px;font-weight:600;}
+  .modal-close{background:none;border:none;font-size:18px;color:var(--ink-soft);cursor:pointer;line-height:1;padding:2px 6px;}
+  .modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px;}
+  .field label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:5px;}
+  .field select{width:100%;font-family:inherit;font-size:13.5px;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);}
+  .suite-readout{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;}
+  .suite-readout.missing{color:var(--warn);background:var(--warn-bg);border-color:transparent;}
+  .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
+  .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;}
+</style>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="logo-row"><img src="/assets/arrive-logo.png" alt="Arrive"></div>
+    <div class="tool-name">Test-Ops Console</div>
+    <nav class="navgroups">
+      <div class="navgroup">
+        <div class="label">Overview</div>
+        <button class="navitem active" data-view="health"><span class="dot"></span>Suite health</button>
+        <button class="navitem" data-view="pipelines"><span class="dot"></span>Processes &amp; flows</button>
+        <button class="navitem" data-view="features"><span class="dot"></span>Features</button>
+        <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
+        <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">GO</div>
+      <div>George Oliver</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="target-chip" id="targetChip">Translink <span class="seg">/</span> POS <span class="seg">/</span> POS_Way6</div>
+      <div>
+        <button class="btn" id="changeTargetBtn">Change target</button>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="targetModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Change target</h3><button class="modal-close" id="modalClose">&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Project</label><select id="selProject"></select></div>
+      <div class="field"><label>Device</label><select id="selDevice"></select></div>
+      <div class="field"><label>Model / build</label><select id="selModel"></select></div>
+    </div>
+    <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply">Apply target</button></div>
+  </div>
+</div>
+
+<script>
+const KIND_META = {
+  cli:   {label: 'CODE',  cls: 'code'},
+  agent: {label: 'AI',    cls: 'ai'},
+  gate:  {label: 'GATE',  cls: 'gate'},
+  human: {label: 'HUMAN', cls: 'human'},
+  composite_ref: {label: 'SUB-FLOW', cls: 'human'},
+};
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) { const body = await res.json().catch(() => ({})); throw new Error(body.detail || res.statusText); }
+  return res.json();
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
+const content = document.getElementById('content');
+function setContent(html) { content.innerHTML = html; }
+function loading() { setContent('<div class="loading">Loading real data…</div>'); }
+function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
+
+/* ---------------- Suite health ---------------- */
+async function renderHealth() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/build-stats');
+    const fixtureNote = d.is_fixture ? `<div class="fixture-note">⚠ ${esc(d.fixture_note)}</div>` : '';
+    setContent(`
+      <div class="page-head"><h1>Suite health — ${esc(d.project)}</h1><p>${esc(d.suite)} · generated ${esc(d.generated_at)}</p></div>
+      ${fixtureNote}
+      <div class="stat-row">
+        <div class="stat"><span class="n">${d.cases_total}</span><span class="l">cases total</span></div>
+        <div class="stat ok"><span class="n">${d.delta.added.length}</span><span class="l">added</span></div>
+        <div class="stat warn"><span class="n">${d.delta.edited.length}</span><span class="l">edited</span></div>
+        <div class="stat ${d.delta.removed.length ? 'bad' : ''}"><span class="n">${d.delta.removed.length}</span><span class="l">removed</span></div>
+        <div class="stat"><span class="n">${d.delta.unchanged}</span><span class="l">unchanged</span></div>
+        ${d.gap_open_count !== null ? `<div class="stat bad"><span class="n">${d.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
+      </div>
+      <div class="card">
+        <h2>Case delta since last snapshot</h2>
+        <table>
+          <tr><th>Change</th><th>Case ids (first 10)</th></tr>
+          <tr><td><span class="pill ok">Added</span></td><td>${d.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${d.delta.added.length>10?` …+${d.delta.added.length-10} more`:''}</td></tr>
+          <tr><td><span class="pill warn">Edited</span></td><td>${d.delta.edited.slice(0,10).map(i=>'C'+i).join(', ')}${d.delta.edited.length>10?` …+${d.delta.edited.length-10} more`:''}</td></tr>
+        </table>
+      </div>`);
+  } catch (e) { errbox('Could not load suite health: ' + e.message); }
+}
+
+/* ---------------- Processes & flows (simplified, replaces the dense FigJam board) ---------------- */
+async function renderPipelines() {
+  loading();
+  try {
+    const list = await fetchJSON('/api/pipelines');
+    const rows = list.map(p => `
+      <div class="pipeline-row" data-id="${esc(p.id)}">
+        <div class="head">
+          <div class="name">${esc(p.id)} ${p.slash_command ? `<code>${esc(p.slash_command)}</code>` : ''}</div>
+          <div class="density">
+            ${p.density.agent ? `<span class="density-chip pill ai">${p.density.agent} AI</span>` : ''}
+            ${p.density.cli ? `<span class="density-chip pill code">${p.density.cli} code</span>` : ''}
+            ${p.density.gate ? `<span class="density-chip pill gate">${p.density.gate} gate</span>` : ''}
+            ${p.density.human ? `<span class="density-chip pill human">${p.density.human} human</span>` : ''}
+            <span class="chevron">▸</span>
+          </div>
+        </div>
+        <div class="flow"><div class="loading">Click to load steps…</div></div>
+      </div>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Processes &amp; flows</h1><p>Every pipeline, real step data — click a row to expand its flow underneath.</p></div>
+      <div class="legend">
+        <span class="chip"><span class="sw" style="background:var(--ai)"></span>AI / judgement</span>
+        <span class="chip"><span class="sw" style="background:var(--code)"></span>Deterministic code</span>
+        <span class="chip"><span class="sw" style="background:var(--gate)"></span>Gate / decision</span>
+        <span class="chip"><span class="sw" style="background:var(--human)"></span>Human only</span>
+      </div>
+      ${rows}`);
+
+    content.querySelectorAll('.pipeline-row .head').forEach(head => {
+      head.addEventListener('click', async () => {
+        const row = head.parentElement;
+        const flowEl = row.querySelector('.flow');
+        const wasOpen = row.classList.contains('open');
+        row.classList.toggle('open');
+        if (!wasOpen && flowEl.dataset.loaded !== '1') {
+          try {
+            const detail = await fetchJSON(`/api/pipelines/${row.dataset.id}`);
+            flowEl.innerHTML = detail.steps.map(s => {
+              const meta = KIND_META[s.kind] || KIND_META.human;
+              return `<div class="flow-step">
+                <span class="stepkind pill ${meta.cls}">${meta.label}</span>
+                <span class="stepid">${esc(s.id)}</span>
+                <span class="stepdetail">${esc(s.agent || s.command || s.ref || s.ref_pipeline || '')}</span>
+                ${s.loop ? `<span class="steploop">${esc(s.loop)}</span>` : ''}
+              </div>`;
+            }).join('');
+            flowEl.dataset.loaded = '1';
+          } catch (e) { flowEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+        }
+      });
+    });
+  } catch (e) { errbox('Could not load pipelines: ' + e.message); }
+}
+
+/* ---------------- Features (common vs bespoke) ---------------- */
+async function renderFeatures() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/features');
+    const byFeature = {};
+    d.features.forEach(f => byFeature[f.key] = {feature: f, variants: []});
+    d.variants.forEach(v => byFeature[v.feature_key]?.variants.push(v));
+    const cards = Object.values(byFeature).map(({feature, variants}) => `
+      <div class="card">
+        <h2>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft)">${esc(feature.key)}</code></h2>
+        <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
+        <table>
+          <tr><th>Project</th><th>Device</th><th>Variant</th><th>Cited source</th></tr>
+          ${variants.map(v => `<tr><td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td><td><span class="pill code">${esc(v.citation.source_ref)}</span></td></tr>`).join('')}
+        </table>
+      </div>`).join('');
+    const gapRows = Object.entries(d.gaps).map(([proj, keys]) => keys.length
+      ? `<li><b>${esc(proj)}</b> — no cited variant yet for: ${keys.map(esc).join(', ')}</li>` : '').join('');
+    setContent(`
+      <div class="page-head"><h1>Features — common vs. bespoke</h1><p>The functionality axis: same behaviour, cited per-project embodiment.</p></div>
+      ${gapRows ? `<div class="card"><h2>Real gaps found</h2><ul class="activity">${gapRows}</ul></div>` : ''}
+      ${cards}`);
+  } catch (e) { errbox('Could not load features: ' + e.message); }
+}
+
+/* ---------------- Repo map ---------------- */
+async function renderRepoMap() {
+  loading();
+  try {
+    const sections = await fetchJSON('/api/repo-map');
+    const html = sections.map(s => `
+      <div class="card">
+        <h2>${esc(s.title)}</h2>
+        <table><tr><th>File</th><th>Purpose</th><th>Lines</th></tr>
+        ${s.files.map(f => `<tr><td><code style="font-size:12px">${esc(f.path)}</code></td><td>${esc(f.purpose)}</td><td>${f.lines}</td></tr>`).join('')}
+        </table>
+      </div>`).join('');
+    setContent(`<div class="page-head"><h1>Repo map</h1><p>Generated live, right now, from real docstrings/frontmatter — not a cached snapshot.</p></div>${html}`);
+  } catch (e) { errbox('Could not load repo map: ' + e.message); }
+}
+
+/* ---------------- Gap register ---------------- */
+async function renderGaps() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/gap-register');
+    const rows = d.shown.map(g => `<tr><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text)}</td></tr>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Gap register</h1><p>${d.total} real GAP/UNCONFIRMED marker(s) found repo-wide, showing first ${d.shown.length}.</p></div>
+      ${d.is_fixture ? `<div class="fixture-note">⚠ Fixture data from a real gap-register run, 2026-09-07 — not live.</div>` : ''}
+      <div class="card"><table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table></div>`);
+  } catch (e) { errbox('Could not load gap register: ' + e.message); }
+}
+
+const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps};
+document.querySelectorAll('.navitem[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.navitem[data-view]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    VIEWS[btn.dataset.view]();
+  });
+});
+renderHealth();
+
+/* ---------------- Target switcher (real taxonomy) ---------------- */
+let TAXONOMY = {};
+fetchJSON('/api/taxonomy').then(t => { TAXONOMY = t; refreshDevices(); }).catch(() => {});
+
+const KNOWN_SUITES = {"Translink|POS": "GG - POS - Claude Suite"};
+const selProject = document.getElementById('selProject');
+const selDevice = document.getElementById('selDevice');
+const selModel = document.getElementById('selModel');
+function fillSelect(sel, items) { sel.innerHTML = items.map(i => `<option value="${esc(i)}">${esc(i.replace(/_/g,' '))}</option>`).join(''); }
+function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); }
+function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || []); }
+selProject?.addEventListener('change', () => { fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); });
+selDevice?.addEventListener('change', refreshModels);
+
+const targetModal = document.getElementById('targetModal');
+document.getElementById('changeTargetBtn').addEventListener('click', () => targetModal.classList.add('open'));
+document.getElementById('modalClose').addEventListener('click', () => targetModal.classList.remove('open'));
+document.getElementById('modalCancel').addEventListener('click', () => targetModal.classList.remove('open'));
+document.getElementById('modalApply').addEventListener('click', () => {
+  document.getElementById('targetChip').innerHTML = `${esc(selProject.value)} <span class="seg">/</span> ${esc(selDevice.value)} <span class="seg">/</span> ${esc(selModel.value)}`;
+  targetModal.classList.remove('open');
+});
+</script>

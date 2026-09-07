@@ -3,10 +3,13 @@
 The sandbox's own Platform/testops/ copy is stale (frozen June, predates the pipelines/ split)
 so these point TESTOPS_CLAUDE_ROOT at the live system-test-ops checkout via a fixture — the
 same "point at a real checkout" pattern sync_sit_mirror.py uses for sit-mirror/.
+
+No module reload needed: pipelines.py resolves its root fresh on every call rather than
+caching it at import time, specifically so one test file's env var doesn't leak into another
+caller sharing the cached module (see _default_root()'s docstring for the bug this replaced).
 """
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
 
 import pytest
@@ -23,9 +26,7 @@ def pipelines(monkeypatch):
     monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(LIVE_CLAUDE_ROOT))
     from model import pipelines as mod
 
-    importlib.reload(mod)  # module-level CLAUDE_ROOT/PIPELINES_ROOT must re-read the env var
     yield mod
-    importlib.reload(mod)  # restore default root for any test that runs after
 
 
 def test_index_lists_all_fourteen_pipelines(pipelines):
@@ -85,8 +86,5 @@ def test_missing_root_raises_a_clear_error(monkeypatch):
     monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(Path("/definitely/does/not/exist")))
     from model import pipelines as mod
 
-    importlib.reload(mod)
     with pytest.raises(FileNotFoundError, match="stale"):
         mod.load_pipeline_index()
-    monkeypatch.delenv("TESTOPS_CLAUDE_ROOT", raising=False)
-    importlib.reload(mod)
