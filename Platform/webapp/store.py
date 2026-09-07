@@ -111,14 +111,33 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
         )
-        # Seed the one real, documented suite pair (system-test-ops CLAUDE.md's hard rule) —
-        # never invent others. INSERT OR IGNORE so re-running init_db doesn't clobber edits.
-        conn.execute(
-            """INSERT OR IGNORE INTO suite_mappings
-               (user_id, project, device, old_suite, new_suite, updated_at)
-               VALUES (?, 'Translink', 'POS', 'AA-POS Acceptance Test', 'GG - POS - Claude Suite', datetime('now'))""",
-            (DEFAULT_USER_ID,),
-        )
+        # Seed every real, unambiguous old/new pair actually found in system-test-ops —
+        # never invent others. Each is a single documented 1:1 pair (source: as cited).
+        # Deliberately NOT seeded here (found, but genuinely ambiguous or unconfirmed —
+        # see Platform/webapp/ISSUES.md's 2026-09-07 write-up for the full reasoning):
+        #   - TVM: 4+ old suites feed the new one (30284) — no single "the" old suite.
+        #   - HHD: same shape, 4 old suites (5446 primary + others) -> 30285.
+        #   - NJT FR: new suite 30295 is real and in heavy use (proposals/njt-fr-suite-
+        #     restructure/*.cases.yaml), but no old/source suite id is documented anywhere
+        #     in this repo — can't seed a pair with an unconfirmed half.
+        # INSERT OR IGNORE so re-running init_db doesn't clobber George's own edits.
+        seed_pairs = [
+            # (project, device, old_suite, new_suite) -- cite: system-test-ops CLAUDE.md
+            ("Translink", "POS", "AA-POS Acceptance Test", "GG - POS - Claude Suite"),
+            # cite: knowledge/devices/etm.md:89 + proposals/etm-suite-restructure/*
+            ("Translink", "ETM", "AA-ETM-Acceptance Test", "NEW ETM-Acceptance Suite"),
+            # cite: proposals/gv-suite-restructure/old-suite-audit.md:7
+            ("Translink", "GV", "AA - Gate Validator - Acceptance Test", "NEW GV Test Suite"),
+            # cite: proposals/pv-suite-restructure/build-complete.md:3, pv-mode-tagging.changelog.md:81
+            ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite"),
+        ]
+        for project, device, old_suite, new_suite in seed_pairs:
+            conn.execute(
+                """INSERT OR IGNORE INTO suite_mappings
+                   (user_id, project, device, old_suite, new_suite, updated_at)
+                   VALUES (?, ?, ?, ?, ?, datetime('now'))""",
+                (DEFAULT_USER_ID, project, device, old_suite, new_suite),
+            )
 
 
 def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
@@ -234,6 +253,44 @@ def delete_doc(project: str, device: str, filename: str) -> bool:
     if not path.is_file():
         return False
     path.unlink()
+    return True
+
+
+def detect_sibling_env_credentials(env_path: Path) -> dict | None:
+    """Read-only peek at a sibling repo's .env (system-test-ops' own TESTRAIL_* vars) so the
+    console can offer to import real, already-configured credentials instead of asking
+    George to retype something that already exists on his machine. Never returns the key
+    itself — only enough to show what would be imported; the key is read again, server-side
+    only, at actual import time (import_sibling_env_credentials)."""
+    if not env_path.is_file():
+        return None
+    values = {}
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        values[key.strip()] = val.strip()
+    url, user, key = values.get("TESTRAIL_URL"), values.get("TESTRAIL_USER"), values.get("TESTRAIL_API_KEY")
+    if not (url and user and key):
+        return None
+    return {"testrail_url": url, "testrail_user": user}
+
+
+def import_sibling_env_credentials(env_path: Path, user_id: int = DEFAULT_USER_ID) -> bool:
+    if not env_path.is_file():
+        return False
+    values = {}
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        values[key.strip()] = val.strip()
+    url, user, key = values.get("TESTRAIL_URL"), values.get("TESTRAIL_USER"), values.get("TESTRAIL_API_KEY")
+    if not (url and user and key):
+        return False
+    save_credentials(url, user, key, user_id=user_id)
     return True
 
 

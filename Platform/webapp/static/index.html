@@ -277,6 +277,11 @@ function renderStep(s) {
   </div>`;
 }
 
+const content = document.getElementById('content');
+function setContent(html) { content.innerHTML = html; }
+function loading() { setContent('<div class="loading">Loading real data…</div>'); }
+function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
+
 /* Delegated clicks: step accordions + feature-variant accordions, works across all views
    since content.innerHTML is replaced wholesale on every render (a listener bound directly
    to a row would be destroyed with it; delegation from the stable `content` element survives). */
@@ -292,11 +297,6 @@ content.addEventListener('click', (e) => {
     }
   }
 });
-
-const content = document.getElementById('content');
-function setContent(html) { content.innerHTML = html; }
-function loading() { setContent('<div class="loading">Loading real data…</div>'); }
-function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
 
 /* ---------------- Suite health ---------------- */
 // Every stat here comes from ONE captured fixture (Translink/POS, 2026-08-07). There's no
@@ -563,10 +563,16 @@ async function renderDocs() {
 async function renderSettings() {
   loading();
   try {
-    const [status, mappings] = await Promise.all([
+    const [status, mappings, envDetect] = await Promise.all([
       fetchJSON('/api/credentials/status'),
       fetchJSON('/api/suite-mappings'),
+      fetchJSON('/api/credentials/detect-env').catch(() => ({found: false})),
     ]);
+    const importCard = (!status.configured && envDetect && envDetect.found) ? `
+      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span>ℹ Found existing TestRail credentials in <code>system-test-ops/.env</code> for <b>${esc(envDetect.testrail_user)}</b> at <code>${esc(envDetect.testrail_url)}</code> — import instead of retyping?</span>
+        <button class="btn primary" id="credImportBtn" style="font-size:12px;padding:6px 12px;white-space:nowrap;">Import</button>
+      </div>` : '';
     const credCard = `
       <div class="card">
         <h2>TestRail credentials</h2>
@@ -583,6 +589,19 @@ async function renderSettings() {
         <div id="credMsg" style="margin-top:8px;font-size:12.5px;"></div>
       </div>`;
 
+    const connectionsCard = `
+      <div class="card">
+        <h2>Connections this console needs</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 12px;">What's actually checkable here vs. what lives at the Claude Code / agent layer, out of this app's sight.</p>
+        <table>
+          <tr><th>Integration</th><th>Used for</th><th>Status</th></tr>
+          <tr><td>TestRail</td><td>Cases, runs, push (once wired)</td><td>${status.configured ? '<span class="pill ok">Configured</span>' : '<span class="pill warn">Not configured</span>'}</td></tr>
+          <tr><td>JIRA (Atlassian Rovo MCP)</td><td>Fix versions, stories, epics, bugs for coverage audits</td><td><span class="pill human">Checked in Claude Code, not here</span></td></tr>
+          <tr><td>Confluence (Atlassian Rovo MCP)</td><td>Release notes for scope/coverage context</td><td><span class="pill human">Checked in Claude Code, not here</span></td></tr>
+        </table>
+        <p style="color:var(--ink-soft);font-size:12px;margin:12px 0 0;">This app is a plain FastAPI server — it can't see which MCP servers your Claude Code session has authenticated. JIRA/Confluence access is per-engineer, connected in Claude Code itself (<code>mcp__claude_ai_Atlassian_Rovo__authenticate</code>), not something this console stores or checks. The pipelines that need them (audit-coverage, ingest-docs, etc.) run as Claude Code agents, not through this API — so "connected" for those means connected in your Claude Code session, checked there, not here.</p>
+      </div>`;
+
     const mapRows = mappings.map(m => `
       <tr>
         <td>${esc(m.project)}</td><td>${esc(m.device)}</td>
@@ -596,7 +615,15 @@ async function renderSettings() {
         ${mappings.length ? `<table><tr><th>Project</th><th>Device</th><th>Old suite</th><th>New suite</th><th></th></tr>${mapRows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No suite mappings configured yet.</p>'}
       </div>`;
 
-    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${credCard}${mapCard}`);
+    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${importCard}${credCard}${connectionsCard}${mapCard}`);
+
+    document.getElementById('credImportBtn')?.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/credentials/import-env', {method: 'POST'});
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        renderSettings();
+      } catch (e) { alert('Could not import: ' + e.message); }
+    });
 
     if (!status.configured) {
       document.getElementById('credSaveBtn').addEventListener('click', async () => {

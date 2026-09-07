@@ -23,13 +23,15 @@ def test_default_user_seeded(store):
     assert user["display_name"] == "George Oliver"
 
 
-def test_seed_mapping_is_the_real_documented_one(store):
-    mappings = store.list_suite_mappings()
-    assert len(mappings) == 1
-    m = mappings[0]
-    assert m["project"] == "Translink" and m["device"] == "POS"
-    assert m["old_suite"] == "AA-POS Acceptance Test"
-    assert m["new_suite"] == "GG - POS - Claude Suite"
+def test_seed_mappings_are_the_real_documented_ones(store):
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert len(mappings) == 4
+    assert mappings["Translink|POS"]["old_suite"] == "AA-POS Acceptance Test"
+    assert mappings["Translink|POS"]["new_suite"] == "GG - POS - Claude Suite"
+    assert mappings["Translink|ETM"]["old_suite"] == "AA-ETM-Acceptance Test"
+    assert mappings["Translink|ETM"]["new_suite"] == "NEW ETM-Acceptance Suite"
+    assert mappings["Translink|GV"]["old_suite"] == "AA - Gate Validator - Acceptance Test"
+    assert mappings["Translink|PV"]["old_suite"] == "AA-Platform Validator Acceptance Test"
 
 
 def test_upsert_new_mapping(store):
@@ -40,10 +42,11 @@ def test_upsert_new_mapping(store):
 
 
 def test_upsert_updates_existing_pair_not_duplicate(store):
+    before = len(store.list_suite_mappings())
     store.upsert_suite_mapping("Translink", "POS", "New Old Name", "New New Name")
-    mappings = store.list_suite_mappings()
-    assert len(mappings) == 1  # still one row, updated in place
-    assert mappings[0]["old_suite"] == "New Old Name"
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert len(mappings) == before  # updated in place, no new row
+    assert mappings["Translink|POS"]["old_suite"] == "New Old Name"
 
 
 def test_upsert_rejects_blank_fields(store):

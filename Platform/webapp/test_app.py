@@ -19,6 +19,7 @@ os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from Platform.webapp import app as app_module  # noqa: E402
 from Platform.webapp.app import app  # noqa: E402
 
 client = TestClient(app)
@@ -193,4 +194,46 @@ def test_docs_upload_list_and_delete_roundtrip():
 
 def test_docs_delete_unknown_is_404():
     res = client.delete("/api/docs/NoSuch/DEV/missing.md")
+    assert res.status_code == 404
+
+
+def test_detect_env_reports_not_found_when_no_sibling_env(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "SIBLING_ENV_PATH", tmp_path / "does-not-exist.env")
+    res = client.get("/api/credentials/detect-env")
+    assert res.status_code == 200
+    assert res.json() == {"found": False}
+
+
+def test_detect_and_import_env_credentials_roundtrip(tmp_path, monkeypatch):
+    env_file = tmp_path / "sibling.env"
+    env_file.write_text(
+        "TESTRAIL_URL=http://testraildb/testrail\n"
+        "TESTRAIL_USER=george.oliver@arrive.com\n"
+        "TESTRAIL_API_KEY=super-secret-value\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(app_module, "SIBLING_ENV_PATH", env_file)
+    client.delete("/api/credentials")
+
+    res = client.get("/api/credentials/detect-env")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["found"] is True
+    assert body["testrail_user"] == "george.oliver@arrive.com"
+    assert "super-secret-value" not in res.text
+
+    res = client.post("/api/credentials/import-env")
+    assert res.status_code == 200
+    assert res.json()["configured"] is True
+    assert "super-secret-value" not in res.text
+
+    status = client.get("/api/credentials/status").json()
+    assert status["configured"] is True
+    assert status["testrail_url"] == "http://testraildb/testrail"
+    client.delete("/api/credentials")
+
+
+def test_import_env_404_when_nothing_to_import(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "SIBLING_ENV_PATH", tmp_path / "missing.env")
+    res = client.post("/api/credentials/import-env")
     assert res.status_code == 404

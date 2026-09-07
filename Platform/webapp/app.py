@@ -49,6 +49,13 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
     if _live_sto.is_dir():
         os.environ["TESTOPS_CLAUDE_ROOT"] = str(_live_sto)
 
+# system-test-ops' own .env, same sibling-checkout convention as TESTOPS_CLAUDE_ROOT above.
+# George already has real TESTRAIL_* values there (used by that repo's CLI) -- the console
+# offers to import them rather than asking him to retype credentials that already exist on
+# this machine. Detection/import both happen server-side; the key itself is never sent to
+# the frontend at any point (see store.py's detect_/import_sibling_env_credentials).
+SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
+
 from model import devices, features, pipelines  # noqa: E402
 from Platform.webapp import store  # noqa: E402
 
@@ -124,6 +131,21 @@ def put_credentials(body: CredentialsIn):
 def remove_credentials():
     store.delete_credentials()
     return {"ok": True}
+
+
+@app.get("/api/credentials/detect-env")
+def detect_env_credentials():
+    """Read-only peek at the sibling system-test-ops/.env this machine already has — never
+    the key itself, just enough (url/user) to show what an import would bring in."""
+    found = store.detect_sibling_env_credentials(SIBLING_ENV_PATH)
+    return {"found": found is not None, **(found or {})}
+
+
+@app.post("/api/credentials/import-env")
+def import_env_credentials():
+    if not store.import_sibling_env_credentials(SIBLING_ENV_PATH):
+        raise HTTPException(status_code=404, detail="No TestRail credentials found in system-test-ops/.env")
+    return store.get_credentials_status()
 
 
 @app.get("/api/docs")
