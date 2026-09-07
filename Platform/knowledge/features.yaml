@@ -1,0 +1,99 @@
+# Common features vs. bespoke project variants — see model/features.py's module docstring.
+#
+# Manually curated, cited seed data. Every variant below traces to a real TestRail case and/or
+# spec paragraph already in system-test-ops — nothing here is invented. Sourced 2026-08-26 from
+# proposals/coherence-audit/fixes/pv-card-variant-sweep.changelog.md (Translink PV, suite 30255)
+# and proposals/pv-suite-restructure/coverage-map.md.
+#
+# Add to this file the same way: find the real case/spec, cite it, don't guess.
+
+features:
+  - key: card_reading.tap
+    name: Tap a card/credential at a reader
+    description: >
+      Present a card or credential at a device's reader; the reader identifies the technology
+      and routes to the matching validation. The behaviour (present -> identify -> validate) is
+      the same regardless of which credential technology a given project actually issues.
+
+  - key: backoffice.cloudfare_comm
+    name: Device communicates with the CloudFare back-office
+    description: >
+      Every device talks to the shared CloudFare back-office product — the same underlying
+      channel — but what each project actually configures/uses it for differs.
+
+  - key: driver.sign_on
+    name: Driver/operator signs on before operating the device
+    description: >
+      Same conceptual behaviour (credential entry -> device unlocks for operation) across every
+      project; the exact sign-on method and screens are project/device-specific.
+
+variants:
+  - feature_key: card_reading.tap
+    project: translink
+    device_type: PV
+    variant_name: "DESFire EV3 (ABT smartcard)"
+    note: >
+      Corrected 2026-07-23 from a prior misnomer: the old suite had a case titled "FEIG - ITSO
+      Smartcard Tap", but Translink's own card-format spec never mentions ITSO — the real
+      credential is DESFire EV3. C4101081 was rewritten to match. This is the exact failure mode
+      this model exists to catch: a plausible-sounding bespoke label that had drifted from what
+      the cited spec actually says.
+    citation: {source_kind: spec, source_ref: "FBD-100236 (Translink DESFire ABT Card Format Specification)", confidence: confirmed}
+
+  - feature_key: card_reading.tap
+    project: translink
+    device_type: PV
+    variant_name: "MIFARE"
+    note: "Card technology — MIFARE and DESFire"
+    citation: {source_kind: testrail_case, source_ref: "C4101008", confidence: confirmed}
+
+  - feature_key: card_reading.tap
+    project: translink
+    device_type: PV
+    variant_name: "Mobile wallet (Apple Pay / Google Pay)"
+    citation: {source_kind: testrail_case, source_ref: "C4100998", confidence: confirmed}
+
+  - feature_key: card_reading.tap
+    project: translink
+    device_type: PV
+    variant_name: "EMV contactless"
+    note: "Valid/invalid cEMV tap and decline reasons"
+    citation: {source_kind: testrail_case, source_ref: "C4101088", confidence: confirmed}
+
+  - feature_key: card_reading.tap
+    project: translink
+    device_type: PV
+    variant_name: "Legacy smartcard"
+    citation: {source_kind: testrail_case, source_ref: "C4101007", confidence: confirmed}
+
+  - feature_key: backoffice.cloudfare_comm
+    project: njt
+    device_type: null
+    variant_name: "Remote commands (GR-2/GR-4/GR-5/FF-5/GR-3/FRT-1)"
+    note: "NJT's CloudFare integration is remote-command-centric (Section 8.1)."
+    citation: {source_kind: spec, source_ref: "NJT FS002 §8/8.1 (knowledge/njt/specs/fs002-cloudfare-communication.md)", confidence: confirmed}
+
+  - feature_key: backoffice.cloudfare_comm
+    project: translink
+    device_type: null
+    variant_name: "Zone configuration for ABT geographic capping"
+    note: "Translink's CloudFare integration is zone/capping-centric, not remote-command-centric."
+    citation: {source_kind: spec, source_ref: "FBD-100229 (Translink CloudFare Zone Configuration)", confidence: confirmed}
+
+  - feature_key: driver.sign_on
+    project: njt
+    device_type: ETM
+    variant_name: "FS002 §5.1 driver sign-on (default display + paper ticket flow)"
+    citation: {source_kind: spec, source_ref: "NJT FS002 §5.1 (knowledge/njt/specs/fs002-driver-signon-display-paper.md)", confidence: confirmed}
+
+  - feature_key: driver.sign_on
+    project: translink
+    device_type: ETM
+    variant_name: "Translink ETM driver sign-on flow"
+    citation: {source_kind: flow_map, source_ref: "knowledge/flows/translink-etm-driver-signon.md", confidence: confirmed}
+
+  - feature_key: driver.sign_on
+    project: translink
+    device_type: POS
+    variant_name: "Translink POS operator sign-on flow"
+    citation: {source_kind: flow_map, source_ref: "knowledge/flows/translink-pos-signon.md", confidence: confirmed}
