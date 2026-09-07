@@ -80,20 +80,22 @@ def get_features():
 
 @app.get("/api/pipelines")
 def get_pipelines():
-    """Every pipeline's AI-density (cli/agent/human/gate counts), derived live from the real
-    .claude/pipelines/*.yaml files — not a hand-maintained table that can go stale."""
+    """Every pipeline's AI-density (cli/agent/human/gate counts) and real description,
+    derived live from the real .claude/pipelines/*.yaml files — not a hand-maintained
+    table that can go stale."""
     try:
         index = pipelines.load_pipeline_index()
     except FileNotFoundError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     density = pipelines.ai_density_report()
-    return [
-        {
+    out = []
+    for e in index:
+        p = pipelines.load_pipeline(e.id)
+        out.append({
             "id": e.id, "ui_action": e.ui_action, "slash_command": e.slash_command,
-            "density": density.get(e.id, {}),
-        }
-        for e in index
-    ]
+            "description": p.description, "density": density.get(e.id, {}),
+        })
+    return out
 
 
 @app.get("/api/pipelines/{pipeline_id}")
@@ -124,6 +126,30 @@ def get_build_stats():
     data["is_fixture"] = True
     data["fixture_note"] = "Real build-stats run, 2026-08-07 vs 2026-07-23 POS report data — not a live TestRail call."
     return data
+
+
+@app.get("/api/run-health")
+def get_run_health(limit: int = 15):
+    """Real run-health data for POS (2026-08-07, 6 runs considered) — a genuine `runs` CLI
+    output, not synthesised. Flagged cases sorted worst-first (most failures); counts by
+    flag type shown uncapped even though the list itself is capped for display."""
+    path = FIXTURES / "pos-run-health.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="No run-health fixture found")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    cases = data.get("cases", [])
+    flag_names = ("always_failing", "never_executed", "flaky", "recently_regressed", "orphaned")
+    flagged = [c for c in cases if any(c.get(f) for f in flag_names)]
+    flagged.sort(key=lambda c: (c.get("failed", 0), c.get("executed_count", 0)), reverse=True)
+    counts = {f: sum(1 for c in cases if c.get(f)) for f in flag_names}
+    return {
+        "suite": data.get("suite"), "project": data.get("project"),
+        "runs_considered": len(data.get("run_ids", [])),
+        "cases_total": len(cases), "flagged_total": len(flagged),
+        "counts": counts, "shown": flagged[:limit],
+        "is_fixture": True,
+        "fixture_note": "Real `runs` CLI output, POS suite 30253, 2026-08-07 (6 runs) — not a live TestRail call.",
+    }
 
 
 @app.get("/api/gap-register")

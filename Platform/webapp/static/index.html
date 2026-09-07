@@ -46,6 +46,7 @@
   .navitem:hover{background:rgba(255,255,255,.06);}
   .navitem.active{background:var(--sidebar-active-bg);color:#fff;font-weight:600;}
   .navitem .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;flex:none;}
+  .navitem .skel{opacity:.4;}
   .sidebar-foot{border-top:1px solid rgba(255,255,255,.12);padding-top:14px;margin-top:6px;font-size:12px;color:var(--sidebar-ink-dim);display:flex;align-items:center;gap:8px;}
   .avatar{width:26px;height:26px;border-radius:50%;background:var(--p2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none;}
 
@@ -124,21 +125,34 @@
   .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
   .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
+
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
+  @media (max-width:960px){.grid2{grid-template-columns:1fr;}}
+  .tooltip-wrap{position:relative;display:inline-block;}
+  .tooltip-wrap .tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;
+    transform:translateX(-50%);background:var(--n900);color:#fff;font-size:11.5px;padding:6px 10px;
+    border-radius:6px;white-space:nowrap;transition:opacity .12s;z-index:10;}
+  .tooltip-wrap:hover .tip{visibility:visible;opacity:1;}
+  .pipeline-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;}
+  .pipeline-detail-head p{color:var(--ink-soft);font-size:13.5px;margin:4px 0 0;max-width:64ch;}
 </style>
 
 <div class="shell">
   <aside class="sidebar">
     <div class="logo-row"><img src="/assets/arrive-logo.png" alt="Arrive"></div>
     <div class="tool-name">Test-Ops Console</div>
-    <nav class="navgroups">
+    <nav class="navgroups" id="navgroups">
       <div class="navgroup">
         <div class="label">Overview</div>
         <button class="navitem active" data-view="health"><span class="dot"></span>Suite health</button>
-        <button class="navitem" data-view="pipelines"><span class="dot"></span>Processes &amp; flows</button>
+        <button class="navitem" data-view="pipelines"><span class="dot"></span>All processes</button>
         <button class="navitem" data-view="features"><span class="dot"></span>Features</button>
         <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
         <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
       </div>
+      <div class="navgroup" id="navBuild"><div class="label">Build</div><span class="navitem skel">Loading…</span></div>
+      <div class="navgroup" id="navAudit"><div class="label">Audit</div></div>
+      <div class="navgroup" id="navMaintain"><div class="label">Maintain</div></div>
     </nav>
     <div class="sidebar-foot">
       <div class="avatar">GO</div>
@@ -195,26 +209,73 @@ function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
 async function renderHealth() {
   loading();
   try {
-    const d = await fetchJSON('/api/build-stats');
-    const fixtureNote = d.is_fixture ? `<div class="fixture-note">⚠ ${esc(d.fixture_note)}</div>` : '';
-    setContent(`
-      <div class="page-head"><h1>Suite health — ${esc(d.project)}</h1><p>${esc(d.suite)} · generated ${esc(d.generated_at)}</p></div>
-      ${fixtureNote}
-      <div class="stat-row">
-        <div class="stat"><span class="n">${d.cases_total}</span><span class="l">cases total</span></div>
-        <div class="stat ok"><span class="n">${d.delta.added.length}</span><span class="l">added</span></div>
-        <div class="stat warn"><span class="n">${d.delta.edited.length}</span><span class="l">edited</span></div>
-        <div class="stat ${d.delta.removed.length ? 'bad' : ''}"><span class="n">${d.delta.removed.length}</span><span class="l">removed</span></div>
-        <div class="stat"><span class="n">${d.delta.unchanged}</span><span class="l">unchanged</span></div>
-        ${d.gap_open_count !== null ? `<div class="stat bad"><span class="n">${d.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
-      </div>
+    const [bs, rh, gaps] = await Promise.all([
+      fetchJSON('/api/build-stats'),
+      fetchJSON('/api/run-health').catch(() => null),
+      fetchJSON('/api/gap-register?limit=5').catch(() => null),
+    ]);
+    const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
+
+    const runHealthTable = rh ? `
+      <div class="card">
+        <h2>Run health — ${esc(rh.suite)}</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${esc(rh.fixture_note)}</p>
+        <div class="stat-row">
+          <div class="stat"><span class="n">${rh.runs_considered}</span><span class="l">runs considered</span></div>
+          <div class="stat warn"><span class="n">${rh.counts.flaky}</span><span class="l">flaky</span></div>
+          <div class="stat bad"><span class="n">${rh.counts.always_failing}</span><span class="l">always failing</span></div>
+          <div class="stat"><span class="n">${rh.counts.orphaned}</span><span class="l">orphaned</span></div>
+        </div>
+        <table>
+          <tr><th>Case</th><th>Title</th><th>Pass/Fail</th><th>Flags</th></tr>
+          ${rh.shown.slice(0,8).map(c => {
+            const flags = ['always_failing','never_executed','flaky','recently_regressed','orphaned'].filter(f=>c[f]);
+            return `<tr><td>C${c.case_id}</td><td>${esc((c.title||'').slice(0,42))}</td><td>${c.passed}/${c.failed}</td><td>${flags.map(f=>`<span class="pill ${f==='flaky'?'warn':'bad'}">${f.replace('_',' ')}</span>`).join(' ')}</td></tr>`;
+          }).join('')}
+        </table>
+      </div>` : `<div class="card"><h2>Run health</h2><p class="errbox">Not available</p></div>`;
+
+    const deltaCard = `
       <div class="card">
         <h2>Case delta since last snapshot</h2>
         <table>
           <tr><th>Change</th><th>Case ids (first 10)</th></tr>
-          <tr><td><span class="pill ok">Added</span></td><td>${d.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${d.delta.added.length>10?` …+${d.delta.added.length-10} more`:''}</td></tr>
-          <tr><td><span class="pill warn">Edited</span></td><td>${d.delta.edited.slice(0,10).map(i=>'C'+i).join(', ')}${d.delta.edited.length>10?` …+${d.delta.edited.length-10} more`:''}</td></tr>
+          <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
+          <tr><td><span class="pill warn">Edited</span></td><td>${bs.delta.edited.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.edited.length>10?` …+${bs.delta.edited.length-10} more`:''}</td></tr>
         </table>
+      </div>`;
+
+    const gapsCard = gaps ? `
+      <div class="card">
+        <h2>Open gap-register questions</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} found repo-wide, showing 5</p>
+        <ul class="activity">${gaps.shown.map(g => `<li><span class="pill ${g.kind==='GAP'?'bad':'warn'}">${esc(g.kind)}</span>&nbsp;${esc(g.text.slice(0,90))}</li>`).join('')}</ul>
+      </div>` : '';
+
+    const dataAsOf = `
+      <div class="card">
+        <h2>Data currency</h2>
+        <ul class="activity">
+          <li>build-stats generated ${esc(bs.generated_at)}</li>
+          ${rh ? `<li>run-health fixture: ${esc(rh.fixture_note)}</li>` : ''}
+          ${gaps ? `<li>gap-register: ${gaps.total} markers, last scanned 2026-09-07</li>` : ''}
+        </ul>
+      </div>`;
+
+    setContent(`
+      <div class="page-head"><h1>Suite health — ${esc(bs.project)}</h1><p>${esc(bs.suite)} · generated ${esc(bs.generated_at)}</p></div>
+      ${fixtureNote}
+      <div class="stat-row">
+        <div class="stat"><span class="n">${bs.cases_total}</span><span class="l">cases total</span></div>
+        <div class="stat ok"><span class="n">${bs.delta.added.length}</span><span class="l">added</span></div>
+        <div class="stat warn"><span class="n">${bs.delta.edited.length}</span><span class="l">edited</span></div>
+        <div class="stat ${bs.delta.removed.length ? 'bad' : ''}"><span class="n">${bs.delta.removed.length}</span><span class="l">removed</span></div>
+        <div class="stat"><span class="n">${bs.delta.unchanged}</span><span class="l">unchanged</span></div>
+        ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
+      </div>
+      <div class="grid2">
+        <div>${runHealthTable}${deltaCard}</div>
+        <div>${gapsCard}${dataAsOf}</div>
       </div>`);
   } catch (e) { errbox('Could not load suite health: ' + e.message); }
 }
@@ -329,13 +390,75 @@ async function renderGaps() {
   } catch (e) { errbox('Could not load gap register: ' + e.message); }
 }
 
+/* ---------------- Single pipeline detail (used by grouped Build/Audit/Maintain nav) ---------------- */
+async function renderPipelineDetail(id) {
+  loading();
+  try {
+    const [list, detail] = await Promise.all([
+      fetchJSON('/api/pipelines'),
+      fetchJSON(`/api/pipelines/${id}`),
+    ]);
+    const meta = list.find(p => p.id === id) || {};
+    const steps = detail.steps.map(s => {
+      const km = KIND_META[s.kind] || KIND_META.human;
+      return `<div class="flow-step">
+        <span class="stepkind pill ${km.cls}">${km.label}</span>
+        <span class="stepid">${esc(s.id)}</span>
+        <span class="stepdetail">${esc(s.agent || s.command || s.ref || s.ref_pipeline || '')}</span>
+        ${s.loop ? `<span class="steploop">${esc(s.loop)}</span>` : ''}
+      </div>`;
+    }).join('');
+    setContent(`
+      <div class="pipeline-detail-head">
+        <div>
+          <h1 style="font-size:20px;margin:0;">${esc(id)} ${meta.slash_command ? `<code style="font-size:12px;color:var(--ink-soft);font-weight:400;">${esc(meta.slash_command)}</code>` : ''}</h1>
+          <p>${esc(detail.description)}</p>
+        </div>
+        <div class="tooltip-wrap">
+          <button class="btn primary" disabled>Run</button>
+          <span class="tip">Needs TestRail credentials — not wired yet</span>
+        </div>
+      </div>
+      <div class="legend">
+        ${detail.guardrails.map(g => `<span class="chip"><span class="sw" style="background:var(--gate)"></span>${esc(g)}</span>`).join('')}
+      </div>
+      <div class="card"><div class="flow" style="display:block;">${steps}</div></div>`);
+  } catch (e) { errbox('Could not load this pipeline: ' + e.message); }
+}
+
+/* ---------------- Grouped nav (Build / Audit / Maintain) from real pipeline ids ---------------- */
+const GROUPS = {
+  Build: ['onboard-suite', 'new-suite-from-docs', 'ingest-docs', 'add-feature', 'consolidate', 'export-automation'],
+  Audit: ['audit-coverage', 'audit-flows', 'audit', 'resolve-gaps'],
+  Maintain: ['fold-defect', 'review-runs', 'maintain'],
+};
+
+function setActiveNav(btn) {
+  document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function populateGroupedNav() {
+  try {
+    const list = await fetchJSON('/api/pipelines');
+    const byId = Object.fromEntries(list.map(p => [p.id, p]));
+    for (const [groupName, ids] of Object.entries(GROUPS)) {
+      const el = document.getElementById('nav' + groupName);
+      el.innerHTML = `<div class="label">${esc(groupName)}</div>` + ids.filter(id => byId[id]).map(id => {
+        const p = byId[id];
+        return `<button class="navitem" data-pipeline="${esc(id)}"><span class="dot"></span>${esc(p.slash_command ? p.slash_command.replace('/', '').replace(/-/g,' ') : id)}</button>`;
+      }).join('');
+    }
+    document.querySelectorAll('.navitem[data-pipeline]').forEach(btn => {
+      btn.addEventListener('click', () => { setActiveNav(btn); renderPipelineDetail(btn.dataset.pipeline); });
+    });
+  } catch (e) { /* leave groups empty if this fails; Overview/All-processes still work */ }
+}
+populateGroupedNav();
+
 const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps};
 document.querySelectorAll('.navitem[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.navitem[data-view]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    VIEWS[btn.dataset.view]();
-  });
+  btn.addEventListener('click', () => { setActiveNav(btn); VIEWS[btn.dataset.view](); });
 });
 renderHealth();
 
