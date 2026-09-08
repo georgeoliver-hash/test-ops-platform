@@ -143,10 +143,17 @@
   .flow-step-wrap.step-open .step-chevron{transform:rotate(90deg);}
   .step-detail{display:none;padding:2px 0 12px 88px;font-size:12.5px;color:var(--ink-soft);}
   .flow-step-wrap.step-open .step-detail{display:block;}
-  .step-detail-line{margin-bottom:4px;}
-  .step-detail-line b{color:var(--ink);font-weight:600;margin-right:4px;}
+  .step-detail-line{margin-bottom:5px;}
+  .step-detail-line b{font-weight:600;margin-right:5px;padding:1px 7px;border-radius:5px;font-size:11.5px;display:inline-block;}
   .step-detail-line code{font-size:11.5px;background:var(--bg);padding:1px 5px;border-radius:5px;}
   .step-detail-empty{font-style:italic;}
+  .step-detail-line.plain{font-size:13px;color:var(--ink);margin-bottom:8px;}
+  /* Key labels tinted the same as the kind pill they belong to (AI/code/gate/human) — so the
+     same colour means the same thing everywhere on the page, not just on the top-level badge. */
+  .step-detail-line b.k-code{background:var(--code-bg);color:var(--code);}
+  .step-detail-line b.k-ai{background:var(--ai-bg);color:var(--ai);}
+  .step-detail-line b.k-gate{background:var(--gate-bg);color:var(--gate);}
+  .step-detail-line b.k-human{background:var(--human-bg);color:var(--human);}
 
   .variant-row{cursor:pointer;}
   .variant-row:hover{background:var(--bg);}
@@ -171,6 +178,7 @@
         <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
         <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
       </div>
+      <div class="navgroup" id="navStart"></div>
       <div class="navgroup" id="navBuild"><div class="label">Build</div><span class="navitem skel">Loading…</span></div>
       <div class="navgroup" id="navAudit"><div class="label">Audit</div></div>
       <div class="navgroup" id="navMaintain"><div class="label">Maintain</div></div>
@@ -246,24 +254,81 @@ async function fetchJSON(url) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
+/* Plain-language glosses -- every entry here is sourced from a real doc, simplified, never
+   invented. CLI subcommands come verbatim from system-test-ops CLAUDE.md's "CLI quick
+   reference"; agent roles from the same file's "The team" table (also each agent's own
+   .claude/agents/<name>.md). Kept as a lookup, not a generator, so nothing here can drift
+   into asserting behaviour that isn't actually documented. */
+const CLI_SUBCOMMAND_GLOSS = {
+  doctor: 'Checks the environment is ready — credentials, connectivity.',
+  check: 'Confirms TestRail credentials work and lists visible projects.',
+  'discover-fields': "Prints the exact settings this TestRail project needs before pushing cases to it.",
+  cases: 'Pulls the suite’s cases from TestRail as a plain data file.',
+  runs: 'Pulls the last N test runs for this suite from TestRail.',
+  push: 'Writes cases to the new suite only — old/source suites are never touched.',
+  audit: 'Checks a suite’s cases against the house Gherkin standard, read-only.',
+  'coverage-prefilter': 'Narrows down which cases might already cover a JIRA item, before a person/agent looks closer.',
+  'render-report': 'Turns the raw findings into the readable report file.',
+  'gap-register': 'Scans for GAP/UNCONFIRMED markers left in cases and notes.',
+  'build-stats': 'Snapshots the suite: what changed since last time, and current health.',
+};
+// Plain-language gloss per pipeline, one level simpler than its real `description:` field
+// (shown alongside it, never instead of it) -- simplified wording only, no new claims.
+const PIPELINE_PLAIN = {
+  start: 'The front door — checks your setup is ready, asks what you want to do, and points you to the right process.',
+  'add-feature': 'Adds test coverage for a new feature by extending the flow it changes.',
+  'audit-coverage': "Checks whether the suite already covers a given JIRA release, and drafts what's missing. Doesn't change TestRail.",
+  'audit-flows': "Compares a device's real user-flow map against the suite, and fills in what's already covered.",
+  audit: "Checks a suite's cases follow the house test-writing standard. Doesn't change anything.",
+  consolidate: 'Merges near-duplicate cases that test the same thing into one clean case.',
+  'export-automation': "Hands off cases marked automatable to the automation-tests repo, as a to-do list.",
+  'fold-defect': 'Folds a found-and-fixed bug into the test case that should have caught it, so it stays covered.',
+  'ingest-docs': "Turns a project's raw requirement docs into short, cited notes the team can work from.",
+  maintain: 'Periodic health check — run history, standards compliance, and duplicate cases.',
+  'new-suite-from-docs': "You upload requirement/design docs for a device, and it builds a suite grounded in them. The main 'build' button.",
+  'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
+  'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
+  'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
+};
+const AGENT_PLAIN = {
+  'test-lead': 'The orchestrator — runs the other specialists and pulls their findings into one report.',
+  'coverage-analyst': 'Checks whether TestRail cases actually cover what a JIRA fix version asked for.',
+  'run-historian': 'Looks at recent test runs and flags cases that are always failing, flaky, or never run.',
+  'gherkin-author': 'Drafts new or edited test case text in the house format — never writes to TestRail directly.',
+  'standards-keeper': 'Reviews drafts and existing cases for consistent style and wording.',
+};
+function plainGlossFor(s) {
+  if (s.kind === 'cli' && s.command) {
+    const m = s.command.match(/system_test_ops\s+([a-z-]+)/);
+    if (m && CLI_SUBCOMMAND_GLOSS[m[1]]) return CLI_SUBCOMMAND_GLOSS[m[1]];
+  }
+  if (s.kind === 'agent' && s.agent && AGENT_PLAIN[s.agent]) return AGENT_PLAIN[s.agent];
+  if (s.is_composite_ref || s.ref_pipeline || s.ref) return `Runs another whole process (${s.ref_pipeline || s.ref}) at this point, then continues.`;
+  if (s.kind === 'gate') return 'A checkpoint — the process only continues if this condition holds.';
+  if (s.kind === 'human') return 'Needs a person to do this directly — not automated.';
+  return null;
+}
+
 /* ---------------- Shared step renderer: accordion "what it does" panel per step ---------------- */
 function renderStep(s) {
   const meta = KIND_META[s.kind] || KIND_META.human;
   const asText = (v) => Array.isArray(v) ? v.join(', ') : v;
   const lines = [];
-  if (s.note) lines.push(`<div class="step-detail-line"><b>What it does:</b> ${esc(s.note)}</div>`);
-  if (s.command) lines.push(`<div class="step-detail-line"><b>Command:</b> <code>${esc(s.command)}</code></div>`);
-  if (s.agent) lines.push(`<div class="step-detail-line"><b>Agent:</b> ${esc(s.agent)}</div>`);
-  if (s.reviewer) lines.push(`<div class="step-detail-line"><b>Reviewer:</b> ${esc(s.reviewer)}</div>`);
-  if (s.ref_pipeline || s.ref) lines.push(`<div class="step-detail-line"><b>Runs pipeline:</b> ${esc(s.ref_pipeline || s.ref)}</div>`);
-  if (s.produces) lines.push(`<div class="step-detail-line"><b>Produces:</b> ${esc(asText(s.produces))}</div>`);
-  if (s.reads) lines.push(`<div class="step-detail-line"><b>Reads:</b> ${esc(asText(s.reads))}</div>`);
-  if (s.when) lines.push(`<div class="step-detail-line"><b>When:</b> ${esc(s.when)}</div>`);
-  if (s.rule) lines.push(`<div class="step-detail-line"><b>Rule:</b> ${esc(s.rule)}</div>`);
-  if (s.gate) lines.push(`<div class="step-detail-line"><b>Gate:</b> ${esc(s.gate)}</div>`);
-  if (s.must_be) lines.push(`<div class="step-detail-line"><b>Must be:</b> ${esc(s.must_be)}</div>`);
-  if (s.parallel) lines.push(`<div class="step-detail-line"><b>Runs in parallel with:</b> ${esc(asText(s.parallel))}</div>`);
-  if (s.guardrails && s.guardrails.length) lines.push(`<div class="step-detail-line"><b>Guardrails:</b> ${s.guardrails.map(esc).join(', ')}</div>`);
+  const gloss = plainGlossFor(s);
+  if (gloss) lines.push(`<div class="step-detail-line plain">${esc(gloss)}</div>`);
+  if (s.note) lines.push(`<div class="step-detail-line"><b class="k-human">What it does</b> ${esc(s.note)}</div>`);
+  if (s.command) lines.push(`<div class="step-detail-line"><b class="k-code">Command</b> <code>${esc(s.command)}</code></div>`);
+  if (s.agent) lines.push(`<div class="step-detail-line"><b class="k-ai">Agent</b> ${esc(s.agent)}</div>`);
+  if (s.reviewer) lines.push(`<div class="step-detail-line"><b class="k-ai">Reviewer</b> ${esc(s.reviewer)}</div>`);
+  if (s.ref_pipeline || s.ref) lines.push(`<div class="step-detail-line"><b class="k-human">Runs pipeline</b> ${esc(s.ref_pipeline || s.ref)}</div>`);
+  if (s.produces) lines.push(`<div class="step-detail-line"><b class="k-code">Produces</b> ${esc(asText(s.produces))}</div>`);
+  if (s.reads) lines.push(`<div class="step-detail-line"><b class="k-code">Reads</b> ${esc(asText(s.reads))}</div>`);
+  if (s.when) lines.push(`<div class="step-detail-line"><b class="k-gate">When</b> ${esc(s.when)}</div>`);
+  if (s.rule) lines.push(`<div class="step-detail-line"><b class="k-gate">Rule</b> ${esc(s.rule)}</div>`);
+  if (s.gate) lines.push(`<div class="step-detail-line"><b class="k-gate">Gate</b> ${esc(s.gate)}</div>`);
+  if (s.must_be) lines.push(`<div class="step-detail-line"><b class="k-gate">Must be</b> ${esc(s.must_be)}</div>`);
+  if (s.parallel) lines.push(`<div class="step-detail-line"><b class="k-ai">Runs in parallel with</b> ${esc(asText(s.parallel))}</div>`);
+  if (s.guardrails && s.guardrails.length) lines.push(`<div class="step-detail-line"><b class="k-gate">Guardrails</b> ${s.guardrails.map(esc).join(', ')}</div>`);
   const hasDetail = lines.length > 0;
   return `<div class="flow-step-wrap">
     <div class="flow-step ${hasDetail ? 'clickable' : ''}">
@@ -286,6 +351,14 @@ function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
    since content.innerHTML is replaced wholesale on every render (a listener bound directly
    to a row would be destroyed with it; delegation from the stable `content` element survives). */
 content.addEventListener('click', (e) => {
+  const gotoLink = e.target.closest('[data-goto-view]');
+  if (gotoLink) {
+    e.preventDefault();
+    const view = gotoLink.dataset.gotoView;
+    const navBtn = document.querySelector(`.navitem[data-view="${view}"]`);
+    if (navBtn) { setActiveNav(navBtn); ACTIVE_VIEW = view; VIEWS[view](); }
+    return;
+  }
   const stepHead = e.target.closest('.flow-step.clickable');
   if (stepHead) { stepHead.parentElement.classList.toggle('step-open'); return; }
   const vRow = e.target.closest('.variant-row');
@@ -314,17 +387,18 @@ async function renderHealth() {
     return;
   }
   try {
-    const [bs, rh, gaps] = await Promise.all([
+    const [bs, rh, gaps, docs] = await Promise.all([
       fetchJSON('/api/build-stats'),
       fetchJSON('/api/run-health').catch(() => null),
       fetchJSON('/api/gap-register?limit=5').catch(() => null),
+      fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => []),
     ]);
     const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
 
     const runHealthTable = rh ? `
       <div class="card">
         <h2>Run health — ${esc(rh.suite)}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${esc(rh.fixture_note)}</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs (people/automation executing the actual suite), not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
         <div class="stat-row">
           <div class="stat"><span class="n">${rh.runs_considered}</span><span class="l">runs considered</span></div>
           <div class="stat warn"><span class="n">${rh.counts.flaky}</span><span class="l">flaky</span></div>
@@ -343,27 +417,37 @@ async function renderHealth() {
     const deltaCard = `
       <div class="card">
         <h2>Case delta since last snapshot</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Compares this suite's cases now vs. the last time build-stats ran. "Removed" means a case id that was in the last snapshot but isn't in the suite any more — TestRail's API here can't delete cases, so this only happens if someone removed it by hand in the TestRail UI, or it moved to a different suite.</p>
         <table>
           <tr><th>Change</th><th>Case ids (first 10)</th></tr>
           <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
           <tr><td><span class="pill warn">Edited</span></td><td>${bs.delta.edited.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.edited.length>10?` …+${bs.delta.edited.length-10} more`:''}</td></tr>
+          <tr><td><span class="pill ${bs.delta.removed.length ? 'bad' : ''}">Removed</span></td><td>${bs.delta.removed.length ? bs.delta.removed.slice(0,10).map(i=>'C'+i).join(', ') + (bs.delta.removed.length>10?` …+${bs.delta.removed.length-10} more`:'') : 'None'}</td></tr>
         </table>
       </div>`;
 
     const gapsCard = gaps ? `
       <div class="card">
-        <h2>Open gap-register questions</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} found repo-wide, showing 5</p>
+        <h2>Open gap-register questions <a href="#" data-goto-view="gaps" style="font-size:11.5px;font-weight:400;">See all →</a></h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} found repo-wide, showing ${gaps.shown.length}</p>
         <ul class="activity">${gaps.shown.map(g => `<li><span class="pill ${g.kind==='GAP'?'bad':'warn'}">${esc(g.kind)}</span>&nbsp;${esc(g.text.slice(0,90))}</li>`).join('')}</ul>
       </div>` : '';
 
+    const docsCard = `
+      <div class="card">
+        <h2>Docs on file for ${esc(target.project)}/${esc(target.device)} <a href="#" data-goto-view="docs" style="font-size:11.5px;font-weight:400;">Manage →</a></h2>
+        ${docs.length
+          ? `<ul class="activity">${docs.slice(0,5).map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);font-size:11.5px;">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul>`
+          : `<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this target yet.</p>`}
+      </div>`;
+
     const dataAsOf = `
       <div class="card">
-        <h2>Data currency</h2>
+        <h2>Where this data comes from</h2>
         <ul class="activity">
-          <li>build-stats generated ${esc(bs.generated_at)}</li>
-          ${rh ? `<li>run-health fixture: ${esc(rh.fixture_note)}</li>` : ''}
-          ${gaps ? `<li>gap-register: ${gaps.total} markers, last scanned 2026-09-07</li>` : ''}
+          <li>Case counts/delta: build-stats snapshot, generated ${esc(bs.generated_at)}</li>
+          ${rh ? `<li>Run health: ${esc(rh.fixture_note)}</li>` : ''}
+          ${gaps ? `<li>Gap register: ${gaps.total} GAP/UNCONFIRMED markers, mechanically grepped repo-wide</li>` : ''}
         </ul>
       </div>`;
 
@@ -374,13 +458,13 @@ async function renderHealth() {
         <div class="stat"><span class="n">${bs.cases_total}</span><span class="l">cases total</span></div>
         <div class="stat ok"><span class="n">${bs.delta.added.length}</span><span class="l">added</span></div>
         <div class="stat warn"><span class="n">${bs.delta.edited.length}</span><span class="l">edited</span></div>
-        <div class="stat ${bs.delta.removed.length ? 'bad' : ''}"><span class="n">${bs.delta.removed.length}</span><span class="l">removed</span></div>
+        <div class="stat ${bs.delta.removed.length ? 'bad' : ''}"><span class="n">${bs.delta.removed.length}</span><span class="l">removed since snapshot</span></div>
         <div class="stat"><span class="n">${bs.delta.unchanged}</span><span class="l">unchanged</span></div>
         ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
       </div>
       <div class="grid2">
         <div>${runHealthTable}${deltaCard}</div>
-        <div>${gapsCard}${dataAsOf}</div>
+        <div>${gapsCard}${docsCard}${dataAsOf}</div>
       </div>`);
   } catch (e) { errbox('Could not load suite health: ' + e.message); }
 }
@@ -402,6 +486,7 @@ async function renderPipelines() {
             <span class="chevron">▸</span>
           </div>
         </div>
+        ${PIPELINE_PLAIN[p.id] ? `<div style="padding:0 16px 10px;font-size:12.5px;color:var(--ink-soft);">${esc(PIPELINE_PLAIN[p.id])}</div>` : ''}
         <div class="flow"><div class="loading">Click to load steps…</div></div>
       </div>`).join('');
     setContent(`
@@ -673,6 +758,7 @@ async function renderPipelineDetail(id) {
       <div class="pipeline-detail-head">
         <div>
           <h1 style="font-size:20px;margin:0;">${esc(id)} ${meta.slash_command ? `<code style="font-size:12px;color:var(--ink-soft);font-weight:400;">${esc(meta.slash_command)}</code>` : ''}</h1>
+          ${PIPELINE_PLAIN[id] ? `<p style="font-size:14px;font-weight:500;margin:6px 0 2px;">${esc(PIPELINE_PLAIN[id])}</p>` : ''}
           <p>${esc(detail.description)}</p>
         </div>
         <div class="tooltip-wrap">
@@ -688,7 +774,12 @@ async function renderPipelineDetail(id) {
 }
 
 /* ---------------- Grouped nav (Build / Audit / Maintain) from real pipeline ids ---------------- */
+// Every real pipeline in system-test-ops' .claude/pipelines/index.yaml MUST appear in
+// exactly one group here -- `start` was missing for a while (found via ISSUES.md feedback,
+// 2026-09-08): it's real, has a real /start slash command, but wasn't in any group, so it
+// silently never showed up in the sidebar even though every other pipeline did.
 const GROUPS = {
+  'Start': ['start'],
   Build: ['onboard-suite', 'new-suite-from-docs', 'ingest-docs', 'add-feature', 'consolidate', 'export-automation'],
   Audit: ['audit-coverage', 'audit-flows', 'audit', 'resolve-gaps'],
   Maintain: ['fold-defect', 'review-runs', 'maintain'],
