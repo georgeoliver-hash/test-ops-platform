@@ -636,7 +636,33 @@ async function renderDocs() {
       <div class="card">
         <h2>Docs on file for this target</h2>
         ${docs.length ? `<table><tr><th>File</th><th>Size</th><th>Uploaded</th><th></th></tr>${rows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this project/device yet.</p>'}
+      </div>
+      <div class="card">
+        <h2>Requirement docs — check for changes</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Compares <code>%USERPROFILE%\\TestOpsRequirements\\${esc(project.toLowerCase())}\\</code> against the last time you checked — real file changes, not a guess. Doesn't re-parse anything into knowledge notes yet (that needs the same pipeline-execution wiring "Run" is waiting on) — this just makes sure nothing silently goes stale in the meantime.</p>
+        <button class="btn" id="docsRefreshCheckBtn">Check for changes</button>
+        <div id="docsRefreshResult" style="margin-top:10px;"></div>
       </div>`);
+
+    document.getElementById('docsRefreshCheckBtn').addEventListener('click', async () => {
+      const resultEl = document.getElementById('docsRefreshResult');
+      resultEl.innerHTML = '<div class="loading">Checking…</div>';
+      try {
+        const res = await fetch(`/api/docs/${encodeURIComponent(project)}/refresh-check`, {method: 'POST'});
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        const d = await res.json();
+        if (!d.exists) {
+          resultEl.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">No local requirements folder found for ${esc(project)} yet.</p>`;
+          return;
+        }
+        const list = (label, cls, items) => items.length
+          ? `<li><span class="pill ${cls}">${label}</span> ${items.length}: ${items.slice(0,8).map(esc).join(', ')}${items.length>8?` …+${items.length-8} more`:''}</li>` : '';
+        const lines = [list('New', 'ok', d.new), list('Changed', 'warn', d.changed), list('Removed', 'bad', d.removed)].filter(Boolean);
+        resultEl.innerHTML = lines.length
+          ? `<ul class="activity">${lines.join('')}</ul><p style="color:var(--ink-soft);font-size:12px;margin-top:8px;">${d.unchanged_count} unchanged, ${d.total_files} files total. Marked as checked — next check compares against right now.</p>`
+          : `<p style="font-size:13px;">No changes since last check — ${d.total_files} files, all unchanged.</p>`;
+      } catch (e) { resultEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    });
 
     document.getElementById('docUploadBtn').addEventListener('click', async () => {
       const input = document.getElementById('docFileInput');

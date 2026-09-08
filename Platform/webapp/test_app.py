@@ -285,3 +285,31 @@ def test_setup_status_not_ready_for_an_unconfigured_target():
     assert body["suite_configured"] is False
     assert body["docs_configured"] is False
     assert body["ready"] is False
+
+
+def test_refresh_check_reports_no_folder_for_unknown_project():
+    res = client.post("/api/docs/NoSuchProject/refresh-check")
+    assert res.status_code == 200
+    assert res.json()["exists"] is False
+
+
+def test_refresh_check_detects_new_then_unchanged_then_modified(tmp_path, monkeypatch):
+    home_dir = tmp_path / "fake-home"
+    req_dir = home_dir / "TestOpsRequirements" / "testproj"
+    req_dir.mkdir(parents=True)
+    (req_dir / "spec.txt").write_text("v1", encoding="utf-8")
+    monkeypatch.setattr(app_module.Path, "home", classmethod(lambda cls: home_dir))
+
+    res = client.post("/api/docs/testproj/refresh-check")
+    body = res.json()
+    assert body["exists"] is True
+    assert body["new"] == ["spec.txt"]
+
+    res = client.post("/api/docs/testproj/refresh-check")
+    body = res.json()
+    assert body["new"] == [] and body["changed"] == [] and body["unchanged_count"] == 1
+
+    (home_dir / "TestOpsRequirements" / "testproj" / "spec.txt").write_text("v2 - longer content now", encoding="utf-8")
+    res = client.post("/api/docs/testproj/refresh-check")
+    body = res.json()
+    assert body["changed"] == ["spec.txt"]

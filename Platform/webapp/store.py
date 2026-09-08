@@ -116,6 +116,16 @@ def init_db() -> None:
             )"""
         )
         conn.execute(
+            """CREATE TABLE IF NOT EXISTS doc_snapshots (
+                user_id INTEGER NOT NULL,
+                project TEXT NOT NULL,
+                rel_path TEXT NOT NULL,
+                mtime REAL NOT NULL,
+                size INTEGER NOT NULL,
+                PRIMARY KEY (user_id, project, rel_path)
+            )"""
+        )
+        conn.execute(
             """CREATE TABLE IF NOT EXISTS pipeline_runs (
                 id TEXT PRIMARY KEY,
                 pipeline_id TEXT NOT NULL,
@@ -323,6 +333,52 @@ def delete_doc(project: str, device: str, filename: str) -> bool:
         return False
     path.unlink()
     return True
+
+
+def check_docs_for_changes(project: str, requirements_dir: Path, user_id: int = DEFAULT_USER_ID) -> dict:
+    """Real change-detection against a local requirements folder (e.g.
+    TestOpsRequirements/<project>/) -- mtime+size per file, compared against the last check.
+    Updates the stored snapshot to the current state, so the next check is relative to now.
+
+    Deliberately does NOT re-parse anything into knowledge/*.md itself -- that's the same
+    ingest-docs pipeline that isn't built yet (write-capable, needs the same "prove it's
+    safe" pass audit just got). This only answers "what changed since I last looked",
+    honestly, so nothing gets silently missed while that pipeline doesn't exist yet."""
+    if not requirements_dir.is_dir():
+        return {"exists": False, "new": [], "changed": [], "removed": [], "unchanged_count": 0}
+
+    current = {}
+    for f in requirements_dir.rglob("*"):
+        if f.is_file():
+            rel = str(f.relative_to(requirements_dir))
+            stat = f.stat()
+            current[rel] = (stat.st_mtime, stat.st_size)
+
+    with _connect() as conn:
+        prior_rows = conn.execute(
+            "SELECT rel_path, mtime, size FROM doc_snapshots WHERE user_id = ? AND project = ?",
+            (user_id, project),
+        ).fetchall()
+        prior = {r["rel_path"]: (r["mtime"], r["size"]) for r in prior_rows}
+
+        new_files = sorted(set(current) - set(prior))
+        removed_files = sorted(set(prior) - set(current))
+        changed_files = sorted(
+            rel for rel in (set(current) & set(prior))
+            if current[rel][1] != prior[rel][1] or abs(current[rel][0] - prior[rel][0]) > 1
+        )
+        unchanged_count = len(current) - len(new_files) - len(changed_files)
+
+        conn.execute("DELETE FROM doc_snapshots WHERE user_id = ? AND project = ?", (user_id, project))
+        conn.executemany(
+            "INSERT INTO doc_snapshots (user_id, project, rel_path, mtime, size) VALUES (?, ?, ?, ?, ?)",
+            [(user_id, project, rel, mtime, size) for rel, (mtime, size) in current.items()],
+        )
+
+    return {
+        "exists": True, "new": new_files, "changed": changed_files, "removed": removed_files,
+        "unchanged_count": unchanged_count, "total_files": len(current),
+    }
 
 
 def detect_sibling_env_credentials(env_path: Path) -> dict | None:

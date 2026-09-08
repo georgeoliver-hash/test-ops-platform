@@ -213,6 +213,17 @@ def remove_doc(project: str, device: str, filename: str):
     return {"ok": True}
 
 
+@app.post("/api/docs/{project}/refresh-check")
+def refresh_docs_check(project: str):
+    """Real change-detection against the project's local requirements folder
+    (%USERPROFILE%\\TestOpsRequirements\\<project>\\, see .env.example's documented
+    convention) -- what's new/changed/removed since the last check. Does NOT re-parse
+    anything into knowledge/*.md; that's the still-unbuilt ingest-docs pipeline. This just
+    means nothing silently goes stale between now and when that exists."""
+    req_dir = Path.home() / "TestOpsRequirements" / project.lower()
+    return store.check_docs_for_changes(project, req_dir)
+
+
 @app.get("/api/taxonomy")
 def get_taxonomy():
     """Real project -> device -> model taxonomy, parsed live from the mirrored
