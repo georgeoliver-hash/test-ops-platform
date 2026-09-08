@@ -754,6 +754,10 @@ async function renderPipelineDetail(id) {
     ]);
     const meta = list.find(p => p.id === id) || {};
     const steps = detail.steps.map(renderStep).join('');
+    const target = window.CURRENT_TARGET || {};
+    const runButton = detail.runnable
+      ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
+      : `<div class="tooltip-wrap"><button class="btn primary" disabled>Run</button><span class="tip">Not wired yet — only read-only pipelines are, so far</span></div>`;
     setContent(`
       <div class="pipeline-detail-head">
         <div>
@@ -761,16 +765,64 @@ async function renderPipelineDetail(id) {
           ${PIPELINE_PLAIN[id] ? `<p style="font-size:14px;font-weight:500;margin:6px 0 2px;">${esc(PIPELINE_PLAIN[id])}</p>` : ''}
           <p>${esc(detail.description)}</p>
         </div>
-        <div class="tooltip-wrap">
-          <button class="btn primary" disabled>Run</button>
-          <span class="tip">Needs TestRail credentials — not wired yet</span>
-        </div>
+        ${runButton}
       </div>
       <div class="legend">
         ${detail.guardrails.map(g => `<span class="chip"><span class="sw" style="background:var(--gate)"></span>${esc(g)}</span>`).join('')}
       </div>
-      <div class="card"><div class="flow" style="display:block;">${steps}</div></div>`);
+      <div class="card"><div class="flow" style="display:block;">${steps}</div></div>
+      <div id="pipelineRunResult"></div>`);
+
+    document.getElementById('pipelineRunBtn')?.addEventListener('click', () => runPipeline(id, target));
   } catch (e) { errbox('Could not load this pipeline: ' + e.message); }
+}
+
+/* ---------------- Real pipeline execution (today: only `audit` is wired) ---------------- */
+async function runPipeline(id, target) {
+  const resultEl = document.getElementById('pipelineRunResult');
+  const btn = document.getElementById('pipelineRunBtn');
+  if (btn) btn.disabled = true;
+  resultEl.innerHTML = `<div class="card"><div class="loading">Starting ${esc(id)} against ${esc(target.project)}/${esc(target.device)}…</div></div>`;
+  try {
+    const res = await fetch(`/api/pipelines/${id}/run`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({project: target.project, device: target.device}),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    const {run_id} = await res.json();
+    pollPipelineRun(run_id, resultEl, btn);
+  } catch (e) {
+    resultEl.innerHTML = `<div class="errbox">Could not start run: ${esc(e.message)}</div>`;
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function pollPipelineRun(runId, resultEl, btn) {
+  try {
+    const run = await fetchJSON(`/api/pipelines/runs/${runId}`);
+    if (run.status === 'running') {
+      resultEl.innerHTML = `<div class="card"><div class="loading">Running… (${esc(run.pipeline_id)} against ${esc(run.project)}/${esc(run.device)})</div></div>`;
+      setTimeout(() => pollPipelineRun(runId, resultEl, btn), 2000);
+      return;
+    }
+    if (btn) btn.disabled = false;
+    if (run.status === 'failed') {
+      resultEl.innerHTML = `<div class="card"><h2>Run failed</h2><div class="errbox">${esc(run.error || 'Unknown error')}</div>${run.cli_output ? `<pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:10px;">${esc(run.cli_output)}</pre>` : ''}</div>`;
+      return;
+    }
+    resultEl.innerHTML = `
+      <div class="card">
+        <h2>Result</h2>
+        ${run.summary ? `<p style="font-size:14px;">${esc(run.summary)}</p>` : ''}
+        ${run.report_path ? `<p style="color:var(--ink-soft);font-size:12.5px;">Full report: <code>${esc(run.report_path)}</code></p>` : ''}
+        <details style="margin-top:10px;"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft);">Raw CLI output</summary>
+          <pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:8px;">${esc(run.cli_output || '')}</pre>
+        </details>
+      </div>`;
+  } catch (e) {
+    resultEl.innerHTML = `<div class="errbox">Lost track of this run: ${esc(e.message)}</div>`;
+    if (btn) btn.disabled = false;
+  }
 }
 
 /* ---------------- Grouped nav (Build / Audit / Maintain) from real pipeline ids ---------------- */

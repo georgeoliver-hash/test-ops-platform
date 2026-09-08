@@ -94,16 +94,39 @@ def init_db() -> None:
                 device TEXT NOT NULL,
                 old_suite TEXT NOT NULL,
                 new_suite TEXT NOT NULL,
+                new_suite_id INTEGER,
                 updated_at TEXT NOT NULL,
                 UNIQUE(user_id, project, device)
             )"""
         )
+        # Migration for DBs created before new_suite_id existed (2026-09-08) -- needed to
+        # actually run a pipeline against a suite (the CLI takes a numeric --suite id, not a
+        # name); pre-existing rows just get it backfilled below via the same INSERT OR IGNORE
+        # seed keys, or stay NULL until edited if they're a custom row George added by hand.
+        cols = {r["name"] for r in conn.execute("PRAGMA table_info(suite_mappings)").fetchall()}
+        if "new_suite_id" not in cols:
+            conn.execute("ALTER TABLE suite_mappings ADD COLUMN new_suite_id INTEGER")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS credentials (
                 user_id INTEGER PRIMARY KEY,
                 testrail_url TEXT NOT NULL,
                 testrail_user TEXT NOT NULL,
                 encrypted_api_key BLOB NOT NULL,
+                updated_at TEXT NOT NULL
+            )"""
+        )
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS pipeline_runs (
+                id TEXT PRIMARY KEY,
+                pipeline_id TEXT NOT NULL,
+                project TEXT NOT NULL,
+                device TEXT NOT NULL,
+                status TEXT NOT NULL,
+                cli_output TEXT,
+                summary TEXT,
+                report_path TEXT,
+                error TEXT,
+                created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )"""
         )
@@ -119,25 +142,31 @@ def init_db() -> None:
         # suite from Gareth — deliberately left unseeded until confirmed, not guessed.
         # INSERT OR IGNORE so re-running init_db doesn't clobber George's own edits.
         seed_pairs = [
-            # (project, device, old_suite, new_suite) -- cite: system-test-ops CLAUDE.md
-            ("Translink", "POS", "AA-POS Acceptance Test", "GG - POS - Claude Suite"),
+            # (project, device, old_suite, new_suite, new_suite_id) -- cite: system-test-ops CLAUDE.md
+            ("Translink", "POS", "AA-POS Acceptance Test", "GG - POS - Claude Suite", 30253),
             # cite: knowledge/devices/etm.md:89 + proposals/etm-suite-restructure/*
-            ("Translink", "ETM", "AA-ETM-Acceptance Test", "NEW ETM-Acceptance Suite"),
+            ("Translink", "ETM", "AA-ETM-Acceptance Test", "NEW ETM-Acceptance Suite", 30254),
             # cite: proposals/gv-suite-restructure/old-suite-audit.md:7
-            ("Translink", "GV", "AA - Gate Validator - Acceptance Test", "NEW GV Test Suite"),
+            ("Translink", "GV", "AA - Gate Validator - Acceptance Test", "NEW GV Test Suite", 30286),
             # cite: proposals/tvm-suite-restructure/old-suite-audit.md:14 (id 5602) + George, 2026-09-08
-            ("Translink", "TVM", "AA-TVM-Acceptance Test-V03", "NEW TVM Test Suite"),
+            ("Translink", "TVM", "AA-TVM-Acceptance Test-V03", "NEW TVM Test Suite", 30284),
             # cite: proposals/hhd-suite-restructure/old-suite-audit.md:19 (id 5446) + George, 2026-09-08
-            ("Translink", "HHD", "AA-HHD-Acceptance", "NEW HHD Test Suite"),
+            ("Translink", "HHD", "AA-HHD-Acceptance", "NEW HHD Test Suite", 30285),
             # cite: proposals/pv-suite-restructure/build-complete.md:3, pv-mode-tagging.changelog.md:81
-            ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite"),
+            ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite", 30255),
         ]
-        for project, device, old_suite, new_suite in seed_pairs:
+        for project, device, old_suite, new_suite, new_suite_id in seed_pairs:
             conn.execute(
                 """INSERT OR IGNORE INTO suite_mappings
-                   (user_id, project, device, old_suite, new_suite, updated_at)
-                   VALUES (?, ?, ?, ?, ?, datetime('now'))""",
-                (DEFAULT_USER_ID, project, device, old_suite, new_suite),
+                   (user_id, project, device, old_suite, new_suite, new_suite_id, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, datetime('now'))""",
+                (DEFAULT_USER_ID, project, device, old_suite, new_suite, new_suite_id),
+            )
+            # Backfill for rows created before new_suite_id existed (this session, pre-migration)
+            conn.execute(
+                """UPDATE suite_mappings SET new_suite_id = ?
+                   WHERE user_id = ? AND project = ? AND device = ? AND new_suite_id IS NULL""",
+                (new_suite_id, DEFAULT_USER_ID, project, device),
             )
 
 
@@ -150,24 +179,36 @@ def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
 def list_suite_mappings(user_id: int = DEFAULT_USER_ID) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
-            "SELECT project, device, old_suite, new_suite, updated_at FROM suite_mappings "
+            "SELECT project, device, old_suite, new_suite, new_suite_id, updated_at FROM suite_mappings "
             "WHERE user_id = ? ORDER BY project, device",
             (user_id,),
         ).fetchall()
         return [dict(r) for r in rows]
 
 
-def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, user_id: int = DEFAULT_USER_ID) -> None:
+def get_new_suite_id(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> int | None:
+    """The numeric TestRail suite id to actually run a pipeline against — the CLI's --suite
+    flag needs a real id, not the display name stored in new_suite."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT new_suite_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
+            (user_id, project, device),
+        ).fetchone()
+        return row["new_suite_id"] if row else None
+
+
+def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, new_suite_id: int | None = None, user_id: int = DEFAULT_USER_ID) -> None:
     if not (project.strip() and device.strip() and old_suite.strip() and new_suite.strip()):
         raise ValueError("project, device, old_suite, and new_suite are all required — no blanks.")
     with _connect() as conn:
         conn.execute(
-            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, updated_at)
-               VALUES (?, ?, ?, ?, ?, datetime('now'))
+            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
                ON CONFLICT(user_id, project, device)
                DO UPDATE SET old_suite = excluded.old_suite, new_suite = excluded.new_suite,
+                             new_suite_id = COALESCE(excluded.new_suite_id, suite_mappings.new_suite_id),
                              updated_at = excluded.updated_at""",
-            (user_id, project.strip(), device.strip(), old_suite.strip(), new_suite.strip()),
+            (user_id, project.strip(), device.strip(), old_suite.strip(), new_suite.strip(), new_suite_id),
         )
 
 
@@ -178,6 +219,33 @@ def delete_suite_mapping(project: str, device: str, user_id: int = DEFAULT_USER_
             (user_id, project, device),
         )
         return cur.rowcount > 0
+
+
+def create_run(run_id: str, pipeline_id: str, project: str, device: str) -> None:
+    with _connect() as conn:
+        conn.execute(
+            """INSERT INTO pipeline_runs (id, pipeline_id, project, device, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, 'running', datetime('now'), datetime('now'))""",
+            (run_id, pipeline_id, project, device),
+        )
+
+
+def update_run(run_id: str, **fields) -> None:
+    """fields: any of status, cli_output, summary, report_path, error."""
+    if not fields:
+        return
+    set_clause = ", ".join(f"{k} = ?" for k in fields)
+    with _connect() as conn:
+        conn.execute(
+            f"UPDATE pipeline_runs SET {set_clause}, updated_at = datetime('now') WHERE id = ?",
+            (*fields.values(), run_id),
+        )
+
+
+def get_run(run_id: str) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute("SELECT * FROM pipeline_runs WHERE id = ?", (run_id,)).fetchone()
+        return dict(row) if row else None
 
 
 def get_credentials_status(user_id: int = DEFAULT_USER_ID) -> dict:

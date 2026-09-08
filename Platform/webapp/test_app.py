@@ -240,3 +240,27 @@ def test_import_env_404_when_nothing_to_import(tmp_path, monkeypatch):
     monkeypatch.setattr(app_module, "SIBLING_ENV_PATH", tmp_path / "missing.env")
     res = client.post("/api/credentials/import-env")
     assert res.status_code == 404
+
+
+def test_pipelines_list_flags_which_are_runnable():
+    res = client.get("/api/pipelines")
+    assert res.status_code == 200
+    by_id = {p["id"]: p for p in res.json()}
+    assert by_id["audit"]["runnable"] is True
+    assert by_id["onboard-suite"]["runnable"] is False
+
+
+def test_run_rejects_a_non_runnable_pipeline():
+    res = client.post("/api/pipelines/onboard-suite/run", json={"project": "Translink", "device": "POS"})
+    assert res.status_code == 400
+
+
+def test_run_rejects_a_target_with_no_suite_id_configured():
+    res = client.post("/api/pipelines/audit/run", json={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 400
+    assert "new_suite_id" in res.json()["detail"] or "No new_suite_id" in res.json()["detail"]
+
+
+def test_get_run_404_for_unknown_id():
+    res = client.get("/api/pipelines/runs/does-not-exist")
+    assert res.status_code == 404

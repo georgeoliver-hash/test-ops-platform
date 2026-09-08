@@ -67,7 +67,7 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
 SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 
 from model import devices, features, pipelines  # noqa: E402
-from Platform.webapp import store  # noqa: E402
+from Platform.webapp import runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
@@ -82,6 +82,12 @@ class SuiteMappingIn(BaseModel):
     device: str
     old_suite: str
     new_suite: str
+    new_suite_id: int | None = None
+
+
+class RunRequest(BaseModel):
+    project: str
+    device: str
 
 
 class CredentialsIn(BaseModel):
@@ -107,7 +113,7 @@ def get_suite_mappings():
 @app.post("/api/suite-mappings")
 def put_suite_mapping(body: SuiteMappingIn):
     try:
-        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite)
+        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True}
@@ -231,6 +237,7 @@ def get_pipelines():
         out.append({
             "id": e.id, "ui_action": e.ui_action, "slash_command": e.slash_command,
             "description": p.description, "density": density.get(e.id, {}),
+            "runnable": runner.is_runnable(e.id),
         })
     return out
 
@@ -248,7 +255,30 @@ def get_pipeline_detail(pipeline_id: str):
         "trigger": p.trigger.model_dump(),
         "guardrails": p.guardrails,
         "steps": [s.model_dump() for s in p.steps],
+        "runnable": runner.is_runnable(p.id),
     }
+
+
+@app.post("/api/pipelines/{pipeline_id}/run")
+def run_pipeline(pipeline_id: str, body: RunRequest):
+    """Kicks off a REAL run — today, only `audit` (read-only) is wired. Every other pipeline
+    stays disabled in the UI on purpose (George's call, 2026-09-08: read-only pipelines get
+    proven safe before any write-capable one gets wired up)."""
+    if not runner.is_runnable(pipeline_id):
+        raise HTTPException(status_code=400, detail=f"'{pipeline_id}' isn't wired to run yet — only {sorted(runner.RUNNABLE_PIPELINES)} are.")
+    try:
+        run_id = runner.start_audit_run(body.project, body.device)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"run_id": run_id}
+
+
+@app.get("/api/pipelines/runs/{run_id}")
+def get_pipeline_run(run_id: str):
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    return run
 
 
 @app.get("/api/build-stats")
