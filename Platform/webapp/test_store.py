@@ -25,9 +25,11 @@ def test_default_user_seeded(store):
 
 def test_seed_mappings_are_the_real_documented_ones(store):
     mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
-    assert len(mappings) == 4
+    assert len(mappings) == 6
     assert mappings["Translink|POS"]["old_suite"] == "AA-POS Acceptance Test"
     assert mappings["Translink|POS"]["new_suite"] == "GG - POS - Claude Suite"
+    assert mappings["Translink|TVM"]["old_suite"] == "AA-TVM-Acceptance Test-V03"
+    assert mappings["Translink|HHD"]["old_suite"] == "AA-HHD-Acceptance"
     assert mappings["Translink|ETM"]["old_suite"] == "AA-ETM-Acceptance Test"
     assert mappings["Translink|ETM"]["new_suite"] == "NEW ETM-Acceptance Suite"
     assert mappings["Translink|GV"]["old_suite"] == "AA - Gate Validator - Acceptance Test"

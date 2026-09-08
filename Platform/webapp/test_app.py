@@ -37,7 +37,10 @@ def test_features_returns_real_gap_for_njt():
     res = client.get("/api/features")
     assert res.status_code == 200
     data = res.json()
-    assert "card_reading.tap" in data["gaps"].get("njt", [])
+    # card_reading.tap used to be this gap; filled in 2026-09-08 with a real cEMV-tap
+    # variant from knowledge/njt/specs/fs002-obv-barcode-emv.md — transaction.annulment
+    # is the current real, unfilled gap for njt.
+    assert "transaction.annulment" in data["gaps"].get("njt", [])
 
 
 def test_pipelines_list_has_real_descriptions():

@@ -46,9 +46,11 @@ def test_cross_project_feature_has_variants_from_both_projects():
 
 def test_features_missing_variants_flags_a_real_gap():
     reg = load_feature_registry()
-    # njt has no card_reading.tap variant seeded yet -> a real, queryable gap
+    # njt has no transaction.annulment variant seeded yet -> a real, queryable gap
+    # (card_reading.tap used to be this gap; the 2026-09-08 extraction pass filled it in
+    # with a real cEMV-tap variant from knowledge/njt/specs/fs002-obv-barcode-emv.md)
     missing = reg.features_missing_variants("njt")
-    assert any(f.key == "card_reading.tap" for f in missing)
+    assert any(f.key == "transaction.annulment" for f in missing)
 
 
 def test_missing_seed_file_raises_not_silently_empty(tmp_path):
@@ -56,6 +58,12 @@ def test_missing_seed_file_raises_not_silently_empty(tmp_path):
         load_feature_registry(tmp_path / "does-not-exist.yaml")
 
 
-def test_no_uncited_variants_in_the_real_seed():
+def test_uncited_variants_are_real_flagged_gaps_not_missing_citations():
+    # Post-2026-09-08 extraction, some variants are honestly marked gap/unconfirmed (the
+    # source docs themselves say so) rather than all being "confirmed" — that's correct
+    # behaviour, not a defect. What must still hold: every one of them cites a real,
+    # non-empty source, so "uncited" never actually means "no citation at all".
     reg = load_feature_registry()
-    assert reg.uncited_variants() == []
+    for v in reg.uncited_variants():
+        assert v.citation.confidence in ("gap", "unconfirmed")
+        assert v.citation.source_ref.strip()

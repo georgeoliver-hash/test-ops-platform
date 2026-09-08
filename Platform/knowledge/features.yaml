@@ -1,99 +1,1305 @@
 # Common features vs. bespoke project variants — see model/features.py's module docstring.
 #
 # Manually curated, cited seed data. Every variant below traces to a real TestRail case and/or
-# spec paragraph already in system-test-ops — nothing here is invented. Sourced 2026-08-26 from
-# proposals/coherence-audit/fixes/pv-card-variant-sweep.changelog.md (Translink PV, suite 30255)
-# and proposals/pv-suite-restructure/coverage-map.md.
+# spec paragraph/flow-map already in system-test-ops — nothing here is invented. Original 5
+# entries sourced 2026-08-26; comprehensively extended 2026-09-08 by mining ~90 flow-annotation
+# files + ~55 cited FBD spec notes + 12 NJT spec notes (all real, already in system-test-ops'
+# knowledge/) via parallel extraction agents, one per device cluster, each instructed to trace
+# every fact to a real source and mark GAP/UNCONFIRMED exactly as the source does.
 #
-# Add to this file the same way: find the real case/spec, cite it, don't guess.
+# Add to this file the same way: find the real case/spec/flow-map, cite it, don't guess.
 
 features:
-  - key: card_reading.tap
-    name: Tap a card/credential at a reader
-    description: >
-      Present a card or credential at a device's reader; the reader identifies the technology
-      and routes to the matching validation. The behaviour (present -> identify -> validate) is
-      the same regardless of which credential technology a given project actually issues.
+- key: card_reading.tap
+  name: Tap a card/credential at a reader
+  description: 'Present a card or credential at a device''s reader; the reader identifies the technology
+    and routes to the matching validation. The behaviour (present -> identify -> validate) is the same
+    regardless of which credential technology a given project actually issues.
 
-  - key: backoffice.cloudfare_comm
-    name: Device communicates with the CloudFare back-office
-    description: >
-      Every device talks to the shared CloudFare back-office product — the same underlying
-      channel — but what each project actually configures/uses it for differs.
+    '
+- key: backoffice.cloudfare_comm
+  name: Device communicates with the CloudFare back-office
+  description: 'Every device talks to the shared CloudFare back-office product — the same underlying channel
+    — but what each project actually configures/uses it for differs.
 
-  - key: driver.sign_on
-    name: Driver/operator signs on before operating the device
-    description: >
-      Same conceptual behaviour (credential entry -> device unlocks for operation) across every
-      project; the exact sign-on method and screens are project/device-specific.
+    '
+- key: driver.sign_on
+  name: Driver/operator signs on before operating the device
+  description: 'Same conceptual behaviour (credential entry -> device unlocks for operation) across every
+    project; the exact sign-on method and screens are project/device-specific.
 
+    '
+- key: ticket_issue.fare_sale
+  name: Fare/ticket sale and payment
+  description: Selecting a fare product (with boarding/alighting stage) and completing payment to issue
+    a paper ticket.
+- key: transaction.annulment
+  name: Annul/reverse a recent transaction
+  description: Voiding a recently completed ticket, top-up, discount-card, card-issue, or ABT transaction
+    shortly after it occurred, subject to a per-project eligibility window.
+- key: device.power_interruption
+  name: Power interruption / backup battery recovery
+  description: Device behaviour when mains power is lost, using a short battery backup to save state before
+    shutting down, and how it recovers on power resumption.
+- key: revenue.limit_lockout
+  name: Revenue limit approaching/reached lockout
+  description: Warning and hard-lockout behaviour when cash/revenue taken on a device approaches or reaches
+    a configured ceiling.
+- key: printer.error_recovery
+  name: Printer error/paper-jam handling and retry/annul recovery
+  description: Device response to a failed or jammed print during a transaction, offering retry, reverse-paper-feed,
+    or a cancel/annul path back to the prior flow.
+- key: barcode.multi_use_validation
+  name: Offline multiple-use barcode validation
+  description: Devices that support multi-use barcodes validate them offline against on-device business
+    rules (time, mode, zone, route/location) rather than contacting a back-office service in real time.
+- key: smartcard.topup
+  name: Top up a stored-value/period smartcard
+  description: Adding journeys/days/time-based value to a presented smartcard, with confirmation on success
+    or an error on write failure.
+- key: card_payment.bank_card
+  name: Bank card payment via attached terminal
+  description: Taking a customer bank-card payment on an attached payment terminal (insert/tap/swipe,
+    PIN entry, approve/decline, signature, receipt).
+- key: smartcard.issue
+  name: Issue new smartcard
+  description: Writing a new smartcard product onto a blank/presented card and printing an issue receipt.
+- key: smartcard.entitlement_validation
+  name: Discount/entitlement smartcard validation
+  description: Validating a presented discount or entitlement pass per-transaction (rather than top-up)
+    to set a ticket type, and handling faulty/hotlisted/passback cards.
+- key: barcode.single_use_validation
+  name: Online single-use barcode validation
+  description: Devices that support single-use (Corethree-generated) barcodes validate them online against
+    the Corethree/MMT-Being service, scoped by device type and barcode type, with an offline fallback
+    under a value ceiling.
+- key: transaction.basket_payment
+  name: Multi-item basket & payment
+  description: Accumulating multiple ticket items into a basket before taking one combined payment, with
+    a payment-method gate on card availability.
+- key: pos.refund
+  name: POS refund of prior ticket sales
+  description: The POS device can refund a qualifying prior ticket sale by cash or card, with role gating
+    and validation before the audit record is written.
+- key: panic_mode.covert_alert
+  name: Panic mode (covert backoffice alert)
+  description: A hidden operator trigger that raises a covert alert to the backoffice and temporarily
+    disables normal operator functions.
+- key: smartcard.inspection_validation
+  name: Smartcard inspection & validation
+  description: Reading a presented smartcard and determining whether the journey it represents is valid,
+    based on passback, prior validation, and transfer-period/direction-of-travel checks.
+- key: revenue_inspection.emv_check
+  name: Revenue inspection (EMV/payment-card tap check)
+  description: An inspector taps a customer's EMV bank card against the device's payment reader to check
+    it against the backoffice denylist/inspection record, independent of ticket/smartcard checks.
+- key: payment.card_transaction
+  name: Bank card payment via attached terminal (chip & PIN / contactless)
+  description: Taking a bank-card payment on the device's attached payment reader, covering contactless/chip-and-PIN
+    selection, PIN entry, decline handling, and signature/void handling.
+- key: printing.receipt_ticket
+  name: Shared print-success/print-failed pattern across receipts
+  description: A common pattern across many print contexts (ticket, receipt, waybill, mini statement)
+    offering retry-or-cancel on failure and, for payment-linked prints, requiring an annulment if printing
+    cannot complete.
+- key: ticket_issue.purchase
+  name: Ticket purchase (destination + type + payment + print)
+  description: The end-to-end behaviour of selecting a destination/ticket type, confirming details, paying,
+    and receiving a printed ticket.
+- key: payment.process_tender
+  name: Self-service payment tender (cash/card)
+  description: Accepting cash or card payment for a transaction on a self-service kiosk, including cancellation
+    and failure handling at the point of tender.
+- key: ticket_printing.dispense
+  name: Post-payment ticket/change dispensing
+  description: Printing and dispensing tickets (and any change/voucher/receipt) once payment has completed.
+- key: session_timeout.idle
+  name: Idle/inactivity session timeout
+  description: Handling of a device screen timing out from user inactivity, including any resume/cancel
+    behaviour and partial-transaction cleanup.
+- key: ticket_collection.by_reference
+  name: Collect pre-purchased ticket by reference
+  description: Retrieving and printing a previously booked/paid ticket using a booking reference number
+    rather than a fresh purchase.
+- key: basket.multi_item
+  name: Multi-item basket before payment
+  description: Collecting more than one ticket item into a basket before a single payment, with the ability
+    to edit or remove items and add more before paying.
+- key: device_fault_handling.reader_unavailable
+  name: Reader-unavailable fault handling
+  description: When a card or barcode reader becomes unavailable (or another non-powerloss fault occurs),
+    the device shows a degraded present-screen or goes out of service, and may attempt a reboot to recover
+    the reader.
+- key: gate_access.mode_operation
+  name: Gate in-service mode operation
+  description: While in an operating mode (Entry, Exit, Bi-Directional, Emergency, Fully Free, Closed),
+    the gate presents readers to travellers, validates cards/barcodes presented, and can degrade to card-only
+    or code-only when a reader fails.
+- key: gate_access.remote_mode_change
+  name: Gate remote mode change
+  description: A gate's operating mode can be remotely changed (Fully Free, Emergency, Entry, Exit, Locked),
+    and the gate's own Primary/Secured-side role determines whether the change results in Please Proceed,
+    No Entry, or Emergency Exit.
+- key: technician_menu.sign_on
+  name: Technician menu sign-on
+  description: A technician signs into the device's technician menu by presenting a technician card (or
+    ID) and entering a PIN, reaching a Home Screen hub on success or an error screen on an invalid PIN.
+- key: technician_menu.location_settings
+  name: Technician location settings
+  description: A technician can edit the device's location fields and change its Home Location from a
+    Back-Office-supplied list; changing the Home Location requires a device reboot to apply.
+- key: technician_menu.force_communications
+  name: Technician force communications
+  description: A technician can view pending back-office communication status (audit records, manifest
+    downloads) and manually trigger a comms check.
+- key: abt_emv.fare_validation
+  name: ABT EMV card fare validation
+  description: A presented ABT EMV bank card is checked through AID acceptance, expiry, ODA, BIN list,
+    deny/negative list, and passback-period rules before being accepted or rejected.
+- key: device.functional_state_machine
+  name: Device functional state machine
+  description: The device's internal functional states (e.g. Idle, Comms Locked, Low Power, Screen Saver,
+    Out of Service) and the rules governing transitions between them.
+- key: fare_structure.class_transaction_model
+  name: Rider class and transaction type fare model
+  description: The fare system's model of a transaction as a rider class plus a transaction type, with
+    only certain class/transaction combinations valid and the selectable list configurable per route.
+- key: farepay.stored_value_card
+  name: Stored-value fare card transaction
+  description: Processing a tap of the project's own stored-value/prepaid fare card, including balance/threshold
+    checks distinct from a ticket-product card tap.
+- key: driver.operator_menu_functions
+  name: Operator/driver menu functions
+  description: The set of in-shift administrative actions a driver performs from an operator menu (e.g.
+    ending a trip/run, taking a break, requesting relief, cancelling a ticket), each producing device
+    state changes and back-office audit records.
+- key: special_user.supervisor_admin_mode
+  name: Special user (Supervisor/Administrator) mode
+  description: A privileged sign-on path, separate from normal driver sign-on, that grants access to device-management
+    functions gated by a staff-list-defined role.
+- key: device.emergency_mode_handling
+  name: Emergency mode entry/exit handling
+  description: The device's driver-facing messaging when a connected validator signals an active emergency
+    scenario, and when that scenario clears.
+- key: comms.transaction_timeout_resolution
+  name: In-flight transaction resolution on comms loss/timeout
+  description: How a transaction awaiting driver confirmation is automatically resolved when the peripheral
+    link drops out or the driver takes too long to respond.
+- key: device.warnings_errors_faults
+  name: Device warning and error/fault handling
+  description: The device's warning and error states for resource exhaustion (memory, paper) and connected-peripheral
+    faults, including driver-facing messaging and recovery paths.
+- key: card_validation.format_checksum
+  name: Smartcard format & integrity validation
+  description: A device reading a smartcard must parse its format-specific structure and verify integrity/security
+    checks before accepting the card.
+- key: comms.device_heartbeat
+  name: Device heartbeat / last-communication reporting
+  description: Every device type periodically calls in to the back office so CloudFare can track when
+    it was last seen, independent of any ticket transaction.
+- key: fare.transfer_detection
+  name: Journey vs. transfer detection on re-validation
+  description: On re-presenting a card, a device decides whether to charge a new journey or record a fare-free
+    transfer based on a configured transfer window and direction.
+- key: fare.card_reference_lookup
+  name: Card-reference-number fare/alighting lookup
+  description: For products carrying a card reference number, a device-distributed lookup file combined
+    with the boarding stop determines the permitted alighting point/fare.
+- key: gate.acceptance_control
+  name: Automatic gate open/close acceptance control
+  description: A gate device only opens on an explicit validator authorisation signal, monitors for obstruction,
+    and falls back to Out of Service on repeated failures.
+- key: fare.tap_on_only
+  name: Tap-on-only (TOO) card validation
+  description: A device validates a contactless bank card on boarding only (no tap-off), running route/location/product
+    gating and card checks, then charges a flat or driver-selected fare via the back office.
+- key: audit.abt_audit_schema
+  name: ABT tap audit record structure
+  description: Every ABT-related card tap (TOO or TOTO) emits an audit record to the back office with
+    a common set of constant fields and a device-specific structure, since fare charging happens back-office
+    rather than on-device.
+- key: fare.tap_on_tap_off
+  name: Tap-on-tap-off (TOTO) card validation and journey matching
+  description: A device validates a contactless bank card at both boarding and alighting; the back office
+    matches the pair of taps against a programmed journey time to decide the fare, falling back to a maximum
+    fare when a tap is missing or out of time.
 variants:
-  - feature_key: card_reading.tap
-    project: translink
-    device_type: PV
-    variant_name: "DESFire EV3 (ABT smartcard)"
-    note: >
-      Corrected 2026-07-23 from a prior misnomer: the old suite had a case titled "FEIG - ITSO
-      Smartcard Tap", but Translink's own card-format spec never mentions ITSO — the real
-      credential is DESFire EV3. C4101081 was rewritten to match. This is the exact failure mode
-      this model exists to catch: a plausible-sounding bespoke label that had drifted from what
-      the cited spec actually says.
-    citation: {source_kind: spec, source_ref: "FBD-100236 (Translink DESFire ABT Card Format Specification)", confidence: confirmed}
+- feature_key: card_reading.tap
+  project: translink
+  device_type: PV
+  variant_name: DESFire EV3 (ABT smartcard)
+  note: 'Corrected 2026-07-23 from a prior misnomer: the old suite had a case titled "FEIG - ITSO Smartcard
+    Tap", but Translink''s own card-format spec never mentions ITSO — the real credential is DESFire EV3.
+    C4101081 was rewritten to match. This is the exact failure mode this model exists to catch: a plausible-sounding
+    bespoke label that had drifted from what the cited spec actually says.
 
-  - feature_key: card_reading.tap
-    project: translink
-    device_type: PV
-    variant_name: "MIFARE"
-    note: "Card technology — MIFARE and DESFire"
-    citation: {source_kind: testrail_case, source_ref: "C4101008", confidence: confirmed}
-
-  - feature_key: card_reading.tap
-    project: translink
-    device_type: PV
-    variant_name: "Mobile wallet (Apple Pay / Google Pay)"
-    citation: {source_kind: testrail_case, source_ref: "C4100998", confidence: confirmed}
-
-  - feature_key: card_reading.tap
-    project: translink
-    device_type: PV
-    variant_name: "EMV contactless"
-    note: "Valid/invalid cEMV tap and decline reasons"
-    citation: {source_kind: testrail_case, source_ref: "C4101088", confidence: confirmed}
-
-  - feature_key: card_reading.tap
-    project: translink
-    device_type: PV
-    variant_name: "Legacy smartcard"
-    citation: {source_kind: testrail_case, source_ref: "C4101007", confidence: confirmed}
-
-  - feature_key: backoffice.cloudfare_comm
-    project: njt
-    device_type: null
-    variant_name: "Remote commands (GR-2/GR-4/GR-5/FF-5/GR-3/FRT-1)"
-    note: "NJT's CloudFare integration is remote-command-centric (Section 8.1)."
-    citation: {source_kind: spec, source_ref: "NJT FS002 §8/8.1 (knowledge/njt/specs/fs002-cloudfare-communication.md)", confidence: confirmed}
-
-  - feature_key: backoffice.cloudfare_comm
-    project: translink
-    device_type: null
-    variant_name: "Zone configuration for ABT geographic capping"
-    note: "Translink's CloudFare integration is zone/capping-centric, not remote-command-centric."
-    citation: {source_kind: spec, source_ref: "FBD-100229 (Translink CloudFare Zone Configuration)", confidence: confirmed}
-
-  - feature_key: driver.sign_on
-    project: njt
-    device_type: ETM
-    variant_name: "FS002 §5.1 driver sign-on (default display + paper ticket flow)"
-    citation: {source_kind: spec, source_ref: "NJT FS002 §5.1 (knowledge/njt/specs/fs002-driver-signon-display-paper.md)", confidence: confirmed}
-
-  - feature_key: driver.sign_on
-    project: translink
-    device_type: ETM
-    variant_name: "Translink ETM driver sign-on flow"
-    citation: {source_kind: flow_map, source_ref: "knowledge/flows/translink-etm-driver-signon.md", confidence: confirmed}
-
-  - feature_key: driver.sign_on
-    project: translink
-    device_type: POS
-    variant_name: "Translink POS operator sign-on flow"
-    citation: {source_kind: flow_map, source_ref: "knowledge/flows/translink-pos-signon.md", confidence: confirmed}
+    '
+  citation:
+    source_kind: spec
+    source_ref: FBD-100236 (Translink DESFire ABT Card Format Specification)
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: PV
+  variant_name: MIFARE
+  note: Card technology — MIFARE and DESFire
+  citation:
+    source_kind: testrail_case
+    source_ref: C4101008
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: PV
+  variant_name: Mobile wallet (Apple Pay / Google Pay)
+  citation:
+    source_kind: testrail_case
+    source_ref: C4100998
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: PV
+  variant_name: EMV contactless
+  note: Valid/invalid cEMV tap and decline reasons
+  citation:
+    source_kind: testrail_case
+    source_ref: C4101088
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: PV
+  variant_name: Legacy smartcard
+  citation:
+    source_kind: testrail_case
+    source_ref: C4101007
+    confidence: confirmed
+- feature_key: backoffice.cloudfare_comm
+  project: njt
+  device_type: null
+  variant_name: Remote commands (GR-2/GR-4/GR-5/FF-5/GR-3/FRT-1)
+  note: NJT's CloudFare integration is remote-command-centric (Section 8.1).
+  citation:
+    source_kind: spec
+    source_ref: NJT FS002 §8/8.1 (knowledge/njt/specs/fs002-cloudfare-communication.md)
+    confidence: confirmed
+- feature_key: backoffice.cloudfare_comm
+  project: translink
+  device_type: null
+  variant_name: Zone configuration for ABT geographic capping
+  note: Translink's CloudFare integration is zone/capping-centric, not remote-command-centric.
+  citation:
+    source_kind: spec
+    source_ref: FBD-100229 (Translink CloudFare Zone Configuration)
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: njt
+  device_type: ETM
+  variant_name: FS002 §5.1 driver sign-on (default display + paper ticket flow)
+  citation:
+    source_kind: spec
+    source_ref: NJT FS002 §5.1 (knowledge/njt/specs/fs002-driver-signon-display-paper.md)
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: translink
+  device_type: ETM
+  variant_name: Translink ETM driver sign-on flow
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-driver-signon.md
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: translink
+  device_type: POS
+  variant_name: Translink POS operator sign-on flow
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-signon.md
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: translink
+  device_type: ETM
+  variant_name: ETM manual/smartcard driver sign-on with duty/journey selection
+  note: Manual first-use sign-on runs Enter -> Staff ID -> masked PIN -> auth check -> First Use Safety
+    Check -> Bus Check (Any Defects) -> Select Duty -> Route/Journey selection -> Route Summary -> Message
+    of the Day -> Word & Colour of the Day -> FLU Home. A valid smartcard tap skips straight to PIN entry.
+    3+ incorrect attempts locks the device, cleared only by a Supervisor smartcard tap. Sign-off after
+    duty selection prints a waybill; sign-off before it does not.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-driver-signon.md
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: ETM
+  variant_name: ETM ABT/EMV contactless tap with Metro/Ulsterbus branch
+  note: 'A contactless EMV/ABT card is checked for validity, then for passback (already validated within
+    the passback period) before a mode branch: Metro mode validates the tap directly (EMV Validated, zone/flat-fare,
+    no alighting-stage step); Ulsterbus mode requires the driver to select an alighting stage before the
+    tap completes. Invalid cards show an EMV Validation Failure that clears after 2s, on card removal,
+    or the L6 key.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-flu-abt-emv.md
+    confidence: confirmed
+- feature_key: backoffice.cloudfare_comm
+  project: translink
+  device_type: ETM
+  variant_name: ETM CloudFare comms-loss lockout at Idle
+  note: If comms fail at the Idle screen the device shows an Idle-Bad-Comms state; if comms are restored
+    it returns to Idle, but if the failure persists it moves to a Communications Locked screen (the exact
+    hours threshold is not stated in the source and is flagged as a gap). Sign-on/shift/defect activity
+    is otherwise auditable up through CloudFare.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-driver-signon.md
+    confidence: unconfirmed
+- feature_key: ticket_issue.fare_sale
+  project: translink
+  device_type: ETM
+  variant_name: ETM FLU product selection, payment and ticket print
+  note: From FLU Home the driver selects a product and alighting stage (directly, via a toggle group,
+    a preset button, or menu-type selection), confirms, and on successful payment a ticket prints and
+    the device returns to FLU Home. Cash payment shows a 'Last Transaction 200 - Success' banner that
+    auto-times-out after 3 seconds and persists as a small indicator. This sub-flow is mode-generic (no
+    Metro/Ulsterbus/Rail branching) since ETM has no Rail mode.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-flu-ticket-issue.md
+    confidence: confirmed
+- feature_key: transaction.annulment
+  project: translink
+  device_type: ETM
+  variant_name: ETM Driver Menu annulment (tickets/top-up/yLink/ABT TOO)
+  note: From the Driver Menu, annulment is typed by transaction kind (ticket/product issue, top-up, discount/yLink
+    card, ABT TOO product); only the last transaction, and only if it occurred less than a minute ago,
+    can be annulled, and a stage change clears the annulment list entirely. A basket sale annuls as a
+    single whole transaction, not per line item. An incorrect card presented for a top-up/discount annulment
+    re-prompts for the same card rather than returning to FLU.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-driver-menu-annulment.md
+    confidence: confirmed
+- feature_key: device.power_interruption
+  project: translink
+  device_type: ETM
+  variant_name: ETM Power Interruption screen (short backup, temporary vs longer loss)
+  note: Per the board's annotations, the ETM has only a short battery backup after losing power; timeouts
+    are tuned so system state can be saved safely before shutdown. A temporary interruption returns the
+    device to the screen it was originally on; a longer interruption leads to the device shutting down.
+    The Overflow board itself records zero screen-to-screen connections, so this sequence is stated only
+    in annotation prose, not a confirmed graph edge.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-power-interruption.md
+    confidence: unconfirmed
+- feature_key: revenue.limit_lockout
+  project: translink
+  device_type: ETM
+  variant_name: ETM Revenue Limit Approaching/Reached banners and auto sign-off
+  note: A pre-configured approaching-amount threshold shows a 'Revenue Limit Approaching' header banner
+    (appears after a Transaction Complete banner disappears, then self-clears after 3 seconds). When the
+    max revenue is reached, the driver is automatically signed off, a waybill prints, and the ETM locks
+    pending Supervisor/Technician intervention; the ETM also re-establishes its back-office connection
+    in the background. The exact clearing mechanism for the locked state is not documented in this board.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-revenue-limit.md
+    confidence: unconfirmed
+- feature_key: printer.error_recovery
+  project: translink
+  device_type: ETM
+  variant_name: ETM FLU Printer Error (retry/annul, paper jam, paper low)
+  note: A Printer Error during ticket issue offers retry (looping back to the same error on repeated failure)
+    or lets the driver annul the transaction instead; the recovery button reads 'Annul Transaction' for
+    a failed ticket print but 'Cancel' for a non-ticket printout (e.g. a Technician Menu version printout).
+    A Paper Jam variant adds a 'Reverse Paper Feed' option without dismissing the screen, and a Paper
+    Low warning appears only immediately after a successful ticket print, auto-clearing after 5 seconds.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-flu-printer-travel-mode.md
+    confidence: confirmed
+- feature_key: barcode.multi_use_validation
+  project: translink
+  device_type: ETM
+  variant_name: ETM barcode scan/reference validation with online and offline checks
+  note: A scanned barcode (or a manually entered Barcode Reference from the Driver Menu) is decrypted/parsed,
+    checked against prior offline validation, then validated online if available or against an offline
+    value/product limit if not; failures of any check route to a shared 'Barcode Validation Failed' screen.
+    A separate mLink path validates a customer-presented mLink ticket via offline encryption keys and
+    a date check. The board is explicitly flagged provisional, pending a post-R2.0 review of the Corethree
+    barcode approach and multi-use barcodes.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-barcode-scanning.md
+    confidence: unconfirmed
+- feature_key: smartcard.topup
+  project: translink
+  device_type: ETM
+  variant_name: ETM smartcard top-up (journeys/days/period) via Smart Card Menu
+  note: From the Smart Card Menu the driver selects a top-up amount; on card write success a Top Up Confirmation
+    is shown until the card is removed, on failure a Top Up Error is shown instead. Per the annotation
+    this same flow template is shared across DayLink (shows 'Days'), iLink and Metro Travelcard (shows
+    periods of time) top-ups, and a successfully topped-up day/journey is immediately auto-validated for
+    DayLink, iLink and Ulsterbus Town Service cards.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-etm-flu-smartcard.md
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: translink
+  device_type: POS
+  variant_name: POS ID+PIN / Admin-card sign-on with MotD and Word & Colour
+  note: Operator signs on via ID+PIN (or an Administrator smartcard which auto-fills ID and activates
+    the PIN field) at the Idle screen; a valid sign-on passes through 'Please Wait...', then conditionally
+    shows Message of the Day and Word & Colour of the Day (each has its own 'Unavailable' fallback screen)
+    before landing on the Main Screen. Invalid credentials show a 'Sign On Failed' / 'Sign On - Incorrect
+    Details' dialog with an attempt counter; repeated failures lead to a 'Device Locked' screen requiring
+    a Supervisor card. Rail-mode operators land on the Main Screen; Metro operators land on the Present
+    Smartcard screen instead.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-signon.md
+    confidence: confirmed
+- feature_key: backoffice.cloudfare_comm
+  project: translink
+  device_type: POS
+  variant_name: POS Communication Locked (CloudFare loss at idle)
+  note: When the POS cannot establish comms with the back office (CloudFare) while idle, it shows a 'Communication
+    Locked' screen instructing the operator to notify a Supervisor or Technician; this is an idle-state
+    condition, not a sign-on-submit failure. Device notes describe the same comms component as 'CloudFare'
+    with a configurable loss period before lockout.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-signon.md
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: POS
+  variant_name: POS Present Smartcard (contact/contactless fare-card read)
+  note: Operator or customer presents a Translink smartcard at the reader from the Main Screen or an FLU
+    screen ('Smartcard/Please Present Smartcard'); the POS checks validity and branches by card family
+    (Smartlink, ABT, Metro Smartlink) to top-up, issue, or validation menus, or to a shared 'Smartcard/Error'
+    screen on an invalid/unrecognised card (3s timeout or any key returns to the previous screen). Metro
+    has its own entry screen and its own 'Is the Smartcard valid?' instance separate from Ulsterbus/NIR.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-topup-validation-topup.md; knowledge/flows/translink-pos-issue-card-ulsterbus-nir.md;
+      knowledge/flows/translink-pos-issue-card-metro.md
+    confidence: confirmed
+- feature_key: card_payment.bank_card
+  project: translink
+  device_type: POS
+  variant_name: POS Miura M020 card payment
+  note: 'Bank card payment runs on an attached Miura M020 terminal: the POS initialises the transaction,
+    the customer presents/inserts/swipes the card (or cancels via the M020''s Cancel button), and depending
+    on payment type and amount, PIN entry and/or a signature step occurs before a Transaction Successful/Declined
+    outcome. Approved transactions print a ticket immediately and offer an optional payment receipt; declined
+    transactions auto-print a declined receipt and show specific errors (e.g. ''Incorrect PIN entered
+    too many times'', ''Signature doesn''t match payment card''). Bank card option is only available when
+    a PCD is attached to the POS.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-card-payment.md
+    confidence: confirmed
+- feature_key: smartcard.topup
+  project: translink
+  device_type: POS
+  variant_name: POS smartcard top-up (multi-journey / travelcard / ABT / DayLink / Belfast Visitor / iLink)
+  note: After a valid smartcard is presented, the operator picks a top-up product from the Smartcard Menu
+    (Ulsterbus/Metro Multi-Journey, Metro/Ulsterbus Travelcard, ABT, DayLink, Belfast Visitor Pass, iLink);
+    each flow checks first-use/expiry, builds a basket, and on 'Card Write Success' prompts card removal
+    and prints a receipt, or on failure shows a 'Top Up Error' screen. Top-up is shared across all three
+    operating modes (any mode can top up any card); only the Metro/Ulsterbus-branded products are mode-homed.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-topup-validation-topup.md; knowledge/projects/translink.md
+    confidence: confirmed
+- feature_key: smartcard.issue
+  project: translink
+  device_type: POS
+  variant_name: POS card issue (Smartlink/Ulsterbus Travelcard/Daylink/iLink/Belfast Visitor/ABT/Metro)
+  note: Once a smartcard is validated as issuable, adult/child selection is automatic from card data;
+    the operator selects a product type (Smartlink reference number, Ulsterbus Travelcard, Daylink, iLink,
+    Belfast Visitor Pass, ABT with custom amount, or Metro zone/travelcard), the POS writes the card,
+    and on success shows 'Remove Smartcard' then prints a card-issue receipt. On write failure, a shared
+    'Card Issue Error' screen offers retry or cancel (voiding the transaction); a card paid by bank card
+    is automatically voided on this error, and no totals are updated.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-issue-card-ulsterbus-nir.md; knowledge/flows/translink-pos-issue-card-abt.md;
+      knowledge/flows/translink-pos-issue-card-metro.md
+    confidence: confirmed
+- feature_key: smartcard.entitlement_validation
+  project: translink
+  device_type: POS
+  variant_name: POS free/half-fare smartpass validation and faulty-card handling
+  note: Free smartpasses (Senior, 60+, RoI Senior, Blind, War Pensioner) and half-fare passes (DLA, yLink,
+    24+, Dependants Pass) set a ticket type on presentation and print a ticket directly or after a payment
+    step, without going into a basket. A faulty smartcard, one presented outside its valid time band,
+    one re-used too soon (passback), or a hotlisted/expired card each route to a distinct error screen.
+    Entitlement smartcards validate per transaction and cannot be added to a basket.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-topup-validation-validation.md; knowledge/projects/translink.md
+    confidence: confirmed
+- feature_key: barcode.single_use_validation
+  project: translink
+  device_type: POS
+  variant_name: POS FLU/manual barcode scan with device/type matrix and print retry
+  note: A scanned barcode is decrypted/parsed, checked against offline-already-validated status, an online
+    check (or offline value/product-limit check when online is unavailable); failures route to a shared
+    'Barcode Validation Failed' screen or 'Transaction Cancelled', with a manual-retry path via the Operator
+    Menu's Barcode Reference entry. POS validates single-use barcodes online, limited to type W (Walk-up)
+    on Bus and types B/U/E/S/D/H on Rail. A valid ticket is shown for operator visual inspection, then
+    printed online or offline (first print-error press retries, second press invalidates the barcode).
+    Offline redemption is only permitted under a BOS-configured Ceiling Limit and must sync back to Corethree
+    on reconnect.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-barcode-scanning.md; knowledge/translink/specs/FBD-100317-corethree-single-multi-use-barcodes.md
+    confidence: confirmed
+- feature_key: transaction.annulment
+  project: translink
+  device_type: POS
+  variant_name: POS operator annulment (bus/rail/card top-up/card issue)
+  note: Bus-ticket annulment is available only for a bus ticket issued within the last 60 seconds or a
+    smartcard transaction, via 'Annul Previous Ticket'; Rail/Misc annulment is looked up by ticket number
+    instead. Card top-up and card issue annulment are reached by presenting the relevant smartcard from
+    the Operator Menu. On success a confirmation screen shows and an annulled-ticket receipt prints (with
+    automatic card refund and refund receipt if a payment card was used); on failure an error screen shows.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-operator-annulment.md
+    confidence: confirmed
+- feature_key: printer.error_recovery
+  project: translink
+  device_type: POS
+  variant_name: POS Printer Error / Paper Jam screens
+  note: A failed print shows an 'Error - Printer Error' screen offering an annulment flow or return to
+    the screen where the print was attempted; a paper jam shows 'Error - Paper Jam', during which the
+    POS automatically attempts to reverse the paper feed before offering the same annulment option or
+    returning to FLU as if the print succeeded. Repeated print failures loop back to the same error screen
+    until the operator annuls the transaction, by design. Low paper shows a separate temporary 3-second
+    notification.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-printer-errors.md
+    confidence: confirmed
+- feature_key: device.power_interruption
+  project: translink
+  device_type: POS
+  variant_name: POS power interruption / restart / auto sign-off & suspend chain
+  note: A brief power interruption is covered by backup power and the device stays on its current screen;
+    a longer interruption shows a 'Power Interruption' screen and the system shuts down. On power resuming,
+    the POS goes to the Operator Break screen if the outage was shorter than the configured Auto Sign
+    Off time, or to the Idle screen with no waybill printed if longer. Inactivity on an FLU screen for
+    the configured Auto Sign Off period reverts to Idle; further inactivity on Idle for the configured
+    Auto Suspend period turns the screen off, auto-rebooting after the configured Suspend Duration or
+    on any key press.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-power-interruption-audio.md
+    confidence: confirmed
+- feature_key: transaction.basket_payment
+  project: translink
+  device_type: POS
+  variant_name: POS Bus/Rail FLU basket and payment (PCD-gated bank card)
+  note: The Bus FLU basket holds up to 9 tickets and cannot mix two different routes; the Rail FLU basket/payment
+    covers Popular, 3-Day, and Advance Ticket products. Every payment screen checks whether a PCD is attached
+    to the POS — bank card is offered only if attached, otherwise a paired 'Card Unavailable' screen shows
+    (3s timeout). Only one advance ticket is allowed per basket, and entitlement/favourite smartpass tickets
+    cannot be added to a basket at all.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pos-basket-payment.md; knowledge/projects/translink.md
+    confidence: confirmed
+- feature_key: pos.refund
+  project: translink
+  device_type: POS
+  variant_name: Cash/card refund flow, role gating and audit
+  note: Only the POS device performs refunds; TVM is sales-only and HHD does sales+reversals but no refunds;
+    ETM sales are only refundable if originally paid by cash. Only the Operator role may authorise a refund.
+    Cash refunds are validated against a 23-character URN and must not exceed the original sale value;
+    card refunds call the payment provider (PSP) in real time, capped at the original sale value. The
+    audit record carries the refunded amount as a positive Fare value with a dedicated Refund product
+    (Allow Refund = true).
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100373-refund-on-pos.md
+    confidence: confirmed
+- feature_key: driver.sign_on
+  project: translink
+  device_type: HHD
+  variant_name: HHD ID/password or operator-smartcard login with 3-attempt lockout
+  note: Operator signs in via ID+password entry or by presenting an operator smartcard; after 3 incorrect
+    attempts the HHD locks (Device Locked) and only a Supervisor can unlock it by logging in from that
+    screen. A correct login routes by user type (Operator enters a Duty Number then sees Message/Word
+    of the Day and a test print; Supervisor goes to Supervisor Menu; Technician to Technician Mode).
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-login.md
+    confidence: confirmed
+- feature_key: panic_mode.covert_alert
+  project: translink
+  device_type: HHD
+  variant_name: HHD 3x quick-press panic trigger from Sales Screen
+  note: From the Sales Screen, pressing a button 3 times in quick succession shows a Panic Message, disables
+    operator software functions, and sends an alert to the backoffice (Event Code 1127); after a 3-second
+    timeout the device transitions to Break Mode - NIR. The identity of the button and whether other screens
+    can trigger it are unconfirmed per the source.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-panic-mode.md
+    confidence: confirmed
+- feature_key: barcode.multi_use_validation
+  project: translink
+  device_type: HHD
+  variant_name: HHD Multi-Use barcode scan decision chain
+  note: After a successful scan matching the Multi-Use format, the HHD runs a chain of checks (passback
+    period, vehicle type valid for route, start/end date-time, 3-Day-Select same-date rule, product valid
+    on route, zone match, boarding/alighting location, and for CR105 a >=£90 value check) leading to a
+    per-product-type Validation or Query result screen, or one of five named failure screens.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-barcode-mlink-multiuse.md
+    confidence: confirmed
+- feature_key: barcode.single_use_validation
+  project: translink
+  device_type: HHD
+  variant_name: HHD Single-Use barcode scan/manual entry + operator visual check
+  note: A single-use barcode is scanned (camera) or manually entered via a reference-entry keypad, then
+    validated online or (if unavailable) offline against a configurable value/product limit. Depending
+    on barcode type it reaches one of four 'Ticket Valid' screens where the operator visually inspects
+    the physical ticket and selects Valid or Not Valid; Valid proceeds to online-availability check, Redeeming,
+    then the ticket print flow.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-barcode-mlink-singleuse.md
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: HHD
+  variant_name: HHD Present/Represent Smart Card
+  note: The operator or customer presents a smartcard to the HHD (Present Smart Card / Represent Smartcard
+    screens) which triggers a Smartcard Readable? check; an unreadable card routes to a Critical Error
+    with Retry/Cancel, a readable card proceeds into passback/validity checks used by top-up, annulment
+    and inspection flows.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-sales-mode-smartcard-topup.md
+    confidence: confirmed
+- feature_key: smartcard.inspection_validation
+  project: translink
+  device_type: HHD
+  variant_name: HHD Inspection/Validation V2 smartcard chain
+  note: Presenting a smartcard on an Inspection or Validation device-view screen runs Smartcard Readable?,
+    then (if passback is configured) a passback-period check, then pre-validation and previously-validated
+    checks; if previously validated, whether the last use is within a 90-minute transfer period and whether
+    direction of travel matches the route determines Inspection-Valid, Inspection-Invalid, or Inspection-Invalid-Warning.
+    A successful validation sends a Transaction Record to the back office.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-inspection-validation-smartcard.md
+    confidence: confirmed
+- feature_key: revenue_inspection.emv_check
+  project: translink
+  device_type: HHD
+  variant_name: HHD square-button Revenue Inspection via M020 payment device
+  note: From a Sales/Rail Inspection or Validation device-view screen, selecting the square button connects
+    to the payment device and shows a Card Prompt; presenting an EMV card to the payment device (M020)
+    processes it, and if the payment device has BOS connectivity the result is Success or Denylist failure,
+    otherwise a Disconnected failure is shown. Available only from Sales Mode; while active, barcode scanning
+    and smartcard validation are disabled.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-inspection-validation-revenue.md
+    confidence: confirmed
+- feature_key: smartcard.topup
+  project: translink
+  device_type: HHD
+  variant_name: HHD Glider/Rail smartcard top-up (present, select amount, pay, represent)
+  note: Operator taps the top-up icon, presents the smartcard (readability and validity checked), selects
+    a product/amount if any are available, pays by cash or card, then the customer represents the smartcard
+    to complete the write. A DayLink/Multi-Journey/Period card's remaining days/journeys/new expiry is
+    shown on the Transaction Complete screen; a card with no eligible products routes to a dedicated 'no
+    products available' screen.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-sales-mode-smartcard-topup.md
+    confidence: confirmed
+- feature_key: payment.card_transaction
+  project: translink
+  device_type: HHD
+  variant_name: HHD Payment Area card-payment flow with contactless/Chip&PIN and card-reader reconnect
+  note: From the Payment Area, choosing Card initialises the transaction and prompts the customer to present
+    a card; amounts over a configured limit or exceeding a contactless threshold require Chip & PIN. PIN
+    entry failures after a set number of attempts, or a failed transaction, lead to Declined; a successful
+    transaction prints a receipt for signature, and a signature mismatch triggers Voiding Last Card Transaction.
+    A disconnected card reader can be retried up to 3 times before the operator is told to contact a Supervisor/Technician.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-sales-mode-payment.md
+    confidence: confirmed
+- feature_key: printing.receipt_ticket
+  project: translink
+  device_type: HHD
+  variant_name: HHD shared print-success/print-failed pattern across ticket, receipt, waybill and mini-statement
+    printing
+  note: 'Multiple print contexts (cash/card ticket, card receipt, waybill, mini statement, barcode ticket)
+    share the same Print Success? decision pattern: failure shows a context-specific Print Failed screen
+    offering Retry (loops back to the originating print screen) or Cancel/Continue Without Printing. For
+    card ticket/card-payment printing specifically, the operator must annul the transaction if it cannot
+    print. Only one reprint attempt is allowed on failure.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-sales-mode-printing.md
+    confidence: confirmed
+- feature_key: transaction.annulment
+  project: translink
+  device_type: HHD
+  variant_name: HHD Glider quick-annul vs Rail search-based annul, gated by time/validation-status rules
+  note: 'Glider offers a quick ''Annul Previous Ticket'' for the last transaction; Rail requires searching
+    a transaction list by ticket number and, for top-ups, only allows annulling the most recent top-up
+    on the card. Stated eligibility rules: Glider top-ups annullable before card validation and within
+    60 minutes, Glider paper tickets only the last ticket within 60 seconds; Rail top-ups within 60 minutes,
+    Rail paper tickets before validation and within 60 minutes; concessionary/discount cards only the
+    last ticket within 60 seconds and never after the card has been validated.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-operator-menu-annulment.md
+    confidence: confirmed
+- feature_key: backoffice.cloudfare_comm
+  project: translink
+  device_type: HHD
+  variant_name: HHD Communications Locked screen after no CloudFare contact
+  note: Per annotation, the HHD's Communications Locked screen (1.4.3) is shown after the device has not
+    communicated with CloudFare for an unspecified number of hours. The source captured no screen-to-screen
+    connections for this board at all, so the exact trigger/clearing mechanism and the numeric hour threshold
+    are unconfirmed, and it is not confirmed whether this is the same mechanism as the equivalent ETM
+    comms-lock state.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-hhd-additional-features-lockout-states.md
+    confidence: unconfirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: TVM
+  variant_name: TVM smartcard presentation branching
+  note: 'Presenting a smartcard at the TVM''s Home Screen branches by card type/state read: unreadable
+    card, fully topped-up card, top-up-eligible card, discount card, ABT card, ABT card on deny list,
+    or a card offering free/half-fare travel — each routes to a different downstream screen from the same
+    entry point.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-smartcards.md
+    confidence: confirmed
+- feature_key: ticket_issue.purchase
+  project: translink
+  device_type: TVM
+  variant_name: TVM buy-ticket flow (Destination -> Buy Tickets/Choose Ticket Details -> Payment Process
+    -> Ticket Printing)
+  note: The Map overview board states Choose Ticket Details always routes to Payment Process on 'Confirm
+    Selection', and Payment Process always routes to Ticket Printing on 'Pay'. Destination and Buy Tickets
+    link to each other and each links directly onward to Choose Ticket Details, rather than a single fixed
+    order. Ticket type selection covers Train (incl. Three-Day Travel date sub-flow), Cross Border, and
+    Bus/Metro branches.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-map.md
+    confidence: confirmed
+- feature_key: smartcard.topup
+  project: translink
+  device_type: TVM
+  variant_name: TVM iLink/UMJ top-up
+  note: From Home Screen, presenting a top-up-eligible card (UMJ or iLink Zone 1 Adult) offers a top-up-volume
+    selection screen (with an optional receipt toggle), then a payment-method screen showing a top-up
+    summary, then feeds into the shared Payment Process. Top-up shows current ePurse balance; account
+    balance is capped between a £3.00 minimum and £50.00 maximum, and multi-journey cards are capped at
+    50 journeys.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-smartcards.md
+    confidence: confirmed
+- feature_key: smartcard.issue
+  project: translink
+  device_type: TVM
+  variant_name: TVM Buy ABT Card
+  note: User selects a pre-configured top-up amount, chooses a payment type specific to Buy ABT, goes
+    through the shared Payment Process, then the TVM always prints a unique-code receipt (not skippable/toggleable,
+    unlike the smartcards top-up receipt) before issuing the card. Issuing can fail with a Card Jammed
+    message (routes to Home Screen) or succeed with a take-card-and-receipt(s) message.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-buy-abt-card.md
+    confidence: confirmed
+- feature_key: payment.process_tender
+  project: translink
+  device_type: TVM
+  variant_name: TVM Payment Process board
+  note: Cash payment can hit no-more-coins/no-more-notes/no-more-cash-accepted states, and can trigger
+    a change voucher when change hoppers are insufficient. Card payment splits into Contactless (straight
+    to Ticket Printing) and Chip and PIN (via an EMV-complete message). After a payment type is selected,
+    pressing Cancel shows a cancellation message first (content depends on how far the transaction had
+    progressed), then returns to Home Screen.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-payment-process.md
+    confidence: confirmed
+- feature_key: ticket_printing.dispense
+  project: translink
+  device_type: TVM
+  variant_name: TVM Ticket Printing board
+  note: 'After cash payment, the device branches by change outcome: exact value (take tickets, no button),
+    no change but a voucher required (take tickets and change voucher), or change required (take tickets
+    and change). After non-cash payment, tickets print, an optional card receipt is offered if requested,
+    then a take-your-tickets message that proceeds on timeout or the user tapping done. A change-voucher-failed
+    error screen exists but its trigger/connection is not stated in the source.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-ticket-printing.md
+    confidence: confirmed
+- feature_key: session_timeout.idle
+  project: translink
+  device_type: TVM
+  variant_name: TVM Timeouts board
+  note: Per-screen timeouts (configurable length) lead to a 'More Time Required' prompt; pressing 'Yes'
+    resumes the original screen. If its own countdown expires, the device returns to Home Screen directly,
+    or via a 'Payment Cancelled - Change returned' message if cash had been entered but payment not completed,
+    or via a 'payment cancelled please wait' message if a payment type had already been selected. The
+    source reconstructs this sequence from annotations rather than explicit connection arrows.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-timeouts.md
+    confidence: unconfirmed
+- feature_key: ticket_collection.by_reference
+  project: translink
+  device_type: TVM
+  variant_name: TVM Collect Tickets by Reference board
+  note: From Home Screen or Multi Modal Home Screen, pressing 'Collect Tickets' leads to entering a booking
+    reference number, then a 'Please wait' interstitial that branches to a valid booking (shows booked
+    ticket data, then take-your-tickets), an invalid reference (retry with cleared field, escalating to
+    an attempt limit on the 3rd invalid try), or already-collected tickets (Reference Used message).
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-collect-tickets-reference.md
+    confidence: confirmed
+- feature_key: basket.multi_item
+  project: translink
+  device_type: TVM
+  variant_name: TVM Basket board
+  note: The Basket screen (reached after 'Add to Basket' from a ticket-selection flow) lets the user edit
+    a Single/Return item's destination or ticket count, edit a Day-ticket item's ticket count, delete
+    an item (with a Yes/No confirmation), add more items, or pay now. Pressing Cancel while items are
+    in the basket returns the user to Home Screen and removes all basket items.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-tvm-basket.md
+    confidence: confirmed
+- feature_key: card_reading.tap
+  project: translink
+  device_type: GV
+  variant_name: GV legacy smartcard tap validation (operator/passenger)
+  note: 'On the Gate Validator, a readable legacy smartcard first checks if it is an operator card, routing
+    to Technician Menu if it matches a Technician ID. A non-operator card is checked in order: blocked,
+    on Actionlist, product valid for location, valid at time/date, expired, within Passback period, within
+    transfer period, ending at ''Tag successful'' or ''Represent Card''. Per the PV board''s annotation,
+    GV treats a Passback-period hit as a Failure response, unlike the PV.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-gv-gate-validator-flows.md
+    confidence: confirmed
+- feature_key: barcode.multi_use_validation
+  project: translink
+  device_type: PV
+  variant_name: PV barcode validation chain
+  note: 'After a barcode is confirmed readable, the PV checks in sequence: valid on current route/service,
+    valid at current date/time, valid at current location, not expired, and not used within the Passback
+    Period, reaching a Barcode Validation Successful screen if all pass, or one of five named fail screens
+    otherwise. An unreadable barcode reaches an Unable to Validate screen. Annotation: for barcodes with
+    an expiry time between 00:00 and 04:00, the PV must display the previous day as the expiry date.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pv-barcode.md
+    confidence: confirmed
+- feature_key: device_fault_handling.reader_unavailable
+  project: translink
+  device_type: GV
+  variant_name: GV reader-fault / not-in-service / reboot-recovery
+  note: From the normal 'Present SmartCard or Barcode' screen, a Barcode Reader outage shows 'Present
+    SmartCard no Tickets' and a Smartcard Reader outage shows 'Present Ticket no SmartCard'; both readers
+    unavailable (or another non-powerloss fault) shows 'Machine Not in Service - Gate'. Once the fault
+    is corrected the device returns to the Present screen; alternatively the device may reboot in an attempt
+    to recover the reader. The same structure is present verbatim on the PV board.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-gv-gate-validator-flows.md
+    confidence: confirmed
+- feature_key: gate_access.mode_operation
+  project: translink
+  device_type: GV
+  variant_name: GV Entry/Exit/Bi-Directional in-service reader validation
+  note: In Entry Mode, a card/barcode presented to the Primary Reader is checked valid; success or fail
+    both return to InService. Exit Mode mirrors this on the Secondary Reader. Bi-Directional Mode runs
+    both Primary and Secondary reader checks independently. In each mode, if the Barcode Reader becomes
+    unavailable the mode drops to 'CardOnly', and if the Card Reader becomes unavailable it drops to 'Code
+    Only'.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-gv-gate-validator-flows.md
+    confidence: confirmed
+- feature_key: gate_access.remote_mode_change
+  project: translink
+  device_type: GV
+  variant_name: GV remote mode-change routing by Primary/Secured side
+  note: From the Present screen, the GV checks whether it has been remotely changed to Fully Free, Emergency,
+    Entry, or Exit mode; for the latter three, a Primary/Secured-side check determines the outcome — Emergency
+    mode's Secured-Side branch reaches Emergency Exit while Entry/Exit mode's equivalent branch loops
+    back to the commissioning check, and every Primary/Secured-Side branch otherwise reaches No Entry.
+    Locked Mode routes straight to No Entry if active.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-gv-gate-validator-flows.md
+    confidence: confirmed
+- feature_key: technician_menu.sign_on
+  project: translink
+  device_type: PV
+  variant_name: PV technician card + PIN sign-on
+  note: Presenting a valid Technician Card at the PV's 'Present SmartCard or Barcode' screen redirects
+    to the Login Screen with the ID auto-entered and the PIN field active; entering a PIN feeds a validity
+    check, reaching the Home Screen on success or 'Incorrect Details' on failure (whose error message
+    disappears after a short timeout).
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pv-technician-menu.md
+    confidence: confirmed
+- feature_key: technician_menu.location_settings
+  project: translink
+  device_type: GV
+  variant_name: GV Location Settings - Gate edit/select/reboot
+  note: In Location Settings - Gate - Edit, 'Stop Location', 'Install Point ID', 'Mount ID' and 'Zone'
+    are configured via an on-screen pin-pad; the Home Location itself is changed via 'Select' from a list
+    supplied by the BackOffice on request, and confirming a changed Home Location reboots the device back
+    to the Present screen. If the Home Location list is not available, 'Location Settings - Fail' is shown
+    instead.
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-gv-technician-menu.md
+    confidence: confirmed
+- feature_key: technician_menu.force_communications
+  project: translink
+  device_type: PV
+  variant_name: PV Force Communications screen
+  note: 'The Force Communications screen summarises: pending Audit Records count, last successful Audit
+    Record send date/time, last manifest download attempt date/time, last successful manifest download
+    date/time, and a count of pending software/configuration update files. ''Call Now'' triggers a manifest
+    check at the back office and attempts to send pending audit records; ''Refresh'' updates the displayed
+    values.'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pv-technician-menu.md
+    confidence: confirmed
+- feature_key: abt_emv.fare_validation
+  project: translink
+  device_type: PV
+  variant_name: PV ABT EMV AID/expiry/ODA/BIN/deny-list/passback chain
+  note: 'For a card identified as ABT EMV, the PV checks: Valid AID (Yes for VISA/Mastercard/Maestro,
+    No e.g. Amex routes straight to the shared ABT deny list/negative list screen), card not expired,
+    ODA valid, PAN not on BIN list, PAN not on Deny List, and PAN not used within the Passback Period;
+    passing all reaches ABT Tag successful (with a distinct Northern Ireland Travel Only sub-variant for
+    NIR/Rail).'
+  citation:
+    source_kind: flow_map
+    source_ref: knowledge/flows/translink-pv-barcode.md
+    confidence: confirmed
+- feature_key: device.functional_state_machine
+  project: njt
+  device_type: ETM
+  variant_name: FR functional states (Idle / Comms Locked / Low Power / Screen Saver / Out of Service)
+  note: The FR's functional state machine has five states. Comms Locked is entered only from Idle, after
+    failing to reach the back office for a configurable period (0-99,999 hours), and blocks driver sign-on
+    except for special users. Screen Saver is entered only from Idle after inactivity, and Low Power only
+    from Screen Saver (not directly from Idle). Out of Service is entered on either a local fault or a
+    CloudFare-issued state-change command, blocks sign-on except for special users, and clears via fault
+    resolution or a CloudFare 'In Service' command.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-functional-states.md
+    confidence: confirmed
+- feature_key: ticket_issue.fare_sale
+  project: njt
+  device_type: ETM
+  variant_name: FR Full/Exact Fare product issue plus Accept underpayment path
+  note: In Full Service mode the FR shows the configured price and issues on ISSUE. In Exact Fare mode
+    issuance additionally requires sufficient funds registered in the Farebox, with a 'not enough money'
+    error if insufficient. The Accept function lets the driver issue at the value of funds actually received
+    when short, provided at least one cent was received, recording an underpayment on the receipt. A boarding/alighting
+    pair with a zero reference fare shows an Error and blocks issuance in both modes.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-driver-signon-display-paper.md
+    confidence: confirmed
+- feature_key: fare_structure.class_transaction_model
+  project: njt
+  device_type: ETM
+  variant_name: NJT Class/Transaction Type model (7 classes x 25 transaction types)
+  note: The FR's fare structure defines 7 rider classes (Adult, Child, Senior, Student, Employee, Family,
+    Foreign) and 25 named transaction types. Only certain class/transaction combinations are valid per
+    a checkmark matrix in the source spec; that matrix is flagged as a GAP because the PDF-to-text extraction
+    lost which class column each checkmark belongs to. The ticket-selection display order and page count
+    vary by which optional transaction types (continue-trip, transfer) are enabled per route.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-fare-structure.md
+    confidence: gap
+- feature_key: card_reading.tap
+  project: njt
+  device_type: ETM
+  variant_name: NJT cEMV contactless bank card tap via OBV
+  note: The Conduent OBV validates a tapped contactless bank card (cEMV) and passes the result to the
+    FR, which displays transaction result, product type, rider class and zone information for the driver
+    to accept or cancel. Zones default to the FR's currently set boarding/alighting zones since EMV does
+    not supply them, except in an approval mode where the driver actively sets zone, rider class and one-way/continue-trip
+    before accepting.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-obv-barcode-emv.md
+    confidence: confirmed
+- feature_key: barcode.single_use_validation
+  project: njt
+  device_type: ETM
+  variant_name: NJT OBV barcode scan validation and driver finalization
+  note: The OBV scans barcodes on NJ Transit paper tickets/passes and the NJT mobile app, validates the
+    ticket details, and sends the result to the FR, which shows Transaction Result, Ticket Type, Rider
+    Class and Zone Information for the driver to accept (Issue) or cancel; a rejected barcode shows a
+    denied-reason string with no receipt printed. A multi-passenger barcode requires an Issue press per
+    passenger. An 'automatic acknowledgment' mode auto-accepts without a driver press when the OBV message's
+    approval byte is '01'.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-obv-barcode-emv.md
+    confidence: confirmed
+- feature_key: farepay.stored_value_card
+  project: njt
+  device_type: ETM
+  variant_name: NJT Fare Pay card (Stored Value + Ticket Product) processing
+  note: The FR distinguishes a Stored Value (SV) card tap from a Ticket Product card tap using the card
+    message's Ticket Type Pass field. SV transactions check that SV balance minus fare meets a threshold
+    before accepting, show the card's balance (or 'Offline' if unavailable), and only print/audit a fare
+    value on one-way transactions; Ticket Product transactions carry no balance/threshold concept. Both
+    card types can be online or offline, with offline handling differing between SV (expected, no funds
+    check) and Ticket (not expected, falls back to a default product).
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-obv-farepay-card.md
+    confidence: confirmed
+- feature_key: driver.operator_menu_functions
+  project: njt
+  device_type: ETM
+  variant_name: NJT FR Operator Menu (End of Trip/Run, Relief, Driver Break, Cancel Ticket, etc.)
+  note: Pressing the 'F' key opens the Operator Menu, from which the driver can Cancel Ticket (Full Service
+    only, last paper transaction within 10 minutes), take a Driver Break (secures the FR, resumes via
+    PIN), request Relief (signs off the current driver), and End Trip / End Run (each with a confirm/cancel
+    screen, a printed report, and CloudFare + Clever Device notifications).
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-operator-menu.md
+    confidence: confirmed
+- feature_key: special_user.supervisor_admin_mode
+  project: njt
+  device_type: ETM
+  variant_name: NJT FR Supervisor and Administrator special-user modes
+  note: Pressing Issue from the idle screen and entering an operator number + PIN validated against the
+    staff list can, per the role recorded in that list, enter Supervisor mode (software versions, force
+    communications, historic trip reports, device settings, system status, enable OBV maintenance mode)
+    or the more restricted Administrator mode (unlock Farebox door, program Farebox number). Special users
+    retain access even while the device is Comms Locked or Out of Service.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-special-user-functionality.md
+    confidence: confirmed
+- feature_key: device.emergency_mode_handling
+  project: njt
+  device_type: ETM
+  variant_name: NJT FR Emergency Mode messaging (OBV-driven)
+  note: When the FR first sees the OBV's Emergency Mode status bit set, it displays a message instructing
+    the driver to accept products from other operators; this is cleared only by the driver pressing C.
+    When the OBV's Emergency Mode bit later clears, a second message tells the driver the system has reverted
+    to normal operation, also cleared only by C.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-obv-emergency-status-timeout.md
+    confidence: confirmed
+- feature_key: comms.transaction_timeout_resolution
+  project: njt
+  device_type: ETM
+  variant_name: NJT FR comms-loss and driver-timeout auto-resolution by transaction type
+  note: If the FR detects no OBV messages for a configurable period (default 9 seconds), an EMV or stored-value
+    transaction awaiting driver interaction is automatically cancelled, while a Barcode or Fare card transaction
+    awaiting driver interaction remains waiting. Separately, if the driver does not respond within a configurable
+    period (default 60 seconds), Barcode and Fare card transactions auto-accept, EMV transactions auto-cancel,
+    and a displayed rejection message is auto-acknowledged.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-obv-emergency-status-timeout.md
+    confidence: confirmed
+- feature_key: device.warnings_errors_faults
+  project: njt
+  device_type: ETM
+  variant_name: NJT FR memory/paper warnings and Farebox failure/fault handling
+  note: The FR shows a clearable warning at 90% audit-memory use and enters Out of Service at 100%, auto-returning
+    to idle only after a successful comms upload. Paper Low/Jam are any-key-clearable warnings; Paper
+    Out blocks further transactions and restricts idle-mode login to special users. On Farebox communication
+    loss (no reply for 10 consecutive polls, or 10 consecutive NAKs) the FR pauses into a 'standby' display
+    that blocks actions, then reverts to Full Service mode if comms don't restore within 2 seconds.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/njt/specs/fs002-other-functions-warnings-errors.md
+    confidence: confirmed
+- feature_key: card_validation.format_checksum
+  project: translink
+  device_type: PV
+  variant_name: DESFire EV3 ABT card structure validation
+  note: The ABT smartcard has ABT and optional TRK (Tracking) applications; a terminal must reject any
+    card that has the ABT application but is missing the ABT Tracking application. ABT Data (32 bytes)
+    plus the Card UID is signed with RSA-1024/SHA-256 and the terminal verifies against the terminal-stored
+    public key; tampered data or wrong Card UID should be rejected.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100236-desfire-abt-card-format.md
+    confidence: confirmed
+- feature_key: card_validation.format_checksum
+  project: translink
+  device_type: HHD
+  variant_name: Legacy Mifare pre-printed card checksum/expiry validation
+  note: Legacy Mifare pre-printed cards (SmartPass/Funded/Multi-Journey/travelcards) are checked via three
+    recomputed checksums (LRC, Smart Card CRC, Customer CRC) and a primary/backup sector-pair match; a
+    bad checksum or mismatched pair should cause rejection. Expiry logic is per-card-type (e.g. academic-year
+    EA Pupil cards start 1 Sept/expire 30 June) and dates use a 2-byte dd/mm/yy format with year offset
+    from 1991 wrapping every 16 years.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100250-preprinted-smartcard-format.md
+    confidence: confirmed
+- feature_key: comms.device_heartbeat
+  project: translink
+  device_type: POS
+  variant_name: Staff List Refresh as the heartbeat mechanism
+  note: Translink devices (ETM, POS, TVM, HHD, validators) perform a Staff List Refresh check every 15
+    minutes regardless of sign-on state; this call-in is reused as the heartbeat (a dedicated Device Status
+    message was rejected on performance grounds) and is not configurable by Translink despite an original
+    requirement that it should be. Receiving a StaffList message resets Hours-Since-Last-Communication
+    to zero and updates Asset Manager/Devices Last Seen.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100266-device-heartbeat.md
+    confidence: confirmed
+- feature_key: fare.transfer_detection
+  project: translink
+  device_type: ETM
+  variant_name: Multi-Journey (Metro/Ulsterbus) transfer window check
+  note: On first validation the card is written with time and direction of travel; on re-validation inside
+    the transfer window the ETM records a transfer (no journey deducted) instead of a new journey. The
+    ETM checks the route's Transfer Time property, that the stop is inside the Metro Transfer Zone, that
+    now is within LastValidated+TransferTime, and (if enabled) that direction matches. Passback checks
+    always take priority over the transfer timer, and Transfer Time = 0 means no transfers are ever granted.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100271-legacy-smartcard-transfer.md
+    confidence: confirmed
+- feature_key: fare.card_reference_lookup
+  project: translink
+  device_type: ETM
+  variant_name: Card Reference File validation algorithm
+  note: The device reads the card's Field ID and reference number, selects the matching reference table,
+    and searches the boarding-stop column for that ReferenceId, taking the occurrence furthest down that
+    column; if not found it iterates upward through the table until a match or the top is reached. The
+    resolved alighting stop and card reference number are audited on the transaction; an edited file requires
+    its ConfigurationVersion to be incremented or devices will not pick up the change.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100277-card-reference-file-usage.md
+    confidence: confirmed
+- feature_key: gate.acceptance_control
+  project: translink
+  device_type: GV
+  variant_name: TGS840 swing gate authorisation, timing and fault behaviour
+  note: Per the FBD-100348 acceptance report, the gate stays closed in Controlled mode until it receives
+    the validator authorisation signal, then opens within 650ms (standard aisle) or 900ms (wide aisle)
+    if the safety zone is clear, and an obstruction blocks open/close and raises an infraction. Failing
+    to fully open within 3 seconds forces immediate Out of Service, and 3 consecutive close failures also
+    force Out of Service. Many of these validator-integration rows are explicitly marked in the source
+    as 'to be validated on integration of Validator', so they are documented design intent rather than
+    confirmed live behaviour.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100348-gate-acceptance.md
+    confidence: unconfirmed
+- feature_key: fare.tap_on_only
+  project: translink
+  device_type: PV
+  variant_name: Glider flat-fare Tap On Only
+  note: On the Glider PV, taps are only accepted if the route's ABT Type attribute is 'Tap On Only (Flat
+    Fare)' and the boarding location is inside the Metro Network Zone; the card is then checked for expiry,
+    ODA, BIN list, deny list and passback, each mapped to a Declined Reason code, and a pass gives a success
+    screen with no alighting selection (flat fare). Because there is no alighting selection, the PV derives
+    a synthetic alighting point from the Furthest Alighting Point file.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100651-glider-tap-on-only.md
+    confidence: confirmed
+- feature_key: fare.tap_on_only
+  project: translink
+  device_type: ETM
+  variant_name: Ulsterbus driver-initiated Tap On Only
+  note: On Ulsterbus, the route's ABT Type must be 'Tap On Only (Driver Initiated)' and boarding plus
+    at least one subsequent stop must be in the Northern Ireland Zone; after the same card checks pass,
+    a locked FLU screen shows valid alighting stages and the driver selects one before the tap is audited
+    and a ticket printed. Cancelling before an alighting stage is selected produces no audit at all; annulment
+    is only possible on the ETM driver menu for the single most recent transaction within 1 minute with
+    the boarding stage unchanged.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100662-ulsterbus-tap-on-only.md
+    confidence: confirmed
+- feature_key: audit.abt_audit_schema
+  project: translink
+  device_type: PV
+  variant_name: ABT tap record constant fields and unit split
+  note: Every ABT tap sets paymentType to 'ABT' and revenue to 0 because the fare is calculated back-office.
+    DeclinedReason is a shared enum (0 Success, 1 Card Expired, 2 On Deny List, 3 Declined, 4 Cancelled,
+    15 On BIN List, 20 Passback), CardType is always 'emv'. The tap-level Fare field is in pounds while
+    transactionProducts.fareCost is in pence — a unit mismatch the source explicitly flags as an easy
+    bug to assert on both sides of. PV/GV taps carry gpsCoordinates while HHD taps carry a CardDetails
+    block instead of raw card data.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100658-abt-audit-specification.md
+    confidence: confirmed
+- feature_key: fare.tap_on_tap_off
+  project: translink
+  device_type: GV
+  variant_name: NIR rail TOTO tap validation and gate direction
+  note: GV and PV run the same check order as Glider TOO (route ABT Type = 'Tap On Tap Off', Northern
+    Ireland Zone location, product existence) then card checks (expiry/ODA/BIN/deny/passback); a pass
+    opens the gate and the GV additionally audits a Gate Direction of entry (Tap On) or exit (Tap Off).
+    The back-office matching algorithm charges a single fare if the tap-off falls within the Programmed
+    Journey Time, and a maximum fare if there is no tap-off within the global Maximum Journey Time; maximum-fare
+    journeys do not count toward capping.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100690-nir-tap-on-tap-off.md
+    confidence: confirmed
+- feature_key: revenue_inspection.emv_check
+  project: translink
+  device_type: HHD
+  variant_name: T1 HHD + Miura M020 online cEMV inspection (RID list, penalty fare)
+  note: Inspection is HHD-only and online-only with no offline capability. The M020 checks card scheme/ODA/expiry,
+    tokenises the card via ChipDNA online validation, and checks the token against the HHD's local RID
+    List (refreshed by full list on startup and every 15 minutes as delta); a token on the RID list fails,
+    otherwise it succeeds. The back office charges no penalty if a matching travel tap exists within the
+    Maximum Journey Time before the inspection; otherwise it charges a Standard Fare at End-of-Day settlement,
+    and an inspection tap itself cannot be annulled on the device — only a back-office refund can reverse
+    it.
+  citation:
+    source_kind: spec
+    source_ref: knowledge/translink/specs/FBD-100716-revenue-inspection-device.md
+    confidence: confirmed

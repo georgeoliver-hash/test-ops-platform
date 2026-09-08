@@ -1,7 +1,0 @@
-﻿adb : adb.exe: device '192.168.3.151:5555' not found
-At line:1 char:226
-+ ... rt-Sleep 8; adb -s 192.168.3.151:5555 shell 'uiautomator dump /data/l ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (adb.exe: device...5555' not found:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 

@@ -111,15 +111,12 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
         )
-        # Seed every real, unambiguous old/new pair actually found in system-test-ops —
-        # never invent others. Each is a single documented 1:1 pair (source: as cited).
-        # Deliberately NOT seeded here (found, but genuinely ambiguous or unconfirmed —
-        # see Platform/webapp/ISSUES.md's 2026-09-07 write-up for the full reasoning):
-        #   - TVM: 4+ old suites feed the new one (30284) — no single "the" old suite.
-        #   - HHD: same shape, 4 old suites (5446 primary + others) -> 30285.
-        #   - NJT FR: new suite 30295 is real and in heavy use (proposals/njt-fr-suite-
-        #     restructure/*.cases.yaml), but no old/source suite id is documented anywhere
-        #     in this repo — can't seed a pair with an unconfirmed half.
+        # Seed every real, documented old/new pair found in system-test-ops — never invent
+        # others. TVM and HHD confirmed by George directly on 2026-09-08 (both had multiple
+        # "old" suites feeding the new one; he named the one real Acceptance suite to treat
+        # as the reference for each). NJT FR: new suite 30295 is real and in heavy use
+        # (proposals/njt-fr-suite-restructure/*.cases.yaml), but George is getting the old
+        # suite from Gareth — deliberately left unseeded until confirmed, not guessed.
         # INSERT OR IGNORE so re-running init_db doesn't clobber George's own edits.
         seed_pairs = [
             # (project, device, old_suite, new_suite) -- cite: system-test-ops CLAUDE.md
@@ -128,6 +125,10 @@ def init_db() -> None:
             ("Translink", "ETM", "AA-ETM-Acceptance Test", "NEW ETM-Acceptance Suite"),
             # cite: proposals/gv-suite-restructure/old-suite-audit.md:7
             ("Translink", "GV", "AA - Gate Validator - Acceptance Test", "NEW GV Test Suite"),
+            # cite: proposals/tvm-suite-restructure/old-suite-audit.md:14 (id 5602) + George, 2026-09-08
+            ("Translink", "TVM", "AA-TVM-Acceptance Test-V03", "NEW TVM Test Suite"),
+            # cite: proposals/hhd-suite-restructure/old-suite-audit.md:19 (id 5446) + George, 2026-09-08
+            ("Translink", "HHD", "AA-HHD-Acceptance", "NEW HHD Test Suite"),
             # cite: proposals/pv-suite-restructure/build-complete.md:3, pv-mode-tagging.changelog.md:81
             ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite"),
         ]

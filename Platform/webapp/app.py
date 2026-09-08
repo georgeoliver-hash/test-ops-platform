@@ -49,6 +49,16 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
     if _live_sto.is_dir():
         os.environ["TESTOPS_CLAUDE_ROOT"] = str(_live_sto)
 
+# NOTE: model/devices.py, model/functions.py and model/flows.py all read the same
+# SIT_SCHEMA_ROOT env var, but resolve three DIFFERENT real subtrees under it (ConfigSets/
+# for devices, scattered Resources/Devices/*/Bindings/ for functions, ConfigSets/*/ScreenFlow
+# for flows) -- unlike TESTOPS_CLAUDE_ROOT, one shared live-`sit`-checkout default can't
+# correctly serve all three at once without replicating sync_sit_mirror.py's scatter/gather
+# logic. So this deliberately does NOT auto-point at a live `sit` checkout the way
+# TESTOPS_CLAUDE_ROOT does -- sit-mirror/ (re-synced via tools/sync_sit_mirror.py) stays the
+# real, working source for now. Point SIT_SCHEMA_ROOT at a live checkout's ConfigSets/
+# yourself only if you're using devices.py alone and know the other two won't be called.
+
 # system-test-ops' own .env, same sibling-checkout convention as TESTOPS_CLAUDE_ROOT above.
 # George already has real TESTRAIL_* values there (used by that repo's CLI) -- the console
 # offers to import them rather than asking him to retype credentials that already exist on
