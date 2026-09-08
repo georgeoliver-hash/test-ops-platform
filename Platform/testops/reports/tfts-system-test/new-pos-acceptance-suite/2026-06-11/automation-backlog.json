@@ -1,0 +1,5474 @@
+{
+  "generated_utc": "2026-06-11T12:01:22+00:00",
+  "source": "system-test-ops",
+  "project": {
+    "id": 42,
+    "name": "TFTS - System Test"
+  },
+  "suite": {
+    "id": 30253,
+    "name": "**NEW** POS-Acceptance Suite",
+    "device": "POS"
+  },
+  "contract": {
+    "traceability": "Reference `ref` (TestRail case id, e.g. C4099911) in each automated test so a result maps back to its case.",
+    "markers": "Mirror device + feature as pytest markers; add @pytest.mark.destructive where destructive is true (deselected by default).",
+    "cross_check": "cross_check lists the back-office systems the case asserts — the test must verify the event landed there (CloudFare / MERIT / SmartTrack).",
+    "note": "automatable/priority are system-test-ops judgements and a starting point; the automation engineer may override with rationale."
+  },
+  "counts": {
+    "total_cases": 498,
+    "automatable_full": 51,
+    "automatable_partial": 118,
+    "manual_only": 329,
+    "untagged": 0,
+    "destructive_in_backlog": 5
+  },
+  "cases": [
+    {
+      "ref": "C4099963",
+      "case_id": 4099963,
+      "title": "Administrator — Clear Card",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Card Management"
+      ],
+      "feature": "Card Management",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator clears a valid card",
+            "then": "**THEN** the card is cleared\n**AND** success is reported"
+          },
+          {
+            "when": "**WHEN** the administrator attempts to clear an invalid card",
+            "then": "**THEN** the operation is reported as unsuccessful with a card error"
+          }
+        ],
+        "expected": "A valid card clears successfully and an invalid card reports a Card Error."
+      }
+    },
+    {
+      "ref": "C4099964",
+      "case_id": 4099964,
+      "title": "Administrator — Card Dump",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Card Management"
+      ],
+      "feature": "Card Management",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator dumps a valid card",
+            "then": "**THEN** the card data is read\n**AND** success is reported"
+          },
+          {
+            "when": "**WHEN** the administrator attempts to dump an invalid card",
+            "then": "**THEN** the operation is reported as unsuccessful"
+          }
+        ],
+        "expected": "A valid card dump succeeds and an invalid card reports unsuccessful."
+      }
+    },
+    {
+      "ref": "C4099965",
+      "case_id": 4099965,
+      "title": "Administrator — Data Download",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Card Management"
+      ],
+      "feature": "Card Management",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator performs a Data Download",
+            "then": "**THEN** the data is downloaded\n**AND** a 'Data Download Successful' confirmation is shown"
+          }
+        ],
+        "expected": "Data Download completes and shows the success confirmation."
+      }
+    },
+    {
+      "ref": "C4099966",
+      "case_id": 4099966,
+      "title": "Administrator — Device Settings",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Device & Network"
+      ],
+      "feature": "Device & Network",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-22632",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator changes the Home Location, Boarding Location, Mounting Point and Tray Identifier",
+            "then": "**THEN** each setting is updated\n**AND** each setting is retained\n**AND** the default Boarding Stage and Mounting Point are correct"
+          }
+        ],
+        "expected": "Device settings change and persist, with correct default Boarding Stage and Mounting Point (regression: TIBU-22632)."
+      }
+    },
+    {
+      "ref": "C4099967",
+      "case_id": 4099967,
+      "title": "Administrator — Network Settings",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Device & Network"
+      ],
+      "feature": "Device & Network",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24740",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator opens Network Settings and changes a setting",
+            "then": "**THEN** the screen responds to the input\n**AND** the change is applied"
+          }
+        ],
+        "expected": "Administrator Network Settings respond to input and apply changes (regression: TIBU-24740)."
+      }
+    },
+    {
+      "ref": "C4099968",
+      "case_id": 4099968,
+      "title": "Administrator — Force Comms",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Device & Network"
+      ],
+      "feature": "Device & Network",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator initiates, refreshes and exits Force Comms",
+            "then": "**THEN** each action completes\n**AND** the administrator returns to the Administrator menu"
+          }
+        ],
+        "expected": "Force Comms can be initiated, refreshed and exited from the Administrator menu."
+      }
+    },
+    {
+      "ref": "C4099969",
+      "case_id": 4099969,
+      "title": "Administrator — Versions",
+      "section_path": [
+        "Functional",
+        "Administrator",
+        "Device & Network"
+      ],
+      "feature": "Device & Network",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an administrator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the administrator views and prints the serial, software and configuration versions",
+            "then": "**THEN** each version set is displayed\n**AND** each version set is printed"
+          }
+        ],
+        "expected": "Serial, software and configuration versions are viewable and printable from the Administrator menu."
+      }
+    },
+    {
+      "ref": "C4100439",
+      "case_id": 4100439,
+      "title": "Barcode — validate a ticket by barcode",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator accesses Barcode Reference via the Operator Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the operator scans a ticket barcode",
+            "then": "**THEN** the ticket validation screen shows the information for that barcode type\n**AND** any Notes on that barcode type are shown\n**AND** pressing any key (or a 3s timeout) returns to the FLU screen"
+          }
+        ],
+        "expected": "Scanning a ticket barcode shows the type-appropriate validation info (incl. Notes) for the operator's visual check, then returns to FLU."
+      }
+    },
+    {
+      "ref": "C4100440",
+      "case_id": 4100440,
+      "title": "Barcode — offline validations stored until reconnect",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the POS is offline (no CloudFare/Corethree connection)",
+        "steps": [
+          {
+            "when": "**WHEN** the operator validates barcodes",
+            "then": "**THEN** the offline validations are stored in a list"
+          },
+          {
+            "when": "**WHEN** connection to CloudFare/Corethree is re-established",
+            "then": "**THEN** the stored validations are synced"
+          }
+        ],
+        "expected": "Offline barcode validations are queued and synced on reconnect to CloudFare/Corethree."
+      }
+    },
+    {
+      "ref": "C4099996",
+      "case_id": 4099996,
+      "title": "Annulment — annul last transaction",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19352,TIBU-24878",
+      "gherkin": {
+        "given": "**GIVEN** the operator has issued a ticket this shift",
+        "steps": [
+          {
+            "when": "**WHEN** the operator annuls the last transaction",
+            "then": "**THEN** the transaction is annulled\n**AND** when there is nothing to annul the 'No ticket to Annul' option is greyed out"
+          }
+        ],
+        "expected": "The last transaction annuls, and the control is disabled when there is nothing to annul (regression: TIBU-19352, TIBU-24878)."
+      }
+    },
+    {
+      "ref": "C4099997",
+      "case_id": 4099997,
+      "title": "Annulment — newly issued smartcard",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24334,TIBU-23949,TIBU-26760",
+      "gherkin": {
+        "given": "**GIVEN** the operator has just issued a new smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the operator annuls that smartcard issue",
+            "then": "**THEN** the issue is annulled successfully\n**AND** the annulment is recorded\n**AND** its receipt prints"
+          }
+        ],
+        "expected": "A newly issued smartcard annuls with the correct outcome and printed ticket (regression: TIBU-24334, TIBU-23949, TIBU-26760)."
+      }
+    },
+    {
+      "ref": "C4099998",
+      "case_id": 4099998,
+      "title": "Annulment — multi-journey top-up",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-25072,TIBU-25100",
+      "gherkin": {
+        "given": "**GIVEN** the operator has topped up a multi-journey smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the operator annuls the top-up",
+            "then": "**THEN** the top-up is annulled\n**AND** the journeys on the card are corrected"
+          }
+        ],
+        "expected": "Multi-journey top-ups annul with accurate journey counts (regression: TIBU-25072, TIBU-25100)."
+      }
+    },
+    {
+      "ref": "C4099999",
+      "case_id": 4099999,
+      "title": "Annulment — receipt content",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-23932,TIBU-25888,TIBU-25889,TIBU-25402,TIBU-25404,TIBU-25800,TIBU-25116",
+      "gherkin": {
+        "given": "**GIVEN** the operator has annulled a transaction",
+        "steps": [
+          {
+            "when": "**WHEN** the annulment receipt prints",
+            "then": "**THEN** it shows the correct title, card type and journey/cancellation information\n**AND** the card type text is not cut short\n**AND** the Tray ID is present"
+          }
+        ],
+        "expected": "Annulment receipts show correct, complete information (title, card type, journeys, cancellations, Tray ID) (regression: TIBU-23932, TIBU-25888, TIBU-25889, TIBU-25402, TIBU-25404, TIBU-25800, TIBU-25116)."
+      }
+    },
+    {
+      "ref": "C4100000",
+      "case_id": 4100000,
+      "title": "Annulment — during paper jam",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19311,TIBU-20980",
+      "gherkin": {
+        "given": "**GIVEN** the printer is in a paper-jam state after a transaction",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses Annul Transaction on the Paper Jam screen",
+            "then": "**THEN** the annul control responds\n**AND** the transaction is annulled"
+          }
+        ],
+        "expected": "The Annul Transaction button works from the Paper Jam screen (regression: TIBU-19311, TIBU-20980)."
+      }
+    },
+    {
+      "ref": "C4100386",
+      "case_id": 4100386,
+      "title": "Annulment — Belfast Visitor Pass",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21443",
+      "gherkin": {
+        "given": "**GIVEN** the operator has just issued an Adult Belfast Visitors Pass",
+        "steps": [
+          {
+            "when": "**WHEN** the operator annuls the issue",
+            "then": "**THEN** the Belfast Visitors Pass issue is annulled successfully"
+          }
+        ],
+        "expected": "A new Adult Belfast Visitors Pass can be annulled (regression: TIBU-21443)."
+      }
+    },
+    {
+      "ref": "C4100387",
+      "case_id": 4100387,
+      "title": "Annulment — re-present different card",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-25073",
+      "gherkin": {
+        "given": "**GIVEN** the operator is annulling the last transaction",
+        "steps": [
+          {
+            "when": "**WHEN** a different card is presented during the annul flow",
+            "then": "**THEN** the mismatch is handled gracefully\n**AND** the device is not left stuck"
+          }
+        ],
+        "expected": "Presenting a different card during annul is handled gracefully with no stuck state (regression: TIBU-25073)."
+      }
+    },
+    {
+      "ref": "C4100505",
+      "case_id": 4100505,
+      "title": "Annulment — ticket issue",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Annulment"
+      ],
+      "feature": "Annulment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator has just issued a ticket this shift",
+        "steps": [
+          {
+            "when": "**WHEN** the operator annuls that ticket issue",
+            "then": "**THEN** the ticket issue is annulled\n**AND** the annulment is recorded\n**AND** an annulment receipt is printed"
+          }
+        ],
+        "expected": "A newly issued ticket annuls with the correct outcome and a printed annulment receipt."
+      }
+    },
+    {
+      "ref": "C4099989",
+      "case_id": 4099989,
+      "title": "Basket — add & review",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21777,TIBU-24364",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on and has built one or more fares",
+        "steps": [
+          {
+            "when": "**WHEN** the operator adds them to the basket and opens the basket",
+            "then": "**THEN** the basket lists the items with the correct total\n**AND** the expected basket buttons are present"
+          }
+        ],
+        "expected": "Items are added and the basket shows the items, correct total and controls (regression: TIBU-21777, TIBU-24364)."
+      }
+    },
+    {
+      "ref": "C4099990",
+      "case_id": 4099990,
+      "title": "Basket — clear basket",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24368",
+      "gherkin": {
+        "given": "**GIVEN** the basket contains one or more items",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses Clear Basket",
+            "then": "**THEN** the basket is emptied"
+          }
+        ],
+        "expected": "Clear Basket removes all items (regression: TIBU-24368)."
+      }
+    },
+    {
+      "ref": "C4099991",
+      "case_id": 4099991,
+      "title": "Basket — checkout total",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24098,TIBU-24860",
+      "gherkin": {
+        "given": "**GIVEN** the basket contains multiple items",
+        "steps": [
+          {
+            "when": "**WHEN** the operator proceeds to checkout",
+            "then": "**THEN** the checkout total equals the sum of the items\n**AND** 'add more to basket' is unavailable when the basket cannot accept more"
+          }
+        ],
+        "expected": "Checkout total is correct and 'add more' is disabled when appropriate (regression: TIBU-24098, TIBU-24860)."
+      }
+    },
+    {
+      "ref": "C4100432",
+      "case_id": 4100432,
+      "title": "Basket — maximum of 9 tickets",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator is adding tickets to the basket",
+        "steps": [
+          {
+            "when": "**WHEN** the basket reaches 9 tickets",
+            "then": "**THEN** the Add More button becomes unavailable"
+          },
+          {
+            "when": "**WHEN** the operator deletes a ticket from the basket",
+            "then": "**THEN** the Add More button becomes available again"
+          }
+        ],
+        "expected": "The basket caps at 9 tickets; Add More disables at the cap and re-enables after a delete."
+      }
+    },
+    {
+      "ref": "C4100433",
+      "case_id": 4100433,
+      "title": "Basket — entitlement passes cannot be basketed",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator has built a fare using a smartcard entitlement pass",
+        "steps": [
+          {
+            "when": "**WHEN** the operator attempts to add it to the basket",
+            "then": "**THEN** the fare cannot be basketed\n**AND** it must be validated and paid as an individual transaction"
+          }
+        ],
+        "expected": "Entitlement-pass fares cannot be added to a basket; they require per-transaction validation."
+      }
+    },
+    {
+      "ref": "C4100434",
+      "case_id": 4100434,
+      "title": "Basket — bus basket is single-route",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Basket"
+      ],
+      "feature": "Basket",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is building a bus basket on a route",
+        "steps": [
+          {
+            "when": "**WHEN** the operator tries to add a ticket from a different route",
+            "then": "**THEN** it is not allowed"
+          },
+          {
+            "when": "**WHEN** the operator adds tickets with two different boarding stages on the same route",
+            "then": "**THEN** both are accepted"
+          }
+        ],
+        "expected": "A bus basket is limited to one route; multiple boarding stages on that route are allowed."
+      }
+    },
+    {
+      "ref": "C4099994",
+      "case_id": 4099994,
+      "title": "Card Payment — pay by card",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Card Payment"
+      ],
+      "feature": "Card Payment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24777,TIBU-24834",
+      "gherkin": {
+        "given": "**GIVEN** a payment card device (PCD) is attached and the POS is in NIR or Ulsterbus mode\n**AND** the basket/fare is ready for payment",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects Bank Card and the customer pays by contactless, chip & PIN, or swipe",
+            "then": "**THEN** the payment terminal authorises the transaction\n**AND** the ticket is printed as soon as the transaction succeeds\n**AND** the customer is offered an optional payment receipt\n**AND** the POS returns to the Bus/Rail FLU screen"
+          }
+        ],
+        "expected": "Bank Card payment authorises and prints the ticket (receipt optional), via contactless/chip&PIN/swipe. NIR + Ulsterbus only; the Bank Card option is hidden if no PCD is attached (regression: TIBU-24777, TIBU-24834)."
+      }
+    },
+    {
+      "ref": "C4099995",
+      "case_id": 4099995,
+      "title": "Card Payment — back from payment",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Card Payment"
+      ],
+      "feature": "Card Payment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24876",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the payment screen for a single ticket",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses Back",
+            "then": "**THEN** the operator is returned to the basket/fare with its state intact"
+          }
+        ],
+        "expected": "Back from the payment screen returns cleanly with state intact (regression: TIBU-24876)."
+      }
+    },
+    {
+      "ref": "C4100424",
+      "case_id": 4100424,
+      "title": "Card Payment — declined, cancelled or error",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Card Payment"
+      ],
+      "feature": "Card Payment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the customer is paying by bank card",
+        "steps": [
+          {
+            "when": "**WHEN** the card is declined",
+            "then": "**THEN** a declined message is shown\n**AND** a declined receipt is printed"
+          },
+          {
+            "when": "**WHEN** the customer cancels on the PIN pad before entering the PIN",
+            "then": "**THEN** the transaction is cancelled with no cancelled-payment receipt"
+          },
+          {
+            "when": "**WHEN** the PIN is entered incorrectly too many times, or the amount is too big for a card, or the signature does not match",
+            "then": "**THEN** the matching error message (driven by the M020/PCD) is shown\n**AND** the POS returns to the payment screen"
+          }
+        ],
+        "expected": "Each card error path shows the correct message: declined (with receipt), cancelled-before-PIN (no receipt), too many PIN attempts, value too big, signature mismatch — then returns to payment."
+      }
+    },
+    {
+      "ref": "C4099992",
+      "case_id": 4099992,
+      "title": "Cash — pay a basket",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Cash Payment"
+      ],
+      "feature": "Cash Payment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19336,TIBU-7379",
+      "gherkin": {
+        "given": "**GIVEN** the basket has one or more items",
+        "steps": [
+          {
+            "when": "**WHEN** the operator takes cash payment and completes the transaction",
+            "then": "**THEN** the transaction completes\n**AND** the basket is issued"
+          },
+          {
+            "when": "**WHEN** the operator builds and cash-pays a further basket on a different route",
+            "then": "**THEN** that transaction also completes without the device freezing"
+          }
+        ],
+        "expected": "Cash payment completes for a basket and subsequent baskets/routes without freezing (regression: TIBU-19336, TIBU-7379)."
+      }
+    },
+    {
+      "ref": "C4099993",
+      "case_id": 4099993,
+      "title": "Cash — EOS total net",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Cash Payment"
+      ],
+      "feature": "Cash Payment",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-29484,TIBU-30634",
+      "gherkin": {
+        "given": "**GIVEN** an operator has taken cash sales and at least one annulment during the shift",
+        "steps": [
+          {
+            "when": "**WHEN** the End of Shift cash total is produced",
+            "then": "**THEN** the total is the net amount, accounting for annulments"
+          }
+        ],
+        "expected": "The EOS cash total is net of annulments and the annulment total is correct (regression: TIBU-29484, TIBU-30634)."
+      }
+    },
+    {
+      "ref": "C4100001",
+      "case_id": 4100001,
+      "title": "Receipts — printed per transaction",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Receipts & Printing"
+      ],
+      "feature": "Receipts & Printing",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21135,TIBU-21176,TIBU-23016,TIBU-21266",
+      "gherkin": {
+        "given": "**GIVEN** an operator completes an issuing transaction (ticket, card issue or top-up)",
+        "steps": [
+          {
+            "when": "**WHEN** the transaction completes",
+            "then": "**THEN** a receipt is printed"
+          }
+        ],
+        "expected": "Every issuing transaction prints its receipt (regression: TIBU-21135, TIBU-21176, TIBU-23016, TIBU-21266)."
+      }
+    },
+    {
+      "ref": "C4100002",
+      "case_id": 4100002,
+      "title": "Receipts — no duplicates",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Receipts & Printing"
+      ],
+      "feature": "Receipts & Printing",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-22548,TIBU-22557",
+      "gherkin": {
+        "given": "**GIVEN** an operator completes a transaction that prints a receipt",
+        "steps": [
+          {
+            "when": "**WHEN** the receipt prints",
+            "then": "**THEN** exactly one receipt is produced"
+          }
+        ],
+        "expected": "Transactions print a single receipt, never duplicates (regression: TIBU-22548, TIBU-22557)."
+      }
+    },
+    {
+      "ref": "C4100003",
+      "case_id": 4100003,
+      "title": "Receipts — template & fonts",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Receipts & Printing"
+      ],
+      "feature": "Receipts & Printing",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-23835,TIBU-24890,TIBU-23096,TIBU-16109,TIBU-24848",
+      "gherkin": {
+        "given": "**GIVEN** an operator prints a ticket/receipt",
+        "steps": [
+          {
+            "when": "**WHEN** the printout is produced",
+            "then": "**THEN** it uses the correct template, fonts and current Translink logo\n**AND** rail ticket templates follow the revised naming\n**AND** a missing template is handled gracefully with no crash"
+          }
+        ],
+        "expected": "Printouts use the right template/fonts/logo/naming, and a missing template is handled gracefully (regression: TIBU-23835, TIBU-24890, TIBU-23096, TIBU-16109, TIBU-24848)."
+      }
+    },
+    {
+      "ref": "C4100004",
+      "case_id": 4100004,
+      "title": "Receipts — mini statement",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Receipts & Printing"
+      ],
+      "feature": "Receipts & Printing",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-20759,TIBU-21581,TIBU-23989,TIBU-21178,TIBU-21463",
+      "gherkin": {
+        "given": "**GIVEN** the operator prints a mini statement for a smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the mini statement prints",
+            "then": "**THEN** it shows the correct information including the actual expiry date\n**AND** the printout is long enough to contain all content\n**AND** an expired multi-journey card still prints its receipt"
+          }
+        ],
+        "expected": "Mini statements print correct content with a real expiry, adequate length, incl. expired MJ cards (regression: TIBU-20759, TIBU-21581, TIBU-23989, TIBU-21178, TIBU-21463)."
+      }
+    },
+    {
+      "ref": "C4100005",
+      "case_id": 4100005,
+      "title": "Receipts — day summary",
+      "section_path": [
+        "Functional",
+        "Basket & Payment",
+        "Receipts & Printing"
+      ],
+      "feature": "Receipts & Printing",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24800",
+      "gherkin": {
+        "given": "**GIVEN** card transactions have occurred during the day",
+        "steps": [
+          {
+            "when": "**WHEN** the operator prints the day summary",
+            "then": "**THEN** the printout includes the card transaction details"
+          }
+        ],
+        "expected": "The day summary print includes card transaction details (regression: TIBU-24800)."
+      }
+    },
+    {
+      "ref": "C4100033",
+      "case_id": 4100033,
+      "title": "Customer Display — passenger display",
+      "section_path": [
+        "Functional",
+        "Customer Displays"
+      ],
+      "feature": "Customer Displays",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24845",
+      "gherkin": {
+        "given": "**GIVEN** an operator is building and paying for a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator adds items and takes payment",
+            "then": "**THEN** the passenger display shows the fare and running total\n**AND** the passenger display updates as the transaction progresses"
+          }
+        ],
+        "expected": "The passenger display works, showing the fare/total and updating through the transaction (regression: TIBU-24845)."
+      }
+    },
+    {
+      "ref": "C4100499",
+      "case_id": 4100499,
+      "title": "Customer Display — Rail passenger display",
+      "section_path": [
+        "Functional",
+        "Customer Displays"
+      ],
+      "feature": "Customer Displays",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Rail (NIR) mode and building a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator adds items and takes payment",
+            "then": "**THEN** the passenger display shows the rail fare and running total\n**AND** the passenger display updates as the transaction progresses"
+          }
+        ],
+        "expected": "In Rail mode the passenger display shows the fare/total and updates through the transaction."
+      }
+    },
+    {
+      "ref": "C4100500",
+      "case_id": 4100500,
+      "title": "Customer Display — Ulsterbus passenger display",
+      "section_path": [
+        "Functional",
+        "Customer Displays"
+      ],
+      "feature": "Customer Displays",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode and building a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator adds items and takes payment",
+            "then": "**THEN** the passenger display shows the Ulsterbus fare and running total\n**AND** the passenger display updates as the transaction progresses"
+          }
+        ],
+        "expected": "In Ulsterbus mode the passenger display shows the fare/total and updates through the transaction."
+      }
+    },
+    {
+      "ref": "C4099987",
+      "case_id": 4099987,
+      "title": "FLU — passenger type",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Common"
+      ],
+      "feature": "Common",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator is building a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects a passenger type",
+            "then": "**THEN** the passenger type is applied\n**AND** the price updates"
+          }
+        ],
+        "expected": "Selecting a passenger type applies it and updates the price. Each passenger type is a data variation."
+      }
+    },
+    {
+      "ref": "C4099988",
+      "case_id": 4099988,
+      "title": "FLU — cash limit",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Common"
+      ],
+      "feature": "Common",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator is building a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the basket total exceeds the configured cash limit",
+            "then": "**THEN** the Cash Limit error is shown"
+          }
+        ],
+        "expected": "Exceeding the configured cash limit shows the Cash Limit error and blocks the over-limit cash transaction."
+      }
+    },
+    {
+      "ref": "C4100024",
+      "case_id": 4100024,
+      "title": "Issue Card — issue from blank",
+      "section_path": [
+        "Functional",
+        "Issue Card",
+        "Issue from Blank"
+      ],
+      "feature": "Issue from Blank",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-26845,TIBU-21266,TIBU-26760,TIBU-21208,TIBU-24715,TIBU-25890",
+      "gherkin": {
+        "given": "**Given** an operator is signed on and a blank smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects the product, takes payment and issues it to the card",
+            "then": "**THEN** the product is written to the card at the correct price\n**AND** a receipt is printed"
+          }
+        ],
+        "expected": "A product issues onto a blank card with a receipt. Run across products — Metro Multi-Journey, Multi-Journey, DayLink, iLink, Metro Travelcard, Belfast Visitor Pass, Ulsterbus Multi-Journey, Town Service Travelcard."
+      }
+    },
+    {
+      "ref": "C4100031",
+      "case_id": 4100031,
+      "title": "Issue Card — recognised by other devices",
+      "section_path": [
+        "Functional",
+        "Issue Card",
+        "Issue from Blank"
+      ],
+      "feature": "Issue from Blank",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21446,TIBU-22603,TIBU-23996,TIBU-26721,TIBU-26722",
+      "gherkin": {
+        "given": "**GIVEN** the operator has created a new card from blank on the POS",
+        "steps": [
+          {
+            "when": "**WHEN** the card is presented to another device (ETM/TVM) and back to the POS for top-up",
+            "then": "**THEN** the card is recognised as valid\n**AND** it can be topped up"
+          }
+        ],
+        "expected": "Cards created on the POS are recognised by other devices and can be topped up (regression: TIBU-21446, TIBU-22603, TIBU-23996, TIBU-26721, TIBU-26722)."
+      }
+    },
+    {
+      "ref": "C4100390",
+      "case_id": 4100390,
+      "title": "Issue Card — blank card options",
+      "section_path": [
+        "Functional",
+        "Issue Card",
+        "Issue from Blank"
+      ],
+      "feature": "Issue from Blank",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-23963",
+      "gherkin": {
+        "given": "**GIVEN** the operator places an Adult BVP or iLink Zone 1 'blank' card on the POS",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects the Adult Belfast Visitors option",
+            "then": "**THEN** the correct Belfast Visitors options are offered\n**AND** the iLink Zone card options are not shown"
+          }
+        ],
+        "expected": "Selecting Adult Belfast Visitors on a blank BVP/iLink Zone 1 card shows the correct options, not the iLink Zone options (regression: TIBU-23963)."
+      }
+    },
+    {
+      "ref": "C4100430",
+      "case_id": 4100430,
+      "title": "Numerical Input — group ticket",
+      "section_path": [
+        "Functional",
+        "Numerical Input"
+      ],
+      "feature": "Numerical Input",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator has selected a group-eligible product with boarding/alighting set",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters a passenger count (or uses + / -) up to 100 and confirms",
+            "then": "**THEN** a single group ticket is printed\n**AND** one back-office transaction is recorded with a sub-element per passenger"
+          },
+          {
+            "when": "**WHEN** the operator selects a non-group-eligible product or an invalid count",
+            "then": "**THEN** an error banner is shown"
+          }
+        ],
+        "expected": "A group ticket issues for up to 100 passengers as one printed ticket and one multi-passenger transaction; non-eligible products/counts are rejected. Group eligibility is configured in Cloudfare."
+      }
+    },
+    {
+      "ref": "C4100431",
+      "case_id": 4100431,
+      "title": "Numerical Input — calculate change",
+      "section_path": [
+        "Functional",
+        "Numerical Input"
+      ],
+      "feature": "Numerical Input",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator is taking a cash payment",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters the amount tendered and selects Calculate Change",
+            "then": "**THEN** the change is calculated\n**AND** the change is shown"
+          },
+          {
+            "when": "**WHEN** too many digits are entered, or the amount is less than the ticket value, or the previous transaction had no value",
+            "then": "**THEN** the Calculate Change option is unavailable"
+          }
+        ],
+        "expected": "Change is calculated for a valid tendered amount; the option is hidden for too-many-digits / under-value / no-value cases."
+      }
+    },
+    {
+      "ref": "C4099936",
+      "case_id": 4099936,
+      "title": "Operator Options — correct options listed",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Options"
+      ],
+      "feature": "Options",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-22640",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator opens Operator Options",
+            "then": "**THEN** the expected operator options are listed\n**AND** no 'Report Faulty Payment Device' option is shown"
+          }
+        ],
+        "expected": "Operator Options shows the correct set of options, with no spurious 'Report Faulty Payment Device' entry (regression: TIBU-22640)."
+      }
+    },
+    {
+      "ref": "C4099945",
+      "case_id": 4099945,
+      "title": "Totals — view & print",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Totals"
+      ],
+      "feature": "Totals",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-20914",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects Totals",
+            "then": "**THEN** the operator's totals are displayed"
+          },
+          {
+            "when": "**WHEN** the operator prints the totals",
+            "then": "**THEN** the totals print without a fatal error"
+          }
+        ],
+        "expected": "The operator's totals are displayed and printed with no fatal error (regression: TIBU-20914)."
+      }
+    },
+    {
+      "ref": "C4099935",
+      "case_id": 4099935,
+      "title": "Sign On — audit events",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Audit"
+      ],
+      "feature": "Audit",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a valid operator",
+        "steps": [
+          {
+            "when": "**WHEN** the operator signs on, then signs off, and separately a forced sign-off occurs",
+            "then": "**THEN** a Sign On event is recorded to CloudFare\n**AND** a Sign Off event is recorded to CloudFare\n**AND** a Forced Sign Off event is recorded to CloudFare"
+          }
+        ],
+        "expected": "Each of sign-on, sign-off and forced sign-off produces its corresponding CloudFare audit event for the operator."
+      }
+    },
+    {
+      "ref": "C4099924",
+      "case_id": 4099924,
+      "title": "Sign On — Communication Locked",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Communication Locked"
+      ],
+      "feature": "Communication Locked",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-28530,TIBU-21278",
+      "gherkin": {
+        "given": "**GIVEN** the POS has lost communication with CloudFare for longer than the configured period",
+        "steps": [
+          {
+            "when": "**WHEN** the operator attempts to sign on",
+            "then": "**THEN** the \"Communication Locked\" screen is shown\n**AND** it states the device was automatically locked due to lost communication\n**AND** it instructs the operator to \"Notify a Supervisor or Technician\""
+          }
+        ],
+        "expected": "Once comms are lost beyond the configured period the device enters Communication Locked and sign-on is blocked (regression: TIBU-28530, TIBU-21278)."
+      }
+    },
+    {
+      "ref": "C4099921",
+      "case_id": 4099921,
+      "title": "Sign On — incorrect credentials",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Failures & Lockout"
+      ],
+      "feature": "Failures & Lockout",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "REQ-0050,REQ-0056,REQ-0276,REQ-2821,TIBU-22671,TIBU-24379",
+      "gherkin": {
+        "given": "**GIVEN** the POS is showing the Sign On screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters an unrecognised ID or PIN and presses Enter",
+            "then": "**THEN** the \"Sign On Failed\" screen is shown with \"The ID or PIN is incorrect\"\n**AND** the attempt counter is shown (e.g. \"1 of 3\")\n**AND** the operator is returned to the Sign On screen to retry"
+          }
+        ],
+        "expected": "Sign-on is rejected with the 'Sign On Failed' message and an attempt counter, the operator can retry, and the ID must be entered before the PIN (regression: TIBU-22671, TIBU-24379)."
+      }
+    },
+    {
+      "ref": "C4099922",
+      "case_id": 4099922,
+      "title": "Sign On — device locks after the configured failed attempts",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Failures & Lockout"
+      ],
+      "feature": "Failures & Lockout",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": true,
+      "refs": "REQ-0050,REQ-0099,REQ-2821,TIBU-22672,TIBU-22003",
+      "gherkin": {
+        "given": "**GIVEN** the configured failed-attempt lockout threshold (set via TMS)",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters incorrect credentials up to the configured number of times",
+            "then": "**THEN** the device locks after the configured number of attempts\n**AND** a Device Locked screen is shown"
+          }
+        ],
+        "expected": "After the TMS-configured number of failed sign-on attempts the device locks and shows the Device Locked screen (regression: TIBU-22672, TIBU-22003)."
+      }
+    },
+    {
+      "ref": "C4099923",
+      "case_id": 4099923,
+      "title": "Sign On — unlock with Supervisor card",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Failures & Lockout"
+      ],
+      "feature": "Failures & Lockout",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "REQ-0050,REQ-1137,REQ-2821,TIBU-21384",
+      "gherkin": {
+        "given": "**GIVEN** the POS is displaying the Device Locked screen\n**AND** the POS is communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** a supervisor presents a valid Supervisor card",
+            "then": "**THEN** the device is unlocked\n**AND** the POS returns to the Sign On screen"
+          }
+        ],
+        "expected": "Presenting a valid Supervisor card unlocks the device and returns it to the Sign On screen (regression: TIBU-21384)."
+      }
+    },
+    {
+      "ref": "C4099912",
+      "case_id": 4099912,
+      "title": "Sign On — screen, field entry and the 'C' key",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Idle & Screen"
+      ],
+      "feature": "Idle & Screen",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "REQ-0050",
+      "gherkin": {
+        "given": "**Given** the ETM is idle",
+        "steps": [
+          {
+            "when": "**WHEN** the Sign On screen is displayed",
+            "then": "**THEN** the ID and PIN fields are shown"
+          },
+          {
+            "when": "**WHEN** the operator enters digits into a field",
+            "then": "**THEN** the field updates\n**AND** the 'C' key clears one character at a time"
+          },
+          {
+            "when": "**WHEN** no entry is made",
+            "then": "**THEN** the ETM remains on or returns to the idle Sign On screen"
+          }
+        ],
+        "expected": "The Sign On screen shows ID and PIN fields; field entry updates and 'C' clears a character; idle returns to the Sign On screen."
+      }
+    },
+    {
+      "ref": "C4099929",
+      "case_id": 4099929,
+      "title": "Sign Off — by role",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Sign Off"
+      ],
+      "feature": "Sign Off",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21440,TIBU-26846",
+      "gherkin": {
+        "given": "**Given** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator signs off",
+            "then": "**THEN** the ETM returns to the idle screen\n**AND** the sign-off is audited"
+          }
+        ],
+        "expected": "Sign off returns the ETM to idle and audits the event. Run for each role — Operator, Supervisor, Technician, Administrator."
+      }
+    },
+    {
+      "ref": "C4099933",
+      "case_id": 4099933,
+      "title": "Sign Off — automatic (inactivity)",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Sign Off"
+      ],
+      "feature": "Sign Off",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the configured inactivity period elapses with no interaction",
+            "then": "**THEN** the operator is automatically signed off\n**AND** the POS returns to the Idle screen"
+          }
+        ],
+        "expected": "After the configured inactivity period the operator is automatically signed off and the POS returns to Idle."
+      }
+    },
+    {
+      "ref": "C4099934",
+      "case_id": 4099934,
+      "title": "Sign Off — forced by power cycle",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Sign Off"
+      ],
+      "feature": "Sign Off",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24790",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the POS is power-cycled during the shift",
+            "then": "**THEN** on restart the POS returns to the Idle screen\n**AND** exactly one Forced Sign-off event is recorded to CloudFare"
+          }
+        ],
+        "expected": "After a power cycle the POS restarts to Idle and records a single Forced Sign-off event (regression: TIBU-24790)."
+      }
+    },
+    {
+      "ref": "C4099913",
+      "case_id": 4099913,
+      "title": "Sign On — by role (manual and smartcard)",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Sign On"
+      ],
+      "feature": "Sign On",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "REQ-0050,REQ-0056,REQ-0276,REQ-2821,REQ-3013",
+      "gherkin": {
+        "given": "**Given** the ETM is at the idle Sign On screen and communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters a valid ID and PIN and confirms",
+            "then": "**THEN** the operator is authenticated and reaches the menu for their role"
+          },
+          {
+            "when": "**WHEN** the operator presents a valid staff smartcard instead",
+            "then": "**THEN** the ID is pre-populated and, after a valid PIN, the operator reaches their role menu"
+          }
+        ],
+        "expected": "Sign on succeeds by manual entry and by smartcard. Run for each role — Operator, Supervisor, Technician, Administrator."
+      }
+    },
+    {
+      "ref": "C4099925",
+      "case_id": 4099925,
+      "title": "Sign On — Message and Word & Colour of the Day",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Sign-on Messages"
+      ],
+      "feature": "Sign-on Messages",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an operator is signing on",
+        "steps": [
+          {
+            "when": "**WHEN** the Message of the Day is available",
+            "then": "**THEN** it is presented for the operator to confirm"
+          },
+          {
+            "when": "**WHEN** the Message of the Day cannot be retrieved",
+            "then": "**THEN** the Message of the Day Unavailable state is shown and sign-on continues"
+          },
+          {
+            "when": "**WHEN** the Word & Colour of the Day is available",
+            "then": "**THEN** it is presented for the operator to confirm"
+          },
+          {
+            "when": "**WHEN** the Word & Colour of the Day cannot be retrieved",
+            "then": "**THEN** the Word & Colour Unavailable state is shown and sign-on continues"
+          }
+        ],
+        "expected": "Message of the Day and Word & Colour of the Day are each shown during sign-on, with an Unavailable fallback when they cannot be retrieved."
+      }
+    },
+    {
+      "ref": "C4100413",
+      "case_id": 4100413,
+      "title": "Smartcard — Half Fare",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24795",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a Half Fare smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the half-fare entitlement is applied to the fare"
+          }
+        ],
+        "expected": "A Half Fare smartcard is recognised and applies the half-fare price (regression: TIBU-24795; payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100414",
+      "case_id": 4100414,
+      "title": "Smartcard — Youth",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a Youth smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the youth entitlement is applied"
+          }
+        ],
+        "expected": "A Youth smartcard applies the youth entitlement."
+      }
+    },
+    {
+      "ref": "C4100415",
+      "case_id": 4100415,
+      "title": "Smartcard — yLink",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a yLink smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the yLink entitlement is applied"
+          }
+        ],
+        "expected": "A yLink smartcard applies its entitlement."
+      }
+    },
+    {
+      "ref": "C4100416",
+      "case_id": 4100416,
+      "title": "Smartcard — 24+",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a 24+ smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the 24+ entitlement is applied"
+          }
+        ],
+        "expected": "A 24+ smartcard applies its entitlement."
+      }
+    },
+    {
+      "ref": "C4100417",
+      "case_id": 4100417,
+      "title": "Smartcard — Concession",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a Concession smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the concession entitlement is applied"
+          }
+        ],
+        "expected": "A Concession smartcard applies the concession entitlement."
+      }
+    },
+    {
+      "ref": "C4100418",
+      "case_id": 4100418,
+      "title": "Smartcard — Dependents Pass",
+      "section_path": [
+        "Functional",
+        "Smartcards"
+      ],
+      "feature": "Smartcards",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a Dependents Pass smartcard",
+            "then": "**THEN** the card is recognised\n**AND** the dependents-pass entitlement is applied"
+          }
+        ],
+        "expected": "A Dependents Pass smartcard applies its entitlement."
+      }
+    },
+    {
+      "ref": "C4099950",
+      "case_id": 4099950,
+      "title": "Supervisor — Print & Zero",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Reports & Information"
+      ],
+      "feature": "Reports & Information",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24786",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor selects Print and Zero (Current or Accumulated)",
+            "then": "**THEN** a confirmation prompt asks whether to zero the totals after printing"
+          },
+          {
+            "when": "**WHEN** the supervisor confirms Yes",
+            "then": "**THEN** the report is printed\n**AND** the totals are reset to zero\n**AND** the printout includes operator no., POS no., sign-on/off times, tickets sold, revenue, misc revenue, smartcard validations, annulled tickets, first/last ticket numbers and per-ticket detail"
+          }
+        ],
+        "expected": "Print & Zero confirms before zeroing, prints the full report (operator/POS/times/tickets/revenue/validations/annulments/ticket detail) and resets the totals (regression: TIBU-24786)."
+      }
+    },
+    {
+      "ref": "C4099951",
+      "case_id": 4099951,
+      "title": "Supervisor — Versions",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Versions & Comms"
+      ],
+      "feature": "Versions & Comms",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-15782",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor opens Versions and views the serial, software and configuration versions",
+            "then": "**THEN** each version set is displayed with the real version numbers\n**AND** each version set can be printed"
+          }
+        ],
+        "expected": "Serial, software and configuration versions show the real numbers and can be printed (regression: TIBU-15782)."
+      }
+    },
+    {
+      "ref": "C4099952",
+      "case_id": 4099952,
+      "title": "Supervisor — Force Comms",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Versions & Comms"
+      ],
+      "feature": "Versions & Comms",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor initiates a POS-initiated Force Comms",
+            "then": "**THEN** the communication is performed"
+          },
+          {
+            "when": "**WHEN** the supervisor refreshes and then exits Force Comms",
+            "then": "**THEN** the supervisor returns to the Supervisor menu"
+          }
+        ],
+        "expected": "Force Comms can be initiated, refreshed and exited cleanly from the Supervisor menu."
+      }
+    },
+    {
+      "ref": "C4099953",
+      "case_id": 4099953,
+      "title": "Technician — Device Settings",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Device Settings"
+      ],
+      "feature": "Device Settings",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-16044,TIBU-16228,TIBU-20967,TIBU-24866",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician changes the Home Location, Boarding Location, Mounting Point and Tray Identifier",
+            "then": "**THEN** each setting is updated\n**AND** each setting is retained\n**AND** the Tray Identifier is stored correctly (prefixed \"AT\")"
+          }
+        ],
+        "expected": "All device settings can be changed and persist, with the Tray ID prefixed 'AT' (regression: TIBU-16044, TIBU-16228, TIBU-20967, TIBU-24866)."
+      }
+    },
+    {
+      "ref": "C4100507",
+      "case_id": 4100507,
+      "title": "Technician — set Default Boarding Stage",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Device Settings"
+      ],
+      "feature": "Device Settings",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a Technician is signed on in Device Settings",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician sets the Default Boarding Stage",
+            "then": "**THEN** the Default Boarding Stage is saved\n**AND** subsequent bus fare look-ups use the new default boarding stage"
+          }
+        ],
+        "expected": "The Default Boarding Stage can be set in Technician and is applied to later bus fare look-ups."
+      }
+    },
+    {
+      "ref": "C4100373",
+      "case_id": 4100373,
+      "title": "Display — clock shows correct 24-hour time",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Display"
+      ],
+      "feature": "Display",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19560,TIBU-21411",
+      "gherkin": {
+        "given": "**GIVEN** the device is powered on and time-synced",
+        "steps": [
+          {
+            "when": "**WHEN** the operator views the on-screen clock",
+            "then": "**THEN** the time is shown in 24-hour format\n**AND** the time is correct for the local time zone (not an hour out)"
+          }
+        ],
+        "expected": "The clock displays the correct local time in 24-hour format, not 12-hour and not an hour out (regression: TIBU-19560, TIBU-21411)."
+      }
+    },
+    {
+      "ref": "C4099955",
+      "case_id": 4099955,
+      "title": "Technician — Force Comms",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21096",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician initiates, refreshes and exits Force Comms",
+            "then": "**THEN** each action completes successfully\n**AND** no fatal error occurs"
+          }
+        ],
+        "expected": "Technician Force Comms completes its actions with no fatal error (regression: TIBU-21096)."
+      }
+    },
+    {
+      "ref": "C4099957",
+      "case_id": 4099957,
+      "title": "Technician — Network Settings",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24740,TIBU-26905",
+      "gherkin": {
+        "given": "**GIVEN** a Technician is signed on and on the Network Settings page",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician changes the Ethernet setting",
+            "then": "**THEN** the Ethernet setting is updated\n**AND** the change is applied and retained after the page is reopened"
+          }
+        ],
+        "expected": "Network settings, including the Ethernet setting, can be changed and the change is applied and retained (regression: TIBU-24740, TIBU-26905)."
+      }
+    },
+    {
+      "ref": "C4099958",
+      "case_id": 4099958,
+      "title": "Technician — Versions",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-15782",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician views and prints the serial, software and configuration versions",
+            "then": "**THEN** each version set is displayed with real version numbers\n**AND** each can be printed"
+          }
+        ],
+        "expected": "Serial, software and configuration versions show real numbers and can be printed (regression: TIBU-15782)."
+      }
+    },
+    {
+      "ref": "C4099959",
+      "case_id": 4099959,
+      "title": "Technician — Status panels",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician opens the Device Status, Other Devices, Card Reader and Paper Status panels",
+            "then": "**THEN** each panel displays the relevant status information"
+          }
+        ],
+        "expected": "All Technician status panels display correctly."
+      }
+    },
+    {
+      "ref": "C4099960",
+      "case_id": 4099960,
+      "title": "Technician — card reader test",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24792",
+      "gherkin": {
+        "given": "**GIVEN** a technician is on the card-reader test",
+        "steps": [
+          {
+            "when": "**WHEN** the technician presents a smartcard to the test screen",
+            "then": "**THEN** the test screen reports the card-read result correctly"
+          }
+        ],
+        "expected": "The Present Smartcard test screen correctly reports the result (regression: TIBU-24792)."
+      }
+    },
+    {
+      "ref": "C4099962",
+      "case_id": 4099962,
+      "title": "Technician — change operating mode",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24868",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician changes the operating mode from the Technician menu",
+            "then": "**THEN** the device switches to the selected operating mode"
+          }
+        ],
+        "expected": "The operating mode can be changed from the Technician menu (regression: TIBU-24868)."
+      }
+    },
+    {
+      "ref": "C4100384",
+      "case_id": 4100384,
+      "title": "Technician — Paper Status back key",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-23928",
+      "gherkin": {
+        "given": "**GIVEN** a technician is on the Paper Status screen",
+        "steps": [
+          {
+            "when": "**WHEN** the technician presses Back",
+            "then": "**THEN** the technician returns to the previous screen\n**AND** no fatal error occurs"
+          }
+        ],
+        "expected": "Back from Paper Status returns cleanly with no fatal error (regression: TIBU-23928)."
+      }
+    },
+    {
+      "ref": "C4100508",
+      "case_id": 4100508,
+      "title": "TMS — application update",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "TMS Updates"
+      ],
+      "feature": "TMS Updates",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an application update is published to the device via TMS",
+        "steps": [
+          {
+            "when": "**WHEN** the device downloads and applies the update",
+            "then": "**THEN** the update is applied successfully\n**AND** the new application version is shown in Technician → Versions\n**AND** no queued transactions or unsent data are lost\n**AND** an update audit event is recorded"
+          }
+        ],
+        "expected": "A TMS application update applies, shows the new version, preserves transaction data and raises an audit event."
+      }
+    },
+    {
+      "ref": "C4100509",
+      "case_id": 4100509,
+      "title": "TMS — topology update",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "TMS Updates"
+      ],
+      "feature": "TMS Updates",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a topology/configuration update is published to the device via TMS",
+        "steps": [
+          {
+            "when": "**WHEN** the device downloads and applies the update",
+            "then": "**THEN** the update is applied successfully\n**AND** the new configuration/topology version is shown in Technician → Versions\n**AND** no queued transactions or unsent data are lost\n**AND** an update audit event is recorded"
+          }
+        ],
+        "expected": "A TMS topology update applies, shows the new version, preserves transaction data and raises an audit event."
+      }
+    },
+    {
+      "ref": "C4100419",
+      "case_id": 4100419,
+      "title": "Single ticket",
+      "section_path": [
+        "Functional",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Single ticket via the mode's fare look-up and takes payment",
+            "then": "**THEN** the Single ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Single ticket issues at the correct price in NIR and Ulsterbus. Data variations: passenger type (Adult/Child/concession), payment (cash/card/warrant)."
+      }
+    },
+    {
+      "ref": "C4100420",
+      "case_id": 4100420,
+      "title": "Day Return ticket",
+      "section_path": [
+        "Functional",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Day Return ticket via the mode's fare look-up and takes payment",
+            "then": "**THEN** the Day Return ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Day Return issues at the correct price in NIR and Ulsterbus (passenger/payment data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100421",
+      "case_id": 4100421,
+      "title": "iLink Single",
+      "section_path": [
+        "Functional",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator sells an iLink Single fare against a presented iLink smartcard",
+            "then": "**THEN** the iLink Single is issued/recorded against the card\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An iLink Single is sold against the iLink smartcard in NIR and Ulsterbus (zone/passenger data variations)."
+      }
+    },
+    {
+      "ref": "C4100422",
+      "case_id": 4100422,
+      "title": "Warrant Return",
+      "section_path": [
+        "Functional",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Warrant Return and completes the warrant payment",
+            "then": "**THEN** the Warrant Return ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Warrant Return issues against a warrant payment in NIR and Ulsterbus."
+      }
+    },
+    {
+      "ref": "C4100423",
+      "case_id": 4100423,
+      "title": "Family & Friends Day ticket",
+      "section_path": [
+        "Functional",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Family & Friends Day ticket and takes payment",
+            "then": "**THEN** the Family & Friends Day ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Family & Friends Day ticket issues correctly in NIR and Ulsterbus (payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100022",
+      "case_id": 4100022,
+      "title": "Faulty Card — options",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Faulty Card"
+      ],
+      "feature": "Faulty Card",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-25818,TIBU-21256",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents a faulty smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the faulty smartcard screen is shown",
+            "then": "**THEN** Charge Full Fare, Issue Ticket and Select Card Type are offered\n**AND** a Cancel option is available"
+          },
+          {
+            "when": "**WHEN** the operator chooses Issue Ticket then Issue Receipt",
+            "then": "**THEN** a ticket is produced\n**AND** its receipt is produced"
+          }
+        ],
+        "expected": "A faulty smartcard offers the options with a working Cancel and Issue Receipt (regression: TIBU-25818, TIBU-21256)."
+      }
+    },
+    {
+      "ref": "C4100023",
+      "case_id": 4100023,
+      "title": "Faulty Card — invalid card removal",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Faulty Card"
+      ],
+      "feature": "Faulty Card",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-20851",
+      "gherkin": {
+        "given": "**GIVEN** an invalid top-up card is on the reader",
+        "steps": [
+          {
+            "when": "**WHEN** the card is removed",
+            "then": "**THEN** the POS detects that the card has been removed"
+          }
+        ],
+        "expected": "Removal of an invalid top-up card is detected (regression: TIBU-20851)."
+      }
+    },
+    {
+      "ref": "C4100007",
+      "case_id": 4100007,
+      "title": "Top Up — top up a smartcard",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-23016,TIBU-21280,TIBU-21119,TIBU-21184,TIBU-22985",
+      "gherkin": {
+        "given": "**Given** an operator is signed on and a topp-able smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects Top Up, takes payment and confirms",
+            "then": "**THEN** the card is topped up\n**AND** a top-up receipt is printed\n**AND** the card is auto-validated for the current journey where applicable"
+          }
+        ],
+        "expected": "Top-up completes with a receipt and auto-validation. Run across products — Metro Travelcard, Ulsterbus Town Service Travelcard, DayLink, iLink, Belfast Visitor Pass, ABT smartcard, Monthly Season, half-fare/concession."
+      }
+    },
+    {
+      "ref": "C4100008",
+      "case_id": 4100008,
+      "title": "Top Up — cancel a top-up",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24858,TIBU-25885,TIBU-21786",
+      "gherkin": {
+        "given": "**GIVEN** the operator has started a smartcard top-up",
+        "steps": [
+          {
+            "when": "**WHEN** the operator cancels or presses Back",
+            "then": "**THEN** the operator is returned to the previous screen\n**AND** the screen remains responsive"
+          }
+        ],
+        "expected": "Cancelling a top-up returns cleanly with a responsive screen (regression: TIBU-24858, TIBU-25885, TIBU-21786)."
+      }
+    },
+    {
+      "ref": "C4100009",
+      "case_id": 4100009,
+      "title": "Top Up — Multi-Journey limit",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21133,TIBU-21992,TIBU-24051,TIBU-25886",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents a Multi-Journey smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the operator tops up journeys",
+            "then": "**THEN** the journeys are added\n**AND** the journeys are shown\n**AND** the card cannot exceed its maximum permitted journeys\n**AND** a card with expired journeys can still be topped up\n**AND** the device does not crash"
+          }
+        ],
+        "expected": "Multi-Journey top-up adds/shows journeys, enforces the max, handles expired journeys, and never crashes (regression: TIBU-21133, TIBU-21992, TIBU-24051, TIBU-25886)."
+      }
+    },
+    {
+      "ref": "C4100017",
+      "case_id": 4100017,
+      "title": "Top Up — mini statement",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21450,TIBU-22398,TIBU-25098,TIBU-23989,TIBU-22558",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents a topped-up smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the mini statement is shown",
+            "then": "**THEN** it shows the correct card type, number, balance/journeys, start date and expiry\n**AND** it reflects top-ups made on this and other devices"
+          }
+        ],
+        "expected": "Mini statements show correct, current details across devices (regression: TIBU-21450, TIBU-22398, TIBU-25098, TIBU-23989, TIBU-22558)."
+      }
+    },
+    {
+      "ref": "C4100389",
+      "case_id": 4100389,
+      "title": "Top Up — non-toppable card handled",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21219",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents a card that cannot be topped up",
+        "steps": [
+          {
+            "when": "**WHEN** the card is read",
+            "then": "**THEN** the POS reports that the card cannot be topped up\n**AND** the device does not crash"
+          }
+        ],
+        "expected": "A non-toppable card is reported gracefully with no crash (regression: TIBU-21219)."
+      }
+    },
+    {
+      "ref": "C4100435",
+      "case_id": 4100435,
+      "title": "Top Up — expired Multi-Journey clears existing journeys",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents an expired Multi-Journey card",
+        "steps": [
+          {
+            "when": "**WHEN** the operator adds journeys (tops it up) and the top-up succeeds",
+            "then": "**THEN** all existing journeys are removed\n**AND** a journey-removal receipt is printed"
+          }
+        ],
+        "expected": "Topping up an expired Multi-Journey clears prior journeys and prints a journey-removal receipt."
+      }
+    },
+    {
+      "ref": "C4100018",
+      "case_id": 4100018,
+      "title": "Validation — validate a smartcard",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the POS is on the main screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid smartcard is presented for validation",
+            "then": "**THEN** the validation confirmation screen is shown"
+          }
+        ],
+        "expected": "A valid smartcard validation shows the confirmation screen."
+      }
+    },
+    {
+      "ref": "C4100019",
+      "case_id": 4100019,
+      "title": "Validation — already validated",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a smartcard has already been validated",
+        "steps": [
+          {
+            "when": "**WHEN** the card is presented again",
+            "then": "**THEN** the 'Smartcard Already Validated' message is shown"
+          }
+        ],
+        "expected": "An already-validated card is detected and the Already Validated message is shown."
+      }
+    },
+    {
+      "ref": "C4100020",
+      "case_id": 4100020,
+      "title": "Validation — hotlisted card",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a smartcard is on the hotlist",
+        "steps": [
+          {
+            "when": "**WHEN** the card is presented",
+            "then": "**THEN** the Hotlisted Error is shown\n**AND** the card is not accepted"
+          }
+        ],
+        "expected": "A hotlisted card is rejected with the Hotlisted Error."
+      }
+    },
+    {
+      "ref": "C4100021",
+      "case_id": 4100021,
+      "title": "Validation — outside time band",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a smartcard is presented outside its valid time band",
+        "steps": [
+          {
+            "when": "**WHEN** the card is read",
+            "then": "**THEN** the Outside Time Band handling is applied\n**AND** the validation outcome is recorded in the back office (CloudFare, MERIT and SmartTrack)"
+          }
+        ],
+        "expected": "Cards presented outside the valid time band are handled per the rules."
+      }
+    },
+    {
+      "ref": "C4100427",
+      "case_id": 4100427,
+      "title": "Validation — entitlement smartcard sets the ticket type",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is selling a fare in NIR or Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents an entitlement smartcard (e.g. Senior, Blind, War Pensioner, yLink, 24+, Half-Fare, Dependants)",
+            "then": "**THEN** the matching ticket type is set (e.g. \"60+ Single\", \"Half Fare Single\")\n**AND** the fare must be validated per transaction (it cannot be added to a basket)\n**AND** the operator can still change the boarding or alighting station\n**AND** on Rail, cross-border variants are selectable via the L4/R4 keys\n**AND** Half-Fare sub-types (Partially Sighted, Learning Disability, No Driving Licence) and DLA each set the matching ticket type"
+          }
+        ],
+        "expected": "An entitlement smartcard sets its ticket type, requires per-transaction validation (no basketing), allows boarding/alighting change, and offers XB variants on Rail. NIR + Ulsterbus only."
+      }
+    },
+    {
+      "ref": "C4100428",
+      "case_id": 4100428,
+      "title": "Validation — error mid-transaction voids the payment",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a fare is being validated as part of a paid transaction",
+        "steps": [
+          {
+            "when": "**WHEN** a validation error occurs",
+            "then": "**THEN** any cash or warrant payment is not recorded in the POS audit data\n**AND** any card transaction is automatically voided by the POS\n**AND** a diagnostic event is recorded to audit the error"
+          }
+        ],
+        "expected": "A mid-transaction validation error records no cash/warrant, auto-voids any card payment, and audits a diagnostic event."
+      }
+    },
+    {
+      "ref": "C4100506",
+      "case_id": 4100506,
+      "title": "Mini Statement — reflects usage and top-ups",
+      "section_path": [
+        "Functional",
+        "Top Up & Validation",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a smartcard that has been validated/used and topped up",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents the card to view the mini statement",
+            "then": "**THEN** the mini statement shows the correct current balance/journeys\n**AND** it reflects recent validations/usage\n**AND** it reflects top-ups made on this and other devices"
+          }
+        ],
+        "expected": "The mini statement is accurate and current after usage and top-ups, including activity on other devices."
+      }
+    },
+    {
+      "ref": "C4100425",
+      "case_id": 4100425,
+      "title": "Metro — payment is cash only",
+      "section_path": [
+        "Metro",
+        "Payment & Validation"
+      ],
+      "feature": "Payment & Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Metro mode with a fare ready for payment",
+        "steps": [
+          {
+            "when": "**WHEN** the operator reaches the payment options",
+            "then": "**THEN** only the Cash option is offered\n**AND** Bank Card is not offered\n**AND** Warrant is not offered"
+          }
+        ],
+        "expected": "Metro offers cash only; bank card and warrant are not available (card/warrant are NIR + Ulsterbus only)."
+      }
+    },
+    {
+      "ref": "C4100426",
+      "case_id": 4100426,
+      "title": "Metro — no smartcard validation",
+      "section_path": [
+        "Metro",
+        "Payment & Validation"
+      ],
+      "feature": "Payment & Validation",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Metro mode",
+        "steps": [
+          {
+            "when": "**WHEN** a smartcard is presented",
+            "then": "**THEN** no validation is performed\n**AND** the Metro top-up / smartcard menu behaviour applies instead"
+          }
+        ],
+        "expected": "Metro POS performs no smartcard validation — validation behaviour is NIR + Ulsterbus only."
+      }
+    },
+    {
+      "ref": "C4100391",
+      "case_id": 4100391,
+      "title": "Top Up — Metro Multi-Journey",
+      "section_path": [
+        "Metro",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21133,TIBU-21992,TIBU-25081",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents a Metro Multi-Journey smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the operator tops up journeys and pays",
+            "then": "**THEN** the journeys are added\n**AND** the journeys are shown\n**AND** the card cannot exceed its maximum permitted journeys\n**AND** the mini-statement expiry text is correct"
+          }
+        ],
+        "expected": "Metro Multi-Journey top-up adds/shows journeys, enforces the max and shows the correct expiry (regression: TIBU-21133, TIBU-21992, TIBU-25081). Data variations: payment by Cash / Card (Warrant not available on Metro)."
+      }
+    },
+    {
+      "ref": "C4099970",
+      "case_id": 4099970,
+      "title": "Rail FLU — sell a ticket",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19374,TIBU-24862,TIBU-24853",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects a boarding station, an alighting station, a passenger type and a ticket type",
+            "then": "**THEN** the selected fare and price are shown with the correct field layout\n**AND** the correct price is used (including Cross-Border tickets)"
+          },
+          {
+            "when": "**WHEN** the operator adds the fare to the basket",
+            "then": "**THEN** the fare is added\n**AND** the correct boarding and alighting stations are audited"
+          }
+        ],
+        "expected": "A rail fare is built with correct price (incl. XB), correct layout, added to basket, and the right stations audited (regression: TIBU-19374, TIBU-24862, TIBU-24853). Stations/ticket types are data variations."
+      }
+    },
+    {
+      "ref": "C4099971",
+      "case_id": 4099971,
+      "title": "Rail FLU — boarding = alighting rejected",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19292",
+      "gherkin": {
+        "given": "**GIVEN** the operator is building a rail fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator sets the boarding and alighting stations to the same station",
+            "then": "**THEN** the fare is not accepted\n**AND** the screen does not offer issue buttons for it"
+          }
+        ],
+        "expected": "Setting boarding = alighting is blocked and no issue buttons are offered (regression: TIBU-19292)."
+      }
+    },
+    {
+      "ref": "C4099972",
+      "case_id": 4099972,
+      "title": "Rail FLU — station lists & numeric select",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-22953,TIBU-21771",
+      "gherkin": {
+        "given": "**GIVEN** the operator is building a rail fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator opens the station list and enters the station number",
+            "then": "**THEN** the station list is displayed\n**AND** the numeric selection chooses the station"
+          }
+        ],
+        "expected": "Station lists display and numeric input selects the stations (regression: TIBU-22953, TIBU-21771)."
+      }
+    },
+    {
+      "ref": "C4099973",
+      "case_id": 4099973,
+      "title": "Rail FLU — function keys",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": true,
+      "refs": "TIBU-24774,TIBU-24775,TIBU-21779,TIBU-24827,TIBU-24828,TIBU-21770",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the Rail FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses the function keys (e.g. R3 passengers, R4 ticket types)",
+            "then": "**THEN** the corresponding list is displayed with real labels (not \"example\")\n**AND** the device does not crash\n**AND** buttons that should be unavailable cannot be pressed"
+          }
+        ],
+        "expected": "Rail FLU function keys show the lists with real labels, never crash, and disabled buttons stay disabled (regression: TIBU-24774, TIBU-24775, TIBU-21779, TIBU-24827, TIBU-24828, TIBU-21770)."
+      }
+    },
+    {
+      "ref": "C4099974",
+      "case_id": 4099974,
+      "title": "Rail FLU — C returns",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24810",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on a Rail FLU sub-screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses the 'C' button",
+            "then": "**THEN** the operator is returned to the previous FLU screen"
+          }
+        ],
+        "expected": "The 'C' button steps back to the previous Rail FLU screen (regression: TIBU-24810)."
+      }
+    },
+    {
+      "ref": "C4099975",
+      "case_id": 4099975,
+      "title": "Rail FLU — Main screen rail-only",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24864",
+      "gherkin": {
+        "given": "**GIVEN** the POS is in rail (NIR) mode on the Main Rail screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator views the screen",
+            "then": "**THEN** no 'Bus' or 'Day Tours' button is shown"
+          }
+        ],
+        "expected": "The Main Rail screen shows rail options only (regression: TIBU-24864)."
+      }
+    },
+    {
+      "ref": "C4099976",
+      "case_id": 4099976,
+      "title": "Rail FLU — non-Adult-Single keeps state",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24865",
+      "gherkin": {
+        "given": "**GIVEN** the operator has built a non-Adult-Single rail fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator issues the ticket",
+            "then": "**THEN** the Rail FLU screen retains the correct state and does not revert"
+          }
+        ],
+        "expected": "Issuing a non-Adult-Single ticket leaves the Rail FLU in the correct state (regression: TIBU-24865)."
+      }
+    },
+    {
+      "ref": "C4100385",
+      "case_id": 4100385,
+      "title": "Rail FLU — present smartcard",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-21933,TIBU-21786",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the Rail FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a smartcard",
+            "then": "**THEN** the smartcard is handled without a fatal error\n**AND** the operator can return to the Rail FLU screen"
+          }
+        ],
+        "expected": "Presenting a smartcard on the Rail FLU screen does not crash and the operator can return to FLU (regression: TIBU-21933, TIBU-21786)."
+      }
+    },
+    {
+      "ref": "C4100429",
+      "case_id": 4100429,
+      "title": "Rail FLU — cross-border ticket & currency toggle",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19374",
+      "gherkin": {
+        "given": "**GIVEN** an operator is building a rail fare with a cross-border boarding or alighting station",
+        "steps": [
+          {
+            "when": "**WHEN** the operator views the ticket types",
+            "then": "**THEN** cross-border ticket types are shown with the correct price"
+          },
+          {
+            "when": "**WHEN** the operator presses the price button",
+            "then": "**THEN** the currency toggles to euro"
+          },
+          {
+            "when": "**WHEN** the operator presses it again",
+            "then": "**THEN** the currency toggles back to GBP"
+          }
+        ],
+        "expected": "Cross-border journeys show XB ticket types at the correct price with a working GBP↔euro toggle; XB is available on Rail only (regression: TIBU-19374)."
+      }
+    },
+    {
+      "ref": "C4100501",
+      "case_id": 4100501,
+      "title": "Rail FLU — change boarding & alighting stations",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator has selected a rail fare with boarding and alighting stations",
+        "steps": [
+          {
+            "when": "**WHEN** the operator changes the boarding station",
+            "then": "**THEN** the fare updates for the new boarding station"
+          },
+          {
+            "when": "**WHEN** the operator changes the alighting station",
+            "then": "**THEN** the fare updates for the new alighting station"
+          }
+        ],
+        "expected": "Changing the boarding or alighting station on a rail fare updates the fare and price correctly."
+      }
+    },
+    {
+      "ref": "C4100502",
+      "case_id": 4100502,
+      "title": "Cross-Border — enable Euro currency",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** a Cross-Border product is selected on a Rail (NIR) POS",
+        "steps": [
+          {
+            "when": "**WHEN** Euro currency is enabled and the price/currency is toggled to Euro",
+            "then": "**THEN** the Cross-Border fare is shown in Euros\n**AND** payment can be taken in the selected currency"
+          }
+        ],
+        "expected": "With Euro currency enabled, Cross-Border products show and accept payment in Euros (GBP↔EUR toggle works)."
+      }
+    },
+    {
+      "ref": "C4099979",
+      "case_id": 4099979,
+      "title": "Rail FLU — Advance Ticket",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up — Advance & Multi-day"
+      ],
+      "feature": "Fare Look-Up — Advance & Multi-day",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21792,TIBU-22824,TIBU-24826",
+      "gherkin": {
+        "given": "**GIVEN** the operator selects Advance Ticket on the Rail FLU",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters a valid future date in range",
+            "then": "**THEN** the advance ticket is added (basket shows 'Ticket Date DD/MM/YY')"
+          },
+          {
+            "when": "**WHEN** the operator enters an invalid date or one outside the valid advance range",
+            "then": "**THEN** an error is shown (3s timeout, override with any key)\n**AND** the device does not crash\n**AND** an advance ticket cannot be combined with other products in the basket (one at a time)\n**AND** the advance date, passenger and ticket type reset after 1 minute of inactivity"
+          }
+        ],
+        "expected": "Advance Ticket accepts valid in-range dates, rejects invalid/out-of-range with an error, is one-at-a-time (no other basket items), and resets after 1 min inactivity (regression: TIBU-21792, TIBU-22824, TIBU-24826)."
+      }
+    },
+    {
+      "ref": "C4099980",
+      "case_id": 4099980,
+      "title": "Rail FLU — 3 Day Select",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up — Advance & Multi-day"
+      ],
+      "feature": "Fare Look-Up — Advance & Multi-day",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24829,TIBU-24837",
+      "gherkin": {
+        "given": "**GIVEN** the operator selects a 3 Day Select ticket on the Rail FLU",
+        "steps": [
+          {
+            "when": "**WHEN** the operator chooses the available days using the day list and the + / - buttons",
+            "then": "**THEN** the selected days are applied to the ticket"
+          }
+        ],
+        "expected": "The 3 Day Select ticket allows choosing the travel days via the list and +/- buttons (regression: TIBU-24829, TIBU-24837)."
+      }
+    },
+    {
+      "ref": "C4099981",
+      "case_id": 4099981,
+      "title": "Rail FLU — Misc button",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up — Advance & Multi-day"
+      ],
+      "feature": "Fare Look-Up — Advance & Multi-day",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19454",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the Main Rail FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses the Misc button",
+            "then": "**THEN** the Misc option opens without a fatal error"
+          }
+        ],
+        "expected": "The Misc button opens cleanly with no fatal error (regression: TIBU-19454)."
+      }
+    },
+    {
+      "ref": "C4099977",
+      "case_id": 4099977,
+      "title": "Rail FLU — favourites: save & issue",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up — Favourites"
+      ],
+      "feature": "Fare Look-Up — Favourites",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19371,TIBU-24783,TIBU-24781,TIBU-19456",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the Rail FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator saves a fare as a favourite and opens the favourites list",
+            "then": "**THEN** the favourites list is shown with paging and correct alignment"
+          },
+          {
+            "when": "**WHEN** the operator selects a favourite",
+            "then": "**THEN** the favourite's ticket details are shown\n**AND** the flow proceeds to the payment screen"
+          }
+        ],
+        "expected": "Favourites can be saved, listed/paged, show details, and selecting one proceeds to payment (regression: TIBU-19371, TIBU-24783, TIBU-24781, TIBU-19456)."
+      }
+    },
+    {
+      "ref": "C4099978",
+      "case_id": 4099978,
+      "title": "Rail FLU — favourites: overwrite",
+      "section_path": [
+        "NIR (Rail)",
+        "Fare Look-Up — Favourites"
+      ],
+      "feature": "Fare Look-Up — Favourites",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24095,TIBU-24776,TIBU-24886",
+      "gherkin": {
+        "given": "**GIVEN** the operator is overwriting an existing favourite",
+        "steps": [
+          {
+            "when": "**WHEN** the operator confirms the overwrite",
+            "then": "**THEN** the favourite is stored in the correct slot with no fatal error"
+          },
+          {
+            "when": "**WHEN** the operator instead cancels an overwrite",
+            "then": "**THEN** the overwrite is aborted and no change is made"
+          }
+        ],
+        "expected": "Overwriting saves to the right slot without crashing, and cancel aborts cleanly (regression: TIBU-24095, TIBU-24776, TIBU-24886)."
+      }
+    },
+    {
+      "ref": "C4099946",
+      "case_id": 4099946,
+      "title": "Excess Ticket — available (rail)",
+      "section_path": [
+        "NIR (Rail)",
+        "Operator (rail-only)"
+      ],
+      "feature": "Operator (rail-only)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24804",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on with the POS in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator opens the Operator menu",
+            "then": "**THEN** the Excess Ticket feature is available"
+          }
+        ],
+        "expected": "In rail mode the Excess Ticket feature is present in the Operator menu (regression: TIBU-24804)."
+      }
+    },
+    {
+      "ref": "C4100393",
+      "case_id": 4100393,
+      "title": "NIR — Single",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Single ticket (boarding, alighting, passenger type) and takes payment",
+            "then": "**THEN** the Single ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An NIR Single issues at the correct price and prints. Data variations: passenger type (Adult/Child/concession), payment (cash/card/warrant)."
+      }
+    },
+    {
+      "ref": "C4100394",
+      "case_id": 4100394,
+      "title": "NIR — Day Return",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Day Return ticket and takes payment",
+            "then": "**THEN** the Day Return ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An NIR Day Return issues at the correct price and prints (passenger/payment are data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100395",
+      "case_id": 4100395,
+      "title": "1/3 Off Day Return",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a 1/3 Off Day Return ticket and takes payment",
+            "then": "**THEN** the ticket is issued with the 1/3 discount applied\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A 1/3 Off Day Return issues with the discount applied (passenger/payment data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100396",
+      "case_id": 4100396,
+      "title": "Weekly Season",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Weekly Season ticket and takes payment",
+            "then": "**THEN** the Weekly Season ticket is issued with the correct From/To dates\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Weekly Season issues with correct validity dates (passenger/payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100397",
+      "case_id": 4100397,
+      "title": "Monthly Season",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19299",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Monthly Season ticket and takes payment",
+            "then": "**THEN** the Monthly Season ticket is issued with the correct From/To dates\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Monthly Season issues with the correct 'To'/expiry date (regression: TIBU-19299; passenger/payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100398",
+      "case_id": 4100398,
+      "title": "NIR — Warrant Return",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Warrant Return and completes the warrant payment",
+            "then": "**THEN** the Warrant Return ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An NIR Warrant Return issues against a warrant payment and prints."
+      }
+    },
+    {
+      "ref": "C4100399",
+      "case_id": 4100399,
+      "title": "3 Day Select",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a 3 Day Select ticket, chooses the days and takes payment",
+            "then": "**THEN** the 3 Day Select ticket is issued for the chosen days\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A 3 Day Select issues for the chosen days (passenger/payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100400",
+      "case_id": 4100400,
+      "title": "NIR — Family & Friends Day",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Family & Friends Day ticket and takes payment",
+            "then": "**THEN** the Family & Friends Day ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Family & Friends Day ticket issues correctly (payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100401",
+      "case_id": 4100401,
+      "title": "NIR — iLink Single",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator sells an iLink Single fare against a presented iLink smartcard",
+            "then": "**THEN** the iLink Single is issued/recorded against the card\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An NIR iLink Single is sold against the iLink smartcard (zone/passenger data variations)."
+      }
+    },
+    {
+      "ref": "C4100402",
+      "case_id": 4100402,
+      "title": "NIR — Dependents Pass",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator processes a Dependents Pass smartcard fare",
+            "then": "**THEN** the Dependents Pass fare is applied\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Dependents Pass fare is applied correctly."
+      }
+    },
+    {
+      "ref": "C4100503",
+      "case_id": 4100503,
+      "title": "NIR — Cross-Border Single",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects a Cross-Border Single and takes payment",
+            "then": "**THEN** the Cross-Border Single ticket is issued\n**AND** a green success banner is displayed following the successful issue"
+          }
+        ],
+        "expected": "A Cross-Border Single issues correctly (GBP or EUR; Cash/Warrant/Card) with the green success banner shown."
+      }
+    },
+    {
+      "ref": "C4100504",
+      "case_id": 4100504,
+      "title": "NIR — Cross-Border Day Return",
+      "section_path": [
+        "NIR (Rail)",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Rail (NIR) mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects a Cross-Border Day Return and takes payment",
+            "then": "**THEN** the Cross-Border Day Return ticket is issued\n**AND** a green success banner is displayed following the successful issue"
+          }
+        ],
+        "expected": "A Cross-Border Day Return issues correctly (GBP or EUR; Cash/Warrant/Card) with the green success banner shown."
+      }
+    },
+    {
+      "ref": "C4100362",
+      "case_id": 4100362,
+      "title": "Comms — loss enters Communication Locked",
+      "section_path": [
+        "Non-Functional",
+        "Comms (CloudFare)"
+      ],
+      "feature": "Comms (CloudFare)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-28530,TIBU-27664",
+      "gherkin": {
+        "given": "**GIVEN** the device is operating normally",
+        "steps": [
+          {
+            "when": "**WHEN** CloudFare communication is lost beyond the configured period",
+            "then": "**THEN** the device enters Communication Locked\n**AND** it does not enter Communication Locked while comms are healthy"
+          }
+        ],
+        "expected": "Sustained comms loss triggers Communication Locked at the configured threshold, with no spurious locks (regression: TIBU-28530, TIBU-27664)."
+      }
+    },
+    {
+      "ref": "C4100363",
+      "case_id": 4100363,
+      "title": "Comms — recovery reconnects and syncs",
+      "section_path": [
+        "Non-Functional",
+        "Comms (CloudFare)"
+      ],
+      "feature": "Comms (CloudFare)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the device has lost CloudFare communication",
+        "steps": [
+          {
+            "when": "**WHEN** communication is restored",
+            "then": "**THEN** the device reconnects to CloudFare\n**AND** outstanding transactions are synced"
+          }
+        ],
+        "expected": "On comms restoration the device reconnects and syncs any outstanding data."
+      }
+    },
+    {
+      "ref": "C4100364",
+      "case_id": 4100364,
+      "title": "Comms — token loss does not force Out Of Service",
+      "section_path": [
+        "Non-Functional",
+        "Comms (CloudFare)"
+      ],
+      "feature": "Comms (CloudFare)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": true,
+      "refs": "TIBU-21277",
+      "gherkin": {
+        "given": "**GIVEN** the device is signed on and communicating",
+        "steps": [
+          {
+            "when": "**WHEN** the authentication token is lost",
+            "then": "**THEN** the device re-authenticates\n**AND** the device does not go Out Of Service unexpectedly"
+          }
+        ],
+        "expected": "A lost token is re-acquired without an unexpected Out Of Service (regression: TIBU-21277)."
+      }
+    },
+    {
+      "ref": "C4100365",
+      "case_id": 4100365,
+      "title": "Comms — card-reader failures do not flood CloudFare",
+      "section_path": [
+        "Non-Functional",
+        "Comms (CloudFare)"
+      ],
+      "feature": "Comms (CloudFare)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-16106",
+      "gherkin": {
+        "given": "**GIVEN** the card reader is experiencing failures",
+        "steps": [
+          {
+            "when": "**WHEN** the failures occur repeatedly",
+            "then": "**THEN** the failures are reported to CloudFare at a sensible rate\n**AND** CloudFare is not flooded with duplicate messages"
+          }
+        ],
+        "expected": "Card-reader failures are reported without flooding CloudFare (regression: TIBU-16106)."
+      }
+    },
+    {
+      "ref": "C4100366",
+      "case_id": 4100366,
+      "title": "Comms — device status and Tray ID reported correctly",
+      "section_path": [
+        "Non-Functional",
+        "Comms (CloudFare)"
+      ],
+      "feature": "Comms (CloudFare)",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "TIBU-24888,TIBU-24889,TIBU-25071",
+      "gherkin": {
+        "given": "**GIVEN** the device is communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** the device reports its status",
+            "then": "**THEN** the device status is accurate\n**AND** the Tray ID is reported correctly"
+          }
+        ],
+        "expected": "Device status and Tray ID are reported accurately to CloudFare (regression: TIBU-24888, TIBU-24889, TIBU-25071)."
+      }
+    },
+    {
+      "ref": "C4100358",
+      "case_id": 4100358,
+      "title": "Printer — paper jam detected and recoverable",
+      "section_path": [
+        "Non-Functional",
+        "Printer"
+      ],
+      "feature": "Printer",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-19311,TIBU-20980,TIBU-26723",
+      "gherkin": {
+        "given": "**GIVEN** the operator completes a transaction that prints",
+        "steps": [
+          {
+            "when": "**WHEN** the printer experiences a paper jam",
+            "then": "**THEN** the Paper Jam screen is shown\n**AND** the Annul Transaction control responds"
+          },
+          {
+            "when": "**WHEN** the jam is cleared",
+            "then": "**THEN** the device returns to normal operation"
+          }
+        ],
+        "expected": "A paper jam is detected, the jam screen is actionable (annul works), and the device recovers cleanly once cleared (regression: TIBU-19311, TIBU-20980, TIBU-26723)."
+      }
+    },
+    {
+      "ref": "C4100359",
+      "case_id": 4100359,
+      "title": "Printer — out of paper is handled",
+      "section_path": [
+        "Non-Functional",
+        "Printer"
+      ],
+      "feature": "Printer",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator attempts to print",
+        "steps": [
+          {
+            "when": "**WHEN** the printer is out of paper",
+            "then": "**THEN** the device reports the out-of-paper condition"
+          },
+          {
+            "when": "**WHEN** paper is replaced",
+            "then": "**THEN** printing resumes normally"
+          }
+        ],
+        "expected": "Out-of-paper is reported and printing resumes once paper is replaced, with no crash."
+      }
+    },
+    {
+      "ref": "C4100367",
+      "case_id": 4100367,
+      "title": "Smoke — operator sign on",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the device is at the Idle screen and communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator signs on with valid credentials",
+            "then": "**THEN** the operator reaches the Main Screen"
+          }
+        ],
+        "expected": "The operator signs on and reaches the Main Screen."
+      }
+    },
+    {
+      "ref": "C4100368",
+      "case_id": 4100368,
+      "title": "Smoke — sell a ticket (cash)",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a fare, adds it to the basket and takes cash payment",
+            "then": "**THEN** the ticket is issued\n**AND** a receipt is printed"
+          }
+        ],
+        "expected": "A fare is sold by cash and a ticket plus receipt are produced."
+      }
+    },
+    {
+      "ref": "C4100369",
+      "case_id": 4100369,
+      "title": "Smoke — top up a smartcard",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presents a smartcard, tops it up and takes payment",
+            "then": "**THEN** the top up is applied to the card\n**AND** a receipt is printed"
+          }
+        ],
+        "expected": "A smartcard is topped up and a receipt is printed."
+      }
+    },
+    {
+      "ref": "C4100370",
+      "case_id": 4100370,
+      "title": "Smoke — sign off",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator signs off",
+            "then": "**THEN** the device returns to the Idle screen"
+          }
+        ],
+        "expected": "The operator signs off and the device returns to Idle."
+      }
+    },
+    {
+      "ref": "C4100374",
+      "case_id": 4100374,
+      "title": "Bus FLU — sell a ticket",
+      "section_path": [
+        "Ulsterbus",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19459,TIBU-19460",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on with the POS on the Main Screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters a route number, sets the boarding and alighting stages and selects a fare type",
+            "then": "**THEN** the fare and price are shown\n**AND** the product is added to the basket\n**AND** the product can be purchased"
+          }
+        ],
+        "expected": "A bus fare built from route, stages and fare type is added to the basket and can be purchased (regression: TIBU-19459, TIBU-19460). Specific routes/fares are data variations."
+      }
+    },
+    {
+      "ref": "C4100375",
+      "case_id": 4100375,
+      "title": "Bus FLU — route number letters via the '*' key",
+      "section_path": [
+        "Ulsterbus",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19458",
+      "gherkin": {
+        "given": "**GIVEN** the operator is entering a route number on the Main Screen",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses the '*' key",
+            "then": "**THEN** the route-number letter options are shown"
+          }
+        ],
+        "expected": "Pressing '*' during route-number entry shows the letter options (regression: TIBU-19458)."
+      }
+    },
+    {
+      "ref": "C4100376",
+      "case_id": 4100376,
+      "title": "Bus FLU — change boarding stage, alighting stage and fare type",
+      "section_path": [
+        "Ulsterbus",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator is building a bus fare",
+        "steps": [
+          {
+            "when": "**WHEN** the operator changes the boarding stage",
+            "then": "**THEN** the fare updates"
+          },
+          {
+            "when": "**WHEN** the operator changes the alighting stage and fare type",
+            "then": "**THEN** the fare updates to reflect each change"
+          }
+        ],
+        "expected": "Boarding stage, alighting stage and fare type can each be changed and the fare updates accordingly."
+      }
+    },
+    {
+      "ref": "C4100377",
+      "case_id": 4100377,
+      "title": "Bus FLU — Misc open fare",
+      "section_path": [
+        "Ulsterbus",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the operator selects a Misc product (open fare)",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters a valid open-fare amount",
+            "then": "**THEN** the open fare is accepted\n**AND** the open fare is added to the basket"
+          },
+          {
+            "when": "**WHEN** the operator enters an invalid amount",
+            "then": "**THEN** the amount is rejected with an error"
+          }
+        ],
+        "expected": "A Misc open fare accepts valid amounts and rejects invalid ones with an error."
+      }
+    },
+    {
+      "ref": "C4100378",
+      "case_id": 4100378,
+      "title": "Bus FLU — Default Boarding Stage '*' key",
+      "section_path": [
+        "Ulsterbus",
+        "Fare Look-Up"
+      ],
+      "feature": "Fare Look-Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24026",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on the Default Boarding Stage entry",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses the '*' button",
+            "then": "**THEN** the expected behaviour occurs with no dead key or error"
+          }
+        ],
+        "expected": "The '*' key on Default Boarding Stage behaves correctly (regression: TIBU-24026)."
+      }
+    },
+    {
+      "ref": "C4100403",
+      "case_id": 4100403,
+      "title": "Ulsterbus — Single",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Single ticket (route, stages, passenger type) and takes payment",
+            "then": "**THEN** the Single ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An Ulsterbus Single issues at the correct price (passenger/payment data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100404",
+      "case_id": 4100404,
+      "title": "Ulsterbus — Day Return",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Day Return ticket and takes payment",
+            "then": "**THEN** the Day Return ticket is issued at the correct price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An Ulsterbus Day Return issues at the correct price (passenger/payment data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100405",
+      "case_id": 4100405,
+      "title": "Month Return",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Month Return ticket and takes payment",
+            "then": "**THEN** the Month Return ticket is issued with the correct validity dates\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Month Return issues with correct validity (passenger/payment data variations). Data variations: passenger type (Adult / Child)."
+      }
+    },
+    {
+      "ref": "C4100406",
+      "case_id": 4100406,
+      "title": "Ulsterbus — Warrant Return",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Warrant Return and completes the warrant payment",
+            "then": "**THEN** the Warrant Return ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An Ulsterbus Warrant Return issues against a warrant payment."
+      }
+    },
+    {
+      "ref": "C4100407",
+      "case_id": 4100407,
+      "title": "Bus Rambler",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Bus Rambler ticket and takes payment",
+            "then": "**THEN** the Bus Rambler ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Bus Rambler issues correctly (passenger/payment data variations)."
+      }
+    },
+    {
+      "ref": "C4100408",
+      "case_id": 4100408,
+      "title": "Ulsterbus — Family & Friends Day",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Family & Friends Day ticket and takes payment",
+            "then": "**THEN** the Family & Friends Day ticket is issued\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An Ulsterbus Family & Friends Day ticket issues correctly."
+      }
+    },
+    {
+      "ref": "C4100409",
+      "case_id": 4100409,
+      "title": "Jobseeker Single",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator builds a Jobseeker Single ticket and takes payment",
+            "then": "**THEN** the Jobseeker Single ticket is issued at the correct concession price\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Jobseeker Single issues at the correct concession price."
+      }
+    },
+    {
+      "ref": "C4100410",
+      "case_id": 4100410,
+      "title": "Ulsterbus — iLink Single",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator sells an iLink Single fare against a presented iLink smartcard",
+            "then": "**THEN** the iLink Single is issued/recorded against the card\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "An Ulsterbus iLink Single is sold against the iLink smartcard (zone/passenger data variations)."
+      }
+    },
+    {
+      "ref": "C4100411",
+      "case_id": 4100411,
+      "title": "Rail Substitution Service",
+      "section_path": [
+        "Ulsterbus",
+        "Tickets"
+      ],
+      "feature": "Tickets",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on in Ulsterbus mode running a rail substitution service",
+        "steps": [
+          {
+            "when": "**WHEN** the operator processes a Rail Substitution Service fare and takes payment",
+            "then": "**THEN** the fare is issued under the rail substitution service\n**AND** a receipt is printed\n**AND** a green success banner is displayed following the successful ticket issue"
+          }
+        ],
+        "expected": "A Rail Substitution Service fare is processed and printed."
+      }
+    },
+    {
+      "ref": "C4100392",
+      "case_id": 4100392,
+      "title": "Top Up — Ulsterbus Multi-Journey",
+      "section_path": [
+        "Ulsterbus",
+        "Top Up"
+      ],
+      "feature": "Top Up",
+      "device": "POS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-26861,TIBU-21133",
+      "gherkin": {
+        "given": "**GIVEN** the operator presents an Ulsterbus Multi-Journey smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the operator tops up journeys and pays",
+            "then": "**THEN** the journeys are added following the correct UX flow\n**AND** the journeys are shown\n**AND** the card cannot exceed its maximum permitted journeys"
+          }
+        ],
+        "expected": "Ulsterbus Multi-Journey top-up adds/shows journeys per the UX flow and enforces the max (regression: TIBU-26861, TIBU-21133). Data variations: payment by Cash / Warrant / Card."
+      }
+    },
+    {
+      "ref": "C4100034",
+      "case_id": 4100034,
+      "title": "Barcode — print barcode",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-13180",
+      "gherkin": {
+        "given": "**GIVEN** an operator issues a ticket configured to carry a barcode",
+        "steps": [
+          {
+            "when": "**WHEN** the ticket prints",
+            "then": "**THEN** a scannable barcode is printed on the ticket"
+          }
+        ],
+        "expected": "The POS prints a scannable barcode on tickets that carry one (regression: TIBU-13180)."
+      }
+    },
+    {
+      "ref": "C4100035",
+      "case_id": 4100035,
+      "title": "Barcode — scan barcode",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** an operator is on a screen that accepts a barcode scan",
+        "steps": [
+          {
+            "when": "**WHEN** the operator scans a valid barcode",
+            "then": "**THEN** the barcode is read\n**AND** the corresponding action/product is recognised"
+          }
+        ],
+        "expected": "The POS reads scanned barcodes and acts on them correctly."
+      }
+    },
+    {
+      "ref": "C4100006",
+      "case_id": 4100006,
+      "title": "Numerical Input — keypad entry",
+      "section_path": [
+        "Functional",
+        "Numerical Input"
+      ],
+      "feature": "Numerical Input",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21771",
+      "gherkin": {
+        "given": "**GIVEN** the operator is on a screen requiring numeric entry",
+        "steps": [
+          {
+            "when": "**WHEN** the operator enters digits and corrects with the C key",
+            "then": "**THEN** the entered value reflects the key presses"
+          }
+        ],
+        "expected": "Numeric entry reflects the key presses and can be corrected (regression: TIBU-21771)."
+      }
+    },
+    {
+      "ref": "C4099940",
+      "case_id": 4099940,
+      "title": "Operator Break — leave Break",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Break Mode"
+      ],
+      "feature": "Break Mode",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the device is in Operator Break mode",
+        "steps": [
+          {
+            "when": "**WHEN** the operator leaves Break manually",
+            "then": "**THEN** the device returns to the Operator menu"
+          }
+        ],
+        "expected": "Leaving Break returns the device to the Operator menu, in service."
+      }
+    },
+    {
+      "ref": "C4099937",
+      "case_id": 4099937,
+      "title": "Operator Options — cancel Soft Reset",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Options"
+      ],
+      "feature": "Options",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24727",
+      "gherkin": {
+        "given": "**GIVEN** an operator is in Operator Options on the Soft Reset confirmation",
+        "steps": [
+          {
+            "when": "**WHEN** the operator presses Cancel",
+            "then": "**THEN** the device returns to Operator Options\n**AND** no soft reset is performed"
+          }
+        ],
+        "expected": "Cancelling the Soft Reset confirmation leaves the device in Operator Options without resetting (regression: TIBU-24727)."
+      }
+    },
+    {
+      "ref": "C4099942",
+      "case_id": 4099942,
+      "title": "Ticket History — view, detail and paging",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Ticket History"
+      ],
+      "feature": "Ticket History",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-23091,TIBU-24332,TIBU-24329",
+      "gherkin": {
+        "given": "**Given** an operator is signed on with prior transactions",
+        "steps": [
+          {
+            "when": "**WHEN** the operator opens Ticket History",
+            "then": "**THEN** the issued tickets are listed"
+          },
+          {
+            "when": "**WHEN** the operator selects a ticket",
+            "then": "**THEN** the ticket detail is displayed"
+          },
+          {
+            "when": "**WHEN** the operator pages the list",
+            "then": "**THEN** further tickets are shown"
+          }
+        ],
+        "expected": "Ticket History lists tickets, shows a selected ticket's detail, and pages through the list."
+      }
+    },
+    {
+      "ref": "C4099948",
+      "case_id": 4099948,
+      "title": "Supervisor — Day Information",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Reports & Information"
+      ],
+      "feature": "Reports & Information",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24785,TIBU-22647",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor opens Day Information",
+            "then": "**THEN** the Day Information is displayed with chevron-key instructions"
+          },
+          {
+            "when": "**WHEN** the supervisor prints it",
+            "then": "**THEN** the printout shows the correct number of shifts"
+          }
+        ],
+        "expected": "Day Information is viewed (with chevron instructions) and printed with the correct shifts (regression: TIBU-24785, TIBU-22647)."
+      }
+    },
+    {
+      "ref": "C4099949",
+      "case_id": 4099949,
+      "title": "Supervisor — Sales Breakdown",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Reports & Information"
+      ],
+      "feature": "Reports & Information",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-19682,TIBU-23936",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor opens Sales Breakdown and prints it",
+            "then": "**THEN** the Sales Breakdown is displayed\n**AND** the Sales Breakdown is printed\n**AND** the printout shows the correct sales information\n**AND** the printout does not include stray 'Paper' content"
+          }
+        ],
+        "expected": "Sales Breakdown prints the correct information with no stray content (regression: TIBU-19682, TIBU-23936)."
+      }
+    },
+    {
+      "ref": "C4099961",
+      "case_id": 4099961,
+      "title": "Technician — menu options",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Maintenance"
+      ],
+      "feature": "Maintenance",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-22649",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician views the Technician menu",
+            "then": "**THEN** only the intended options are listed"
+          }
+        ],
+        "expected": "The Technician menu shows only the intended options, with no extras (regression: TIBU-22649)."
+      }
+    },
+    {
+      "ref": "C4100437",
+      "case_id": 4100437,
+      "title": "Printer — paper low notification",
+      "section_path": [
+        "Non-Functional",
+        "Printer"
+      ],
+      "feature": "Printer",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-26995",
+      "gherkin": {
+        "given": "**GIVEN** the printer paper level is low",
+        "steps": [
+          {
+            "when": "**WHEN** the operator is using the POS",
+            "then": "**THEN** a temporary paper-low notification is shown (about 3 seconds)"
+          }
+        ],
+        "expected": "A low paper level shows a temporary (~3s) notification (regression: TIBU-26995)."
+      }
+    },
+    {
+      "ref": "C4100438",
+      "case_id": 4100438,
+      "title": "Printer — print-failure events are sent",
+      "section_path": [
+        "Non-Functional",
+        "Printer"
+      ],
+      "feature": "Printer",
+      "device": "POS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**GIVEN** the printer encounters a fault (no paper, hardware/software error, or power loss mid-print)",
+        "steps": [
+          {
+            "when": "**WHEN** a print fails, partially prints due to power loss, or resumes after power loss",
+            "then": "**THEN** the POS sends the corresponding event"
+          }
+        ],
+        "expected": "Print-fail, partial-print-on-power-loss and resume-after-power-loss each send an event."
+      }
+    },
+    {
+      "ref": "C4099939",
+      "case_id": 4099939,
+      "title": "Operator Break — enter Break",
+      "section_path": [
+        "Functional",
+        "Operator",
+        "Break Mode"
+      ],
+      "feature": "Break Mode",
+      "device": "POS",
+      "priority": "Low",
+      "priority_id": 4,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-24335,TIBU-24879,TIBU-30633",
+      "gherkin": {
+        "given": "**GIVEN** an operator is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the operator selects Operator Break",
+            "then": "**THEN** a confirmation screen is shown"
+          },
+          {
+            "when": "**WHEN** the operator confirms",
+            "then": "**THEN** the device enters Break mode showing the Break screen\n**AND** the Break screen does not show a Bus number\n**AND** all on-screen text is spelled correctly"
+          }
+        ],
+        "expected": "Entering Break shows a confirm screen, then the Break screen with no Bus number and correctly spelled text (regression: TIBU-24335, TIBU-24879, TIBU-30633)."
+      }
+    },
+    {
+      "ref": "C4099947",
+      "case_id": 4099947,
+      "title": "Supervisor — Duty Information",
+      "section_path": [
+        "Functional",
+        "Supervisor",
+        "Reports & Information"
+      ],
+      "feature": "Reports & Information",
+      "device": "POS",
+      "priority": "Low",
+      "priority_id": 4,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21110,TIBU-21138,TIBU-21323,TIBU-21325,TIBU-27443,TIBU-21367,TIBU-22643",
+      "gherkin": {
+        "given": "**GIVEN** a supervisor is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the supervisor opens Duty Information",
+            "then": "**THEN** the duty information is displayed with correct headings, text and chevron-key instructions\n**AND** the device does not reset"
+          },
+          {
+            "when": "**WHEN** the supervisor selects a duty and scrolls with the chevron keys",
+            "then": "**THEN** each individual duty's details can be viewed"
+          }
+        ],
+        "expected": "Duty Information opens with correct text + chevron instructions, shows each duty's details on selection, scrolls, and never resets the device (regression: TIBU-21110, TIBU-21138, TIBU-21323, TIBU-21325, TIBU-27443, TIBU-21367, TIBU-22643)."
+      }
+    },
+    {
+      "ref": "C4099954",
+      "case_id": 4099954,
+      "title": "Technician — Display Settings",
+      "section_path": [
+        "Functional",
+        "Technician",
+        "Device Settings"
+      ],
+      "feature": "Device Settings",
+      "device": "POS",
+      "priority": "Low",
+      "priority_id": 4,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "TIBU-21129",
+      "gherkin": {
+        "given": "**GIVEN** a technician is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the technician opens Display Settings and adjusts the level",
+            "then": "**THEN** the screen indicates the current level"
+          }
+        ],
+        "expected": "Display Settings clearly indicates the current level while adjusting (regression: TIBU-21129)."
+      }
+    }
+  ]
+}

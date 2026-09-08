@@ -1,0 +1,606 @@
+{
+  "2700890": {
+    "id": 2700890,
+    "title": "Secondary Communication Failover Method",
+    "section_id": 557376,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-2746.0",
+    "created_by": 97,
+    "created_on": 1648624724,
+    "updated_by": 97,
+    "updated_on": 1649687153,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 7,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "To verify the platform validator continues to operate when the ethernet network fails and moves over to cellular",
+    "custom_preconds": "**GIVEN** the ethernet is disconnected from the platform validator and is running on cellular\r\n**AND** the user has a valid smartcard available\r\n**AND** the platform validator is on a NIR route\r\n",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user presents the smartcard to the platform validator card reader",
+        "expected": "**THEN** the 'Validation Success' screen is displayed"
+      },
+      {
+        "content": "**WHEN** the user removes the smartcard from the platform validator card reader",
+        "expected": "**THEN** the 'Home Screen' is displayed"
+      },
+      {
+        "content": "**WHEN** the CloudFare activity logs are checked",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing the data in Smartrack",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing the data in Merit",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing data in Merit Web Reporter",
+        "expected": "**THEN** the transaction can be identified"
+      }
+    ],
+    "custom_expected": "**THEN** the platform validator continues to operate as normal",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4073875": {
+    "id": 4073875,
+    "title": "FEIG Update Fails if Device Group Lacks TID/TK, but PV App Software Still Updates",
+    "section_id": 881810,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 135,
+    "created_on": 1757920701,
+    "updated_by": 135,
+    "updated_on": 1757920701,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": null,
+    "custom_preconds": "**GIVEN** A device group for the selected PV Device and FEIG Device is created and configured in CloudFare\r\n**AND** The device group lacks a TID and TK\r\n**AND** A PV and FEIG dataset is created in CloudFare\r\n**AND** the PV dataset includes a new application software version (e.g. cEMVcapablebuild.zip)\r\n**AND** the FEIG dataset includes updates for Transparent App, PCA, and FEIG OS\r\n**AND** the PV devices in the group are missing valid TerminalId and TransactionKey values",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** The full dataset (PV + FEIG) is deployed to the device group via TMS",
+        "expected": "**THEN** The PV application software should be successfully updated\n**BUT** The FEIG firmware update should fail due to missing TerminalId and TransactionKey\n**AND** The new software version should be visible in CloudFare\n**AND** The FEIG devices should remain on their previous version\n**AND** A failure status or exception should be logged in CloudFare for the FEIG update"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091898": {
+    "id": 4091898,
+    "title": "TIBU-25548 - TL PV : SIM ID is not being sent to CF and so not visible in Asset Manager",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-25548",
+    "created_by": 135,
+    "created_on": 1769433097,
+    "updated_by": 135,
+    "updated_on": 1769433410,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "It appears that in the later releases (3.0.0 onwards we think), the SIM ID is not being reported to CF as an asset record, and so is not being shown under the associated assets in CF. See attached screenshot (PV 2313 Asset Manager) of one of our test PVs, which does definitely have a SIM installed (as per attached tech screen PV 2313 Cellular Connected). The SIM ID should be displayed in the Associated Assets section on the right hand side. ",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the PV has a SIM installed ",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the PV is viewed in Asset Manager on Cloudfare",
+        "expected": "**THEN** the SIM ID is visible under the Associated Assets section in Asset Manager"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091908": {
+    "id": 4091908,
+    "title": "TIBU-26303 - Missing Network Interface screen is displayed when trying to access Network Setting on Technician Menu",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-26303",
+    "created_by": 135,
+    "created_on": 1769600635,
+    "updated_by": 135,
+    "updated_on": 1769601288,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 15,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "PV v3.1.2\r\n\r\nMissing Network Interface screen is displayed when trying to access Network Setting on Technician Menu. ",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the device has both ethernet and cellular connection",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user signs into technician",
+        "expected": "**THEN** the technician menu is displayed"
+      },
+      {
+        "content": "**WHEN** the user selects Network Setting ",
+        "expected": "**THEN** the Network Settings page is displayed\n**AND** the Network Interfaces for Ethernet and Cellular are dsiplayed"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091911": {
+    "id": 4091911,
+    "title": "TIBU-27289 - No event for barcode reader dropouts",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-27289",
+    "created_by": 135,
+    "created_on": 1769613358,
+    "updated_by": 135,
+    "updated_on": 1769614094,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 18,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Version: v3.1.2 (NIR)\r\n\r\nActual: Unlike the GV there is no event that triggers when there is a barcode reader dropout on the PV\r\n\r\nExpected: An event should trigger when the barcode reader drops out (much like GV)\r\n\r\nSteps:\r\n\r\nSimulate a barcode reader dropout by disconnecting the barcode reader USB\r\n\r\nBarcode functionality will not trigger any more\r\n\r\nActual Result:\r\n\r\nNotice in Cloudfare how there is no event for the dropout\r\n\r\nExpected Result:\r\n\r\nEvent code 941 should be raised and then when the barcode reader is able to be connected to again then the 941 event should be cleared",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** a barcode reader is connected to the PV",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user disconnects the barcode reader from the PV",
+        "expected": "**THEN** barcodes not available banner is displayed on the PV\n**AND** the event for the barcode not available is displayed in Activity Log "
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091912": {
+    "id": 4091912,
+    "title": "TIBU-27324 - Audible Beep functionality for MUB validation not performing as expected",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-27324",
+    "created_by": 135,
+    "created_on": 1769614873,
+    "updated_by": 135,
+    "updated_on": 1769615989,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 19,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Version: 3.1.2\r\n\r\nDetail: NIR PV is not performing the correct validation beeps when presenting MUBs for specific product types. This includes Senior/Concession and child MUBs purchased from HHD, TVM or mLink (where applicable)\r\n\r\nActual: \r\n\r\nAdult (Local and XB) - Single validation beep\r\n\r\nChild (Local and XB) - Single validation beep\r\n\r\nStudent XB - Single validation beep\r\n\r\nHalf Fare - Single validation beep\r\n\r\nyLink - Single validation beep\r\n\r\n24+ - Single validation beep\r\n\r\nSenior/Concession (All types - Local and XB) - Single validation beep\r\n\r\nPRV-A - Single validation beep\r\n\r\nPRV-C - Single validation beep\r\n\r\nUnemployed - Single validation beep\r\n\r\nExpected: \r\n\r\nAdult (Local and XB) - Single validation beep\r\n\r\nChild (Local and XB) - Double validation beep\r\n\r\nStudent XB - Double validation beep\r\n\r\nHalf Fare - Double validation beep\r\n\r\nyLink - Double validation beep\r\n\r\n24+ - Double validation beep\r\n\r\nSenior/Concession (All types - Local and XB) - Double validation beep\r\n\r\nPRV-A - Single validation beep\r\n\r\nPRV-C - Double validation beep\r\n\r\nUnemployed - Single validation beep",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the barcode reader is connected to the PV",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user presents a barcode for the following products:\n\nAdult (Local and XB)\n\nChild (Local and XB)\n\nStudent XB \n\nHalf Fare \n\nyLink \n\n24+ \n\nSenior/Concession (All types - Local and XB)\n\nPRV-A - \n\nPRV-C - \n\nUnemployed ",
+        "expected": "**THEN** the following Audible Beep for each products:\n\nAdult (Local and XB) - Single validation beep\n\nChild (Local and XB) - Double validation beep\n\nStudent XB - Double validation beep\n\nHalf Fare - Double validation beep\n\nyLink - Double validation beep\n\n24+ - Double validation beep\n\nSenior/Concession (All types - Local and XB) - Double validation beep\n\nPRV-A - Single validation beep\n\nPRV-C - Double validation beep\n\nUnemployed - Single validation beep"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091913": {
+    "id": 4091913,
+    "title": "TIBU-28139 - Remote logging isn't working for PV devices",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 135,
+    "created_on": 1769616119,
+    "updated_by": 135,
+    "updated_on": 1769616119,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 20,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": null,
+    "custom_preconds": null,
+    "custom_steps_seperated": null,
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null
+  },
+  "4060881": {
+    "id": 4060881,
+    "title": "TIBU-22250: Barcodes/Smartcodes not accepted banner does not fully disappear when readers are available",
+    "section_id": 875271,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 93,
+    "created_on": 1748355711,
+    "updated_by": 93,
+    "updated_on": 1748416781,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "When the barcode/smartcard reader is disconnected the banner displays correctly, however when either one is disconnected and reconnected, a small part of the banner remains on the bottom right corner of the screen. ",
+    "custom_preconds": "**GIVEN** The PV is in service\r\n**AND** The PV has both the Barcode reader, Smartcard Reader connected",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** The User disconnects the Barcode Reader",
+        "expected": "**THEN** the Barcode Reader not connected banner is displayed"
+      },
+      {
+        "content": "**WHEN** The User disconnects the Smartcard Reader",
+        "expected": "**THEN** The Smartcard Reader not connected is displayed"
+      },
+      {
+        "content": "**WHEN** Both Readers are reconnected to the PV",
+        "expected": "**THEN** There is no evidence of the not connected banners on screen"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "3275577": {
+    "id": 3275577,
+    "title": "Audible Feedback on Card Presentation",
+    "section_id": 728150,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-1687.0",
+    "created_by": 93,
+    "created_on": 1704795893,
+    "updated_by": 93,
+    "updated_on": 1727767465,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 1,
+    "custom_revstatus": 3,
+    "custom_autoconfirmation": false,
+    "custom_preface": "To verify that a card's presentation is accompanied by a relevant tone",
+    "custom_preconds": "**GIVEN** the platform validator is in service\r\n**AND** the platform validator is on a Glider route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** a user presents a valid card",
+        "expected": "**THEN** the platform validator displays a successful screen\n**AND** the platform validator plays an approving tone"
+      },
+      {
+        "content": "**WHEN** a user presents an invalid card",
+        "expected": "**THEN** the platform validator displays an unsuccessful screen\n**AND** the platform validator plays a declining tone"
+      }
+    ],
+    "custom_expected": "**THEN** a valid card plays an approving tone, an invalid card plays a declining tone",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "3275969": {
+    "id": 3275969,
+    "title": "Audible Feedback on Card Presentation",
+    "section_id": 729110,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-1687.0",
+    "created_by": 93,
+    "created_on": 1704878882,
+    "updated_by": 93,
+    "updated_on": 1704878882,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 1,
+    "custom_revstatus": 3,
+    "custom_autoconfirmation": false,
+    "custom_preface": "To verify that a card's presentation is accompanied by a relevant tone",
+    "custom_preconds": "**GIVEN** the platform validator is in service\r\n**AND** the platform validator is on a Glider route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** a user presents a valid card",
+        "expected": "**THEN** the platform validator displays a successful screen\n**AND** the platform validator plays an approving tone"
+      },
+      {
+        "content": "**WHEN** a user presents an invalid card",
+        "expected": "**THEN** the platform validator displays an unsuccessful screen\n**AND** the platform validator plays a declining tone"
+      }
+    ],
+    "custom_expected": "**THEN** a valid card plays an approving tone, an invalid card plays a declining tone",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "3275939": {
+    "id": 3275939,
+    "title": "Secondary Commnication Failover Method",
+    "section_id": 729083,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-2746.0",
+    "created_by": 93,
+    "created_on": 1704796766,
+    "updated_by": 93,
+    "updated_on": 1704796766,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 7,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "To verify the platform validator continues to operate when the ethernet network fails and moves over to cellular",
+    "custom_preconds": "**GIVEN** the ethernet is disconnected from the platform validator and is running on cellular\r\n**AND** the user has a valid smartcard available\r\n**AND** the platform validator is on a Glider route\r\n",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user presents the smartcard to the platform validator card reader",
+        "expected": "**THEN** the 'Validation Success' screen is displayed"
+      },
+      {
+        "content": "**WHEN** the user removes the smartcard from the platform validator card reader",
+        "expected": "**THEN** the 'Home Screen' is displayed"
+      },
+      {
+        "content": "**WHEN** the CloudFare activity logs are checked",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing the data in Smartrack",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing the data in Merit",
+        "expected": "**THEN** the transaction can be identified"
+      },
+      {
+        "content": "**WHEN** reviewing data in Merit Web Reporter",
+        "expected": "**THEN** the transaction can be identified"
+      }
+    ],
+    "custom_expected": "**THEN** the platform validator continues to operate as normal",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4073767": {
+    "id": 4073767,
+    "title": "FEIG Update Fails if Device Group Lacks TID/TK, but PV App Software Still Updates",
+    "section_id": 881778,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 93,
+    "created_on": 1757490641,
+    "updated_by": 93,
+    "updated_on": 1757490641,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": null,
+    "custom_preconds": null,
+    "custom_steps_seperated": null,
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null
+  },
+  "2224519": {
+    "id": 2224519,
+    "title": "Daylight Saving - A PV set to GMT updates its time to BST when disconnected from the BOS",
+    "section_id": 440383,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-0008.0",
+    "created_by": 64,
+    "created_on": 1604317851,
+    "updated_by": 97,
+    "updated_on": 1646326103,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 1,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Verifies the platform validator correctly updates its time from GMT to BST when disconnected from the BOS.",
+    "custom_preconds": "**GIVEN** the platform validator is disconnected from the BOS\r\n**AND** the platform validator is set to GMT\r\n**AND** the platform validator is on a Glider route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the daylight saving time occurs",
+        "expected": "**THEN** the platform validator time is incremented by one hour"
+      }
+    ],
+    "custom_expected": "**THEN** the time is incremented by one hour when daylight saving time occurs",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "2224520": {
+    "id": 2224520,
+    "title": "Daylight Saving - A PV set to BST updates its time to GMT when disconnected from the BOS",
+    "section_id": 440383,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-0008.0",
+    "created_by": 64,
+    "created_on": 1604317851,
+    "updated_by": 97,
+    "updated_on": 1646381663,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Verifies the platform validator correctly updates its time from BST to GMT when disconnected from the BOS.",
+    "custom_preconds": "**GIVEN** the platform validator is disconnected from the BOS\r\n**AND** the platform validator is set to BST\r\n**AND** the platform validator is on the Glider route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN**  GMT time occurs",
+        "expected": "**THEN** the platform validator time is decremented by one hour"
+      }
+    ],
+    "custom_expected": "**THEN** the platform validator is decremented by one hour",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "2668205": {
+    "id": 2668205,
+    "title": "A Platform Validator set to GMT Updates its time to BST when Disconnected from the BOS",
+    "section_id": 557670,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-0008.0",
+    "created_by": 97,
+    "created_on": 1645611488,
+    "updated_by": 97,
+    "updated_on": 1649687321,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 1,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Verifies that the platform validator correctly updates its time from GMT to BST when disconnected from the BOS",
+    "custom_preconds": "**GIVEN** the platform validator is disconnected from the BOS\r\n**AND** the platform validator is set to GMT\r\n**AND** the platform validator is on a NIR route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the daylight saving time occurs",
+        "expected": "**THEN** the platform validator time is incremented by one hour"
+      }
+    ],
+    "custom_expected": "**THEN** the time is incremented by one hour when daylight saving time occurs",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "2668235": {
+    "id": 2668235,
+    "title": "A Platform Validator set to BST Updates its time to GMT when Disconnected from the BOS",
+    "section_id": 557670,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "REQ-0008.0",
+    "created_by": 97,
+    "created_on": 1645618953,
+    "updated_by": 97,
+    "updated_on": 1649687325,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Verifies the platform validator correctly updates its time from BST to GMT when disconnected from the BOS",
+    "custom_preconds": "**GIVEN** the platform validator is disconnected from the BOS\r\n**AND** the platform validator is set to BST\r\n**AND** the platform validator is on a NIR route",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** GMT time occurs",
+        "expected": "**THEN** the platform validator time is decremented by one hour"
+      }
+    ],
+    "custom_expected": "**THEN** the platform validator is decremented by one hour",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  }
+}

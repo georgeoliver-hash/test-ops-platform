@@ -1,0 +1,2277 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "2.1-Backoffice Systems - ABT DO NOT USE for Testing",
+  "suite_id": 16275,
+  "generated_at": "2026-06-23T14:04:53.132627Z",
+  "cases": [
+    {
+      "case_id": 2923031,
+      "title": "Passenger Portal - Sign-On - Anonymous Accounts - Navigation and Styling",
+      "section_id": 622510,
+      "section_path": "Anonymous Account",
+      "refs": [
+        "REQ-3561"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** that a user logs in to the ABT Passenger Portal\r\n**When** the card details are valid for a card that has performed any number of journeys in the previous seven days\r\n**Then** the user will be signed on\r\n\r\nNote 1: Passenger portal for SAT will be: https://passengerweb-uktest-tl2-env1.albedo-gen.co.uk\r\nNote 2: Anonymous login will redirect directly to card login hosted by NMI",
+      "updated_on": "2022-12-08T14:51:34Z"
+    },
+    {
+      "case_id": 2923032,
+      "title": "Passenger Portal - Sign-On - Invalid Details Entered",
+      "section_id": 622510,
+      "section_path": "Anonymous Account",
+      "refs": [
+        "REQ-3561"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a user enters invalid details during sign-on\r\n**Then** the user will be prevented from signing on \r\n\r\n\r\nNote 1: Passenger portal for SAT will be: https://passengerweb-uktest-tl2-env1.albedo-gen.co.uk\r\nNote 2: Anonymous login will redirect directly to card login hosted by NMI",
+      "updated_on": "2022-12-08T14:51:34Z"
+    },
+    {
+      "case_id": 2923033,
+      "title": "Passenger Portal - Sign-On - No Journeys",
+      "section_id": 622510,
+      "section_path": "Anonymous Account",
+      "refs": [
+        "REQ-3561"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**Given** a user attempts to sign in to the Passenger Portal using card details where no Journeys have taken place in the previous seven days\r\n**Then** the Passenger Portal will prevent the user from signing on\r\n\r\nNote 1: Passenger portal for SAT will be: https://passengerweb-uktest-tl2-env1.albedo-gen.co.uk\r\nNote 2: Anonymous login will redirect directly to card login hosted by NMI",
+      "updated_on": "2022-12-08T14:51:34Z"
+    },
+    {
+      "case_id": 2923034,
+      "title": "Passenger Portal - Sign-On - Mobile Wallet",
+      "section_id": 622510,
+      "section_path": "Anonymous Account",
+      "refs": [
+        "REQ-3561"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** that a user logs in to the ABT Passenger Portal\r\n**When** the card details are valid for a card that has performed any number of journeys in the previous seven days\r\n**And** the Journeys were performed using a mobile wallet (Apple/Google/Samsung/Etc)\r\n**Then** the user will be signed on\r\n\r\nNote 1: Passenger portal for SAT will be: https://passengerweb-uktest-tl2-env1.albedo-gen.co.uk\r\nNote 2: Anonymous login will redirect directly to card login hosted by NMI",
+      "updated_on": "2022-12-08T14:51:34Z"
+    },
+    {
+      "case_id": 2923035,
+      "title": "Passenger Portal - Payment Card - Transaction History",
+      "section_id": 622511,
+      "section_path": "Anonymous Account / Payment Card",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The following test will demonstrate that taps performed with a given payment card can be viewed and printed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923036,
+      "title": "Passenger Portal - Payment Card - Journey History",
+      "section_id": 622511,
+      "section_path": "Anonymous Account / Payment Card",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "The following test will demonstrate that taps performed with a given payment card can be viewed and printed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923037,
+      "title": "Passenger Portal - Payment Card - Refund Request",
+      "section_id": 622511,
+      "section_path": "Anonymous Account / Payment Card",
+      "refs": [
+        "REQ-3388",
+        "REQ-3500"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a user has signed onto their account page\r\n**When** the Account Home page is displayed\r\n**AND** a summary of the card details, account ID, account balance and journey/transaction history will be displayed\r\n**AND** an option to view journeys in more detail is available\r\n**AND** an option to view transactions in more detail is available\r\n**AND** an option to request support is available\r\n**AND** an option to log out is available",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923038,
+      "title": "Passenger Portal - Payment Card - Retry Payment",
+      "section_id": 622511,
+      "section_path": "Anonymous Account / Payment Card",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a user has signed onto their account page\n**And** the Account Home page is displayed\n**AND** a summary of the card details, account ID, account balance and journey/transaction history will be displayed\n**AND** an option to view journeys in more detail is available\n**AND** an option to view transactions in more detail is available\n**AND** an option to request support is available\n**AND** an option to log out is available\n**And** the account has had a failed transaction in the past 7 days ",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923109,
+      "title": "Passenger Portal - Mobile Wallet - Transaction History",
+      "section_id": 622512,
+      "section_path": "Anonymous Account / Mobile Wallet",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a user has signed onto their account page\r\n**AND** the Account Home page is displayed\r\n**AND** a summary of the card details, account ID, account balance and journey/transaction history is displayed\r\n**AND** an option to view journeys in more detail is available\r\n**AND** an option to view transactions in more detail is available\r\n**AND** an option to request support is available\r\n**AND** an option to log out is available",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923110,
+      "title": "Passenger Portal - Mobile Wallet - Journey History",
+      "section_id": 622512,
+      "section_path": "Anonymous Account / Mobile Wallet",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "The following test will demonstrate that taps performed with a given Mobile Device can be viewed and printed",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923111,
+      "title": "Passenger Portal - Mobile Wallet - Refund Request",
+      "section_id": 622512,
+      "section_path": "Anonymous Account / Mobile Wallet",
+      "refs": [
+        "REQ-3388",
+        "REQ-3500"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a user has signed onto their account page\r\n**When** the Account Home page is displayed\r\n**AND** a summary of the card details associated with the mobile wallet, account ID, account balance and journey/transaction history will be displayed\r\n**AND** an option to view journeys in more detail is available\r\n**AND** an option to view transactions in more detail is available\r\n**AND** an option to request support is available\r\n**AND** an option to log out is available",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923112,
+      "title": "Passenger Portal - Mobile Wallet - Retry Payment",
+      "section_id": 622512,
+      "section_path": "Anonymous Account / Mobile Wallet",
+      "refs": [
+        "REQ-3388"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a user has signed onto their account page\n**And** the Account Home page is displayed\n**AND** a summary of the card details associated with the mobile wallet, account ID, account balance and journey/transaction history will be displayed\n**AND** an option to view journeys in more detail is available\n**AND** an option to view transactions in more detail is available\n**AND** an option to request support is available\n**AND** an option to log out is available\n**And** the account has had a failed transaction in the past 7 days ",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923039,
+      "title": "Operator Portal - Sign-On and Navigation",
+      "section_id": 622513,
+      "section_path": "Operator Web Portal",
+      "refs": [
+        "REQ-3390",
+        "REQ-3402"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a user wishes to sign on to the ABT Operator Portal\r\n**AND** the Operator Portal sign-on page is displayed\r\n**And** the user account details has Admin rights \r\n\r\nNote 1: Operator portal for SAT will be: https://operatorweb-uktest-tl-env3.albedo-gen.co.uk/",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923085,
+      "title": "Operator Portal - Menu options",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923086,
+      "title": "Operator Portal - User Type Filter",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is logged in \r\n**AND** on the Customer Information page\r\n**AND** is viewing 'All Users'",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923087,
+      "title": "Operator Portal - View Next or Previous Pages of Users",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** on the Customer Information \r\n**AND** is viewing page 1 of users",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923088,
+      "title": "Operator Portal - Operator can Search for a Card or Customer",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3404"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An Operator needs to locate a particular card or customer\r\n**And** the Operator knows the data for at least one of the below search criteria:\r\n\r\n* cEMV Masked PAN\r\n* Transaction reference      \r\n* Email address\r\n* Smartcard number **Currently Not In Scope**\r\n* Name (First name/Surname)\r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923089,
+      "title": "Operator Portal - Select Customer's Card Account",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** the Customer Information page is displayed",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923090,
+      "title": "Operator Portal - Customer Information - Account",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customer's card \r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923091,
+      "title": "Operator Portal - Customer Information - Journey History -View Tap/Journey Details",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3407"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a device has been registered with CloudFare-ABT system\r\n**When** a customer has performed a Tap transaction on the device successfully\r\n**And** the user is signed into the Operator Portal\r\n**AND** the Customer Information page is displayed \r\n**AND** the user has selected the customers card account",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923092,
+      "title": "Operator Portal - Customer Information - Journey History - Filter View Tap/Journey Details",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3407"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a device has been registered with CloudFare-ABT system\r\n**When** a customer has performed a Tap transactions on the device successfully\r\n**And** the user is signed into the Operator Portal\r\n**AND** the Customer Information page is displayed \r\n**AND** the user has selected the customers card account",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923093,
+      "title": "Customer Portal - Customer Information - Journey History - Previous/Next Page of Results",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customers card account\r\n**AND** has navigated to Journey History\r\n**AND** the customer has enough transactions for there to be more than one page",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923094,
+      "title": "Customer Portal - Customer Information - Journey History - Scroll functionality",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customer's card account\r\n**AND** has navigated to Journey History\r\n**AND** there is enough transactions so that the scroll bar is displayed",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923095,
+      "title": "Operator Portal - Customer Information  - Journey History - Show More/Less",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customer's card\r\n**AND** has selected Journey History\r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923096,
+      "title": "Operator Portal - Customer Information - Journey History - Show More/Less for Two or More Transactions",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "GIVEN the user is signed in\r\nAND has selected a customer's card\r\nAND has selected Journey History",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923097,
+      "title": "Operator Portal - Customer Information - Transaction History - View Tap/Transaction Details",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3407"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a device has been registered with CloudFare-ABT system\r\n**When** a customer has performed a Tap transaction on the device successfully\r\n**And** the user is signed into the Operator Portal\r\n**AND** the Customer Information page is displayed \r\n**AND** the user has selected the customers card account",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923098,
+      "title": "Operator Portal - Customer Information - Transaction History - Filter View Tap/Journey Details",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3407"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a device has been registered with CloudFare-ABT system\r\n**When** a customer has performed a Tap transactions on the device successfully\r\n**And** the user is signed into the Operator Portal\r\n**AND** the Customer Information page is displayed \r\n**AND** the user has selected the customers card account",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923099,
+      "title": "Customer Portal - Customer Information - Transaction History - Previous/Next Page of Results",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customers card account\r\n**AND** has navigated to Transaction History\r\n**AND** the customer has enough transactions for there to be more than one page",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923100,
+      "title": "Operator Portal - Customer Information - Transaction History - Refund Payment",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-1712",
+        "REQ-2662",
+        "REQ-3405",
+        "REQ-3501"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a refund has been requested for a given transaction\r\n**And** the user is signed into the Operator Portal with sufficient privileges to queue a Refund Request for Authorisation\r\n**And** the transaction history for a card is displayed in Operator Portal &gt; Customer Information &gt; Account View &gt; Transaction History\r\n**And** a payment is available for refund ",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923101,
+      "title": "Operator Portal - Customer Information - Transaction History - Refund Payment - Entered value exceeds payment value",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-1712"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a refund has been requested for a given transaction\r\n**And** the user is signed into the Operator Portal with sufficient privileges to queue a Refund Request for Authorisation\r\n**And** the transaction history for a card is displayed in Operator Portal &gt; Customer Information &gt; Account View &gt; Transaction History\r\n**And** a payment is available for refund ",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923102,
+      "title": "Operator Portal - Customer Information - Aftercare",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** the user has selected a customers card account on Customer Information\r\n**AND** the user is on the Account page",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923103,
+      "title": "Operator Portal - Customer Information - Aftercare - Add Comment",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3404"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** the user is on the Customer Information page\r\n**And** a table of customer accounts is available to view and filter\r\n**And** there is an account with a General or refund query submitted",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923104,
+      "title": "Operator Portal - Customer Information - Aftercare - Operator Query - Submit",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3404"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** the user is on the Customer Information page\r\n**And** a table of customer accounts is available to view and filter\r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923105,
+      "title": "Operator Portal - Customer Information - Aftercare - Operator Query - Cancel",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3404"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** the user is on the Customer Information page\r\n**And** a table of customer accounts is available to view and filter\r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923106,
+      "title": "Operator Portal - Customer Information - Aftercare - Operator Query - Cancel with No Data Entered",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [
+        "REQ-3404"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** the user is on the Customer Information page\r\n**And** a table of customer accounts is available to view and filter\r\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923107,
+      "title": "Customer Portal - Customer Information - Aftercare - Previous/Next Page of Results",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected a customers card account\r\n**AND** has navigated to Aftercare\r\n**AND** there are enough entries for multiple pages ",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923108,
+      "title": "Operator Portal -  Operator can log out",
+      "section_id": 622515,
+      "section_path": "Operator Web Portal / Customers / Customer Information",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**Given** An operator needs to log out of the Operator Portal ",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923117,
+      "title": "Operator Portal - Authorisations - Table Contents",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923118,
+      "title": "Operator Portal - Authorisations - Refund Request Approved",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [
+        "REQ-2662",
+        "REQ-3405",
+        "REQ-3408",
+        "REQ-3409",
+        "REQ-3501"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** that an ABT Operator has prepared and processed a refund request for a customer\r\n**And** the user is required to provide 2nd Level of Approval\r\n**And** the Operator Portal is on the Authorisations page ",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923119,
+      "title": "Operator Portal - Authorisations - Refund Request Approved and Declined",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [
+        "REQ-2662",
+        "REQ-3405",
+        "REQ-3408",
+        "REQ-3409",
+        "REQ-3501"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** that an ABT Operator has prepared and processed a refund request for a customer\r\n**And** the user is required to provide 2nd Level of Approval\r\n**And** the Operator Portal is on the Authorisations page ",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923120,
+      "title": "Operator Portal - Authorisations - Refund Request Rejected",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [
+        "REQ-2662",
+        "REQ-3405",
+        "REQ-3408",
+        "REQ-3409",
+        "REQ-3501"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** that an ABT Operator has prepared and processed a refund request for a customer\r\n**AND** the user is required to provide 2nd Level of Approval\r\n**AND** the Operator Portal is on the Authorisations page ",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923121,
+      "title": "Customer Portal - Authoristations - Previous/Next Page of Results",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** has selected Authorisations on the menu\r\n**AND** there are enough data entries for there to be more than one page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923122,
+      "title": "Operator Portal - Authorisations - Select Account ID",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in \r\n**AND** on the Authorisation page\r\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923123,
+      "title": "Operator Portal - Authorisations - Reject All",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [
+        "REQ-2662"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** the is on the Authorisation page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923124,
+      "title": "Operator Portal - Authorisations - Accept All",
+      "section_id": 622516,
+      "section_path": "Operator Web Portal / Customers / Authorisations",
+      "refs": [
+        "REQ-2662"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** the is on the Authorisation page\r\n**THEN** the options to 'Cancel' or 'Reject Refund' is displayed",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923125,
+      "title": "Operator Portal - Navigation of Menu Options",
+      "section_id": 622517,
+      "section_path": "Operator Web Portal / Customers / Navigation",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** on the Customers page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923126,
+      "title": "Operator Portal - Price Capping - Information Icon",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** on the Price Capping page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923127,
+      "title": "Operator Portal - Price Capping - Administrator Can Configure Daily Capping Rules",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [
+        "REQ-3381",
+        "REQ-3504",
+        "REQ-3560"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** an Operator has signed in to the Operator Web Portal\r\n**And** the End of the Operating Day has been configured\r\n**When** they configure a Daily capping Rule\r\n**And** a customer performs transactions within a single operating day that would otherwise aggregate to a cost more than the configured Daily cap\r\n**Then** the System will apply the Daily Capping rule \r\n**And** the customer will be charged the reduced amount for their days travel",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923128,
+      "title": "Operator Portal - Price Capping - Add Daily Price Cap",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user has signed in\r\n**AND** is viewing the Daily Capping page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923129,
+      "title": "Operator Portal - Price Capping - Edit Daily Price Cap",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user has signed in\r\n**AND** is viewing the Daily Capping page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923130,
+      "title": "Operator Portal - Price Capping - Daily, Weekly and Monthly Capping Rules",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923131,
+      "title": "Operator Portal - Price Capping - View Daily Capping Rule",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** in the Price Capping page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923132,
+      "title": "Operating Portal - Price Capping - Deactivate Capping Rule",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** on the Price Capping Page\r\n**AND** has selected a Price Cap Rule",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923133,
+      "title": "Operating Portal - Price Capping - Archive Capping Rule",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in\r\n**AND** on the Price Capping Page\r\n**AND** has selected a Price Cap Rule that is deactivated",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923134,
+      "title": "Operator Portal - Price Capping - Add Weekly Price Cap",
+      "section_id": 622518,
+      "section_path": "Operator Web Portal / ABT Capping Rules",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user has signed in\r\n**AND** is viewing the Weekly Capping page",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923040,
+      "title": "Operator can run a Debt Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3435",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923041,
+      "title": "Operator can run a Retail Debt Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "https://jira.flowbird.group/browse/CA-11724\r\n\r\nDebt Summary - remain the same\r\n\r\nDebt Recovery Summary - Remove the following fields as they are not applicable:\r\n\r\nTap attempts\r\nCustomer online attempts\r\nOperator online attempts\r\n\r\nThe Debt Report detail to contain the following columns:\r\n\r\nDate/Time\r\nAutomatic debt retires\r\nRemaining\r\nAmount\r\nBrand\r\nMasked PAN\r\nTransaction Reference\r\n \r\n\r\nTechnical design\r\n\r\nThe current debt report already collects retail transaction debts as well\r\nThe detail of wether the transaction type is retail or op is found in Transaction -> PaymentSchema column. When loading debts, the transaction table is linked as well through the AbtTransactionID column, therefore the information can be obtained for use inside the report as well.\r\nTransaction table seems to be missing an index on (AbtTransactionID, OperatorID) which is used in queries, should be added.\r\nUpdate Manager / Repository level implementation of debt report to accept 'Payment Schema' filter.\r\nUpdate existing Debt Report endpoint to specify (controller level, not UI, so internally) Payment Schema to 'op' so debt report displays only op-related debts\r\nCreate UI for the new Debt Report (Retail) with the details above)\r\nCreate new endpoint in the OWG for the debt report (retail) similar to op one, but specifying Payment Schema = 'retail'\r\nAdd a new role for the new report\r\nLink to debt report details (to update in case of changes): Reporting - ABT - How they work (technical & business wise) - Cloudfare ABT - Flowbird Confluence",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923042,
+      "title": "Operator can run a Revenue by MID report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923043,
+      "title": "Operator can run an Action List Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3436",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923044,
+      "title": "Operator can run a Account Status Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3438",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923045,
+      "title": "Operator can run a Refund Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3439",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**Given** an ABT Operator is signed into the Operator Web Portal\r\n**When** they select to run a Refund Request Report\r\n**Then** the Refund Request Report is generated and displayed\r\n**And** the report can be exported in the following formats:\r\n\r\n* PDF\r\n* CSV\r\n* XLS",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923046,
+      "title": "Operator can run an Activity by Merchant ID (MID) Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3440",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923047,
+      "title": "Operator can run an Exception Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-2662",
+        "REQ-3442",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923048,
+      "title": "Operator can run an EMV Summary Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-2662",
+        "REQ-3457",
+        "REQ-3491"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923049,
+      "title": "Operator can run an EMV Transaction Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-2662",
+        "REQ-3457",
+        "REQ-3492"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923050,
+      "title": "Operator can run a Lost Tap Data Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [
+        "REQ-3457",
+        "REQ-3533"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923051,
+      "title": "Operator can run an Aftercare Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923052,
+      "title": "Operator can run an Authorisation Failures Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923053,
+      "title": "Operator can run a Cancelled Tap Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923054,
+      "title": "Operator can run a Declined Card Tap Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923055,
+      "title": "Operator can run a Deny List Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923056,
+      "title": "Operator can run a Expired Tap Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923057,
+      "title": "Operator can run a Forced Settles Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923058,
+      "title": "Operator can run a Inspection Details Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923059,
+      "title": "Operator can run a Journeys Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923060,
+      "title": "Operator can run a Late Taps Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923061,
+      "title": "Operator can run a Retail Transactions Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923062,
+      "title": "Operator can run a Revenue Inspectors Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923063,
+      "title": "Operator can run a Summary Retail Transaction Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923064,
+      "title": "Operator can run a Transaction Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923065,
+      "title": "Operator can run a Unique Taps Report",
+      "section_id": 622519,
+      "section_path": "Operator Web Portal / Reports Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923176,
+      "title": "Operator Can run an Account Status Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923177,
+      "title": "Operator can run an Action List Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3436",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923178,
+      "title": "Operator can run an Aftercare Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923179,
+      "title": "Operator can run an Authorisation Failures Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923180,
+      "title": "Operator can run a Cancelled Tap Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923181,
+      "title": "Operator can run a Debt Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3435",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923182,
+      "title": "Operator can run a Duplicate Taps Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923183,
+      "title": "Operator can run an EMV Summary Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3457",
+        "REQ-3491"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923184,
+      "title": "Operator can run an ePurse Balance Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3441"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**Given** an ABT Operator is signed into the Operator Web Portal",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923185,
+      "title": "Operator can view Expired Card Taps",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923186,
+      "title": "Operator can view a Forced Settle Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923187,
+      "title": "Operator can run an Initial Taps by brand Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923188,
+      "title": "Operator can run a Journey Summary Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923189,
+      "title": "Operator can run a Journeys By Card Scheme Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923190,
+      "title": "Operator can run a Journeys by Service/Route Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923191,
+      "title": "Operator can run a Refunds Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3439"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923192,
+      "title": "Operator can run a Retail Transactions Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923193,
+      "title": "Operator can run a Revenue Apportionment Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923194,
+      "title": "Operator can run a Revenue by Business Rule Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923195,
+      "title": "Operator can run a Revenue by MID Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3440"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923196,
+      "title": "Operator can run a Revenue Inspection Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3437"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923197,
+      "title": "Operator can run a Summary Retail Transaction Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923198,
+      "title": "Operator can run a Unique Taps Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923199,
+      "title": "Operator can run a Late Taps Report",
+      "section_id": 622520,
+      "section_path": "Operator Web Portal / Reports Management / Spreadsheet Tests",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923145,
+      "title": "Operator Can run an Account Status Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923146,
+      "title": "Operator can run an Action List Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3436",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923147,
+      "title": "Operator can run an Aftercare Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923148,
+      "title": "Operator can run an Authorisation Failures Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923149,
+      "title": "Operator can run a Cancelled Tap Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923150,
+      "title": "Operator can run a Debt Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3435",
+        "REQ-3457"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Reports page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923151,
+      "title": "Operator can run a Duplicate Taps Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923152,
+      "title": "Operator can run an EMV Summary Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3457",
+        "REQ-3491"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923153,
+      "title": "Operator can run an ePurse Balance Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3441"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**Given** an ABT Operator is signed into the Operator Web Portal",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923154,
+      "title": "Operator can view Expired Card Taps",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923155,
+      "title": "Operator can view a Forced Settle Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923156,
+      "title": "Operator can run an Initial Taps by brand Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923157,
+      "title": "Operator can run a Journey Summary Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923158,
+      "title": "Operator can run a Journeys By Card Scheme Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923159,
+      "title": "Operator can run a Journeys by Service/Route Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923160,
+      "title": "Operator can run a Refunds Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3439"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923161,
+      "title": "Operator can run a Retail Transactions Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923162,
+      "title": "Operator can run a Revenue Apportionment Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923163,
+      "title": "Operator can run a Revenue by Business Rule Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923164,
+      "title": "Operator can run a Revenue by MID Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3440"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923165,
+      "title": "Operator can run a Revenue Inspection Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3437"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923166,
+      "title": "Operator can run a Summary Retail Transaction Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 6,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923167,
+      "title": "Operator can run a Unique Taps Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923168,
+      "title": "Operator can run a Late Taps Report",
+      "section_id": 622521,
+      "section_path": "Operator Web Portal / Reports Management / Product Specification Document",
+      "refs": [
+        "REQ-3442"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an ABT Operator is signed into the Operator Web Portal\r\n**AND** the Report page is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923066,
+      "title": "Administrator can manage the Operator account access rights determine the tasks available to them",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3403"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An Administrator has access to configure operator user / sub-role type permissions\r\n**When** the Administrator configures the access rights of each operator user / sub-role type\r\n**And** the various operator users / sub-role types sign into the system\r\n**Then** only the enabled functionality is available for each user / sub-role type",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923067,
+      "title": "Administrator can configure the End of the Operational Day",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3391"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**When** the ABT Operator sets the End of the Operational Day\n**Then** each operational day will be a 24 hour period\n**And** each operational day will end at the time configured for End of the Operational Day\n**And** each subsequent operational day will begin the minute after the time configured for End of the Operational Day\n\n",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923068,
+      "title": "Administrator can configure the End of the Operational Week",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3395"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**And** the ABT Operator has set the End of the Operational Day\n**When** the ABT Operator sets the End of the Operational Week\n**Then** each operational week will be a 7 day period (start and end times based on configured End of the Operational Day)\n**And** each operational week will end on the day configured for End of the Operational Week\n**And** each subsequent operational week will begin the day after the day configured for End of the Operational Week\n\n",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923069,
+      "title": "Administrator can configure the maximum late data period",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3396"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**When** the ABT Operator sets the Maximum Late Data Period\n**Then** this Maximum Late Data Period will be used to determine how late tap data is processed\n\nAs an Administrator I want to set a maximum late data period, so that late tap data can be processed when inside the period, differently to outside the period.",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923070,
+      "title": "Administrator can configure the maximum journey duration",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3414"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An Administrator wants to configure the maximum journey duration\n**When** the Administrator sets the maximum journey duration\n**Then** this maximum journey duration will be used to determine when the maximum fare is applied",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923071,
+      "title": "Administrator can configure the max number of customer online debt recovery retry attempts",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3399"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**And**  a customers card is on the deny list \n**When** the ABT Operator sets the max number of customer online debt recovery retry attempts\n**Then** the customer  is prevented from exceeding the configured number of customer online debt retry attempts\n**And** this will limit the cost associated with this operation",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923072,
+      "title": "Administrator can configure the max number of customer tap initiated debt recovery retry attempts",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3400"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**And**  a customers card is on the deny list \n**When** the ABT Operator sets the max number of customer tap initiated debt recovery retry attempts\n**Then** the customer is prevented from exceeding the configured number of tap initiated debt retry attempts\n**And** this will limit the cost associated with this operation",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923073,
+      "title": "Administrator can configure the message displayed to a customer upon an unsuccessful debt recovery attempt",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3401"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An ABT Operator has signed into the Operator Portal\n**And**  a customers card is on the deny list \n**When** the ABT Operator sets the message to be displayed to a customer upon an unsuccessful debt recovery attempt\n**And** a customer performs an unsuccessful online debt recovery retry\n**Then** the customer is presented with the configured unsuccessful debt recovery message informing them how to rectify the issue",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923074,
+      "title": "Administrator can view all changes made to customer accounts, so that all changes can be accounted for",
+      "section_id": 622522,
+      "section_path": "Operator Web Portal / Administrator Settings Management",
+      "refs": [
+        "REQ-3415"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** An Administrator needs to check the changes that have been made to a customer's account\n**When** the Administrator views the audit history of the customer's account\n**Then** the Administrator can view the record of all the changes made to the customer's account",
+      "updated_on": "2022-12-08T14:51:35Z"
+    },
+    {
+      "case_id": 2923142,
+      "title": "Operator can view all taps even if the tap is not valid for a journey",
+      "section_id": 622523,
+      "section_path": "Operator Web Portal / Customer Services",
+      "refs": [
+        "REQ-3498"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has performed taps in the transport network on a payment card\r\n**AND** Some of these taps have been valid or invalid\r\n**WHEN** the Operator views a customer's transaction history for a given date range\r\n**THEN** the system will display all tap data for the date selected range\r\n**AND** this will include valid, invalid taps, In Progress, Late Taps etc.",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923143,
+      "title": "Corrupt tap messages are rejected and quarantined so they can be processed",
+      "section_id": 622523,
+      "section_path": "Operator Web Portal / Customer Services",
+      "refs": [
+        "REQ-3532"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a device is registered with CF-ABT\n**When** a corrupt tap message is received by the ABT system from the device\n**Then** this corrupt tap will be rejected by the journey tap service, placed in the quarantine queue and flagged\n**And** the Flowbird DevOps Team will be able to resolve this issue to prevent customers being incorrectly charged",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923144,
+      "title": "Operator Portal - Created Date Time of a Capping Rule is an Hour in the Future",
+      "section_id": 622524,
+      "section_path": "Operator Web Portal / Regression Tests",
+      "refs": [
+        "CA-9447"
+      ],
+      "priority_id": 3,
+      "type_id": 4,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the user is signed in on the Operator Portal\r\n**AND** the Price Capping tab is displayed",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923075,
+      "title": "Flowbird Administrator can manage the Issuer Liability Limit",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3398"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** Flowbird Administrator is aware of the Scheme Rules for the various payment card issuers:\n\n* Visa\n* MasterCard\n* Maestro\n\n**When** the Flowbird Administrator configures the Issuer Liability Threshold to align with the Scheme Rules\n**Then** Financial Losses will be covered up to the configured limits",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923076,
+      "title": "Flowbird Administrator can manage the UK Card Authority (UKCA) trigger limit: MasterCard",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3397"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** Flowbird Administrator is aware of the Scheme Rules for the various payment card issuers:\n\n* Visa\n* MasterCard\n* Maestro\n\n**When** the Flowbird Administrator configures the UK Card Authority (UKCA) trigger limit for MasterCard based on the corresponding Scheme Rules\n**Then** the MasterCard trigger limit will be correctly configured",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923077,
+      "title": "Declined payments are guaranteed up to the Issuer Liability Threshold: Visa",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3354"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has made a transaction on a device using a Visa payment card\n**And** the card has failed authentication for payment \n**When** the declined payment is not recovered from the customer\n**Then** the card issuer will guarantee reimbursing these losses up to the Issuer Liability threshold\n**And** the Operator's financial losses are limited\n\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923078,
+      "title": "Declined payments are guaranteed up to the Issuer Liability Threshold: MasterCard",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3354"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has made a transaction on a device using a MasterCard payment card\n**And** the card has failed authentication for payment \n**When** the declined payment is not recovered from the customer\n**Then** the card issuer will guarantee reimbursing these losses up to the Issuer Liability threshold\n**And** the Operator's financial losses are limited\n\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923079,
+      "title": "Declined payments are guaranteed up to the Issuer Liability Threshold: Maestro",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3354"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has made a transaction on a device using a Maestro payment card\n**And** the card has failed authentication for payment \n**When** the declined payment is not recovered from the customer\n**Then** the card issuer will guarantee reimbursing these losses up to the Issuer Liability threshold\n**And** the Operator's financial losses are limited\n\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923080,
+      "title": "Trigger an Account Verification Request (AVR)  on first use - Visa",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3359"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has not yet made a transaction in this Transport Network using their Visa card\n**When** the customer uses their Visa payment card to make a transaction\n**Then** an AVR will be performed so that the card can be confirmed as valid by the issuer",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923081,
+      "title": "Trigger a Pre-Authorisation check on first use each day - MasterCard",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3360"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has not yet made a transaction today in this Transport Network using their MasterCard\n**When** the customer uses their MasterCard payment card to make a transaction\n**Then** a Pre-Authorisation check will be performed so that the card can be confirmed as valid by the issuer",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923082,
+      "title": "Trigger a Pre-Authorisation check on first use following removal from Deny List - MasterCard",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3360"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has previously made transactions today in this Transport Network using their MasterCard\n**And** this earlier transaction resulted in a Pre-Authorisation check being performed\n**And** the customer's card is now on the Deny List \n**And** devices have been updated with the latest Deny List\n**When** the customer attempts to use this blocked MasterCard payment card for further transactions\n**And** this triggers a Tap Initiated Debt Recovery\n**And** the card passes authorisation for payment\n**And** the card is automatically removed from the deny list\n**Then** a Pre-Authorisation check will be performed so that the card can be confirmed as valid by the issuer\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923083,
+      "title": "Trigger a Pre-Authorisation check on first use each day - Maestro",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3361"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has not yet made a transaction today in this Transport Network using their Maestro payment card\n**When** the customer uses their Maestro payment card to make a transaction\n**Then** a Pre-Authorisation check will be performed so that the card can be confirmed as valid by the issuer",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923084,
+      "title": "Trigger a Pre-Authorisation check on first use following removal from Deny List - Maestro",
+      "section_id": 622525,
+      "section_path": "Card Verification",
+      "refs": [
+        "REQ-3361"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer has previously made transactions today in this Transport Network using their Maestro payment card\n**And** this earlier transaction resulted in a Pre-Authorisation check being performed\n**And** the customer's card is now on the Deny List \n**And** devices have been updated with the latest Deny List\n**When** the customer attempts to use this blocked Maestro payment card for further transactions\n**And** this triggers a Tap Initiated Debt Recovery\n**And** the card passes authorisation for payment\n**And** the card is automatically removed from the deny list\n**Then** a Pre-Authorisation check will be performed so that the card can be confirmed as valid by the issuer\n",
+      "updated_on": "2022-12-08T14:51:36Z"
+    },
+    {
+      "case_id": 2923113,
+      "title": "ABT processes Taps received <= 14 days from date the date a customer tapped on the device",
+      "section_id": 622526,
+      "section_path": "Late Taps",
+      "refs": [
+        "REQ-3374",
+        "REQ-3535"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer made a transaction tap on a device \n**And** Payment handling has already occurred (payment clears)\n**And** the ABT Operator has configured the Maximum Late Data Period to 14 days\n**When** the ABT system receives this tap <= 14 days from the customer's tap \n**Then** the ABT System will successfully process the tap\n**And** the system will make any necessary adjustments to charges\n**And** the customer will be charged the correct amount for their travel\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923114,
+      "title": "ABT rejects Taps received >14 days from date the date a customer tapped on the device",
+      "section_id": 622526,
+      "section_path": "Late Taps",
+      "refs": [
+        "REQ-3374"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer made a transaction tap on a device \n**And** the ABT Operator has configured the Maximum Late Data Period to 14 days\n**When** the ABT system receives this tap > 14 days from the customer's tap \n**Then** the ABT System will reject the tap and not charge the card used for the journey\n\n\nAs Transport Operator I want to process taps received up to 14 days (configurable by a Flowbird Administrator) from the date the customer taps on a device, so that fares can be calculated. \n\n\n\nNote: Taps taken from both a Payment Card or Smartcard \n\n\n\nConstraint: \n\n\n\n\tLate Date can be configured to a Maximum of 14 Days\n\n\tTaps not immediately received but within the 14 days are processed and any caps that should have been applied are done so retrospectively.\n\n\tAny taps received after the configured â€œlate periodâ€ can be identified in the â€œDebt Written Offâ€ report.  Late taps clearly flagged in the customer portal for the customer to see, in order to reduce customer service calls to the tenant.  The business rule algorithm applies the late tap and automatically recalculates the aggregated fare and makes a correction to the customer account balance on the following day of travel.\n\n\tDuplicate Taps are discarded by the system\n\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923115,
+      "title": "ABT applies capping rules retrospectively to Taps not immediately received but within the 14 days",
+      "section_id": 622526,
+      "section_path": "Late Taps",
+      "refs": [
+        "REQ-3374"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer made a transaction tap on a device \n**And** the ABT Operator has configured the Maximum Late Data Period to 14 days\n**And** active Capping Rules have been configured which will be triggered upon the receipt of this customer tap\n**When** the ABT system receives this tap <= 14 days from the customer's tap \n**And** this tap \n**Then** the ABT System will successfully process this tap\n**And** the ABT System automatically recalculates the aggregated fare \n**And** the ABT System makes a correction to the customer account balance on the following day of travel\n\n\n\nAs Transport Operator I want to process taps received up to 14 days (configurable by a Flowbird Administrator) from the date the customer taps on a device, so that fares can be calculated. \n\nNote: Taps taken from both a Payment Card or Smartcard \n\nConstraint: \n\n\tLate Date can be configured to a Maximum of 14 Days\n\n\tTaps not immediately received but within the 14 days are processed and any caps that should have been applied are done so retrospectively.\n\n\tAny taps received after the configured â€œlate periodâ€ can be identified in the â€œDebt Written Offâ€ report.  Late taps clearly flagged in the customer portal for the customer to see, in order to reduce customer service calls to the tenant.  The business rule algorithm applies the late tap and automatically recalculates the aggregated fare and makes a correction to the customer account balance on the following day of travel.\n\n\tDuplicate Taps are discarded by the system\n\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923116,
+      "title": "ABT disregards duplicate Taps received",
+      "section_id": 622526,
+      "section_path": "Late Taps",
+      "refs": [
+        "REQ-3374"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customer made a transaction tap on a device \n**And** the ABT Operator has configured the Maximum Late Data Period to 14 days\n**And** this tap has been successfully processed by the ABT System\n**When** the ABT system receives a duplicate tap <= 14 days from the original customer's tap \n**Then** the ABT System will discard this duplicate tap \n\n\nAs Transport Operator I want to process taps received up to 14 days (configurable by a Flowbird Administrator) from the date the customer taps on a device, so that fares can be calculated. \n\nNote: Taps taken from both a Payment Card or Smartcard \n\nConstraint: \n\n\tLate Date can be configured to a Maximum of 14 Days\n\n\tTaps not immediately received but within the 14 days are processed and any caps that should have been applied are done so retrospectively.\n\n\tAny taps received after the configured â€œlate periodâ€ can be identified in the â€œDebt Written Offâ€ report.  Late taps clearly flagged in the customer portal for the customer to see, in order to reduce customer service calls to the tenant.  The business rule algorithm applies the late tap and automatically recalculates the aggregated fare and makes a correction to the customer account balance on the following day of travel.\n\n\tDuplicate Taps are discarded by the system\n\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923135,
+      "title": "Card Added to the Deny List when card fails authorisation for payment",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3353"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is not on the deny list \n**When** the card fails authorisation for a payment\n**Then** the customer's card will be automatically added to the Deny List\n\nAs a Transport Operator I want customers who's payment cards fail to be authorised for payment to be added to a deny list, so that customers cannot travel until they have resolved the issue. \n\n\n\nConstraint:\n\n\n\n\tAny card that has had an authorisation or account verification declined will be added to the deny list\n\n\tOnce a debt recovery has been initiated and is successful then the deny list is updated and any updates (additions and deletions) are sent to all card readers including Revenue Inspection devices, every 15 minutes (frequency exceeds card scheme rules which require updates to be within 1 hour)\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923136,
+      "title": "Card on Deny List is prevented from use on future travel until the issue has been resolved",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3353"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**And** devices have been updated with the latest Deny List\n**And** the card remains unable to pass authorisation for payment \n**When** the customer attempts to use this blocked card for further transactions\n**Then** the card will be declined preventing travel using a blocked card\n\nAs a Transport Operator I want customers who's payment cards fail to be authorised for payment to be added to a deny list, so that customers cannot travel until they have resolved the issue. \n\n\n\nConstraint:\n\n\n\n\tAny card that has had an authorisation or account verification declined will be added to the deny list\n\n\tOnce a debt recovery has been initiated and is successful then the deny list is updated and any updates (additions and deletions) are sent to all card readers including Revenue Inspection devices, every 15 minutes (frequency exceeds card scheme rules which require updates to be within 1 hour)\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923137,
+      "title": "Card Removed from Deny List when Outstanding Debt is Recovered: Automatic (Back Office)",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3355",
+        "REQ-3503"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**When** the successful authorisation of the card occurs during debt recovery process via Back Office Automatic Retry\n**Then** the customer's card will be automatically removed from the Deny List\n\n\nAs a Transport Operator I want cards automatically removed from the deny list following a successful authorisation, so that customers can travel with the card again. \n\nSuccessful authorisation during the debt recovery process via on the following methods:\n\n\nAutomatic\n\nTap Initiated (using the card used for travel)\n\nOnline Website by customer (using the card used for travel)\n\nBy operator through the operator portal\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923138,
+      "title": "Card Removed from Deny List when Outstanding Debt is Recovered: Customer Tap Initiated",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3355",
+        "REQ-3503"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**When** the successful authorisation of the card occurs during debt recovery process via a customer initiated tap\n**Then** the customer's card will be automatically removed from the Deny List\n\n\nAs a Transport Operator I want cards automatically removed from the deny list following a successful authorisation, so that customers can travel with the card again. \n\nSuccessful authorisation during the debt recovery process via on the following methods:\n\n\nAutomatic\n\nTap Initiated (using the card used for travel)\n\nOnline Website by customer (using the card used for travel)\n\nBy operator through the operator portal\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923139,
+      "title": "Card Removed from Deny List when Outstanding Debt is Recovered: Customer Online Initiated",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3355",
+        "REQ-3503"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**When** the the customer performs a debt recovery retry via the Passenger Web Portal\n**And** the successful authorisation of the card occurs during debt recovery process \n**Then** the customer's card will be automatically removed from the Deny List\n\n\nAs a Transport Operator I want cards automatically removed from the deny list following a successful authorisation, so that customers can travel with the card again. \n\nSuccessful authorisation during the debt recovery process via on the following methods:\n\n\nAutomatic\n\nTap Initiated (using the card used for travel)\n\nOnline Website by customer (using the card used for travel)\n\nBy operator through the operator portal\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923140,
+      "title": "Card Removed from Deny List when Outstanding Debt is Recovered: Operator Online Initiated",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3355",
+        "REQ-3503"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**When** an operator initiates the authorisation of the card via the Operator Web Portal\n**Then** the customer's card will be automatically removed from the Deny List\n\n\nAs a Transport Operator I want cards automatically removed from the deny list following a successful authorisation, so that customers can travel with the card again. \n\nSuccessful authorisation during the debt recovery process via on the following methods:\n\n\nAutomatic\n\nTap Initiated (using the card used for travel)\n\nOnline Website by customer (using the card used for travel)\n\nBy operator through the operator portal\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923141,
+      "title": "Card automatically removed from Deny List following successful authorisation is now enabled for future travel again",
+      "section_id": 622527,
+      "section_path": "Debt Recovery",
+      "refs": [
+        "REQ-3503"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**Given** a customers card is on the deny list \n**And** devices have been updated with the latest Deny List\n**When** the customer attempts to use this blocked card for further transactions\n**And** this triggers a Tap Initiated Debt Recovery\n**And** the card passes authorisation for payment\n**Then** the card will automatically removed from the deny list\n**And** the tap transaction is processed by ABT\n**And** the customer will be charged for the amount required by the debt recovery process\n**And** the customer will be charged for the amount of the journey\n\n",
+      "updated_on": "2022-12-08T14:51:37Z"
+    },
+    {
+      "case_id": 2923169,
+      "title": "Regression Tests - Create smart middleware that can map operators to tenants for requests",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-12046"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923170,
+      "title": "Regression Tests - Do not attempt Automatic DR for some specific response codes for VISA",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-12224"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923171,
+      "title": "Regression Tests - Update terminology for transactions settled under the liability limit",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-12213"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923172,
+      "title": "Regression Tests - Produce Message Queue(s) Data for (Refund Requests)",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-11950"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923173,
+      "title": "Regression Tests - Auto-topup transaction is reported twice when triggered by a refund approval",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-11868"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923174,
+      "title": "Regression Tests - Line change across two legs with taps at the same station are incorrectly grouped",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CA-12016"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    },
+    {
+      "case_id": 2923175,
+      "title": "Regression Tests - Incorrect TVA/VAT rate in journey statement when period contains more than one rates",
+      "section_id": 622528,
+      "section_path": "Regression Tests",
+      "refs": [
+        "CO-1267"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the fix has been applied to the test environment (new build uploaded)",
+      "updated_on": "2022-12-08T14:51:38Z"
+    }
+  ]
+}

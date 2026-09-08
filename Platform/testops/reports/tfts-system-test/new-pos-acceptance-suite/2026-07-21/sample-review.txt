@@ -1,0 +1,176 @@
+==== 4100413 Smartcard — Half Fare
+PRECONDS: **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+**AND** a Half Fare entitlement smartcard is available
+**AND** example: selling an Ulsterbus Adult Single, the half-fare rate is applied on presenting the card
+ STEP content: **WHEN** the operator presents the Half Fare smartcard
+ STEP expected: **THEN** the card is recognised
+**AND** the half-fare entitlement is applied to the fare
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+ STEP content: **WHEN** the smartcard record is reviewed in SmartTrack
+ STEP expected: **THEN** the updated smartcard record appears in SmartTrack
+EXPECTED: A Half Fare smartcard is recognised and applies the half-fare price at sale. NIR + Ulsterbus only.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]
+
+==== 4099950 Supervisor — Print & Zero
+PRECONDS: **GIVEN** a supervisor is signed on to the POS
+**AND** the POS has paper loaded and totals accumulated from the shift
+**AND** example: the supervisor runs Print and Zero Current at end of shift and confirms Yes
+ STEP content: **WHEN** the supervisor selects Print and Zero (Current or Accumulated)
+ STEP expected: **THEN** a confirmation prompt asks whether to zero the totals after printing
+ STEP content: **WHEN** the supervisor confirms Yes
+ STEP expected: **THEN** the report is printed
+**AND** the totals are reset to zero
+**AND** the printout includes operator no., POS no., sign-on/off times, tickets sold, revenue, misc revenue, smartcard validations, annulled tickets, first/last ticket numbers and per-ticket detail
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: Print & Zero confirms before zeroing, prints the full report (operator/POS/times/tickets/revenue/validations/annulments/ticket detail) and resets the totals (regression: TIBU-24786).
+
+[Automatable: Partial · Cross-check: CloudFare]
+
+==== 4100123 Screen Validation — Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection
+PRECONDS: **GIVEN** the POS has reached the 'Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection' screen
+ STEP content: **WHEN** the operator views the screen
+ STEP expected: **THEN** the screen matches the approved design (layout, wording, labels and controls)
+**AND** there are no visual or text defects
+EXPECTED: The 'Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection' screen matches the attached approved design — correct layout, wording, labels and controls, with no visual/text defects.
+
+[Automatable: No]
+
+==== 4100092 Screen Validation — Administrator Mode_Network Settings
+PRECONDS: **GIVEN** the POS has reached the 'Administrator Mode_Network Settings' screen
+ STEP content: **WHEN** the operator views the screen
+ STEP expected: **THEN** the screen matches the approved design (layout, wording, labels and controls)
+**AND** there are no visual or text defects
+EXPECTED: The 'Administrator Mode_Network Settings' screen matches the attached approved design — correct layout, wording, labels and controls, with no visual/text defects.
+
+[Automatable: No]
+
+==== 4100070 Screen Validation — Technician_Device Settings - Changes
+PRECONDS: **GIVEN** the POS has reached the 'Technician_Device Settings - Changes' screen
+ STEP content: **WHEN** the operator views the screen
+ STEP expected: **THEN** the screen matches the approved design (layout, wording, labels and controls)
+**AND** there are no visual or text defects
+EXPECTED: The 'Technician_Device Settings - Changes' screen matches the attached approved design — correct layout, wording, labels and controls, with no visual/text defects.
+
+[Automatable: No]
+
+==== 4103575 Barcode — a successful single-use validation is audited as an event, not a MERIT transaction
+PRECONDS: **GIVEN** a POS validated a single-use barcode successfully
+**AND** single-use validations are audited as events, whereas multiple-use validations (not accepted on the POS) would be BarcodeUsage zero-fare transactions
+**AND** example: a redeemed type B barcode for product 640 carrying its Unique ID
+ STEP content: **WHEN** the validation record reaches CloudFare
+ STEP expected: **THEN** the record is posted as an event in the Activity Log
+**AND** the barcode Unique ID is searchable in the event Message field
+**AND** the event is not synced to MERIT
+EXPECTED: A successful single-use validation posts a searchable CloudFare event and is not reported to MERIT, unlike a multi-use BarcodeUsage zero-fare transaction.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4100024 Issue Card — issue from blank
+PRECONDS: **GIVEN** an operator is signed on to the POS
+**AND** a blank smartcard is presented
+**AND** the POS is communicating with CloudFare
+**AND** example: issue a Metro Multi-Journey onto a blank Smartlink, Metro Inner zone, 10 journeys, paid by cash
+ STEP content: **WHEN** the operator selects the product, takes payment and issues it to the card
+ STEP expected: **THEN** the product is written to the card at the correct price
+**AND** a receipt is printed
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: A product issues onto a blank card at the correct price with a receipt, and is recognised on use. Run across products — Metro Multi-Journey, Multi-Journey, DayLink, iLink, Metro Travelcard, Belfast Visitor Pass, Ulsterbus Multi-Journey, Town Service Travelcard.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4100480 ZZ_DELETE_DUP (created in error) - 4100480
+PRECONDS: **GIVEN** the operator presents a Multi-Journey smartcard
+ STEP content: **WHEN** the operator tops up journeys
+ STEP expected: **THEN** the journeys are added and shown
+**AND** the card cannot exceed its maximum permitted journeys
+**AND** a card with expired journeys can still be topped up
+**AND** the device does not crash
+EXPECTED: Multi-Journey top-up adds/shows journeys, enforces the max, handles expired journeys, and never crashes (regression: TIBU-21133, TIBU-21992, TIBU-24051, TIBU-25886).
+
+==== 4102562 Top Up — on expiry
+PRECONDS: **GIVEN** the POS is signed on
+**AND** a smartcard is presented on its product expiry date — example: an Adult iLink Zone 4 travelcard topped up 1 Week on its expiry date
+ STEP content: **WHEN** the operator tops up the card
+ STEP expected: **THEN** the top-up is applied
+**AND** the product validity is recalculated from the top-up
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the top-up transaction appears in MERIT
+ STEP content: **WHEN** the smartcard record is reviewed in SmartTrack
+ STEP expected: **THEN** the updated smartcard record appears in SmartTrack
+EXPECTED: A top-up on the product expiry date applies and recalculates the product validity, recorded in the CloudFare activity log, MERIT and SmartTrack.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]
+
+==== 4099926 ZZ_DELETE_REVIEW - Sign On — Message of the Day unavailable (folded)
+PRECONDS: **GIVEN** no Message of the Day is configured (or it cannot be retrieved)
+ STEP content: **WHEN** a valid operator completes a successful sign on
+ STEP expected: **THEN** the "Message of the Day Unavailable" screen is shown
+**AND** pressing any key continues to the next screen
+EXPECTED: When no Message of the Day is available the Unavailable screen is shown and dismissed with any key.
+
+==== 4100274 Screen Validation — Smartcard_Top Up_Ulsterbus Travelcard_Basket
+PRECONDS: **GIVEN** the POS has reached the 'Smartcard_Top Up_Ulsterbus Travelcard_Basket' screen
+ STEP content: **WHEN** the operator views the screen
+ STEP expected: **THEN** the screen matches the approved design (layout, wording, labels and controls)
+**AND** there are no visual or text defects
+EXPECTED: The 'Smartcard_Top Up_Ulsterbus Travelcard_Basket' screen matches the attached approved design — correct layout, wording, labels and controls, with no visual/text defects.
+
+[Automatable: No]
+
+==== 4099956 Technician — Soft Reboot
+PRECONDS: **GIVEN** a technician is signed on to the POS during an active shift
+**AND** the shift has recorded transactions that must survive the restart
+**AND** example: the technician performs a Soft Reboot mid-shift to clear a fault
+ STEP content: **WHEN** the technician performs a Soft Reboot
+ STEP expected: **THEN** the POS restarts cleanly
+**AND** the POS recovers to a valid state after the restart
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: A Soft Reboot during a shift restarts the POS cleanly and recovers the session state correctly (regression: TIBU-29752).
+
+[Automatable: No · Cross-check: CloudFare]
+
+==== 4100507 Technician — set Default Boarding Stage
+PRECONDS: **GIVEN** a technician is signed on to the POS in Device Settings
+**AND** the POS is in a bus operating mode (Ulsterbus) that performs fare look-ups
+**AND** example: setting the default boarding stage for the OM (Omagh) home location
+ STEP content: **WHEN** the technician sets the Default Boarding Stage
+ STEP expected: **THEN** the Default Boarding Stage is saved
+**AND** subsequent bus fare look-ups use the new default boarding stage
+EXPECTED: The Default Boarding Stage can be set in Technician Device Settings and is applied to later bus fare look-ups.
+
+[Automatable: Yes]
+
+==== 4100428 Validation — error mid-transaction voids the payment
+PRECONDS: **GIVEN** the POS is signed on
+**AND** a fare is being validated as part of a paid transaction — example: a card fare part-paid when a validation error occurs
+ STEP content: **WHEN** a validation error occurs
+ STEP expected: **THEN** any cash or warrant payment is not recorded in the POS audit data
+**AND** any card transaction is automatically voided by the POS
+**AND** a diagnostic event is recorded to audit the error
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: A mid-transaction validation error records no cash or warrant, auto-voids any card payment, and audits a diagnostic event.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4100065 Screen Validation — Technician_Versions
+PRECONDS: **GIVEN** the POS has reached the 'Technician_Versions' screen
+ STEP content: **WHEN** the operator views the screen
+ STEP expected: **THEN** the screen matches the approved design (layout, wording, labels and controls)
+**AND** there are no visual or text defects
+EXPECTED: The 'Technician_Versions' screen matches the attached approved design — correct layout, wording, labels and controls, with no visual/text defects.
+
+[Automatable: No]

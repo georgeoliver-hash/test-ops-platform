@@ -1,0 +1,2899 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "AA-TVM-Acceptance Test-V03",
+  "suite_id": 5602,
+  "generated_at": "2026-07-16T10:46:27.878735Z",
+  "cases": [
+    {
+      "case_id": 2628935,
+      "title": "Audible Feedback (Card)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-1687"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running \r\n**AND** Smartcard available\r\n**AND** Payment card available\r\n**AND** THe TVM is on The homescreen",
+      "updated_on": "2023-06-12T12:32:18Z"
+    },
+    {
+      "case_id": 2644582,
+      "title": "Audible Feedback (Cash)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-1687"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running \r\n**AND** Smartcard available\r\n**AND** Cash payment available",
+      "updated_on": "2022-03-30T07:19:54Z"
+    },
+    {
+      "case_id": 2628971,
+      "title": "Audible Feedback (Contactless Payment)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-2519"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Check if TVM provides audible and visual feedback when carrying out contactless payment",
+      "updated_on": "2022-03-30T07:26:01Z"
+    },
+    {
+      "case_id": 2644583,
+      "title": "Audible Feedback (Smartcard)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-1687"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running \r\n**AND** a valid Smartcard is available\r\n**AND** The TVM is on the homescreen\r\n",
+      "updated_on": "2022-03-30T07:27:21Z"
+    },
+    {
+      "case_id": 2632879,
+      "title": "Auto Time Adjustment (GMT/BST +1)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0008"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** clocks have moved forward",
+      "updated_on": "2022-03-25T11:19:21Z"
+    },
+    {
+      "case_id": 2662211,
+      "title": "Auto Time Adjustment (GMT/BST -1)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0008"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** clocks have moved back",
+      "updated_on": "2022-03-25T11:19:25Z"
+    },
+    {
+      "case_id": 2652115,
+      "title": "Brightness Settings (Main Screen)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0511",
+        "REQ-2710"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** access to open TVM",
+      "updated_on": "2022-03-29T09:44:44Z"
+    },
+    {
+      "case_id": 2652117,
+      "title": "Brightness Settings (Mini Screen)",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0511",
+        "REQ-2710"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** access to open TVM",
+      "updated_on": "2022-03-29T09:45:04Z"
+    },
+    {
+      "case_id": 2659466,
+      "title": "Force Comms",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0521"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** engineer menu access",
+      "updated_on": "2022-03-29T12:46:04Z"
+    },
+    {
+      "case_id": 1774571,
+      "title": "Reboot to Windows",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when Translink user boots to windows then the user can return to sales mode appropriately without a risk of windows being accessible to end users.\r\n___________________________________\r\n279266- Kiosk startgenericFTS.exe was making windows available to end user",
+      "updated_on": "2023-08-03T14:05:45Z"
+    },
+    {
+      "case_id": 1705882,
+      "title": "Screensaver functionality",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0270",
+        "REQ-0271",
+        "REQ-0277",
+        "REQ-0295",
+        "REQ-1708",
+        "REQ-2170"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode with screensaver active\r\n",
+      "updated_on": "2022-03-29T09:59:58Z"
+    },
+    {
+      "case_id": 1705883,
+      "title": "Speech Prompt during a workflow",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0279",
+        "REQ-0280",
+        "REQ-1409"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test demonstrates that when any user selects a product to buy the speech prompter is activated to guide the user through selected workflow",
+      "updated_on": "2022-03-30T12:55:47Z"
+    },
+    {
+      "case_id": 2691863,
+      "title": "TVM Shall Maintain EMS In Battery Saver Mode",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0326"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verifies the TVM maintains EMS when running from internal batteries during a power failure",
+      "updated_on": "2022-04-01T13:55:24Z"
+    },
+    {
+      "case_id": 2628938,
+      "title": "TVM Unique Identifier",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-2440"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** User has a printed out ticket",
+      "updated_on": "2022-03-30T12:57:24Z"
+    },
+    {
+      "case_id": 2646670,
+      "title": "Volume level",
+      "section_id": 336941,
+      "section_path": "Retail Kiosk / TVM Generic",
+      "refs": [
+        "REQ-0511",
+        "REQ-2710"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** can access engineer menu",
+      "updated_on": "2022-03-29T12:35:57Z"
+    },
+    {
+      "case_id": 2700898,
+      "title": "Popular Tickets (Mastercard)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the BOS\r\n**AND** The TVM is on the homescreen\r\n**AND** Both Bus and Rail options are available\r\n**AND** Card payment method available",
+      "updated_on": "2023-08-01T13:22:37Z"
+    },
+    {
+      "case_id": 3130753,
+      "title": "Popular Tickets (Visa)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the BOS\r\n**AND** The TVM is on the homescreen\r\n**AND** Both Bus and Rail options are available\r\n**AND** Card payment method available",
+      "updated_on": "2023-08-01T13:22:50Z"
+    },
+    {
+      "case_id": 1705884,
+      "title": "Popular Tickets (Mastercard Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the BOS\r\n**AND** The TVM is on the homescreen\r\n**AND** Both Bus and Rail options are available\r\n**AND** Card payment method available",
+      "updated_on": "2023-08-01T13:23:17Z"
+    },
+    {
+      "case_id": 3130754,
+      "title": "Popular Tickets (Visa Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the BOS\r\n**AND** The TVM is on the homescreen\r\n**AND** Both Bus and Rail options are available\r\n**AND** Card payment method available",
+      "updated_on": "2023-08-01T13:23:31Z"
+    },
+    {
+      "case_id": 2639810,
+      "title": "Popular Tickets (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the BOS\r\n**AND** Quickselects are available in Quickselect menu on homescreen\r\n**AND** Cash payment method available",
+      "updated_on": "2022-04-01T14:01:32Z"
+    },
+    {
+      "case_id": 2645096,
+      "title": "Family and Friends Ticket (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:31:42Z"
+    },
+    {
+      "case_id": 2700903,
+      "title": "Family and Friends Ticket (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:35:19Z"
+    },
+    {
+      "case_id": 2700904,
+      "title": "Family and Friends Ticket (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:28:41Z"
+    },
+    {
+      "case_id": 2700906,
+      "title": "Bus Rambler Adult (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:48:53Z"
+    },
+    {
+      "case_id": 2700907,
+      "title": "Bus Rambler Adult (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:49:48Z"
+    },
+    {
+      "case_id": 2700908,
+      "title": "Bus Rambler Adult (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:49:41Z"
+    },
+    {
+      "case_id": 2700910,
+      "title": "Bus Rambler Child (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:51:51Z"
+    },
+    {
+      "case_id": 2700911,
+      "title": "Bus Rambler Child (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T08:52:05Z"
+    },
+    {
+      "case_id": 2700912,
+      "title": "Bus Rambler Child (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T13:02:46Z"
+    },
+    {
+      "case_id": 2700951,
+      "title": "Metro Evening Adult (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T13:58:51Z"
+    },
+    {
+      "case_id": 2700952,
+      "title": "Metro Evening Adult (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T13:59:08Z"
+    },
+    {
+      "case_id": 2700953,
+      "title": "Metro Evening Adult (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T14:05:20Z"
+    },
+    {
+      "case_id": 2700954,
+      "title": "Metro Evening Child (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T14:30:35Z"
+    },
+    {
+      "case_id": 2700955,
+      "title": "Metro Evening Child (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T14:30:52Z"
+    },
+    {
+      "case_id": 2700956,
+      "title": "Metro Evening Child (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T14:31:08Z"
+    },
+    {
+      "case_id": 2700967,
+      "title": "1 Month Return Adult (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:36:37Z"
+    },
+    {
+      "case_id": 2700968,
+      "title": "1 Month Return Adult (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:37:27Z"
+    },
+    {
+      "case_id": 2700969,
+      "title": "1 Month Return Adult (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-12T09:22:38Z"
+    },
+    {
+      "case_id": 2700970,
+      "title": "1 Month Return Child (Card)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:39:17Z"
+    },
+    {
+      "case_id": 2700971,
+      "title": "1 Month Return Child (Contactless)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:40:40Z"
+    },
+    {
+      "case_id": 2700972,
+      "title": "1 Month Return Child (Cash)",
+      "section_id": 341234,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-30T14:35:16Z"
+    },
+    {
+      "case_id": 2640196,
+      "title": "UB Single (Card)",
+      "section_id": 342127,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Ulsterbus",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-08-03T14:07:26Z"
+    },
+    {
+      "case_id": 2645050,
+      "title": "UB Single (Contactless)",
+      "section_id": 342127,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Ulsterbus",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Contactless card payment method available\r\n",
+      "updated_on": "2023-08-03T14:08:05Z"
+    },
+    {
+      "case_id": 2640197,
+      "title": "UB Single (Cash)",
+      "section_id": 342127,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Ulsterbus",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Cash payment method available\r\n",
+      "updated_on": "2023-08-03T14:08:25Z"
+    },
+    {
+      "case_id": 1769601,
+      "title": "UB - Airport Airlink Ticket to Belfast International",
+      "section_id": 342127,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Ulsterbus",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that a user can purchase an Airlink ticket from the Ulsterbus operator \r\n\r\nGIVEN Ulsterbus customer wants to travel to Belfast internatiional airport \r\nWHEN travel from **Ballymena, Cullybackey, Ballymoney, Coleraine, University, Dhu Varren, Portrush, Castlerock, Bellarena and Derry~Londonderry** is selected as the boarding location \r\nTHEN Airlink ticket is displayed for user on service 109 A/D\r\n\r\nhttps://www.translink.co.uk/usingtranslink/specialoffers/airlink-ticket\r\n",
+      "updated_on": "2023-08-03T14:11:06Z"
+    },
+    {
+      "case_id": 1795760,
+      "title": "UB - Day Ticket at Single Price - Promo ticket for Cairnshill P & R",
+      "section_id": 342127,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Ulsterbus",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-08-03T14:14:11Z"
+    },
+    {
+      "case_id": 2701083,
+      "title": "Metro Single Ticket (Card)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:52:43Z"
+    },
+    {
+      "case_id": 2701084,
+      "title": "Metro Single Ticket (Contactless)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T10:52:03Z"
+    },
+    {
+      "case_id": 2701085,
+      "title": "Metro Single Ticket (Cash)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:57:47Z"
+    },
+    {
+      "case_id": 2701087,
+      "title": "Metro Family Day Ticket (Card)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T08:00:11Z"
+    },
+    {
+      "case_id": 2701070,
+      "title": "Metro Family Day Ticket (Contactless)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:26:46Z"
+    },
+    {
+      "case_id": 2701072,
+      "title": "Metro Family Day Ticket (Cash)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:28:44Z"
+    },
+    {
+      "case_id": 2701073,
+      "title": "Metro Day Ticket Adult (Card)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T11:58:09Z"
+    },
+    {
+      "case_id": 2701074,
+      "title": "Metro Day Ticket Adult (Contactless)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T11:59:08Z"
+    },
+    {
+      "case_id": 2701075,
+      "title": "Metro Day Ticket Adult (Cash)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:34:03Z"
+    },
+    {
+      "case_id": 2701080,
+      "title": "Metro Day Child(Card)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T12:00:02Z"
+    },
+    {
+      "case_id": 2701077,
+      "title": "Metro Day Child (Contactless)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2023-06-09T12:02:35Z"
+    },
+    {
+      "case_id": 2701078,
+      "title": "Metro Day Child (Cash)",
+      "section_id": 342128,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / Metro",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** Card payment method available\r\n",
+      "updated_on": "2022-03-31T07:39:15Z"
+    },
+    {
+      "case_id": 2644586,
+      "title": "yLink Smartcard Single (Card)",
+      "section_id": 555140,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / yLink",
+      "refs": [
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid yLink Smartcard is available\r\n**AND** Card payment available\r\n**AND** The TVM is on the homescreen",
+      "updated_on": "2022-03-30T10:44:11Z"
+    },
+    {
+      "case_id": 2645049,
+      "title": "yLink Smartcard Single (Contactless)",
+      "section_id": 555140,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / yLink",
+      "refs": [
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid yLink Smartcard is available\r\n**AND** Contactless card payment available\r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2022-03-30T10:45:23Z"
+    },
+    {
+      "case_id": 2644587,
+      "title": "yLink Smartcard Single (Cash)",
+      "section_id": 555140,
+      "section_path": "Retail Kiosk / Ticket Issuance / Generic Tickets / yLink",
+      "refs": [
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid yLink Smartcard is available\r\n**AND** Cash payment available\r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2022-03-30T10:52:43Z"
+    },
+    {
+      "case_id": 1705885,
+      "title": "Metro - Ticket Selection and Issuance - Cash",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0782",
+        "REQ-0784",
+        "REQ-1489",
+        "REQ-1491",
+        "REQ-1716",
+        "REQ-1877",
+        "REQ-2743",
+        "REQ-2745"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS",
+      "updated_on": "2022-03-30T11:05:28Z"
+    },
+    {
+      "case_id": 1705886,
+      "title": "Metro - Ticket Selection and Issuance using Basket - Cash",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0782",
+        "REQ-1489",
+        "REQ-1491",
+        "REQ-1716",
+        "REQ-1877",
+        "REQ-2743"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS",
+      "updated_on": "2022-03-31T08:05:55Z"
+    },
+    {
+      "case_id": 1705887,
+      "title": "Ulsterbus - Ticket Selection and Issuance - Cash",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0782",
+        "REQ-1489",
+        "REQ-1491",
+        "REQ-1716",
+        "REQ-1734",
+        "REQ-1735",
+        "REQ-1877",
+        "REQ-2743"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and at a green state\r\n**AND** TVM is communicating with the BOS \r\n**AND** Cash coins are available",
+      "updated_on": "2022-03-31T08:06:30Z"
+    },
+    {
+      "case_id": 1705888,
+      "title": "Ulsterbus - Ticket Selection and Issuance using Basket - Cash",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0782",
+        "REQ-1489",
+        "REQ-1491",
+        "REQ-1716",
+        "REQ-1877",
+        "REQ-2743"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and at a green state\r\n**AND** TVM is communicating with the BOS \r\n**AND** Cash coins are available",
+      "updated_on": "2022-03-31T08:06:45Z"
+    },
+    {
+      "case_id": 1705889,
+      "title": "Basket - Add to and Amend Basket - Overpayment",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0290",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-1515",
+        "REQ-1630",
+        "REQ-1854",
+        "REQ-2503",
+        "REQ-2745"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "This test verifies that a user can do the following: add a product to the basket then select a different product and use the Pay now function  \r\n\r\n________________________________\r\nBug 288934 - cannot amend items in basket",
+      "updated_on": "2022-03-31T08:07:04Z"
+    },
+    {
+      "case_id": 1705890,
+      "title": "Buy Product in Different Languages",
+      "section_id": 322884,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment",
+      "refs": [
+        "REQ-0270"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** User has selected a non-English language from homescreen \r\n**AND** TVM is in a green state with all functionality available",
+      "updated_on": "2022-03-31T08:07:20Z"
+    },
+    {
+      "case_id": 1705891,
+      "title": "BNA Error Management",
+      "section_id": 322885,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment / Error Management",
+      "refs": [
+        "REQ-0890",
+        "REQ-2745",
+        "REQ-2768"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when Notes are used for payment and the maximum number of notes are used then the workflow allows user to complete the transaction.  This test also verifies that the TVM validates the notes when used for payment. ",
+      "updated_on": "2023-05-15T10:29:42Z"
+    },
+    {
+      "case_id": 1705892,
+      "title": "EMV Payment Fails - Retry Using Cash",
+      "section_id": 322885,
+      "section_path": "Retail Kiosk / Ticket Issuance / Cash Payment / Error Management",
+      "refs": [
+        "REQ-0890",
+        "REQ-1409",
+        "REQ-2744"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when a payment fails the TVM offers the appriopriate options within the same workflow to user - to cancel or to retry the payment\r\n\r\n- emv payment for £6 (pre-set to fail) > retry using cash",
+      "updated_on": "2022-03-31T12:28:52Z"
+    },
+    {
+      "case_id": 1705893,
+      "title": "Metro - Ticket Selection and Issuance - Card & Contactless",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-0095",
+        "REQ-0097",
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0340",
+        "REQ-2565"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS\r\n**AND** A valid payment card is available",
+      "updated_on": "2023-08-01T10:38:33Z"
+    },
+    {
+      "case_id": 1705894,
+      "title": "Metro - Ticket Selection and Issuance using Basket - Card & Contactless",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-0095",
+        "REQ-0097",
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0340"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS\r\n**AND** A valid payment card is available",
+      "updated_on": "2023-08-03T14:16:10Z"
+    },
+    {
+      "case_id": 1705895,
+      "title": "Ulsterbus - Ticket Selection and Issuance - Card & Contactless",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-0095",
+        "REQ-0097",
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0340"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS\r\n**AND** A valid payment card is available",
+      "updated_on": "2023-08-03T14:17:06Z"
+    },
+    {
+      "case_id": 1705896,
+      "title": "Ulsterbus - Ticket Selection and Issuance using Basket -Card & Contactless",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-0095",
+        "REQ-0097",
+        "REQ-0203",
+        "REQ-0277",
+        "REQ-0282",
+        "REQ-0283",
+        "REQ-0285",
+        "REQ-0295",
+        "REQ-0339",
+        "REQ-0340"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and in a fully functional state\r\n**AND** TVM is communicating with the BOS\r\n**AND** A valid payment card is available",
+      "updated_on": "2023-08-03T14:17:27Z"
+    },
+    {
+      "case_id": 1705897,
+      "title": "Pinpad Messages to User -  PIN enabled card and Contactless",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-1591",
+        "REQ-2518",
+        "REQ-2583"
+      ],
+      "priority_id": 3,
+      "type_id": 12,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when a user pays with a *EMV credit/debit card* then the Pinpad provides instructions to the user on steps to complete payment or any validation errors that may be encountered.  ",
+      "updated_on": "2022-04-01T12:57:03Z"
+    },
+    {
+      "case_id": 2626598,
+      "title": "Payment with Non-Domestic GBP Issued Card",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-1503"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** Non-Domestic GBP Issued Card Available\r\n**AND** User is on choose a ticket screen",
+      "updated_on": "2022-03-31T14:43:32Z"
+    },
+    {
+      "case_id": 2628972,
+      "title": "Payment Receipts",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-0097",
+        "REQ-1722"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** Card payment method available\r\n**AND** User has already chosen a ticket type",
+      "updated_on": "2022-04-01T08:06:11Z"
+    },
+    {
+      "case_id": 2632833,
+      "title": "Payment (Offline Transaction)",
+      "section_id": 322886,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments",
+      "refs": [
+        "REQ-1516"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** Comms unavailable\r\n**AND** Card payment with offline transaction support available",
+      "updated_on": "2023-08-03T14:18:37Z"
+    },
+    {
+      "case_id": 1705898,
+      "title": "Remove Payment card early - During Processing of Transaction",
+      "section_id": 322887,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments / Error Management",
+      "refs": [
+        "REQ-1409",
+        "REQ-1591"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The objective of the test is to ensure that when a payment card is removed early, then the TVM behaves correctly offering the appropriate options to user",
+      "updated_on": "2022-03-31T12:49:42Z"
+    },
+    {
+      "case_id": 1705899,
+      "title": "Buy Alternative Product - Wrong Payment Card Type then correct Payment Card",
+      "section_id": 322887,
+      "section_path": "Retail Kiosk / Ticket Issuance / Card & Contactless Payments / Error Management",
+      "refs": [
+        "REQ-0963",
+        "REQ-2371"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Select single ticket to view price > select alternative ticket > pay using non-emv then take out > insert correct visa card to complete payment > ",
+      "updated_on": "2022-03-30T10:21:43Z"
+    },
+    {
+      "case_id": 1705900,
+      "title": "Collect a Pre-paid Ticket using a BRID",
+      "section_id": 322888,
+      "section_path": "Retail Kiosk / Ticket Issuance / Ticket Collection",
+      "refs": [
+        "REQ-0277",
+        "REQ-0317",
+        "REQ-1409",
+        "REQ-1576"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is green \r\n**AND** all functionality is enabled",
+      "updated_on": "2022-04-01T13:51:08Z"
+    },
+    {
+      "case_id": 2623766,
+      "title": "Payment with Device Media compliant with EMV Standards",
+      "section_id": 545871,
+      "section_path": "Retail Kiosk / Ticket Issuance / EMV",
+      "refs": [
+        "REQ-1490"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** Device Media compliant with EMV standards is available",
+      "updated_on": "2023-08-03T14:20:38Z"
+    },
+    {
+      "case_id": 2628934,
+      "title": "3 Day Ticket (Card)",
+      "section_id": 548373,
+      "section_path": "Retail Kiosk / Ticket Issuance / 3 Day Ticket",
+      "refs": [
+        "REQ-0308"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is running\r\n**AND** is on the homescreen\r\n**AND** Card payment method available \r\n**AND** The user must choose NIR boarding and alighting stages",
+      "updated_on": "2022-04-01T08:50:18Z"
+    },
+    {
+      "case_id": 2702230,
+      "title": "3 Day Ticket (Contactless)",
+      "section_id": 548373,
+      "section_path": "Retail Kiosk / Ticket Issuance / 3 Day Ticket",
+      "refs": [
+        "REQ-0308"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is running\r\n**AND** is on the homescreen\r\n**AND** Card payment method available \r\n**AND** The user must choose NIR boarding and alighting stages",
+      "updated_on": "2022-04-01T08:53:31Z"
+    },
+    {
+      "case_id": 2702229,
+      "title": "3 Day Ticket (Cash)",
+      "section_id": 548373,
+      "section_path": "Retail Kiosk / Ticket Issuance / 3 Day Ticket",
+      "refs": [
+        "REQ-0308"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is running\r\n**AND** is on the homescreen\r\n**AND** Card payment method available \r\n**AND** The user must choose NIR boarding and alighting stages",
+      "updated_on": "2022-04-01T08:56:06Z"
+    },
+    {
+      "case_id": 2703104,
+      "title": "Single Use Barcode Reference",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-3152"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** a valid single use barcode is available",
+      "updated_on": "2022-04-07T09:55:07Z"
+    },
+    {
+      "case_id": 2703109,
+      "title": "Single Use Barcode - Invalid Reference",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-3152"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** invalid single use barcode is available",
+      "updated_on": "2022-04-07T09:54:56Z"
+    },
+    {
+      "case_id": 2703106,
+      "title": "Multiple Use Barcode Reference",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-3152",
+        "REQ-3524"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** a valid multiple use barcode is available",
+      "updated_on": "2022-04-20T12:38:38Z"
+    },
+    {
+      "case_id": 2703758,
+      "title": "Multiple Use Barcode - Invalid Reference",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-3152"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** invalid multiple use barcode is available",
+      "updated_on": "2022-04-07T09:57:13Z"
+    },
+    {
+      "case_id": 2703147,
+      "title": "Printed Ticket Barcode",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-0095",
+        "REQ-3157"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** a valid single use barcode is available\r\n**AND** barcode printing has been enabled in CloudFare",
+      "updated_on": "2022-04-07T09:55:34Z"
+    },
+    {
+      "case_id": 2703760,
+      "title": "Previously Used Barcode",
+      "section_id": 566445,
+      "section_path": "Retail Kiosk / Ticket Issuance / Barcode Entry",
+      "refs": [
+        "REQ-3152"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** a previously used barcode is available",
+      "updated_on": "2022-04-07T10:13:55Z"
+    },
+    {
+      "case_id": 2645279,
+      "title": "Sign-on Smartcard",
+      "section_id": 322889,
+      "section_path": "Retail Kiosk / Smartcard and ABT",
+      "refs": [
+        "REQ-0050"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** TVM is configured to allow smartcard sign-on\r\n**AND** Smartcard available\r\n**AND** Tools to open TVM are available\r\n**AND** access to EMS are available",
+      "updated_on": "2022-03-28T12:08:10Z"
+    },
+    {
+      "case_id": 1705901,
+      "title": "Hotlisted Card - Cannot use on TVM",
+      "section_id": 322889,
+      "section_path": "Retail Kiosk / Smartcard and ABT",
+      "refs": [
+        "REQ-1912",
+        "REQ-2145",
+        "REQ-2550",
+        "REQ-2553",
+        "REQ-2674"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verify that when a smarrtcard is hotlisted on Smartrack then it cannot be used on the TVM either.",
+      "updated_on": "2022-04-01T12:56:06Z"
+    },
+    {
+      "case_id": 1705902,
+      "title": "Review the Statement against Smartcard Details screen",
+      "section_id": 322889,
+      "section_path": "Retail Kiosk / Smartcard and ABT",
+      "refs": [
+        "REQ-2535"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Any of the pre-existing smartcard tests are run",
+      "updated_on": "2022-04-01T12:54:27Z"
+    },
+    {
+      "case_id": 1705903,
+      "title": "Multi-Journey - Top-up Adult card - Contactless",
+      "section_id": 322890,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Journey Based",
+      "refs": [
+        "REQ-0873",
+        "REQ-2097",
+        "REQ-2103",
+        "REQ-2145",
+        "REQ-2366",
+        "REQ-2535",
+        "REQ-2583"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Used METRO or ULSTERBUS multi-journey smartcard is available and active (not expired) \r\n**AND** Validate the smartcard on a PV or HHD\r\n**AND** Contactless enabled device is available to complete payment",
+      "updated_on": "2022-03-31T08:30:15Z"
+    },
+    {
+      "case_id": 1705904,
+      "title": "Multi-Journey - Top-up Child card - Statement & Cash Overpayment",
+      "section_id": 322890,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Journey Based",
+      "refs": [
+        "REQ-0878",
+        "REQ-2097",
+        "REQ-2103",
+        "REQ-2145",
+        "REQ-2535"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** METRO or ULSTERBUS multi-journey card for Child has been validated on a HHD device\r\n**AND** TVM is in sales mode \r\n**AND** Cash note is available to pay with",
+      "updated_on": "2022-03-31T08:32:16Z"
+    },
+    {
+      "case_id": 1705905,
+      "title": "Multi-Journey - Top-up Adult - No Journeys Remaining - Debit card",
+      "section_id": 322890,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Journey Based",
+      "refs": [
+        "REQ-0709",
+        "REQ-0881",
+        "REQ-2097",
+        "REQ-2103",
+        "REQ-2145"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and communicating with the CF and merit/smartrack\r\n**AND** METRO or ULSTERBUS multi-journey card is available with No journeys left \r\n**AND** EMV Payment card is available\r\n**AND** receipt is needed\r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2022-04-01T12:40:03Z"
+    },
+    {
+      "case_id": 1705906,
+      "title": "Multi-Journey Expired - Top-up Child - Journeys Remaining",
+      "section_id": 322890,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Journey Based",
+      "refs": [
+        "REQ-0887",
+        "REQ-2097",
+        "REQ-2103",
+        "REQ-2145"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** METRO or ULSTERBUS Multi-journey card for Child with journeys remaining but card has Expired \r\n**AND** TVM is in communicating with the BOS (Merit, Smartrack and Cloudfare)\r\n**AND** The TVM is on the Homescreen ",
+      "updated_on": "2022-04-01T12:41:40Z"
+    },
+    {
+      "case_id": 1774576,
+      "title": "288841 - MJ  Card Full of Journeys (formerly edge case)",
+      "section_id": 322890,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Journey Based",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when any multi-journey card has been topped up to maximum value of 50 journeys then the user cannot top-up the card further and GUI message shown \r\n\r\n_______________________________\r\nBug 288841 - Missing message for Multi-journey when ",
+      "updated_on": "2022-04-01T12:42:39Z"
+    },
+    {
+      "case_id": 1705907,
+      "title": "Travelcard - Top-up Adult & Child - O Days Remaining - Credit card",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [
+        "REQ-0001",
+        "REQ-0878",
+        "REQ-1515",
+        "REQ-1591",
+        "REQ-2065",
+        "REQ-2070",
+        "REQ-2145",
+        "REQ-2452"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verify that existing travelcards can be topped up when they have no travel left on the card (card can be topped up and re-used)\r\n",
+      "updated_on": "2022-03-29T14:47:35Z"
+    },
+    {
+      "case_id": 1705908,
+      "title": "Periodpass - Top-up Adult - with 1 Day Remaining - Cash",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [
+        "REQ-1086",
+        "REQ-2097",
+        "REQ-2145",
+        "REQ-2743"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that a periodpass (Town Services Travel Card, Daylink, iLink, travelcard) card with 1 day remaining can be used for travel and then topped up for further travel.\r\n__________________________\r\nNOTE: Metro travelcard goes into an 'expired' state after the final day.  No image available other than expired for boundary-value test",
+      "updated_on": "2023-08-01T09:32:26Z"
+    },
+    {
+      "case_id": 1705909,
+      "title": "Periodpass - Top-up Child - Days Remaining - Debit card",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [
+        "REQ-0096",
+        "REQ-1111",
+        "REQ-2103",
+        "REQ-2145"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Used Period pass (Town Services Travel Card, iLink, Daylink, or ideally Metro travelcard) card is available with usage/days remaining on the card\r\n**AND** TVM is in sales mode\r\n**AND** HHD or PV on the same environment is shown on Cloudfare\r\n**AND** Smartcard is available with the attached image\r\n**AND** Change to be used is recorded for audit\r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2023-08-01T09:30:08Z"
+    },
+    {
+      "case_id": 1705910,
+      "title": "iLink - Top-up Adult & Child - Days Remaining - Debit card - Smartcard Details & Statement",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [
+        "REQ-2535",
+        "REQ-2618",
+        "REQ-2633"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** valid Adult iLink used card is available with days available\r\n**AND** New Child iLink card is available \r\n**AND** TVM is in sales mode and connected to the BOS\r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2023-06-12T07:51:06Z"
+    },
+    {
+      "case_id": 1705911,
+      "title": "Belfast Visitor Pass - Adult & Child - Top-up - Cash & Card",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [
+        "REQ-2461",
+        "REQ-2463",
+        "REQ-2535"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** BVP Adult smartcard is available with 0 days to travel \r\n**AND** BVP Child smartcard is available with 1 days to travel \r\n**AND** TVM is in sales mode \r\n",
+      "updated_on": "2022-04-01T12:36:05Z"
+    },
+    {
+      "case_id": 3129981,
+      "title": "Delete",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-08-01T09:33:52Z"
+    },
+    {
+      "case_id": 3129982,
+      "title": "Delete",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-08-01T09:33:44Z"
+    },
+    {
+      "case_id": 3129983,
+      "title": "Delete",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-08-01T09:33:38Z"
+    },
+    {
+      "case_id": 3129984,
+      "title": "Delete",
+      "section_id": 322891,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Time Based",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-08-01T09:33:24Z"
+    },
+    {
+      "case_id": 1705912,
+      "title": "Discount Concessionary Smartcard",
+      "section_id": 322892,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Discount Concessionary Card",
+      "refs": [
+        "REQ-0707",
+        "REQ-0844",
+        "REQ-0845",
+        "REQ-0851",
+        "REQ-0852",
+        "REQ-0853",
+        "REQ-0862",
+        "REQ-2147",
+        "REQ-2170"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Above smartcards are available and active\r\n**AND** TVM is in service\r\n**AND** the TVM is on the Home Screen",
+      "updated_on": "2022-03-24T10:59:24Z"
+    },
+    {
+      "case_id": 1705913,
+      "title": "Discount Concessionary Smartcard - yLink",
+      "section_id": 322892,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Discount Concessionary Card",
+      "refs": [
+        "REQ-0707",
+        "REQ-0862",
+        "REQ-2147"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Ylink smartcard is available and active\r\n**AND** TVM is in service\r\n**AND** The TVM is on the Homescreen\r\n",
+      "updated_on": "2023-06-12T08:17:22Z"
+    },
+    {
+      "case_id": 1705914,
+      "title": "Free Smartcards",
+      "section_id": 322893,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Free Concessionary Card",
+      "refs": [
+        "REQ-0707",
+        "REQ-0837",
+        "REQ-0840",
+        "REQ-0841",
+        "REQ-0842",
+        "REQ-0843",
+        "REQ-0856",
+        "REQ-2147"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The above smartcards are available and active\r\n**AND** TVM is in service\r\n**AND** The TVM is on the Home Screen\r\n",
+      "updated_on": "2022-03-22T15:45:11Z"
+    },
+    {
+      "case_id": 1705915,
+      "title": "Present 2 Smartcards to TVM Simulaneously",
+      "section_id": 322894,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Error Management",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** 2 valid smartcards are available\r\n**AND** TVM is in sales mode and talking to the BOS\r\n**AND** The ETM is on the homepage",
+      "updated_on": "2022-03-22T15:34:02Z"
+    },
+    {
+      "case_id": 1705916,
+      "title": "User Re-presents Smartcard within the Passback Period",
+      "section_id": 322894,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Error Management",
+      "refs": [
+        "REQ-0837",
+        "REQ-0840",
+        "REQ-0841",
+        "REQ-0842",
+        "REQ-0843",
+        "REQ-0844",
+        "REQ-0845",
+        "REQ-0851",
+        "REQ-0852",
+        "REQ-0853",
+        "REQ-0856",
+        "REQ-0862",
+        "REQ-1447",
+        "REQ-2992"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verifies the behaviour of a previously used smartcard which is then re-presented within the passback period on the TVM\r\n",
+      "updated_on": "2022-03-24T09:00:25Z"
+    },
+    {
+      "case_id": 1705917,
+      "title": "Smartcard Error - Faulty Card Presented to the TVM",
+      "section_id": 322894,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Error Management",
+      "refs": [
+        "REQ-1409",
+        "REQ-1687"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Faulty smartcard is available \r\n**AND** The TVM is on the Homescreen",
+      "updated_on": "2022-03-24T09:46:38Z"
+    },
+    {
+      "case_id": 2691914,
+      "title": "Smartcard Error - Different Card Presented during Top-Up",
+      "section_id": 322894,
+      "section_path": "Retail Kiosk / Smartcard and ABT / Error Management",
+      "refs": [
+        "REQ-1409"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** That 2 x valid Smartcards of the same type eg: 2 x Daylink or 2 x Multi Journey ",
+      "updated_on": "2022-03-24T09:46:46Z"
+    },
+    {
+      "case_id": 2623757,
+      "title": "24+ Smartcard (Card)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-1519",
+        "REQ-2671",
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in service\r\n**AND** A Valid 24+ Smartcard is available\r\n**AND** The Card payment is available\r\n**AND** The TVM is on the homescreen",
+      "updated_on": "2022-03-30T12:35:24Z"
+    },
+    {
+      "case_id": 2691918,
+      "title": "24+ Smartcard (Contactless)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-1519",
+        "REQ-2671",
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in service\r\n**AND** A Valid 24+ Smartcard is available\r\n**AND** The Card payment is available\r\n**AND** The TVM is on the homescreen",
+      "updated_on": "2022-03-30T12:35:40Z"
+    },
+    {
+      "case_id": 2634019,
+      "title": "24+ Smartcard (Cash)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-2671",
+        "REQ-2992",
+        "REQ-3463"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid 24+ Smartcard is available\r\n**AND** Cash payment available",
+      "updated_on": "2022-03-30T11:50:53Z"
+    },
+    {
+      "case_id": 2623762,
+      "title": "24+ Smartcard (Outside Passback Period) (Card)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-0519",
+        "REQ-2992"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid 24+ Smartcard is available\r\n**AND** Smartcard is within Passback Period\r\n**AND** Card payment available",
+      "updated_on": "2022-03-30T12:34:40Z"
+    },
+    {
+      "case_id": 2644917,
+      "title": "24+ Smartcard (Outside Passback Period) (Contactless)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-1519",
+        "REQ-2992"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid 24+ Smartcard is available\r\n**AND** Smartcard is within Passback Period\r\n**AND** Contactless card payment available",
+      "updated_on": "2022-03-30T12:35:04Z"
+    },
+    {
+      "case_id": 2634020,
+      "title": "24+ Smartcard (Outside Passback Period) (Cash)",
+      "section_id": 545870,
+      "section_path": "Retail Kiosk / Smartcard and ABT / 24+",
+      "refs": [
+        "REQ-2992"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service\r\n**AND** Valid 24+ Smartcard is available\r\n**AND** Smartcard is within Passback Period\r\n**AND** Cash payment available",
+      "updated_on": "2022-03-30T11:52:11Z"
+    },
+    {
+      "case_id": 2640194,
+      "title": "Purchase ABT Smartcard (Card)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-0544",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then issue them",
+      "updated_on": "2022-03-22T13:45:55Z"
+    },
+    {
+      "case_id": 2691780,
+      "title": "Purchase ABT Smartcard (Contactless)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-0544",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then issue them",
+      "updated_on": "2022-03-22T13:45:15Z"
+    },
+    {
+      "case_id": 2691781,
+      "title": "Purchase ABT Smartcard (Cash)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-0544",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then issue them",
+      "updated_on": "2022-03-22T13:46:18Z"
+    },
+    {
+      "case_id": 2626615,
+      "title": "Top-up ABT Smartcard (Card)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-3335"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** ABT Smartcard is available\r\n**AND** Card payment method is available",
+      "updated_on": "2022-03-22T11:37:38Z"
+    },
+    {
+      "case_id": 2644919,
+      "title": "Top-up ABT Smartcard (Contactless)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-3335"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** ABT Smartcard is available\r\n**AND** Contactless card payment method is available",
+      "updated_on": "2022-03-22T11:38:48Z"
+    },
+    {
+      "case_id": 2634023,
+      "title": "Top-up ABT Smartcard (Cash)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0001",
+        "REQ-3335"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is running\r\n**AND** ABT Smartcard is available\r\n**AND** Cash payment method is available",
+      "updated_on": "2022-03-22T11:44:29Z"
+    },
+    {
+      "case_id": 2626613,
+      "title": "Purchase ABT Smartcard Error (Card)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0554",
+        "REQ-1409",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then give customer options when an error occurs during issuance",
+      "updated_on": "2022-03-17T13:20:57Z"
+    },
+    {
+      "case_id": 2644920,
+      "title": "Purchase ABT Smartcard Error (Contactless)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0554",
+        "REQ-1409",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then give customer options when an error occurs during issuance",
+      "updated_on": "2022-03-17T13:21:55Z"
+    },
+    {
+      "case_id": 2640195,
+      "title": "Purchase ABT Smartcard Error (Cash)",
+      "section_id": 546835,
+      "section_path": "Retail Kiosk / Smartcard and ABT / ABT Smartcards",
+      "refs": [
+        "REQ-0554",
+        "REQ-1409",
+        "REQ-3321"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "TVM should allow customers to purchase an ABT smartcard and then give customer options when an error occurs during issuance",
+      "updated_on": "2022-03-17T13:42:14Z"
+    },
+    {
+      "case_id": 1705918,
+      "title": "Ticket Layout 1 –Metro Adult Single Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:54:53Z"
+    },
+    {
+      "case_id": 1705919,
+      "title": "Ticket Layout 2 –Metro Adult Day Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:55:19Z"
+    },
+    {
+      "case_id": 1705920,
+      "title": "Ticket Layout 3 – Family & Friends Day Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:55:44Z"
+    },
+    {
+      "case_id": 1705921,
+      "title": "Ticket Layout 4 – Family & Friends Additional Child",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:56:21Z"
+    },
+    {
+      "case_id": 1705922,
+      "title": "Ticket Layout 5 –Metro Family Day Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:56:44Z"
+    },
+    {
+      "case_id": 1705923,
+      "title": "Ticket Layout 6 – Metro Family Additional Child Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:57:34Z"
+    },
+    {
+      "case_id": 1705924,
+      "title": "Ticket Layout 7 – Bus Rambler Adult Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0095",
+        "REQ-0277",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:58:24Z"
+    },
+    {
+      "case_id": 1705925,
+      "title": "Ticket Layout 9 – yLink Single",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:59:11Z"
+    },
+    {
+      "case_id": 1705926,
+      "title": "Ticket Layout 11 - Multi-Journey Smartcard Topup Receipt",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0096",
+        "REQ-0339",
+        "REQ-2147"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T11:59:47Z"
+    },
+    {
+      "case_id": 1705927,
+      "title": "Ticket Layout 12 – Period Pass Smartcard Topup Receipt",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0096",
+        "REQ-0339",
+        "REQ-2147"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:00:51Z"
+    },
+    {
+      "case_id": 1705928,
+      "title": "Ticket Layout 13 – DayLink Smartcard Topup Receipt",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0096",
+        "REQ-0339",
+        "REQ-2147"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:01:42Z"
+    },
+    {
+      "case_id": 1705929,
+      "title": "Ticket Layout 14 – Smartcard Top up Expiry Receipt",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0096",
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-04-01T13:29:47Z"
+    },
+    {
+      "case_id": 1705930,
+      "title": "Ticket Layout 15 – Smartcard Mini-Statement Receipt",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [
+        "REQ-0096",
+        "REQ-0339",
+        "REQ-3074"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:02:32Z"
+    },
+    {
+      "case_id": 1705931,
+      "title": "Ticket Layout 16 – Return and 1 Month Return",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:05:44Z"
+    },
+    {
+      "case_id": 1705932,
+      "title": "Ticket Layout 18 – Ulsterbus Adult Single Ticket",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:06:33Z"
+    },
+    {
+      "case_id": 1705933,
+      "title": "Ticket Layout 20 – Ulsterbus yLink Single",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:07:08Z"
+    },
+    {
+      "case_id": 1705934,
+      "title": "Ticket Layout 22 –Dependants – Metro and Ulsterbus",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued\r\n\r\n",
+      "updated_on": "2022-03-30T12:08:01Z"
+    },
+    {
+      "case_id": 1705935,
+      "title": "Ticket Layout 23 – iLink Single",
+      "section_id": 322895,
+      "section_path": "Retail Kiosk / Ticket Formats and Receipts",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in Service\r\n**AND** A Ticket has been issued88",
+      "updated_on": "2022-03-30T12:09:54Z"
+    },
+    {
+      "case_id": 1705937,
+      "title": "EMS Access - Sign into EMS using a Technician StaffID - Stafflist from Cloudfare",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0050",
+        "REQ-2674"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Stafflist contains a valid Technician StaffID\r\n**AND** TVM is running",
+      "updated_on": "2023-08-03T14:22:33Z"
+    },
+    {
+      "case_id": 1705939,
+      "title": "A TVM Engineer prints a software versions report",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** A TVM Technician has already signed-in and the TVM is displaying EMS",
+      "updated_on": "2023-08-03T14:23:21Z"
+    },
+    {
+      "case_id": 1705936,
+      "title": "Cash  Collector - Panic Button",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-2785"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that a Cash collector can raise a burglary alarm when the TVM door is opened and reported to BOS\r\n\r\nNOTE: siren will be loud so please notify other staff of the noise prior to run",
+      "updated_on": "2022-04-01T12:46:48Z"
+    },
+    {
+      "case_id": 1705941,
+      "title": "Comms Test To Back Office - Success message shown to Engineer",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0530",
+        "REQ-2747"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is connected to Cloudfare and TMS \r\n**AND** TVM is in sales mode",
+      "updated_on": "2023-08-03T14:27:07Z"
+    },
+    {
+      "case_id": 1705942,
+      "title": "Copy files from TVM to Transfer Medium - USB - Transport Operator",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0421"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode with key in TVM door\r\n**AND** USB flash drive is available",
+      "updated_on": "2022-02-16T13:17:59Z"
+    },
+    {
+      "case_id": 1705943,
+      "title": "Data Export Medium",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0431"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that all data generated by the TVM is then backed up on to a separate drive on E. ",
+      "updated_on": "2022-02-16T13:17:36Z"
+    },
+    {
+      "case_id": 1705938,
+      "title": "Set Location of TVM",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0514"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that an Engineer and set and amend the Location of a TVM, and this is then visible in CLoudfare",
+      "updated_on": "2022-03-28T13:02:54Z"
+    },
+    {
+      "case_id": 1705940,
+      "title": "Ticket Roll Length - A user manually corrects the ticket roll length",
+      "section_id": 322897,
+      "section_path": "Maintenance Mode and EMS / Technician Functions",
+      "refs": [
+        "REQ-0848"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is In Sales mode \r\n**AND** Valid maintenance engineer login is available",
+      "updated_on": "2022-03-28T13:02:47Z"
+    },
+    {
+      "case_id": 1705944,
+      "title": "Cash Collection - Coins Collection Report",
+      "section_id": 322898,
+      "section_path": "Maintenance Mode and EMS / Cash Collection - Reports",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in service\r\n",
+      "updated_on": "2022-04-01T12:13:36Z"
+    },
+    {
+      "case_id": 1705945,
+      "title": "Cash Collection - Cash Notes Collection Report",
+      "section_id": 322898,
+      "section_path": "Maintenance Mode and EMS / Cash Collection - Reports",
+      "refs": [
+        "REQ-2720",
+        "REQ-2760"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service",
+      "updated_on": "2022-04-01T12:17:33Z"
+    },
+    {
+      "case_id": 1705946,
+      "title": "Cash Collection - A Coins Reload Report",
+      "section_id": 322898,
+      "section_path": "Maintenance Mode and EMS / Cash Collection - Reports",
+      "refs": [
+        "REQ-2720",
+        "REQ-2760"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is in service",
+      "updated_on": "2022-04-01T12:21:45Z"
+    },
+    {
+      "case_id": 1705947,
+      "title": "Cash Collector - Cash Content Report after Replacement of Coin Recycler Hopper",
+      "section_id": 322898,
+      "section_path": "Maintenance Mode and EMS / Cash Collection - Reports",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verifies an engineer who logs into EMS to print a Cash Content Report following the coin hopper being replaced by another with a different serial number. When the Cash content report is printed then the ID of the new coin hopper is shown.  \r\n\r\n",
+      "updated_on": "2022-04-01T12:31:48Z"
+    },
+    {
+      "case_id": 1705949,
+      "title": "Degraded Service  - Card Payments Unavailable",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-1591",
+        "REQ-2362",
+        "REQ-2369",
+        "REQ-2784",
+        "REQ-3294"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service with the homescreen is displayed\r\n\r\n",
+      "updated_on": "2023-01-27T11:53:31Z"
+    },
+    {
+      "case_id": 1705950,
+      "title": "Degraded Service  - Coin Payments Unavailable",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-1591",
+        "REQ-2784"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service with the homescreen is displayed",
+      "updated_on": "2022-02-16T11:51:17Z"
+    },
+    {
+      "case_id": 1705951,
+      "title": "Degraded Service  - Note Payments Unavailable",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-1591",
+        "REQ-2784"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service at green state\r\n**AND** Magnet is available and applied to door sensor to allow sales to run with door open",
+      "updated_on": "2022-02-16T11:50:49Z"
+    },
+    {
+      "case_id": 1705952,
+      "title": "Coin Change Unavailable - Notify Customer",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-1591",
+        "REQ-2784"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verifies that when the TVM is in a low change state then the TVM cannot provide change for an overpayment and instead notifies user of this \r\n",
+      "updated_on": "2022-02-16T11:49:35Z"
+    },
+    {
+      "case_id": 1705953,
+      "title": "Degraded Service - Printer Stock Low",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-0847",
+        "REQ-1591"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Ticket Vending Machine is in service\r\n",
+      "updated_on": "2022-02-16T11:40:58Z"
+    },
+    {
+      "case_id": 1705954,
+      "title": "Device Lockout  - TVM goes Out of Service when a BOS communication has not occurred after configured time",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-2576"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verifies the Sales App locks out the TVM when communications with the BOS has not occurred after the configured time.",
+      "updated_on": "2022-02-16T11:33:02Z"
+    },
+    {
+      "case_id": 1705955,
+      "title": "TVM Prolonged Communication Failure",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-2588"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service and in sales mode \r\n**AND** LAN cable has been unplugged \r\n**AND** SIM connection for the TVM has failed\r\n**AND** Valid smartcard is available and cash is available\r\n**AND** The comms has not been lost for so long that the device has become locked out",
+      "updated_on": "2022-02-16T11:31:06Z"
+    },
+    {
+      "case_id": 1705956,
+      "title": "Mains Power Failure - TVM Runs on Battery Power",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-0326"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Valid banknotes and valid coins are available to use\r\n**AND** TVM is in sales mode and is communicating with Cloudfare\r\n**AND** Locate the mains plug for TVM",
+      "updated_on": "2022-02-16T11:29:58Z"
+    },
+    {
+      "case_id": 1705957,
+      "title": "Coin & Cash Vault Security is Maintained - When Powered On & Off",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-0326"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when TVM powers is turned off and not operational then the TVM's cash remains secure from vandalism. \r\n\r\n",
+      "updated_on": "2022-02-16T11:27:50Z"
+    },
+    {
+      "case_id": 1705958,
+      "title": "Change Voucher is Issued on Request by User",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-0339",
+        "REQ-1591"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when a in a low-change state the TVM offers a Cash user a change voucher if the user attempts to overpay with a Note",
+      "updated_on": "2022-04-01T13:09:18Z"
+    },
+    {
+      "case_id": 1705959,
+      "title": "Print Failure - Cash is Returned",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-0341"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when TVM printer jam occurs then the cash inserted as payment is returned to the user and TVM goes degraded functionality state after printer jam not OOS",
+      "updated_on": "2022-02-16T11:11:47Z"
+    },
+    {
+      "case_id": 1705948,
+      "title": "Transactions - Data is Reported to BOS and Mirrored on E of TVM Drive",
+      "section_id": 322900,
+      "section_path": "Degraded States and Error Management",
+      "refs": [
+        "REQ-1685",
+        "REQ-2721"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode\r\n**AND** Connected  to the BOS",
+      "updated_on": "2022-03-25T13:15:37Z"
+    },
+    {
+      "case_id": 1705960,
+      "title": "TVM Events Reported Regularly to Cloudfare",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-2399"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when cash related containers are removed incorrectly ressulting in an event occurance on the TVM, this is reported to Cloudfare so Engineers are alerted promptly.",
+      "updated_on": "2022-02-16T11:07:09Z"
+    },
+    {
+      "case_id": 1705961,
+      "title": "TVM Comms on SIM - Comms Event Reported to Cloudfare",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-2399",
+        "REQ-2450",
+        "REQ-2589",
+        "REQ-2741",
+        "REQ-2746"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The test verifies that when the LAN network fails the TVM continues to operate and communicate using the SIM connection.  THis test also verifies that the BOS records are communicated in Cloudfare and thereby respectfully removed from TVM BOS records folder.",
+      "updated_on": "2022-02-16T11:01:23Z"
+    },
+    {
+      "case_id": 1705962,
+      "title": "TVM Status and Details - Reported to Cloudfare",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-1519",
+        "REQ-2399",
+        "REQ-2731",
+        "REQ-2741"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The test verifies TVM ID and status are correctly reported in Cloudfare and also that the TVM light represents the correct state of TVM when sending remote commands",
+      "updated_on": "2022-03-30T12:37:55Z"
+    },
+    {
+      "case_id": 1705963,
+      "title": "New Cash Collector - Perform Cash Collection",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-2720",
+        "REQ-2721",
+        "REQ-2731"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** Access to Cloudfare back office which is connected to the TVM\r\n**AND** TVM is in sales mode \r\n**AND** Transactions have been made using coins and bank notes\r\n**AND** Hopper levels are at or above the threshold set in TMS\r\n**AND** Cash notes and coins are available \r\n",
+      "updated_on": "2022-02-16T10:55:33Z"
+    },
+    {
+      "case_id": 1705964,
+      "title": "Partial Print of Ticket - Reported correctly to User & BOS",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-0865"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The purpose of the test is to verify that when a ticket of any kind is only partially printed then the TVM notifies the user of this and also the BOS as an event\r\n",
+      "updated_on": "2022-02-16T10:52:03Z"
+    },
+    {
+      "case_id": 1705965,
+      "title": "TVM time and Cloudfare Time are Synchronised",
+      "section_id": 322901,
+      "section_path": "BOS Interfaces",
+      "refs": [
+        "REQ-2270"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode \r\n**AND** connected  to Cloudfare",
+      "updated_on": "2022-02-16T10:48:18Z"
+    },
+    {
+      "case_id": 1705966,
+      "title": "Cloudfare - Send Remote Command to put TVM in OOS State",
+      "section_id": 322902,
+      "section_path": "BOS Interfaces / Remote Commands and VNC Access",
+      "refs": [
+        "REQ-0606"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in service and communicating with the Cloudfare Back office\r\n**AND** Cloudfare session is active and communicating with the TVM (VPN enabled to environment)",
+      "updated_on": "2022-02-16T10:42:11Z"
+    },
+    {
+      "case_id": 1705967,
+      "title": "Remote Command -  Force Comms with TVM",
+      "section_id": 322902,
+      "section_path": "BOS Interfaces / Remote Commands and VNC Access",
+      "refs": [
+        "REQ-0503",
+        "REQ-0607"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** The TVM is In Service and communicating with Cloudfare\r\n**AND** BOS engineer is logged into Cloudfare in a Chrome browser\r\n\r\n\r\n",
+      "updated_on": "2022-02-16T10:30:25Z"
+    },
+    {
+      "case_id": 1705968,
+      "title": "Secure Connection Required to Access BOS and uVNC session for TVM",
+      "section_id": 322902,
+      "section_path": "BOS Interfaces / Remote Commands and VNC Access",
+      "refs": [
+        "REQ-0608",
+        "REQ-0661"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** No active VPN sessions on local pc\r\n**AND** TVM IP address + password is known\r\n**AND** TVM is in sales mode\r\n**AND** local pc has uVNC installed 1.2.2.3 with the plugin 'SecureVNCPlugin64.dsm' enabled\r\n\r\n",
+      "updated_on": "2022-02-16T10:30:00Z"
+    },
+    {
+      "case_id": 1705971,
+      "title": "New Complete Dataset  is available - Scheduled For Immediate Activation from Cloudfare",
+      "section_id": 322903,
+      "section_path": "BOS Interfaces / Software Distribution and Commissioning.",
+      "refs": [
+        "REQ-0551",
+        "REQ-0553",
+        "REQ-0608",
+        "REQ-0847",
+        "REQ-2727"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies the TVM can download and install a complete dataset of updated/new Software and Configuration files for immediate activation when invoked by Cloudfare",
+      "updated_on": "2022-03-25T13:12:56Z"
+    },
+    {
+      "case_id": 1705972,
+      "title": "New Complete Dataset is available - Scheduled For Future Activation from Cloudfare",
+      "section_id": 322903,
+      "section_path": "BOS Interfaces / Software Distribution and Commissioning.",
+      "refs": [
+        "REQ-0551",
+        "REQ-0553",
+        "REQ-0608",
+        "REQ-0680",
+        "REQ-0847",
+        "REQ-2727"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies the TVM can download and install a complete dataset of updated/new Software and Configuration files for activation at a specified **Future date/time** when invoked by Cloudfare",
+      "updated_on": "2022-03-25T13:13:05Z"
+    },
+    {
+      "case_id": 1705969,
+      "title": "Configure TVM Coin Vault Threshhold",
+      "section_id": 322903,
+      "section_path": "BOS Interfaces / Software Distribution and Commissioning.",
+      "refs": [
+        "REQ-0847"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "The coin bin/coin box in the TVM has 2 threshold parameters that can be set in TMS to enable event notifications to be generated for Translink when Coins fall below the set thresholds.  This setting is to ensure the correct events are raised for Translink who can then send an engineer to perform a collection of the coins so it can be used again.\r\n\r\nCoin box function:\r\nCoin box/bin contains any coins which cannot be recycled by the hoppers.  The TVM recycles the coins which it can back into the hopper and any coins which cannot are then sent to the coin bin/box.  When it approaches max capacity (configurable in TMS- this test) it will generate the appropriate event alert to the BOS.\r\n\r\n* Coin vault almost full - left 'Threshold weight' - event code 1030\r\n* Coin vault full - right Threshold weight'- event code 1031\r\n\r\n\r\n",
+      "updated_on": "2022-02-16T10:28:43Z"
+    },
+    {
+      "case_id": 1705970,
+      "title": "Configure EMV only Mode for TVM",
+      "section_id": 322903,
+      "section_path": "BOS Interfaces / Software Distribution and Commissioning.",
+      "refs": [
+        "REQ-3294"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "Verify that the TVM can be configured to run EMV payments only and this is configuration isset in Cloudfare to be then sent to the TVM.  ",
+      "updated_on": "2022-02-16T10:25:01Z"
+    },
+    {
+      "case_id": 1705973,
+      "title": "Timing of a Ticket Print",
+      "section_id": 322905,
+      "section_path": "Non-Functional Requirement",
+      "refs": [
+        "REQ-3197"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that a when paper ticket prints then the average time is 3.5 seconds for a 110mm length\r\n\r\n__________________________________________________\r\n286076 & 283060 - Ticket fan is added to prevent tickets getting stuck in the shoot, and activated when any tickets are printed",
+      "updated_on": "2022-02-16T10:18:27Z"
+    },
+    {
+      "case_id": 1705974,
+      "title": "The TVM shall accept coins with an acceptance rate of 98% of valid tender coins upon insertion",
+      "section_id": 322905,
+      "section_path": "Non-Functional Requirement",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and at a green state\r\n**AND** TVM is communicating with the BOS \r\n**AND** Cash coins are available",
+      "updated_on": "2022-02-16T10:18:19Z"
+    },
+    {
+      "case_id": 1705975,
+      "title": "The TVM shall accept notes with an acceptance rate of 98% of valid tender banknotes upon insertion",
+      "section_id": 322905,
+      "section_path": "Non-Functional Requirement",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TVM is in sales mode and at a green state\r\n**AND** TVM is communicating with the BOS \r\n**AND** Cash notes are available",
+      "updated_on": "2022-02-16T10:17:06Z"
+    },
+    {
+      "case_id": 1785699,
+      "title": "Amend TVM to New Location",
+      "section_id": 339206,
+      "section_path": "Configuration Topology",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-03-08T11:14:09Z"
+    },
+    {
+      "case_id": 1785695,
+      "title": "Current Location - Correct operator selected",
+      "section_id": 339206,
+      "section_path": "Configuration Topology",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when TVM is set to the location (intended in Live) then all correct alighting stages are available to travel to",
+      "updated_on": "2023-03-08T10:32:14Z"
+    },
+    {
+      "case_id": 1785696,
+      "title": "Current Location with Different operator - New Locations Not Available",
+      "section_id": 339206,
+      "section_path": "Configuration Topology",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2023-03-07T16:06:34Z"
+    },
+    {
+      "case_id": 1785735,
+      "title": "Send Topology to Impertinent Devices",
+      "section_id": 339206,
+      "section_path": "Configuration Topology",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test verifies that when topology to a specific device is sent down to other Devices that it does NOT relate to then the device receiving the Topology  does not regress and the Device remains stable and functional with the expected   ",
+      "updated_on": "2023-03-07T15:57:30Z"
+    },
+    {
+      "case_id": 1785702,
+      "title": "Current Location - Buy Product from the Correct Operator",
+      "section_id": 886614,
+      "section_path": "delete",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2026-05-11T11:14:55Z"
+    },
+    {
+      "case_id": 1785704,
+      "title": "Different Location - Buy Product",
+      "section_id": 886614,
+      "section_path": "delete",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2026-05-11T11:14:55Z"
+    },
+    {
+      "case_id": 1786505,
+      "title": "Home location - Amend Boarding Location to another in Fares Triangle",
+      "section_id": 886614,
+      "section_path": "delete",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2026-05-11T11:14:55Z"
+    },
+    {
+      "case_id": 1785697,
+      "title": "New Location set as Home - Locations within Fares Triangle Available with Correct Operator",
+      "section_id": 886614,
+      "section_path": "delete",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": null,
+      "updated_on": "2026-05-11T11:14:55Z"
+    }
+  ]
+}

@@ -1,0 +1,2547 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "**NEW** BOS Suite",
+  "suite_id": 30287,
+  "generated_at": "2026-08-05T14:50:58.538724Z",
+  "cases": [
+    {
+      "case_id": 4104251,
+      "title": "Sign On — valid credentials reach the CloudFare Dashboard",
+      "section_id": 887861,
+      "section_path": "CloudFare / Sign On & Access",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user signs on with valid Active Directory credentials\n-> **THEN** the user is signed in\n**AND** the Dashboard is displayed",
+      "updated_on": "2026-07-23T14:18:35Z"
+    },
+    {
+      "case_id": 4104252,
+      "title": "Sign On — Google account sign-on (UNVERIFIED)",
+      "section_id": 887861,
+      "section_path": "CloudFare / Sign On & Access",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user attempts to sign on with a Google account\n-> **THEN** **GAP** — outcome undefined: Google/OAuth sign-on is not in requirements",
+      "updated_on": "2026-07-23T14:18:35Z"
+    },
+    {
+      "case_id": 4104253,
+      "title": "Sign On — user can sign off CloudFare",
+      "section_id": 887861,
+      "section_path": "CloudFare / Sign On & Access",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user signs off using the sign-off control\n-> **THEN** the session ends\n**AND** the sign-on page is shown",
+      "updated_on": "2026-07-23T14:18:36Z"
+    },
+    {
+      "case_id": 4104254,
+      "title": "Configure report access for a role — TVM/Cash reports",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets the TVM/Cash report access for a role, including specific report access\n-> **THEN** the role can access only the permitted TVM/Cash reports",
+      "updated_on": "2026-07-24T08:15:58Z"
+    },
+    {
+      "case_id": 4104255,
+      "title": "Configure module and group access for a role — operator-scope claims",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's operator-scope claim — CF Full Operator (AccessControlFullAccess, all operators in hierarchy) or CF-Operator-<Name> (AccessControl<name>, that operator only, no sub-operators)\n-> **THEN** the role's visible operators match the configured scope",
+      "updated_on": "2026-07-24T08:15:58Z"
+    },
+    {
+      "case_id": 4104790,
+      "title": "Configure report access for a role — Staff reports",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets the Staff report access for a role, including specific report access\n-> **THEN** the role can access only the permitted Staff reports",
+      "updated_on": "2026-07-24T08:16:08Z"
+    },
+    {
+      "case_id": 4104791,
+      "title": "Configure report access for a role — Alert reports",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets the Alert report access for a role, including specific report access\n-> **THEN** the role can access only the permitted Alert reports",
+      "updated_on": "2026-07-24T08:16:09Z"
+    },
+    {
+      "case_id": 4104792,
+      "title": "Configure report access for a role — Asset reports",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets the Asset report access for a role, including specific report access\n-> **THEN** the role can access only the permitted Asset reports",
+      "updated_on": "2026-07-24T08:16:10Z"
+    },
+    {
+      "case_id": 4104793,
+      "title": "Configure report access for a role — Topology reports",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets the Topology report access for a role, including specific report access\n-> **THEN** the role can access only the permitted Topology reports",
+      "updated_on": "2026-07-24T08:16:10Z"
+    },
+    {
+      "case_id": 4104794,
+      "title": "Configure module and group access for a role — Dashboard module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Dashboard access\n-> **THEN** the role can access only the permitted Dashboard functions",
+      "updated_on": "2026-07-24T08:16:11Z"
+    },
+    {
+      "case_id": 4104795,
+      "title": "Configure module and group access for a role — Events & Alerts module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Events & Alerts access (Alert Configuration, Event Group Configuration)\n-> **THEN** the role can access only the permitted Events & Alerts functions",
+      "updated_on": "2026-07-24T08:16:12Z"
+    },
+    {
+      "case_id": 4104796,
+      "title": "Configure module and group access for a role — Topology & Fares module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Topology & Fares access (Route Management, Service Delete, Legacy Stages, Product Editor, Fare Rules, Ticket Editor, Delete Label)\n-> **THEN** the role can access only the permitted Topology & Fares functions",
+      "updated_on": "2026-07-24T08:16:13Z"
+    },
+    {
+      "case_id": 4104797,
+      "title": "Configure module and group access for a role — Schedule Manager module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Schedule Manager access (Import, Topology Sync)\n-> **THEN** the role can access only the permitted Schedule Manager functions",
+      "updated_on": "2026-07-24T08:16:13Z"
+    },
+    {
+      "case_id": 4104798,
+      "title": "Configure module and group access for a role — Estate Management module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Estate Management access (Comms Monitor, Activity Log, Asset Manager, Cash View, Staff Manager, Device Dataset Deployment, Quarantine, Device Logging)\n-> **THEN** the role can access only the permitted Estate Management functions",
+      "updated_on": "2026-07-24T08:16:14Z"
+    },
+    {
+      "case_id": 4104799,
+      "title": "Configure module and group access for a role — Reports module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's Reports access\n-> **THEN** the role can access only the permitted Reports functions",
+      "updated_on": "2026-07-24T08:16:15Z"
+    },
+    {
+      "case_id": 4104800,
+      "title": "Configure module and group access for a role — System Configuration module access",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's System Configuration access (Notifications)\n-> **THEN** the role can access only the permitted System Configuration functions",
+      "updated_on": "2026-07-24T08:16:16Z"
+    },
+    {
+      "case_id": 4104801,
+      "title": "Configure module and group access for a role — gate/station claims",
+      "section_id": 887862,
+      "section_path": "CloudFare / Roles & Profiles",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator sets a role's gate/station claim (StationAdmin, TransitGuard, SystemSupervisor, StationSupervisor or Admin)\n-> **THEN** the role's gate/station access matches the configured claim",
+      "updated_on": "2026-07-24T08:16:16Z"
+    },
+    {
+      "case_id": 4104243,
+      "title": "Settings — each Settings option opens its page",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user opens the Settings menu and selects each listed option in turn\n-> **THEN** each selected option opens its Settings page",
+      "updated_on": "2026-07-23T14:18:38Z"
+    },
+    {
+      "case_id": 4104244,
+      "title": "Settings — Event Codes view/add/edit/import",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects an event code and edits it\n-> **THEN** the event codes table reflects the edit\n**WHEN** the user adds a new event code\n-> **THEN** the new event code appears in the table\n**WHEN** the user imports event codes\n-> **THEN** the imported codes appear in the table",
+      "updated_on": "2026-07-23T14:18:39Z"
+    },
+    {
+      "case_id": 4104245,
+      "title": "Settings — Operating Units add/edit/delete",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds an operating unit\n-> **THEN** the operating units list shows the new unit\n**WHEN** the user edits an operating unit\n-> **THEN** the list reflects the edit\n**WHEN** the user deletes an operating unit\n-> **THEN** the unit is removed from the list",
+      "updated_on": "2026-07-23T14:18:40Z"
+    },
+    {
+      "case_id": 4104246,
+      "title": "Settings — Scheduled Tasks enable/disable purges",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user enables or disables the purge for successful quarantine messages\n-> **THEN** the purge schedule for quarantine messages is updated\n**WHEN** the user enables or disables the purge for events and alerts\n-> **THEN** the purge schedule for events and alerts is updated\n**WHEN** the user enables or disables the purge for communications data\n-> **THEN** the purge schedule for communications data is updated",
+      "updated_on": "2026-07-23T14:18:41Z"
+    },
+    {
+      "case_id": 4104247,
+      "title": "Settings — System Settings edit value / VAT / feature toggle",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user edits a system setting value\n-> **THEN** the system setting is saved with the new value\n**WHEN** the user adds a VAT value\n-> **THEN** the VAT value is saved\n**WHEN** the user changes a feature toggle\n-> **THEN** the feature toggle state is saved",
+      "updated_on": "2026-07-23T14:18:42Z"
+    },
+    {
+      "case_id": 4104248,
+      "title": "Settings — edit a Notifications value",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user edits a notifications value\n-> **THEN** the notifications value is saved",
+      "updated_on": "2026-07-23T14:18:42Z"
+    },
+    {
+      "case_id": 4104249,
+      "title": "Settings — edit External Interface Settings",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user edits an external interface setting\n-> **THEN** the setting is saved",
+      "updated_on": "2026-07-23T14:18:43Z"
+    },
+    {
+      "case_id": 4104250,
+      "title": "Settings — edit a Scheduled Adherence threshold",
+      "section_id": 887863,
+      "section_path": "CloudFare / Settings",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user edits a scheduled adherence threshold\n-> **THEN** the threshold is saved",
+      "updated_on": "2026-07-23T14:18:44Z"
+    },
+    {
+      "case_id": 4104287,
+      "title": "ExternalInfo/StaffCash API returns staff cash for a date range",
+      "section_id": 887864,
+      "section_path": "CloudFare / API",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sends a GET ExternalInfo/StaffCash request for a single past day, a multi-day past range, or the current day\n-> **THEN** the API returns the staff cash data for the requested period",
+      "updated_on": "2026-07-23T14:18:45Z"
+    },
+    {
+      "case_id": 4104288,
+      "title": "ExternalInfo/StaffCash API handles invalid requests and BST/GMT",
+      "section_id": 887864,
+      "section_path": "CloudFare / API",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sends an invalid GET ExternalInfo/StaffCash request, or a request spanning the BST/GMT change\n-> **THEN** an invalid request is rejected with an error\n**AND** a BST/GMT request returns the correct staff cash data for the period",
+      "updated_on": "2026-07-23T14:18:45Z"
+    },
+    {
+      "case_id": 4104256,
+      "title": "Topology & Fares Management — each menu option opens its page",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user opens the Topology & Fares Management module via the '3 dot' icon to the right of the 'Topology & Fares' text and selects each option on the Topology main menu\n-> **THEN** each selected Topology & Fares page opens",
+      "updated_on": "2026-07-23T14:18:46Z"
+    },
+    {
+      "case_id": 4104257,
+      "title": "Topology filter — services and routes filter by operator",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100385",
+        "FBD-100698"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects an operator level in the hierarchy\n-> **THEN** only that level's services and routes are shown\n**UNCONFIRMED** — no discrete 'filter by operator' control is described; confirm the actual live control",
+      "updated_on": "2026-07-23T14:18:47Z"
+    },
+    {
+      "case_id": 4104258,
+      "title": "Fares export — standard fares list is exported",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the fares export for the standard fares list (XLSX or CSV)\n-> **THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live",
+      "updated_on": "2026-07-24T08:15:59Z"
+    },
+    {
+      "case_id": 4104259,
+      "title": "Import Map Point File — stops are added and existing stops updated",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects 'Import Map Point File' from the Topology main menu, selects the CSV file and presses 'Import'\n-> **THEN** a success box reports the number of stops added (Stops Added) and updated (Stops Updated)\n**AND** stops not already present are added\n**AND** existing stops are updated from the file",
+      "updated_on": "2026-07-23T14:18:48Z"
+    },
+    {
+      "case_id": 4104260,
+      "title": "Import route data at parent and child operator level",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user imports route data at parent operator level and at child operator level\n-> **THEN** the route data is imported at the selected level\n**UNCONFIRMED** — this import path is not described; confirm it exists live and capture its real file format/screen",
+      "updated_on": "2026-07-23T14:18:49Z"
+    },
+    {
+      "case_id": 4104802,
+      "title": "Fares export — ABT Fares export is exported",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the fares export for the ABT Fares export (XLSX or CSV)\n-> **THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live",
+      "updated_on": "2026-07-24T08:16:17Z"
+    },
+    {
+      "case_id": 4104803,
+      "title": "Fares export — Route Attributes is exported",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the fares export for the Route Attributes (XLSX or CSV)\n-> **THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live",
+      "updated_on": "2026-07-24T08:16:18Z"
+    },
+    {
+      "case_id": 4104804,
+      "title": "Fares export — Area/Zone overlays is exported",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the fares export for the Area/Zone overlays (XLSX or CSV)\n-> **THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live",
+      "updated_on": "2026-07-24T08:16:19Z"
+    },
+    {
+      "case_id": 4104805,
+      "title": "Fares export — single-file export is exported",
+      "section_id": 887866,
+      "section_path": "CloudFare / Topology & Fares / Setup & Import",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the fares export for the single-file export (XLSX or CSV)\n-> **THEN** the fares file is produced\n**AND** **UNCONFIRMED** — the export surface/parameters are not confirmed; confirm live",
+      "updated_on": "2026-07-24T08:16:19Z"
+    },
+    {
+      "case_id": 4104261,
+      "title": "Drawing Tool — add a new map point with a linked stop",
+      "section_id": 887867,
+      "section_path": "CloudFare / Topology & Fares / Drawing Tool",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a new map point and links a stop to it\n-> **THEN** the map point is created\n**AND** the map point is shown on the map",
+      "updated_on": "2026-07-23T14:18:50Z"
+    },
+    {
+      "case_id": 4104262,
+      "title": "Drawing Tool — create, edit and delete a zone",
+      "section_id": 887867,
+      "section_path": "CloudFare / Topology & Fares / Drawing Tool",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user creates a zone\n-> **THEN** the zone is created on the map\n**WHEN** the user edits the zone\n-> **THEN** the edit is applied to the zone\n**WHEN** the user deletes the zone\n-> **THEN** the zone is removed\n**WHEN** the user overlays a smaller zone on a larger zone\n-> **THEN** the smaller zone is layered above the larger zone so it stays accessible",
+      "updated_on": "2026-07-23T14:18:51Z"
+    },
+    {
+      "case_id": 4104263,
+      "title": "Drawing Tool — configure positional points on a route",
+      "section_id": 887867,
+      "section_path": "CloudFare / Topology & Fares / Drawing Tool",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures positional points on the route\n-> **THEN** the positional points are saved to the route",
+      "updated_on": "2026-07-23T14:18:52Z"
+    },
+    {
+      "case_id": 4104264,
+      "title": "Drawing Tool — export map points to CSV and re-import edits",
+      "section_id": 887867,
+      "section_path": "CloudFare / Topology & Fares / Drawing Tool",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user exports the map points to CSV, edits the file and re-imports it\n-> **THEN** the edited map points are updated in CloudFare",
+      "updated_on": "2026-07-23T14:18:52Z"
+    },
+    {
+      "case_id": 4104265,
+      "title": "Drawing Tool — search for a map point",
+      "section_id": 887867,
+      "section_path": "CloudFare / Topology & Fares / Drawing Tool",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user searches for a map point\n-> **THEN** the matching map point is located on the map",
+      "updated_on": "2026-07-23T14:18:53Z"
+    },
+    {
+      "case_id": 4104266,
+      "title": "Route Management — create, amend, copy and delete a route",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100296"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user presses 'Create New Route' in the Routes sub-module, completes the route attributes and stops, and presses 'Add Route'\n-> **THEN** the new route is added and appears in the Routes drop-down\n**WHEN** the user selects the route, opens the '3 dot' menu on the Route Pane and chooses 'Edit Route Attributes' (or 'Copy Route', or 'Delete Route')\n-> **THEN** 'Edit Route Attributes' applies the amended attributes\n**AND** 'Copy Route' creates a copy in the same Service named '<route>-copy'\n**AND** 'Delete Route' removes the route after the Yes/No confirmation\n**UNCONFIRMED** — that a copy retains its fare area is not confirmed; verify against the fares spec/live",
+      "updated_on": "2026-07-23T14:18:54Z"
+    },
+    {
+      "case_id": 4104267,
+      "title": "Route — service and public route code configured",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100296",
+        "REQ-3291"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the route's 'Add to a Service' attribute and its 'Public Route Code' (the code printed on tickets)\n-> **THEN** the route is saved with the selected Service and Public Route Code\n**UNCONFIRMED** — no per-route 'service code'/'operator' field exists in the spec; confirm the live screen's terms",
+      "updated_on": "2026-07-23T14:18:55Z"
+    },
+    {
+      "case_id": 4104268,
+      "title": "Route — enable ABT flat fare",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100296"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user enables ABT flat fare on the route\n-> **THEN** the route is configured for ABT flat-fare travel\n**UNCONFIRMED** — no 'ABT flat fare' route attribute is named in the spec; confirm the setting exists and where it lives",
+      "updated_on": "2026-07-23T14:18:55Z"
+    },
+    {
+      "case_id": 4104269,
+      "title": "Route — enable Multi-Journey transfers and set the transfer time",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100698"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the route's 'Transfer Time' (minutes) — and 'Directional Transfer' if the previous journey's direction must match\n-> **THEN** Multi-Journey transfers are permitted on the route with the configured Transfer Time\n**WHEN** a second tap is made within the configured Transfer Time\n-> **THEN** the fares engine returns the correct transfer fare for the window\n**UNCONFIRMED** — confirm the exact fare returned against seeded fares",
+      "updated_on": "2026-07-23T14:18:56Z"
+    },
+    {
+      "case_id": 4104270,
+      "title": "Route — configure the fares triangle and calculate a fare",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100296",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures the fares triangle, creates a new fare area and calculates a fare\n-> **THEN** the fares triangle is saved\n**AND** the calculated fare matches the configured fare area\n**UNCONFIRMED** — fares-triangle/area configuration is out of scope of this spec; confirm the screen and fields live",
+      "updated_on": "2026-07-23T14:18:57Z"
+    },
+    {
+      "case_id": 4104271,
+      "title": "Route — ETM rail substitution service",
+      "section_id": 887868,
+      "section_path": "CloudFare / Topology & Fares / Route Management",
+      "refs": [
+        "FBD-100698"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures the rail-substitute route\n-> **THEN** the rail-substitute route is saved\n**UNCONFIRMED** — no CloudFare screen for creating a rail-substitution service route is described; confirm the configuration surface live",
+      "updated_on": "2026-07-23T14:18:58Z"
+    },
+    {
+      "case_id": 4104272,
+      "title": "Product — a product is configured and saved",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a product's properties and saves it\n-> **THEN** the product is saved with its configuration\n**AND** the properties correspond to the CloudFare Product Configuration data set (e.g. Description, Short Code, Reference ID)",
+      "updated_on": "2026-07-23T14:18:59Z"
+    },
+    {
+      "case_id": 4104273,
+      "title": "Product — an ABT product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures an ABT product (ABT Create or ABT TopUp)\n-> **THEN** the ABT product is saved with its configuration\n**AND** it is available to ABT as product type 'ABT Product'",
+      "updated_on": "2026-07-23T14:18:59Z"
+    },
+    {
+      "case_id": 4104274,
+      "title": "Product — an Open product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures an Open product\n-> **THEN** the Open product is saved with its configuration",
+      "updated_on": "2026-07-23T14:19:00Z"
+    },
+    {
+      "case_id": 4104275,
+      "title": "Product — a FLU product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a FLU product\n-> **THEN** the FLU product is saved with its configuration",
+      "updated_on": "2026-07-23T14:19:01Z"
+    },
+    {
+      "case_id": 4104276,
+      "title": "Product — a Preset Reverse FLU product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [
+        "FBD-100268",
+        "REQ-0516",
+        "REQ-1592",
+        "REQ-1862"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a Preset Reverse FLU product\n-> **THEN** the Preset Reverse FLU product is saved with its configuration",
+      "updated_on": "2026-07-23T14:19:02Z"
+    },
+    {
+      "case_id": 4104277,
+      "title": "Product — a Reference Type product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a reference-type product and sets its Reference Product\n-> **THEN** the product is saved with its configuration",
+      "updated_on": "2026-07-23T14:19:02Z"
+    },
+    {
+      "case_id": 4104278,
+      "title": "Product — an Excess (open-value) product is configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [
+        "FBD-100268"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures the product's Minimum Value and Maximum Value (in pence)\n-> **THEN** the product is saved as an open-value / excess product\n**UNCONFIRMED** — no distinct 'Excess' product-type field is named in the spec; confirm live",
+      "updated_on": "2026-07-23T14:19:03Z"
+    },
+    {
+      "case_id": 4104279,
+      "title": "Product — a Smartcard product is configured (WTS SmartCreate / SmartRecharge)",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a smartcard product, including its WTS SmartCreate and WTS SmartRecharge variants\n-> **THEN** the smartcard product is saved with its configuration",
+      "updated_on": "2026-07-23T14:19:04Z"
+    },
+    {
+      "case_id": 4104280,
+      "title": "Product — barcode printing configured on a paper ticket product",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the product's 'Print Barcode' setting (and, for a BarcodeUse product, links the Barcode Use product)\n-> **THEN** the barcode-print configuration is saved on the product",
+      "updated_on": "2026-07-23T14:19:05Z"
+    },
+    {
+      "case_id": 4104281,
+      "title": "Product — default alighting stage configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the product's default alighting stage\n-> **THEN** the alighting stage is saved to the product\n**AND** it is used as the MERIT default alighting stage for the product's transactions",
+      "updated_on": "2026-07-23T14:19:06Z"
+    },
+    {
+      "case_id": 4104282,
+      "title": "Product — annulment allowed configured per device type",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the product's 'Annul Allowed' setting, overriding it per device type\n-> **THEN** the 'Annul Allowed' setting is saved, per device type where overridden",
+      "updated_on": "2026-07-23T14:19:06Z"
+    },
+    {
+      "case_id": 4104283,
+      "title": "Product — Passback Time configured",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the product's 'Passback Time' (in minutes)\n-> **THEN** the Passback Time is saved to the product",
+      "updated_on": "2026-07-23T14:19:07Z"
+    },
+    {
+      "case_id": 4104284,
+      "title": "Product buttons — assigned via Menu product groups per device",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [
+        "FBD-100293"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds, removes or reorders products against buttons in a Menu-type product group for a device type\n-> **THEN** the button assignment is saved for that device type\n**UNCONFIRMED** — no per-product 'keyboard button' field exists; confirm the exact live surface",
+      "updated_on": "2026-07-23T14:19:08Z"
+    },
+    {
+      "case_id": 4104285,
+      "title": "Product Group — create and edit a FLU group per device type",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects 'FLU' in the Product Group Create Window, presses 'Create', sets the Group Name and Device Type, and adds products via 'Add Product/Group'\n-> **THEN** the FLU group is saved for the selected device type on pressing 'Save'",
+      "updated_on": "2026-07-23T14:19:09Z"
+    },
+    {
+      "case_id": 4104286,
+      "title": "Product — assignment expiry / enablement",
+      "section_id": 887869,
+      "section_path": "CloudFare / Topology & Fares / Products",
+      "refs": [
+        "FBD-100268",
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user sets the expiry (or enabled/disabled state) of the product assignment\n-> **THEN** the assignment's expiry / enabled state is saved\n**UNCONFIRMED** — no 'product assignment expiry' field is named in the spec; confirm what the live screen actually controls",
+      "updated_on": "2026-07-23T14:19:09Z"
+    },
+    {
+      "case_id": 4104289,
+      "title": "Fares rule — a new rule is added",
+      "section_id": 887870,
+      "section_path": "CloudFare / Topology & Fares / Rules",
+      "refs": [
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a new fares rule\n-> **THEN** the rule is saved and appears in the configured rules\n**UNCONFIRMED** — the add-rule screen/fields are not described; confirm the rule-creation flow live",
+      "updated_on": "2026-07-23T14:19:10Z"
+    },
+    {
+      "case_id": 4104290,
+      "title": "Rule — e-Purse single fare charge",
+      "section_id": 887870,
+      "section_path": "CloudFare / Topology & Fares / Rules",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures an e-Purse single-fare charge rule\n-> **THEN** the rule is saved\n**AND** it is applied to e-Purse single fares\n**UNCONFIRMED** — no governing spec in this set describes an e-Purse single-fare charge rule or its configuration. Confirm the rule type and screen live.",
+      "updated_on": "2026-07-23T14:19:11Z"
+    },
+    {
+      "case_id": 4104291,
+      "title": "Rule — fixed fare (including smartcard fixed fare)",
+      "section_id": 887870,
+      "section_path": "CloudFare / Topology & Fares / Rules",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user configures a fixed-fare rule, including a smartcard fixed fare\n-> **THEN** the fixed-fare rule is saved\n**AND** it is applied\n**UNCONFIRMED** — no governing spec in this set describes a fixed-fare rule type or its configuration. Confirm live.",
+      "updated_on": "2026-07-23T14:19:12Z"
+    },
+    {
+      "case_id": 4104292,
+      "title": "Card Reference File validates alighting stages across devices",
+      "section_id": 887871,
+      "section_path": "CloudFare / Topology & Fares / Card Reference File",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device uses the Card Reference File to check alighting stages\n-> **THEN** the correct alighting stages are provided on each device",
+      "updated_on": "2026-07-23T14:19:13Z"
+    },
+    {
+      "case_id": 4104293,
+      "title": "Topology — label prepared configuration data",
+      "section_id": 887872,
+      "section_path": "CloudFare / Topology & Fares / Labeling & Publishing",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user labels the configuration data\n-> **THEN** the configuration data is labelled",
+      "updated_on": "2026-07-23T14:19:13Z"
+    },
+    {
+      "case_id": 4104294,
+      "title": "Topology — publish configuration with a future transition date",
+      "section_id": 887872,
+      "section_path": "CloudFare / Topology & Fares / Labeling & Publishing",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator publishes the configuration with a future transition date and time\n-> **THEN** the configuration is published\n**WHEN** the transition date and time is reached\n-> **THEN** devices transition from current to future fares",
+      "updated_on": "2026-07-23T14:19:14Z"
+    },
+    {
+      "case_id": 4104295,
+      "title": "Topology — re-publish an older configuration",
+      "section_id": 887872,
+      "section_path": "CloudFare / Topology & Fares / Labeling & Publishing",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user publishes an older configuration\n-> **THEN** the older configuration is published",
+      "updated_on": "2026-07-23T14:19:15Z"
+    },
+    {
+      "case_id": 4104296,
+      "title": "Topology — delete an active published topology label",
+      "section_id": 887872,
+      "section_path": "CloudFare / Topology & Fares / Labeling & Publishing",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user deletes the topology label\n-> **THEN** the topology label is deleted",
+      "updated_on": "2026-07-23T14:19:16Z"
+    },
+    {
+      "case_id": 4104297,
+      "title": "Activity Log — filter by activity, device, and date/time",
+      "section_id": 887874,
+      "section_path": "CloudFare / Estate Management / Activity Log",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user applies a filter with neither Activity nor Device Type set, or with a date range greater than 7 continuous days\n-> **THEN** no results are returned\n**AND** the mandatory-filter / >7-day condition is indicated (not an error)\n**WHEN** the user sets at least one of Activity or Device Type plus a date/time range of 7 days or fewer\n-> **THEN** only the activities matching the selected filters are shown, chronologically",
+      "updated_on": "2026-07-23T14:19:16Z"
+    },
+    {
+      "case_id": 4104298,
+      "title": "Activity Log — page through results",
+      "section_id": 887874,
+      "section_path": "CloudFare / Estate Management / Activity Log",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user navigates to the next and previous pages\n-> **THEN** the adjacent pages of activities are shown",
+      "updated_on": "2026-07-23T14:19:17Z"
+    },
+    {
+      "case_id": 4104299,
+      "title": "Activity Log — shows transactions, events and staff activity with detail",
+      "section_id": 887874,
+      "section_path": "CloudFare / Estate Management / Activity Log",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views the results and expands a Transaction, an Event, and a Start/End of Shift or Journey row\n-> **THEN** each activity type is listed with the standard summary fields (Device Type, Device ID, Operating Company, Activity, Date/Time, Fleet ID where applicable)\n**AND** each row expands to its detail",
+      "updated_on": "2026-07-23T14:19:18Z"
+    },
+    {
+      "case_id": 4104300,
+      "title": "Activity Log — filter by barcode ID",
+      "section_id": 887874,
+      "section_path": "CloudFare / Estate Management / Activity Log",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user filters by a barcode ID\n-> **THEN** only the Transaction/Annulment activities matching that barcode ID are shown",
+      "updated_on": "2026-07-23T14:19:19Z"
+    },
+    {
+      "case_id": 4104301,
+      "title": "Activity Log — failed validations, declined taps and failed payments are identified with reason",
+      "section_id": 887874,
+      "section_path": "CloudFare / Estate Management / Activity Log",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user reviews the failed barcode validation, the declined ABT tap and the failed bank-card retail payment\n-> **THEN** each failure is identified in the Activity Log with its reason\n**AND** the declined ABT tap carries its Declined Reason (e.g. 2 = On Deny List, 1 = Card Expired)",
+      "updated_on": "2026-07-23T14:19:20Z"
+    },
+    {
+      "case_id": 4104302,
+      "title": "Device Details — view and edit device information",
+      "section_id": 887875,
+      "section_path": "CloudFare / Estate Management / Asset Manager",
+      "refs": [
+        "FBD-100263"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user enters Edit mode on the Device Details page and changes the device information\n-> **THEN** the device information is updated\n**UNCONFIRMED** — the full scope of editable fields is not covered; confirm live",
+      "updated_on": "2026-07-23T14:19:20Z"
+    },
+    {
+      "case_id": 4104303,
+      "title": "Device — status set from Device Details page",
+      "section_id": 887875,
+      "section_path": "CloudFare / Estate Management / Asset Manager",
+      "refs": [
+        "FBD-100263"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user assigns a status to the device, then later changes it back\n-> **THEN** the device's status is updated accordingly\n**UNCONFIRMED** — spec describes status categories, not a disable/enable toggle; confirm the live control",
+      "updated_on": "2026-07-23T14:19:21Z"
+    },
+    {
+      "case_id": 4104304,
+      "title": "Quick Product Assignment — add, remove and abandon products",
+      "section_id": 887875,
+      "section_path": "CloudFare / Estate Management / Asset Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds products, removes products, or abandons the changes\n-> **THEN** saved product changes persist\n**AND** abandoned changes are discarded\n**GAP** — 'Quick Product Assignment' is not described in any governing spec in this set; confirm the page, fields and behaviour on the live system before running.",
+      "updated_on": "2026-07-23T14:19:22Z"
+    },
+    {
+      "case_id": 4104305,
+      "title": "Comms Monitor — recent activity, search, filter and report",
+      "section_id": 887876,
+      "section_path": "CloudFare / Estate Management / Comms Monitor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views recent activity and uses search, filter and report\n-> **THEN** the recent activity table updates to the search and filter\n**AND** the communications report is produced",
+      "updated_on": "2026-07-23T14:19:23Z"
+    },
+    {
+      "case_id": 4104306,
+      "title": "Comms Monitor — change of operating company",
+      "section_id": 887876,
+      "section_path": "CloudFare / Estate Management / Comms Monitor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the operating company of a device changes\n-> **THEN** the Comms Monitor reflects the new operating company",
+      "updated_on": "2026-07-23T14:19:23Z"
+    },
+    {
+      "case_id": 4104311,
+      "title": "Device dataset — create and modify a version",
+      "section_id": 887877,
+      "section_path": "CloudFare / Estate Management / Device Dataset Deployment",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user creates a new dataset version and modifies its details\n-> **THEN** the dataset version is saved with the modified details\n**GAP** — no governing spec in this set covers Device Dataset Deployment / Device Datasets; confirm screens, states and behaviour on the live system before running.",
+      "updated_on": "2026-07-23T14:19:24Z"
+    },
+    {
+      "case_id": 4104312,
+      "title": "Device software — upload and configure a version",
+      "section_id": 887877,
+      "section_path": "CloudFare / Estate Management / Device Dataset Deployment",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user uploads a new software version and configures its parameters\n-> **THEN** the software version is uploaded with the configured parameters\n**GAP** — no governing spec in this set covers device software distribution; confirm the page and behaviour on the live system before running.",
+      "updated_on": "2026-07-23T14:19:25Z"
+    },
+    {
+      "case_id": 4104313,
+      "title": "Device dataset — change version state and deploy",
+      "section_id": 887877,
+      "section_path": "CloudFare / Estate Management / Device Dataset Deployment",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user changes the version state and deploys it\n-> **THEN** the version state is updated\n**AND** the dataset is deployed to the target devices\n**GAP** — no governing spec in this set covers dataset version states or deployment; confirm on the live system before running.",
+      "updated_on": "2026-07-23T14:19:26Z"
+    },
+    {
+      "case_id": 4104307,
+      "title": "Staff Manager — add a staff member",
+      "section_id": 887878,
+      "section_path": "CloudFare / Estate Management / Staff Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a new staff member\n-> **THEN** the new staff record is saved and appears in the list",
+      "updated_on": "2026-07-23T14:19:27Z"
+    },
+    {
+      "case_id": 4104308,
+      "title": "Staff Manager — modify a staff member's PIN",
+      "section_id": 887878,
+      "section_path": "CloudFare / Estate Management / Staff Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user modifies the staff member's PIN\n-> **THEN** the new PIN is saved against the staff record",
+      "updated_on": "2026-07-23T14:19:27Z"
+    },
+    {
+      "case_id": 4104309,
+      "title": "Staff Manager — modify home and working location",
+      "section_id": 887878,
+      "section_path": "CloudFare / Estate Management / Staff Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user modifies the staff member's home location\n-> **THEN** the updated home location is saved against the staff record\n**WHEN** the user modifies the staff member's working location\n-> **THEN** the updated working location is saved against the staff record",
+      "updated_on": "2026-07-23T14:19:28Z"
+    },
+    {
+      "case_id": 4104310,
+      "title": "Staff Manager — view staff history",
+      "section_id": 887878,
+      "section_path": "CloudFare / Estate Management / Staff Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views a staff member's history\n-> **THEN** the staff history is displayed",
+      "updated_on": "2026-07-23T14:19:29Z"
+    },
+    {
+      "case_id": 4104314,
+      "title": "Filter quarantined data by device",
+      "section_id": 887879,
+      "section_path": "CloudFare / Estate Management / Quarantined Data",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user filters the quarantined data by device\n-> **THEN** only the quarantined data for that device is shown",
+      "updated_on": "2026-07-23T14:19:30Z"
+    },
+    {
+      "case_id": 4104315,
+      "title": "Edit and resubmit quarantined data",
+      "section_id": 887879,
+      "section_path": "CloudFare / Estate Management / Quarantined Data",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user edits a quarantined record and submits it\n-> **THEN** the corrected record is resubmitted for processing",
+      "updated_on": "2026-07-23T14:19:30Z"
+    },
+    {
+      "case_id": 4104316,
+      "title": "Navigate the Commands Viewer",
+      "section_id": 887880,
+      "section_path": "CloudFare / Estate Management / Commands Viewer",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user opens the Commands Viewer\n-> **THEN** the Commands Viewer page is displayed",
+      "updated_on": "2026-07-23T14:19:31Z"
+    },
+    {
+      "case_id": 4104317,
+      "title": "[UNCONFIRMED] Dashboard — summary tiles show their metrics",
+      "section_id": 887881,
+      "section_path": "CloudFare / Dashboard",
+      "refs": [
+        "FBD-100263",
+        "FBD-100347",
+        "REQ-3585"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views the Dashboard\n-> **THEN** the 'Hours since last communication' tile shows its metric",
+      "updated_on": "2026-07-23T14:19:32Z"
+    },
+    {
+      "case_id": 4104318,
+      "title": "[UNCONFIRMED] Create, clone, favourite and delete a dashboard",
+      "section_id": 887881,
+      "section_path": "CloudFare / Dashboard",
+      "refs": [
+        "FBD-100347",
+        "REQ-3585"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user creates, clones, favourites or deletes a dashboard\n-> **THEN** each change is applied to the user's dashboards",
+      "updated_on": "2026-07-23T14:19:33Z"
+    },
+    {
+      "case_id": 4104319,
+      "title": "[UNCONFIRMED] Add and remove dashboard tiles",
+      "section_id": 887881,
+      "section_path": "CloudFare / Dashboard",
+      "refs": [
+        "FBD-100347"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds and removes tiles\n-> **THEN** the dashboard reflects the tile changes",
+      "updated_on": "2026-07-23T14:19:34Z"
+    },
+    {
+      "case_id": 4104320,
+      "title": "[UNCONFIRMED] View a dashboard full screen",
+      "section_id": 887881,
+      "section_path": "CloudFare / Dashboard",
+      "refs": [
+        "FBD-100347"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects full screen\n-> **THEN** the dashboard is shown full screen",
+      "updated_on": "2026-07-23T14:19:34Z"
+    },
+    {
+      "case_id": 4104321,
+      "title": "Events & Alerts — create, view, edit and delete an alert configuration",
+      "section_id": 887882,
+      "section_path": "CloudFare / Events & Alerts",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user creates an alert configuration (with an owner and subscribers), then views, edits and deletes it\n-> **THEN** each change is applied to the alert configuration",
+      "updated_on": "2026-07-23T14:19:35Z"
+    },
+    {
+      "case_id": 4104322,
+      "title": "Alert Viewer — filter, acknowledge then clear alerts",
+      "section_id": 887882,
+      "section_path": "CloudFare / Events & Alerts",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user filters by status (Acknowledged / Unacknowledged / Cleared / Uncleared) and severity\n-> **THEN** only the alerts matching the filter are shown\n**WHEN** the user acknowledges an alert (optionally with a comment), then clears it (optionally with a comment)\n-> **THEN** the acknowledge icon turns green and the alert is marked acknowledged\n**AND** the alert can then be cleared\n**AND** any comment is recorded against the alert",
+      "updated_on": "2026-07-23T14:19:36Z"
+    },
+    {
+      "case_id": 4104323,
+      "title": "Events & Alerts — configure event groups",
+      "section_id": 887882,
+      "section_path": "CloudFare / Events & Alerts",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a new event group, adds events to it, then modifies and deletes it\n-> **THEN** each change is applied to the event groups",
+      "updated_on": "2026-07-23T14:19:37Z"
+    },
+    {
+      "case_id": 4104324,
+      "title": "Events Viewer — filter the events list",
+      "section_id": 887882,
+      "section_path": "CloudFare / Events & Alerts",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user filters the events list by its adjustable fields\n-> **THEN** only the events matching the filters are shown",
+      "updated_on": "2026-07-23T14:19:38Z"
+    },
+    {
+      "case_id": 4104325,
+      "title": "Depot Location Report — generates and exports",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Depot Location Report for a location and date range\n-> **THEN** the Depot Location Report is generated\n**AND** it can be downloaded as .xlsx",
+      "updated_on": "2026-07-23T14:19:38Z"
+    },
+    {
+      "case_id": 4104326,
+      "title": "Devices Last Seen Report — generates and exports",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Devices Last Seen Report for a single date/time\n-> **THEN** the Devices Last Seen Report is generated\n**AND** it can be downloaded as .xlsx",
+      "updated_on": "2026-07-23T14:19:39Z"
+    },
+    {
+      "case_id": 4104327,
+      "title": "[UNCONFIRMED] Software Versions Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "FBD-100263"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Software Versions Report\n-> **THEN** the report is generated\n**AND** it can be downloaded",
+      "updated_on": "2026-07-23T14:19:40Z"
+    },
+    {
+      "case_id": 4104328,
+      "title": "Staff Activity Report — generates and exports",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "REQ-2499"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Staff Activity Report for a company, staff home location and staff ID\n-> **THEN** the Staff Activity Report is generated\n**AND** it can be downloaded as .xlsx",
+      "updated_on": "2026-07-23T14:19:41Z"
+    },
+    {
+      "case_id": 4104329,
+      "title": "[UNCONFIRMED] Engineer Visits Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "FBD-100263"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Engineer Visits Report for a TVM, PV or GV\n-> **THEN** the report is generated for the selected device type\n**AND** it can be downloaded",
+      "updated_on": "2026-07-23T14:19:41Z"
+    },
+    {
+      "case_id": 4104330,
+      "title": "[UNCONFIRMED] Revenue Inspector's Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "FBD-100263",
+        "FBD-100306",
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Revenue Inspector's Report\n-> **THEN** the report is generated\n**AND** it can be downloaded",
+      "updated_on": "2026-07-23T14:19:42Z"
+    },
+    {
+      "case_id": 4104331,
+      "title": "[UNCONFIRMED] TVM cash collection reports",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a TVM cash collection report\n-> **THEN** the selected cash collection report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:43Z"
+    },
+    {
+      "case_id": 4104332,
+      "title": "[UNCONFIRMED] TVM cash revenue reports",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "FBD-100276"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a cash revenue report\n-> **THEN** the selected cash revenue report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:44Z"
+    },
+    {
+      "case_id": 4104333,
+      "title": "[UNCONFIRMED] Rules List Export",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Rules List Export\n-> **THEN** the Rules List Export is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:44Z"
+    },
+    {
+      "case_id": 4104334,
+      "title": "[UNCONFIRMED] Concise Area & Reference Fare Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Concise Area & Reference Fare Report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:45Z"
+    },
+    {
+      "case_id": 4104335,
+      "title": "[UNCONFIRMED] Route List Export",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Route List Export\n-> **THEN** the Route List Export is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:46Z"
+    },
+    {
+      "case_id": 4104336,
+      "title": "[UNCONFIRMED] Product to Ticket Assignment Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Product to Ticket Assignment Report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:47Z"
+    },
+    {
+      "case_id": 4104337,
+      "title": "[UNCONFIRMED] Product List Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Product List Report\n-> **THEN** the Product List Report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:48Z"
+    },
+    {
+      "case_id": 4104338,
+      "title": "[UNCONFIRMED] Events & Alerts Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Events & Alerts Report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:48Z"
+    },
+    {
+      "case_id": 4104339,
+      "title": "[UNCONFIRMED] Vehicle Check Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Vehicle Check Report\n-> **THEN** the Vehicle Check Report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:19:49Z"
+    },
+    {
+      "case_id": 4104340,
+      "title": "[UNCONFIRMED] CloudFare Usage Report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs, filters and downloads the CloudFare Usage Report\n-> **THEN** the report shows the audited user actions for the filter\n**AND** it can be downloaded",
+      "updated_on": "2026-07-23T14:19:50Z"
+    },
+    {
+      "case_id": 4104341,
+      "title": "Reports — audit data flows end to end into a report",
+      "section_id": 887883,
+      "section_path": "CloudFare / Reports",
+      "refs": [
+        "FBD-100356",
+        "FBD-100387"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the corresponding report after the sync window\n-> **THEN** the report reflects the processed audit data",
+      "updated_on": "2026-07-23T14:19:51Z"
+    },
+    {
+      "case_id": 4104342,
+      "title": "Ticket Editor — create a ticket template",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user presses Create, enters a template name and selects a device type, then confirms\n-> **THEN** a blank ticket template preview is displayed, bounded by the device's default paper dimensions and orientation",
+      "updated_on": "2026-07-23T14:19:52Z"
+    },
+    {
+      "case_id": 4104343,
+      "title": "Ticket Editor — add elements to a template",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a fixed text element and a dynamic field element\n-> **THEN** the fixed text is placed on the preview\n**AND** the dynamic field name is shown in green on the preview\n**WHEN** the user adds a logo/image and a line separator\n-> **THEN** the logo is shown on the preview\n**AND** the separator line is shown on the preview",
+      "updated_on": "2026-07-23T14:19:52Z"
+    },
+    {
+      "case_id": 4104344,
+      "title": "Ticket Editor — copy a template and change its device type",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user copies the template and changes the device type on the copy (e.g. ETM to POS)\n-> **THEN** a separate template is created for the new device type",
+      "updated_on": "2026-07-23T14:19:53Z"
+    },
+    {
+      "case_id": 4104345,
+      "title": "Ticket Editor — configure a change ticket (NOT IN SPEC)",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user attempts to configure a change ticket\n-> **THEN** **GAP** — 'change ticket' concept not defined; confirm live",
+      "updated_on": "2026-07-23T14:19:54Z"
+    },
+    {
+      "case_id": 4104346,
+      "title": "Product Editor — assign a ticket template to a product",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects a ticket template for the product/ticket type from the drop-down of available templates\n-> **THEN** the ticket template is assigned to the product",
+      "updated_on": "2026-07-23T14:19:55Z"
+    },
+    {
+      "case_id": 4104347,
+      "title": "Ticket Editor — group a set of ticket layouts (NOT IN SPEC)",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user attempts to group a set of ticket templates\n-> **THEN** **GAP** — no ticket-layout grouping feature exists; confirm live",
+      "updated_on": "2026-07-23T14:19:55Z"
+    },
+    {
+      "case_id": 4104348,
+      "title": "Ticket Editor — add a barcode to a template",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user selects the barcode tool and places a barcode at the end of the ticket\n-> **THEN** a size-accurate representative barcode image is shown on the preview at the placed position",
+      "updated_on": "2026-07-23T14:19:56Z"
+    },
+    {
+      "case_id": 4104349,
+      "title": "Ticket Editor — add payment-card fields to a template",
+      "section_id": 887884,
+      "section_path": "CloudFare / Ticket Editor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds the payment-card dynamic/optional fields to the template\n-> **THEN** the obfuscated Payment Card Number field is added (REQ-1750.20)\n**AND** the Payment Card Unique Reference Number field is added (REQ-1750.21)\n**AND** the Printed Serial Number field is added (REQ-1750.18)\n**WHEN** the user adds the card date fields\n-> **THEN** the Card Start Date field is added (REQ-1750.17)\n**AND** the Expiry Date field is added (REQ-1750.16)",
+      "updated_on": "2026-07-23T14:19:57Z"
+    },
+    {
+      "case_id": 4104350,
+      "title": "Station Manager — create a rail line and station",
+      "section_id": 887885,
+      "section_path": "CloudFare / Station Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a new rail line and creates a station\n-> **THEN** the rail line and station are added to the network\n**GAP** — no governing spec in this set covers Station Manager, the Network View, rail lines or stations; confirm all screen/field names on the live system before running.",
+      "updated_on": "2026-07-23T14:19:58Z"
+    },
+    {
+      "case_id": 4104351,
+      "title": "Station Manager — delete or change a station",
+      "section_id": 887885,
+      "section_path": "CloudFare / Station Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user deletes or changes a station\n-> **THEN** the change is applied to the network\n**GAP** — no governing spec in this set covers Station Manager; confirm screen/field names on the live system before running.",
+      "updated_on": "2026-07-23T14:19:58Z"
+    },
+    {
+      "case_id": 4104352,
+      "title": "Station Manager — add a branch",
+      "section_id": 887885,
+      "section_path": "CloudFare / Station Manager",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds a branch\n-> **THEN** the branch is added to the network\n**GAP** — no governing spec in this set covers Station Manager or a rail 'branch'; confirm screen/field names on the live system before running.",
+      "updated_on": "2026-07-23T14:19:59Z"
+    },
+    {
+      "case_id": 4104378,
+      "title": "Merit — edit period, roll-over time and start of week (Date Editor)",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator edits the period, roll-over time and start of week\n-> **THEN** the date settings are saved",
+      "updated_on": "2026-07-23T14:20:00Z"
+    },
+    {
+      "case_id": 4104379,
+      "title": "Merit — configure a timeband (Timeband Editor)",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator configures a timeband with start and end times\n-> **THEN** the timeband is saved",
+      "updated_on": "2026-07-23T14:20:01Z"
+    },
+    {
+      "case_id": 4104380,
+      "title": "Merit — edit staff and operator details (Staff Editor)",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator edits a staff member's details and operator details\n-> **THEN** the staff details are saved",
+      "updated_on": "2026-07-23T14:20:02Z"
+    },
+    {
+      "case_id": 4104381,
+      "title": "Merit — edit class types and class groups",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator edits class types and class groups, assigning a product class to more than one group\n-> **THEN** the class type and class group settings are saved",
+      "updated_on": "2026-07-23T14:20:02Z"
+    },
+    {
+      "case_id": 4104382,
+      "title": "Merit — edit locations, location groups and location restrictions",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator edits a location and a location group\n-> **THEN** the location settings are saved\n**WHEN** the administrator edits location restrictions\n-> **THEN** the location restrictions are saved and continue to control user access to depot-specific data",
+      "updated_on": "2026-07-23T14:20:03Z"
+    },
+    {
+      "case_id": 4104383,
+      "title": "Merit — edit route groups (Route Group Editor)",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator edits a route group, assigning a route to more than one group\n-> **THEN** the route group settings are saved",
+      "updated_on": "2026-07-23T14:20:04Z"
+    },
+    {
+      "case_id": 4104384,
+      "title": "Merit — configure route revenue allocation (Route Revenue Editor)",
+      "section_id": 887887,
+      "section_path": "Merit / Administration",
+      "refs": [
+        "FBD-100341",
+        "REQ-2066",
+        "REQ-2137",
+        "REQ-2153",
+        "REQ-2754",
+        "REQ-3285"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator configures pass revenue, generation factor, rail mileage/journey allocation, and BRT mileage/journey allocation\n-> **THEN** the route revenue settings are saved",
+      "updated_on": "2026-07-23T14:20:05Z"
+    },
+    {
+      "case_id": 4104353,
+      "title": "[UNCONFIRMED] Sales Breakdown reports — generate and export",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a Sales Breakdown report (by Driver, by Route/Class or by Class)\n-> **THEN** the selected Sales Breakdown report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:06Z"
+    },
+    {
+      "case_id": 4104354,
+      "title": "Sales Analysis by Class report — generates and exports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Sales Analysis by Class report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:06Z"
+    },
+    {
+      "case_id": 4104355,
+      "title": "[UNCONFIRMED] Origin and Destination reports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs an Origin, Destination or Origin/Destination report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:07Z"
+    },
+    {
+      "case_id": 4104356,
+      "title": "[UNCONFIRMED] Bus Loading by Route/Journey report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Bus Loading by Route/Journey report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:08Z"
+    },
+    {
+      "case_id": 4104357,
+      "title": "[UNCONFIRMED] Route/Stage reports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-1993"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Route/Stage report or the Route/Stage Analysis Detailed report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:09Z"
+    },
+    {
+      "case_id": 4104358,
+      "title": "[UNCONFIRMED] Journey Analysis reports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-1993",
+        "REQ-2005",
+        "REQ-2012"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Journey Analysis or Journey Analysis Detailed report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:10Z"
+    },
+    {
+      "case_id": 4104359,
+      "title": "[UNCONFIRMED] Stage Timeband report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-1993",
+        "REQ-2012"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Stage Timeband report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:10Z"
+    },
+    {
+      "case_id": 4104360,
+      "title": "[UNCONFIRMED] Patronage Timeband report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-1993"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Patronage Timeband report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:11Z"
+    },
+    {
+      "case_id": 4104361,
+      "title": "[UNCONFIRMED] Revenue and Revenue by Stop reports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "FBD-100356"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Revenue report or the Revenue by Stop report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:12Z"
+    },
+    {
+      "case_id": 4104362,
+      "title": "Class Breakdown and Route Breakdown reports — generate and export",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Class Breakdown report or the Route Breakdown report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:13Z"
+    },
+    {
+      "case_id": 4104363,
+      "title": "[UNCONFIRMED] POS Revenue report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "FBD-100341",
+        "REQ-1212"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the POS Revenue report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:14Z"
+    },
+    {
+      "case_id": 4104364,
+      "title": "Duty Comparison and Driver Shift reports — generate and export",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Duty Comparison report or the Driver Shift report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:14Z"
+    },
+    {
+      "case_id": 4104365,
+      "title": "[UNCONFIRMED] Bus Serviceability Final Defects report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Bus Serviceability Final Defects report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:15Z"
+    },
+    {
+      "case_id": 4104366,
+      "title": "[UNCONFIRMED] GPS reports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "FBD-100347",
+        "REQ-1212",
+        "REQ-1993"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the GPS report or a GPS Stage Change Failure report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:16Z"
+    },
+    {
+      "case_id": 4104367,
+      "title": "[UNCONFIRMED] Route Purchase report",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Route Purchase report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:17Z"
+    },
+    {
+      "case_id": 4104368,
+      "title": "Pay-In Reconciliation report — generates and exports",
+      "section_id": 887888,
+      "section_path": "Merit / Analysis Reports",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Pay-In Reconciliation report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:17Z"
+    },
+    {
+      "case_id": 4104369,
+      "title": "Class Revenue Performance report — generates and exports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Class Revenue Performance report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:18Z"
+    },
+    {
+      "case_id": 4104370,
+      "title": "Route Revenue Performance report — generates and exports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Route Revenue Performance report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:19Z"
+    },
+    {
+      "case_id": 4104371,
+      "title": "Period Trend Analysis reports — generate and export",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Period Trend Analysis by Class report or by Route report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:20Z"
+    },
+    {
+      "case_id": 4104372,
+      "title": "[UNCONFIRMED] Tickets By Operator report",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "FBD-100341",
+        "TIBU-17536",
+        "TIBU-22350"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Tickets By Operator report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:20Z"
+    },
+    {
+      "case_id": 4104373,
+      "title": "[UNCONFIRMED] NIR Revenue Performance reports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "FBD-100341",
+        "REQ-1212",
+        "REQ-1967",
+        "REQ-1989",
+        "REQ-1993",
+        "REQ-2000",
+        "REQ-2323",
+        "REQ-2327"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the NIR Class or Route Revenue Performance report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:21Z"
+    },
+    {
+      "case_id": 4104374,
+      "title": "[UNCONFIRMED] NIR Period Trend Analysis reports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [
+        "REQ-1212",
+        "REQ-1967",
+        "REQ-1989",
+        "REQ-1993",
+        "REQ-2000",
+        "REQ-2330",
+        "REQ-2334"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the NIR Period Trend Analysis by Class or by Route report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:22Z"
+    },
+    {
+      "case_id": 4104375,
+      "title": "[UNCONFIRMED] BRT Revenue Performance reports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the BRT Class or Route Revenue Performance report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:23Z"
+    },
+    {
+      "case_id": 4104376,
+      "title": "[UNCONFIRMED] Glider Revenue Performance reports",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Glider Route or Class Revenue Performance report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:24Z"
+    },
+    {
+      "case_id": 4104377,
+      "title": "[UNCONFIRMED] Ticketing Reports including timebands",
+      "section_id": 887889,
+      "section_path": "Merit / Revenue Performance Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a Revenue Performance or Period Trend Analysis report including timebands\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:24Z"
+    },
+    {
+      "case_id": 4104385,
+      "title": "[UNCONFIRMED] Revenue Foregone reports",
+      "section_id": 887890,
+      "section_path": "Merit / Concessionary Reports",
+      "refs": [
+        "FBD-100341",
+        "REQ-1212",
+        "REQ-1993"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a Revenue Foregone report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:25Z"
+    },
+    {
+      "case_id": 4104386,
+      "title": "[UNCONFIRMED] Concessionary Class Summary reports",
+      "section_id": 887890,
+      "section_path": "Merit / Concessionary Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs a Concessionary Class Summary report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:26Z"
+    },
+    {
+      "case_id": 4104387,
+      "title": "[UNCONFIRMED] ENTCS Passenger and Revenue reports",
+      "section_id": 887890,
+      "section_path": "Merit / Concessionary Reports",
+      "refs": [
+        "REQ-1212",
+        "REQ-2388"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs an ENTCS Passenger, ENTCS Revenue or ENTCS Revenue Foregone report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:27Z"
+    },
+    {
+      "case_id": 4104388,
+      "title": "[UNCONFIRMED] Fare Foregone reports",
+      "section_id": 887890,
+      "section_path": "Merit / Concessionary Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Fare Foregone Summary report or the Fare Foregone by Fare Band report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:28Z"
+    },
+    {
+      "case_id": 4104389,
+      "title": "Daily Summary report — generates and exports",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Daily Summary report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:28Z"
+    },
+    {
+      "case_id": 4104390,
+      "title": "Daily Audit reports — generate and export",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Daily Audit report or the Daily Audit by Module report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:29Z"
+    },
+    {
+      "case_id": 4104391,
+      "title": "Class Audit and Route Audit reports — generate and export",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Class Audit report or the Route Audit report\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:30Z"
+    },
+    {
+      "case_id": 4104392,
+      "title": "Annulled Tickets report — generates and exports",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Annulled Tickets report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:31Z"
+    },
+    {
+      "case_id": 4104393,
+      "title": "Inspector's Report — generates and exports",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Inspector's Report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:31Z"
+    },
+    {
+      "case_id": 4104394,
+      "title": "[UNCONFIRMED] Outstanding Duties report",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-2255"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Outstanding Duties report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:32Z"
+    },
+    {
+      "case_id": 4104395,
+      "title": "[UNCONFIRMED] Stage List report",
+      "section_id": 887891,
+      "section_path": "Merit / Daily Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1993"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Stage List report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:33Z"
+    },
+    {
+      "case_id": 4104396,
+      "title": "[UNCONFIRMED] Origin and Destination Distance reports",
+      "section_id": 887892,
+      "section_path": "Merit / Distance Reports",
+      "refs": [
+        "FBD-100306",
+        "REQ-1212",
+        "REQ-1993",
+        "REQ-2012"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator runs an Origin and Destination Distance report (including by class or direction of travel)\n-> **THEN** the selected report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:34Z"
+    },
+    {
+      "case_id": 4104397,
+      "title": "[UNCONFIRMED] Route Distance Analysis report",
+      "section_id": 887892,
+      "section_path": "Merit / Distance Reports",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the administrator runs the Route Distance Analysis report\n-> **THEN** the report is generated\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:35Z"
+    },
+    {
+      "case_id": 4104398,
+      "title": "Merit — Ulsterbus revenue stored procedures",
+      "section_id": 887893,
+      "section_path": "Merit / Stored Procedures",
+      "refs": [
+        "FBD-100356"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Ulsterbus bus revenue stored procedures are run, including by payment type and operational payment type\n-> **THEN** the stored procedures return the correct Ulsterbus revenue",
+      "updated_on": "2026-07-23T14:20:35Z"
+    },
+    {
+      "case_id": 4104399,
+      "title": "Merit — Metro revenue stored procedures",
+      "section_id": 887893,
+      "section_path": "Merit / Stored Procedures",
+      "refs": [
+        "FBD-100356"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Metro bus revenue stored procedures are run, including by payment type and operational payment type\n-> **THEN** the stored procedures return the correct Metro revenue",
+      "updated_on": "2026-07-23T14:20:36Z"
+    },
+    {
+      "case_id": 4104400,
+      "title": "Merit — NIR rail revenue stored procedures",
+      "section_id": 887893,
+      "section_path": "Merit / Stored Procedures",
+      "refs": [
+        "FBD-100356"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the NIR rail revenue stored procedures are run, including by payment type and operational payment type\n-> **THEN** the stored procedures return the correct NIR rail revenue",
+      "updated_on": "2026-07-23T14:20:37Z"
+    },
+    {
+      "case_id": 4104401,
+      "title": "Synchronise staff into Merit",
+      "section_id": 887894,
+      "section_path": "Merit / Synchronisation & Tools",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** staff are added, modified, disabled, have their ID or locations changed, or are imported via Import Staff\n-> **THEN** the corresponding staff changes are synchronised into Merit",
+      "updated_on": "2026-07-23T14:20:38Z"
+    },
+    {
+      "case_id": 4104402,
+      "title": "Browse audit data with Client Tools",
+      "section_id": 887894,
+      "section_path": "Merit / Synchronisation & Tools",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user browses the audit data\n-> **THEN** the audit data is displayed",
+      "updated_on": "2026-07-23T14:20:39Z"
+    },
+    {
+      "case_id": 4104405,
+      "title": "Smartrack access rights for administrator and user",
+      "section_id": 887896,
+      "section_path": "Smartrack / Access",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** each user signs into Smartrack\n-> **THEN** the administrator sees the administrative functions\n**AND** the standard user sees only the permitted functions",
+      "updated_on": "2026-07-23T14:20:39Z"
+    },
+    {
+      "case_id": 4104406,
+      "title": "Smartrack — view and search card data",
+      "section_id": 887897,
+      "section_path": "Smartrack / Card Data",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user searches by customer name and address, ESN and PSN, or card type\n-> **THEN** the matching single or multiple cards are displayed\n**GAP** — Smartrack is a separate card-management application and is not covered by any CloudFare governing spec in this set; no spec exists in the library. Confirm all screen/field names on the live Smartrack system before running.",
+      "updated_on": "2026-07-23T14:20:40Z"
+    },
+    {
+      "case_id": 4104407,
+      "title": "Smartrack — add notes and attached files to a card",
+      "section_id": 887897,
+      "section_path": "Smartrack / Card Data",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user adds notes and attaches files\n-> **THEN** the notes and attached files are saved against the card\n**AND** they can be viewed\n**GAP** — Smartrack is not covered by any governing spec; confirm on the live system before running.",
+      "updated_on": "2026-07-23T14:20:41Z"
+    },
+    {
+      "case_id": 4104408,
+      "title": "Smartrack — view card transactions",
+      "section_id": 887897,
+      "section_path": "Smartrack / Card Data",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views the card transactions for an adult or child Ulsterbus Multi-Journey or Town Service product\n-> **THEN** the card transactions are displayed for the selected product and passenger type\n**GAP** — Smartrack is not covered by any governing spec; confirm on the live system before running.",
+      "updated_on": "2026-07-23T14:20:42Z"
+    },
+    {
+      "case_id": 4104416,
+      "title": "Smartrack — import a card issue and pass-create record file",
+      "section_id": 887898,
+      "section_path": "Smartrack / Import & Export",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user imports a CSV issue and pass-create record file\n-> **THEN** the records are imported into Smartrack\n**GAP** — Smartrack is not covered by any governing spec; confirm the import screen and file format on the live system before running.",
+      "updated_on": "2026-07-23T14:20:42Z"
+    },
+    {
+      "case_id": 4104417,
+      "title": "Smartrack — export the ESN list",
+      "section_id": 887898,
+      "section_path": "Smartrack / Import & Export",
+      "refs": [
+        "FBD-100385"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user exports the ESN list\n-> **THEN** the ESN list is exported\n**GAP** — Smartrack has no dedicated spec in this library; the ESN export is not part of any CloudFare configuration export. Confirm on the live system before running.",
+      "updated_on": "2026-07-23T14:20:43Z"
+    },
+    {
+      "case_id": 4104409,
+      "title": "[UNCONFIRMED] Run the Action List reports (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Active Action List, Inactive Action List or daily action list report\n-> **THEN** the selected Action List report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:44Z"
+    },
+    {
+      "case_id": 4104410,
+      "title": "[UNCONFIRMED] Run the Liability and Scheme Liability reports (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Liability report (summary or detailed) or the Scheme Liability report\n-> **THEN** the selected report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:45Z"
+    },
+    {
+      "case_id": 4104411,
+      "title": "[UNCONFIRMED] Run the Default Payment report (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Default Payment report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:45Z"
+    },
+    {
+      "case_id": 4104412,
+      "title": "[UNCONFIRMED] Run the Delivery report (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Delivery report (summary or detailed)\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:46Z"
+    },
+    {
+      "case_id": 4104413,
+      "title": "[UNCONFIRMED] Run the Refund report (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Refund report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:47Z"
+    },
+    {
+      "case_id": 4104414,
+      "title": "[UNCONFIRMED] Run the Decommission Card report (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the Decommission Card report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:48Z"
+    },
+    {
+      "case_id": 4104415,
+      "title": "[UNCONFIRMED] Run the POS Revenue Analysis report (Smartrack)",
+      "section_id": 887899,
+      "section_path": "Smartrack / Reports",
+      "refs": [
+        "REQ-2375"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user runs the POS Revenue Analysis report\n-> **THEN** the report is generated\n**AND** it can be exported",
+      "updated_on": "2026-07-23T14:20:49Z"
+    },
+    {
+      "case_id": 4104403,
+      "title": "View the available reports in the Merit Web Reporter",
+      "section_id": 887901,
+      "section_path": "Merit Web Reporter / Report Viewer",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user views the available reports\n-> **THEN** the list of available reports is displayed",
+      "updated_on": "2026-07-23T14:20:49Z"
+    },
+    {
+      "case_id": 4104404,
+      "title": "View and export a report in the Merit Web Reporter",
+      "section_id": 887901,
+      "section_path": "Merit Web Reporter / Report Viewer",
+      "refs": [
+        "FBD-100306"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the user opens and exports a report (Daily Audit, Daily Audit by Module, Daily Audit by Trip, Daily Summary, Class Audit, Route Audit, Annulled Tickets, Sales Analysis by Class, Sales Breakdown by Class, Route/Class or Driver, Driver Activity, Inspector's, Duty Comparison, Driver Shift, Pay-In Reconciliation, Class Breakdown or Route Breakdown)\n-> **THEN** the selected report is displayed\n**AND** the report can be exported",
+      "updated_on": "2026-07-23T14:20:50Z"
+    }
+  ]
+}

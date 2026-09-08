@@ -1,0 +1,957 @@
+h2. Run health — TFTS - System Test / AA-ETM-Acceptance Test
+Runs considered: last 20 (ids: 21978, 21742, 21495, 19352, 19087, 19074)
+Flagged for attention: *951*
+
+|| Case || Title || Exec || Pass || Fail || Last || Flags ||
+| C1519256 | Driver sign on - Manual - First Use | 0 | 0 | 0 | - | orphaned |
+| C1519275 | Minor Power Outage - In Service | 0 | 0 | 0 | - | orphaned |
+| C1519276 | Major Power Outage  - In Service | 0 | 0 | 0 | - | orphaned |
+| C1519357 | Hot Listed Smartcards - A user presents an already hotlisted smartcard | 0 | 0 | 0 | - | orphaned |
+| C1519358 | Hot Listed Smartcards - A user presents a smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C1519365 | Adult Ulsterbus Town Service Travelcard- Invalid | 0 | 0 | 0 | - | orphaned |
+| C1519366 | Child Ulsterbus Travelcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C1519375 | View a smartcard status | 0 | 0 | 0 | - | orphaned |
+| C1519378 | Time Change - GMT to BST on ETM | 0 | 0 | 0 | - | orphaned |
+| C1519391 | Time Change - BST to GMT on ETM | 0 | 0 | 0 | - | orphaned |
+| C1521838 | Supervisor sign on - Manual - Success | 0 | 0 | 0 | - | orphaned |
+| C1521839 | Supervisor sign on - Smartcard - Success | 0 | 0 | 0 | - | orphaned |
+| C1521849 | Transition from Current to Future Fare Mode | 0 | 0 | 0 | - | orphaned |
+| C1521852 | Technician sign on - Manual - Success | 0 | 0 | 0 | - | orphaned |
+| C1521853 | Technician sign on - Smartcard - Success | 0 | 0 | 0 | - | orphaned |
+| C1521855 | Ticket Type - Selection | 0 | 0 | 0 | - | orphaned |
+| C1521871 | Driver sign on - Invalid Duty Number | 0 | 0 | 0 | - | orphaned |
+| C1521874 | Driver sign on - Duty Number - Back | 0 | 0 | 0 | - | orphaned |
+| C1521888 | Driver sign on - Invalid Journey Number | 0 | 0 | 0 | - | orphaned |
+| C1521889 | Driver sign on - Back Button at Select Route Entry screen | 0 | 0 | 0 | - | orphaned |
+| C1523711 | ETM - Ticket Layout 01 - Metro Single | 0 | 0 | 0 | - | orphaned |
+| C1523715 | ETM - Ticket Layout 02 – Return Ulsterbus and Metro | 0 | 0 | 0 | - | orphaned |
+| C1523716 | ETM - Ticket Layout 03 - Excess | 0 | 0 | 0 | - | orphaned |
+| C1523717 | ETM - Ticket Layout 04 - Concession Single for Metro | 0 | 0 | 0 | - | orphaned |
+| C1523720 | ETM - Ticket Layout 05 – Staff, Dependants, Spouse and Retired – Metro and Ulsterbus | 0 | 0 | 0 | - | orphaned |
+| C1523723 | ETM - Ticket Layout 06 - Day Ticket | 0 | 0 | 0 | - | orphaned |
+| C1523724 | ETM - Ticket Layout 07 - Family & Friends Day ticket | 0 | 0 | 0 | - | orphaned |
+| C1523725 | ETM - Ticket Layout 07a - Metro Family Day ticket | 0 | 0 | 0 | - | orphaned |
+| C1523726 | ETM - Ticket Layout 08 - Family & Friends Day Additional Child ticket | 0 | 0 | 0 | - | orphaned |
+| C1523727 | ETM - Ticket Layout 08a - Family Day Additional Child ticket | 0 | 0 | 0 | - | orphaned |
+| C1523728 | ETM - Ticket Layout 09 - Faulty Card - One Return Journey | 0 | 0 | 0 | - | orphaned |
+| C1523729 | ETM - Ticket Layout 10 - Annul Ticket - Single | 0 | 0 | 0 | - | orphaned |
+| C1523730 | ETM - Ticket Layout 11 – Metro Multi-Journey Use | 0 | 0 | 0 | - | orphaned |
+| C1523733 | ETM - Ticket Layout 11 – Metro Multi-Journey Use - Journeys Low | 0 | 0 | 0 | - | orphaned |
+| C1523734 | ETM - Ticket Layout 12 – Ticket Layout - Half Fare Concession | 0 | 0 | 0 | - | orphaned |
+| C1523735 | ETM - Ticket Layout 12 – Half Fare Concession - Card 3 Months to Expiry | 0 | 0 | 0 | - | orphaned |
+| C1523736 | ETM - Ticket Layout 13 – Ticket Layout - Period Pass Smartcard Top-Up Receipt | 0 | 0 | 0 | - | orphaned |
+| C1523738 | ETM - Ticket Layout 14 – yLink Single | 0 | 0 | 0 | - | orphaned |
+| C1523750 | ETM - Ticket Layout 15 – aLink Use | 0 | 0 | 0 | - | orphaned |
+| C1523753 | ETM - Ticket Layout 16 – Daylink Use | 0 | 0 | 0 | - | orphaned |
+| C1523754 | ETM - Ticket Layout 17 – DayLink Top-Up Receipt | 0 | 0 | 0 | - | orphaned |
+| C1523756 | ETM - Ticket Layout 18 – Rambler | 0 | 0 | 0 | - | orphaned |
+| C1523757 | ETM - Ticket Layout 19 – iLink Single | 0 | 0 | 0 | - | orphaned |
+| C1523758 | ETM - Ticket Layout 20 – Jobseekers Single | 0 | 0 | 0 | - | orphaned |
+| C1523759 | ETM - Ticket Layout 20 – Gateway Single | 0 | 0 | 0 | - | orphaned |
+| C1523760 | ETM - Ticket Layout 21 – Multi-Journey Top-Up | 0 | 0 | 0 | - | orphaned |
+| C1523761 | ETM - Ticket Layout 22 – Period Pass Use | 0 | 0 | 0 | - | orphaned |
+| C1523763 | ETM - Ticket Layout 23 – Ulsterbus Single | 0 | 0 | 0 | - | orphaned |
+| C1523765 | ETM - Ticket Layout 24 – Ulsterbus Concession | 0 | 0 | 0 | - | orphaned |
+| C1523766 | ETM - Ticket Layout 24 – Ulsterbus Concession - Card 3 Months to Expiry | 0 | 0 | 0 | - | orphaned |
+| C1523767 | ETM - Ticket Layout 26 – Ulsterbus yLink Single | 0 | 0 | 0 | - | orphaned |
+| C1523768 | ETM - Ticket Layout 27 – Ulsterbus Half Fare Concession | 0 | 0 | 0 | - | orphaned |
+| C1523769 | ETM - Ticket Layout 27 – Ulsterbus Half Fare Concession - Card 3 Months to Expiry | 0 | 0 | 0 | - | orphaned |
+| C1523770 | ETM - Ticket Layout 28 – Multi-Journey Top-Up Expiry Receipt | 0 | 0 | 0 | - | orphaned |
+| C1523771 | ETM - Ticket Layout 29 – Inspector Ticket | 0 | 0 | 0 | - | orphaned |
+| C1523772 | ETM - Ticket Layout 30 – Driver Report | 0 | 0 | 0 | - | orphaned |
+| C1523773 | ETM - Ticket Layout 31 – Mini-Statement | 0 | 0 | 0 | - | orphaned |
+| C1523774 | ETM - Ticket Layout 32 – ETM Faulty Smartpass – 7 Day Ticket | 0 | 0 | 0 | - | orphaned |
+| C1523775 | Ticket Issue - Resume Printing - Momentary Power Failure - Retry | 0 | 0 | 0 | - | orphaned |
+| C1523779 | Ticket Issue - Resume Printing - Full Reset with Recovery to Signed In State | 0 | 0 | 0 | - | orphaned |
+| C1523783 | Ticket Issue - Resume Printing - Full Reset preventing Recovery to Signed In State | 0 | 0 | 0 | - | orphaned |
+| C1523798 | Start New Journey | 0 | 0 | 0 | - | orphaned |
+| C1523802 | Driver sign on - Lock Out Device | 0 | 0 | 0 | - | orphaned |
+| C1523804 | Supervisor sign on - Lock Out Device | 0 | 0 | 0 | - | orphaned |
+| C1523805 | Technician sign on - Lock Out Device | 0 | 0 | 0 | - | orphaned |
+| C1523806 | Supervisor sign on - Unlock PIN Locked Device | 0 | 0 | 0 | - | orphaned |
+| C1523827 | Flash Pass - Metro Day Ticket Pass | 0 | 0 | 0 | - | orphaned |
+| C1523830 | Driver options - Word and Colour | 0 | 0 | 0 | - | orphaned |
+| C1523833 | Shopping Basket - Manipulation | 0 | 0 | 0 | - | orphaned |
+| C1523837 | Driver sign off | 0 | 0 | 0 | - | orphaned |
+| C1525287 | Annul Transaction - Last Ticket Issued Only | 0 | 0 | 0 | - | orphaned |
+| C1525292 | Annul Transaction - Ticket Annulment Timeout | 0 | 0 | 0 | - | orphaned |
+| C1525293 | Annul Transaction - Unsuccessful - Boarding Stage Change | 0 | 0 | 0 | - | orphaned |
+| C1525294 | Annul Transaction - Non-Annullable Transaction - Concession Pass | 0 | 0 | 0 | - | orphaned |
+| C1525765 | Driver Break - Enter | 0 | 0 | 0 | - | orphaned |
+| C1525768 | Driver Break - Leave - Manual | 0 | 0 | 0 | - | orphaned |
+| C1525770 | Driver Break - Leave - Smartcard | 0 | 0 | 0 | - | orphaned |
+| C1525771 | Driver Break - Leave - Manual - Abort | 0 | 0 | 0 | - | orphaned |
+| C1525773 | Driver Break - Leave - Smartcard - Abort | 0 | 0 | 0 | - | orphaned |
+| C1525774 | Supervisor menu - Driver Break - Override | 0 | 0 | 0 | - | orphaned |
+| C1526074 | Force Comms  - Cloudfare Initiated | 0 | 0 | 0 | - | orphaned |
+| C1526076 | Supervisor menu - Force Comms  - ETM Initiated | 0 | 0 | 0 | - | orphaned |
+| C1526077 | Technician menu - Force Comms  - ETM Initiated | 0 | 0 | 0 | - | orphaned |
+| C1526078 | Supervisor menu - Force Comms - Exit | 0 | 0 | 0 | - | orphaned |
+| C1526080 | Technician menu - Force Comms - Exit | 0 | 0 | 0 | - | orphaned |
+| C1526081 | Supervisor menu - Force Comms - Refresh | 0 | 0 | 0 | - | orphaned |
+| C1526082 | Technician Menu - Force Comms - Refresh | 0 | 0 | 0 | - | orphaned |
+| C1538061 | Supervisor menu - Software Versions - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1543828 | Technician menu - Software Versions - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1543829 | Supervisor menu - Configuration Data Versions - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1543830 | Technician menu - Configuration Data Versions - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1543831 | Supervisor menu - Serial Numbers - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1543832 | Technician menu - Serial Numbers - View and Print | 0 | 0 | 0 | - | orphaned |
+| C1544934 | Senior Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544960 | Senior Smartpass - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1544962 | Blind Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544964 | Learning Disability Half-Fare Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544966 | Employee (Staff) Pass- Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544968 | Employee (Staff Spouse) Pass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544973 | Adult Belfast Visitor Pass  - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1544974 | Adult Belfast Visitor Pass - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1545357 | Adult iLink Zone 1 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545359 | Adult iLink Zone 2 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545363 | Adult iLink Zone 4 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545365 | Adult iLink Zone NW Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545393 | Adult Metro Travelcard  - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545394 | Adult Metro Travelcard - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1545402 | Child Daylink Card - Top-Up on Expiry - Successful | 0 | 0 | 0 | - | orphaned |
+| C1545406 | Supervisor sign off - manual | 0 | 0 | 0 | - | orphaned |
+| C1545408 | Supervisor sign off - Idle timeout | 0 | 0 | 0 | - | orphaned |
+| C1545714 | Interface With Other On-Vehicle Third Party Equipment | 0 | 0 | 0 | - | orphaned |
+| C1545722 | Employee (External Staff) Pass- Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1545724 | Employee (Retired Staff) Pass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1546019 | Adult Belfast Visitor Pass  - Top-Up - Successful with Use | 0 | 0 | 0 | - | orphaned |
+| C1546022 | Adult iLink Zone 1 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C1546048 | Power Loss - Break Mode | 0 | 0 | 0 | - | orphaned |
+| C1546050 | Restart - Break Mode | 0 | 0 | 0 | - | orphaned |
+| C1546051 | Power Loss - In Service - Within Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C1546101 | Restart - In Service - Within Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C1546102 | Power Loss - In Service - Outside Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C1546103 | Restart - In Service - Outside Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C1547355 | Annul Transaction - Unsuccessful - MJ Product Validated | 0 | 0 | 0 | - | orphaned |
+| C1547359 | Driver sign on - Journey Screen | 0 | 0 | 0 | - | orphaned |
+| C1547361 | Driver sign on - Journey Confirmation | 0 | 0 | 0 | - | orphaned |
+| C1547362 | Driver options - Display Settings | 0 | 0 | 0 | - | orphaned |
+| C1548337 | GPS - Lock - Notification | 0 | 0 | 0 | - | orphaned |
+| C1548377 | GPS - New Location - Notification | 0 | 0 | 0 | - | orphaned |
+| C1548378 | GPS - Arrival at Stop | 0 | 0 | 0 | - | orphaned |
+| C1548379 | GPS - Departure from Stop | 0 | 0 | 0 | - | orphaned |
+| C1550472 | Driver options - Totals - Duty and Journey | 0 | 0 | 0 | - | orphaned |
+| C1550481 | Change Ticket Type - Fare Display | 0 | 0 | 0 | - | orphaned |
+| C1562822 | War Pensioner - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562823 | War Pensioner - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1562839 | 60 Plus - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562842 | ROI Senior - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562843 | ROI Senior - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1562844 | DLA Half-Fare Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562845 | DLA Half-Fare Smartpass - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1562846 | No Driving License Half-Fare Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562849 | Partially Sighted Half-Fare Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562851 | PIPS Half-Fare Smartpass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562852 | PIPS Half-Fare Smartpass - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1562853 | Employee (Dependants) Pass - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562860 | yLink Discount Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562873 | Child DayLink Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1562874 | Child DayLink Smartcard - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1562971 | Adult Ulsterbus Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C1562972 | Adult Ulsterbus Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1562973 | Adult Ulsterbus Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1562975 | Adult Ulsterbus Multi-Journey Smartcard - Invalid card presented - Invalid Boarding Stage | 0 | 0 | 0 | - | orphaned |
+| C1564205 | Adult Ulsterbus Multi-Journey - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1564206 | Adult Ulsterbus Multi-Journey - Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1564721 | Adult Ulsterbus Multi-Journey - Top-Up - Expired Journeys Removed | 0 | 0 | 0 | - | orphaned |
+| C1564728 | Adult Ulsterbus Multi-Journey - Top-Up - Maximum 50 Journeys | 0 | 0 | 0 | - | orphaned |
+| C1564733 | Child Ulsterbus Multi-Journey - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1564734 | Child Ulsterbus Multi-Journey - Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1564735 | Child Ulsterbus Multi-Journey - Top-Up - Maximum 50 Journeys | 0 | 0 | 0 | - | orphaned |
+| C1565340 | aLink Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1565583 | PROMO | 0 | 0 | 0 | - | orphaned |
+| C1567891 | Driver options - Last Ticket Issued | 0 | 0 | 0 | - | orphaned |
+| C1567914 | Inspector Report | 0 | 0 | 0 | - | orphaned |
+| C1567920 | Default Ticket Class - Timeout and Reversion | 0 | 0 | 0 | - | orphaned |
+| C1567940 | Stage Change - Manual | 0 | 0 | 0 | - | orphaned |
+| C1567943 | Supervisor menu - Historic Waybills | 0 | 0 | 0 | - | orphaned |
+| C1568004 | Driver sign on - Correct Topology Data Presented - Metro | 0 | 0 | 0 | - | orphaned |
+| C1568005 | Restart - In Service - Outside Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C1998639 | Child iLink Zone 2 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998641 | Child iLink Zone 3 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998643 | Child iLink Zone 4 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998645 | Child iLink Zone NW Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998647 | Child iLink Zone 1 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998649 | Adult Daylink Card - Top-Up on Expiry - Successful | 0 | 0 | 0 | - | orphaned |
+| C1998653 | Adult DayLink Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998654 | Adult DayLink Smartcard - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1998657 | Child Belfast Visitor Pass  - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998663 | Child Metro Travelcard  - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C1998664 | Child Metro Travelcard - Invalid card presented | 0 | 0 | 0 | - | orphaned |
+| C1998665 | Adult Metro Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C1998666 | Adult Metro Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998667 | Adult Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998669 | Adult Metro Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C1998740 | Child Ulsterbus Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C1998741 | Child Ulsterbus Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998742 | Child Ulsterbus Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998744 | Child Ulsterbus Multi-Journey Smartcard - Invalid card presented - Invalid Boarding Stage | 0 | 0 | 0 | - | orphaned |
+| C1998747 | Child Ulsterbus Multi-Journey - Top-Up - Expired Journeys Removed | 0 | 0 | 0 | - | orphaned |
+| C1998752 | Adult Metro Multi-Journey - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1998753 | Adult Metro Multi-Journey - Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1998754 | Adult Metro Multi-Journey - Top-Up - Maximum 50 Journeys | 0 | 0 | 0 | - | orphaned |
+| C1998758 | Child Metro Multi-Journey - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1998759 | Child Metro Multi-Journey - Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1998760 | Child Metro Multi-Journey - Top-Up - Maximum 50 Journeys | 0 | 0 | 0 | - | orphaned |
+| C1998761 | Child Metro Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C1998762 | Child Metro Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998763 | Child Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C1998765 | Child Metro Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C1999341 | Adult Daylink - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1999342 | Adult Daylink- Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1999344 | Child Daylink - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1999345 | Child Daylink- Top-Up - Unsuccessful - Back | 0 | 0 | 0 | - | orphaned |
+| C1999346 | Adult Metro Travelcard - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1999348 | Child Metro Travelcard - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C1999355 | Adult Ulsterbus Town Service Travelcard - Top-Up unavailable | 0 | 0 | 0 | - | orphaned |
+| C2082941 | Verify "Dashboard Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082942 | Verify "Events & Alerts Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082943 | Verify "Topology & Fares Management Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082944 | Verify "ABT Screen" Contents | 5 | 1 | 3 | Passed | flaky |
+| C2082945 | Verify "Schedule Management Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082946 | Verify "Estate Management Screen" Contents | 6 | 4 | 2 | Passed | flaky |
+| C2082947 | Verify "Reports Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082949 | Verify "Settings Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082950 | Verify "Menu Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2092775 | Successful Cloudfare SignOn - Administrator | 6 | 5 | 1 | Passed | flaky |
+| C2092782 | UnSuccessful Cloudfare SIgnOn - Administrator | 6 | 2 | 3 | Other | flaky, recently-regressed |
+| C2092793 | Successful Cloudfare SignOn - AD CloudFare User | 5 | 3 | 1 | Passed | flaky |
+| C2131388 | Operators - Glider as an Operator | 4 | 3 | 1 | Passed | flaky |
+| C2132847 | Products - Create and Delete Product | 3 | 2 | 1 | Passed | flaky |
+| C2132848 | Rules - Create and Delete Rule | 4 | 1 | 3 | Passed | flaky |
+| C2433052 | Change Currency - Euros | 0 | 0 | 0 | - | orphaned |
+| C2433053 | Change Currency - Pounds | 0 | 0 | 0 | - | orphaned |
+| C2433106 | Technician menu - Device Settings - Home Location Screen Navigation | 0 | 0 | 0 | - | orphaned |
+| C2433107 | Technician menu - Device Settings - Home Location | 0 | 0 | 0 | - | orphaned |
+| C2433112 | Downloading Configuration Files - Future Activation Date | 0 | 0 | 0 | - | orphaned |
+| C2433113 | Downloading Configuration Files | 0 | 0 | 0 | - | orphaned |
+| C2433114 | Upload Audit Files | 0 | 0 | 0 | - | orphaned |
+| C2433115 | Upload Data | 0 | 0 | 0 | - | orphaned |
+| C2433116 | Scheduled Maintenance - Coming Out of Suspend | 0 | 0 | 0 | - | orphaned |
+| C2433117 | Scheduled Maintenance - Idle Mode | 0 | 0 | 0 | - | orphaned |
+| C2433118 | Downloading Corrupt Configuration Files | 0 | 0 | 0 | - | orphaned |
+| C2433125 | Driver options - Paper Status | 0 | 0 | 0 | - | orphaned |
+| C2433126 | Driver options - Other Devices | 0 | 0 | 0 | - | orphaned |
+| C2433127 | Driver options - Soft Reboot | 0 | 0 | 0 | - | orphaned |
+| C2433128 | Driver options - Reboot Card Reader | 0 | 0 | 0 | - | orphaned |
+| C2433854 | Flat Fare Tap - Apple Pay - Mobile Device | 0 | 0 | 0 | - | orphaned |
+| C2433855 | Flat Fare Tap - Google Pay - Mobile Device | 0 | 0 | 0 | - | orphaned |
+| C2433856 | Flat Fare Tap - Samsung Pay - Mobile Device | 0 | 0 | 0 | - | orphaned |
+| C2433857 | Flat Fare Tap - Apple Pay - Apple Watch | 0 | 0 | 0 | - | orphaned |
+| C2433858 | Flat Fare Tap - Google Pay - Android Watch | 0 | 0 | 0 | - | orphaned |
+| C2433859 | Flat Fare Tap - Payment card on the DenyList | 0 | 0 | 0 | - | orphaned |
+| C2433939 | ETM in Working State when BOS Connection Lost - Send Data to Back Office | 0 | 0 | 0 | - | orphaned |
+| C2433940 | ETM in Working State when BOS Connection Lost - Download Data From Back Office | 0 | 0 | 0 | - | orphaned |
+| C2439076 | Comms Lock | 0 | 0 | 0 | - | orphaned |
+| C2439077 | Interrupted Communications | 0 | 0 | 0 | - | orphaned |
+| C2439078 | Paper Low | 0 | 0 | 0 | - | orphaned |
+| C2439079 | Paper Jam | 0 | 0 | 0 | - | orphaned |
+| C2439080 | Replacing the Paper Roll | 0 | 0 | 0 | - | orphaned |
+| C2439095 | MIFARE Classic 1K Card - Validation on ETM | 0 | 0 | 0 | - | orphaned |
+| C2439097 | Faulty Card - Faulty Smartpass Receipt | 0 | 0 | 0 | - | orphaned |
+| C2439098 | 8 Digit PSN range | 0 | 0 | 0 | - | orphaned |
+| C2439099 | MIFARE Classic EV1 Card - Validation on ETM | 0 | 0 | 0 | - | orphaned |
+| C2439590 | Auto Sign off | 0 | 0 | 0 | - | orphaned |
+| C2439636 | Status Bar - Cellular Network Status | 0 | 0 | 0 | - | orphaned |
+| C2439648 | Entering Power Saving Mode | 0 | 0 | 0 | - | orphaned |
+| C2439649 | Leaving Power Saving Mode | 0 | 0 | 0 | - | orphaned |
+| C2439654 | Open Tickets - Adult  Excess Ticket | 0 | 0 | 0 | - | orphaned |
+| C2439655 | Open Tickets - Child Excess Ticket | 0 | 0 | 0 | - | orphaned |
+| C2439656 | Open Tickets - Invalid Amount | 0 | 0 | 0 | - | orphaned |
+| C2439661 | Entering Single Use Barcode Reference | 0 | 0 | 0 | - | orphaned |
+| C2439662 | Entering Single Use Barcode - Invalid Reference | 0 | 0 | 0 | - | orphaned |
+| C2439663 | Entering Multiple Use Barcode Reference | 0 | 0 | 0 | - | orphaned |
+| C2439664 | Entering Multiple Use Barcode - Invalid Reference | 0 | 0 | 0 | - | orphaned |
+| C2439665 | Single Online Validation Successful - Printed Copy | 0 | 0 | 0 | - | orphaned |
+| C2439666 | Single Online Validation Successful - Mobile Phone | 0 | 0 | 0 | - | orphaned |
+| C2439667 | Single Online Validation - Successful | 0 | 0 | 0 | - | orphaned |
+| C2439668 | Single Online Validation Failed - Unable to Decrypt Barcode | 0 | 0 | 0 | - | orphaned |
+| C2439669 | Single Online Validation Failed - Visual Confirmation Not Passed | 0 | 0 | 0 | - | orphaned |
+| C2439670 | Single Online Validation Failed - Already Validated Offline | 0 | 0 | 0 | - | orphaned |
+| C2439671 | Single Online Validation Failed - Invalid Product | 0 | 0 | 0 | - | orphaned |
+| C2439672 | Single Online Validation Failed - Expired Barcode | 0 | 0 | 0 | - | orphaned |
+| C2439673 | Single Offline Validation - Successful | 0 | 0 | 0 | - | orphaned |
+| C2439674 | Single Offline Validation Failed - Over Offline Validation Limit | 0 | 0 | 0 | - | orphaned |
+| C2439675 | Single Offline Validation Failed - Invalid Product | 0 | 0 | 0 | - | orphaned |
+| C2439676 | mLink Barcode Validation Successful | 0 | 0 | 0 | - | orphaned |
+| C2439677 | mLink Barcodes Validation Failed - Expired | 0 | 0 | 0 | - | orphaned |
+| C2439678 | Multiple Use Validation Successful - Printed Copy | 0 | 0 | 0 | - | orphaned |
+| C2439679 | Multiple Use Validation Successful - Mobile Phone | 0 | 0 | 0 | - | orphaned |
+| C2439680 | Validation - Confirming Multiple Use | 0 | 0 | 0 | - | orphaned |
+| C2439681 | Multiple Use Validation Failed - Passback | 0 | 0 | 0 | - | orphaned |
+| C2439682 | Multiple Use Validation Failed - Incorrect Zone | 0 | 0 | 0 | - | orphaned |
+| C2439683 | Multiple Use Validation Failed - Wrong Start/End Date | 0 | 0 | 0 | - | orphaned |
+| C2439684 | Multiple Use Validation Failed - Wrong Travel Method | 0 | 0 | 0 | - | orphaned |
+| C2439685 | Printed Tickets with Barcode | 0 | 0 | 0 | - | orphaned |
+| C2439686 | Legacy Barcodes | 0 | 0 | 0 | - | orphaned |
+| C2439697 | EA Pupils Smartpass Bus Smartcard - Validation & Passback | 0 | 0 | 0 | - | orphaned |
+| C2439698 | EA Pupils Smartpass Bus Smartcard - Presented before start date | 0 | 0 | 0 | - | orphaned |
+| C2439699 | EA Pupils Smartpass Bus Smartcard - Presented after expiry date | 0 | 0 | 0 | - | orphaned |
+| C2439700 | EA Pupils Smartpass Bus Smartcard - Presented outside of the valid time (Mon-Fri) | 0 | 0 | 0 | - | orphaned |
+| C2439701 | EA Pupils Smartpass Bus Smartcard - Presented on a weekend (Sat-Sun) | 0 | 0 | 0 | - | orphaned |
+| C2439702 | EA Pupils Smartpass Bus Smartcard - Presented during a school holiday | 0 | 0 | 0 | - | orphaned |
+| C2439703 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Validation & Passback | 0 | 0 | 0 | - | orphaned |
+| C2439704 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Presented before start date | 0 | 0 | 0 | - | orphaned |
+| C2439705 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Presented after expiry date | 0 | 0 | 0 | - | orphaned |
+| C2439706 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Presented outside of the valid time (Mon-Fri) | 0 | 0 | 0 | - | orphaned |
+| C2439707 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Presented on a weekend (Sat-Sun) | 0 | 0 | 0 | - | orphaned |
+| C2439708 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Presented during a school holiday | 0 | 0 | 0 | - | orphaned |
+| C2441528 | Driver options - Messages | 0 | 0 | 0 | - | orphaned |
+| C2441537 | Passenger Count | 0 | 0 | 0 | - | orphaned |
+| C2441538 | Favourite Stages | 0 | 0 | 0 | - | orphaned |
+| C2441539 | ETM - Ticket Layout - Change receipt | 0 | 0 | 0 | - | orphaned |
+| C2441557 | Other devices - Device Status and Summary | 0 | 0 | 0 | - | orphaned |
+| C2441560 | Other devices - Device Reboot | 0 | 0 | 0 | - | orphaned |
+| C2441561 | Other devices - Forced comms on BV Device | 0 | 0 | 0 | - | orphaned |
+| C2441562 | Other devices - View device alerts | 0 | 0 | 0 | - | orphaned |
+| C2441571 | Technician menu - Soft Reboot | 0 | 0 | 0 | - | orphaned |
+| C2442002 | Passback override for Free Smartpass | 0 | 0 | 0 | - | orphaned |
+| C2442003 | Passback override for Half Fare Smartpass | 0 | 0 | 0 | - | orphaned |
+| C2442004 | Passback override for yLink Smartpass | 0 | 0 | 0 | - | orphaned |
+| C2442006 | GPS - Look Ahead | 0 | 0 | 0 | - | orphaned |
+| C2442007 | GPS - Travelling mode at night | 0 | 0 | 0 | - | orphaned |
+| C2442008 | GPS - Travelling mode with dimmed screen but button pressed or smartcard presented | 0 | 0 | 0 | - | orphaned |
+| C2442022 | ** For Removal? Test is for Bus Validator ** MIFARE Classic 1K Card - Validation on BV | 0 | 0 | 0 | - | orphaned |
+| C2442023 | ** For Removal? Test is for Bus Validator **  MIFARE DESfire Card - Validation on BV | 0 | 0 | 0 | - | orphaned |
+| C2442024 | ** For Removal? Test is for Bus Validator **  MIFARE Classic EV1 Card - Validation on BV | 0 | 0 | 0 | - | orphaned |
+| C2442032 | GPS - Travelling Mode on BV | 0 | 0 | 0 | - | orphaned |
+| C2442034 | Time Change - GMT to BST on BV | 0 | 0 | 0 | - | orphaned |
+| C2442035 | Time Change - BST to GMT on BV | 0 | 0 | 0 | - | orphaned |
+| C2443371 | Technician menu - Paper Status | 0 | 0 | 0 | - | orphaned |
+| C2443373 | Technician menu - Display Settings | 0 | 0 | 0 | - | orphaned |
+| C2448267 | Technician menu - Device Settings - Change Tray Identifier | 0 | 0 | 0 | - | orphaned |
+| C2448269 | Technician menu - Device Settings - Change Fleet Identifier | 0 | 0 | 0 | - | orphaned |
+| C2448270 | Smartcard presentation and validation timings | 0 | 0 | 0 | - | orphaned |
+| C2448294 | EMV hardware and transaction timings  (Potentially untestable - No performance measure provided) | 0 | 0 | 0 | - | orphaned |
+| C2448295 | Supervisor menu - Soft Reboot | 0 | 0 | 0 | - | orphaned |
+| C2469913 | ETM - Ticket Layout 10 - Annul Ticket - Multi Journey | 0 | 0 | 0 | - | orphaned |
+| C2471446 | 1 Idle Screen | 0 | 0 | 0 | - | orphaned |
+| C2471447 | 1.0.1 Communications Locked | 0 | 0 | 0 | - | orphaned |
+| C2471448 | 1.1 Sign On - Empty Fields | 0 | 0 | 0 | - | orphaned |
+| C2471449 | 1.1.1 Sign On - ID Entered | 0 | 0 | 0 | - | orphaned |
+| C2471450 | 1.1.2 Sign On - PIN Entry | 0 | 0 | 0 | - | orphaned |
+| C2471452 | 1.1.4 Sign On - Incorrect Details | 0 | 0 | 0 | - | orphaned |
+| C2471453 | 1.1.5 Sign On - Device Locked | 0 | 0 | 0 | - | orphaned |
+| C2471454 | 1.1.6 Sign Off | 0 | 0 | 0 | - | orphaned |
+| C2471455 | 1.2 Sign on Details Entered - First Use Safety Check | 0 | 0 | 0 | - | orphaned |
+| C2471456 | 1.2.1 Sign on Details Entered - First Use Safety Check On Board | 0 | 0 | 0 | - | orphaned |
+| C2471457 | 1.2.2 Sign on Details Entered - There Must be a First Use Safety Check | 0 | 0 | 0 | - | orphaned |
+| C2471458 | 1.2.3 Sign on Details Entered - Bus Check - Any Defects | 0 | 0 | 0 | - | orphaned |
+| C2471459 | 1.3 Select Duty | 0 | 0 | 0 | - | orphaned |
+| C2471460 | 1.3.1 Select Duty - 4 Typed | 0 | 0 | 0 | - | orphaned |
+| C2471461 | 1.3.2 Select Duty - Incorrect | 0 | 0 | 0 | - | orphaned |
+| C2471462 | 1.4 Type Route - With Letters - Hidden | 0 | 0 | 0 | - | orphaned |
+| C2471463 | 1.4.1 Type Route - With Letters - Shown | 0 | 0 | 0 | - | orphaned |
+| C2471464 | 1.4.2 Type Route - With Letters - Hidden - 10 Typed | 0 | 0 | 0 | - | orphaned |
+| C2471465 | 1.4.3 Route Selection - With Number | 0 | 0 | 0 | - | orphaned |
+| C2471466 | 1.4.4 Route Selection - With Number - Inbound Filtered | 0 | 0 | 0 | - | orphaned |
+| C2471467 | 1.4.5 Route Selection - With Number - Outbound Filtered | 0 | 0 | 0 | - | orphaned |
+| C2471468 | 1.4.6 Type Route - Incorrect | 0 | 0 | 0 | - | orphaned |
+| C2471469 | 1.5 Journey Selection | 0 | 0 | 0 | - | orphaned |
+| C2471470 | 1.5.1 Journey Number | 0 | 0 | 0 | - | orphaned |
+| C2471471 | 1.5.2 Journey Number - 4 Typed | 0 | 0 | 0 | - | orphaned |
+| C2471472 | 1.5.3 Journey Number - Incorrect | 0 | 0 | 0 | - | orphaned |
+| C2471473 | 1.6 Route Summary | 0 | 0 | 0 | - | orphaned |
+| C2471474 | 1.7 Message of the Day | 0 | 0 | 0 | - | orphaned |
+| C2471475 | 1.7.1 Message of the Day - Unavailable | 0 | 0 | 0 | - | orphaned |
+| C2471476 | 1.8 Word and Colour of the Day - Simpler UI | 0 | 0 | 0 | - | orphaned |
+| C2471477 | 1.8.1 Word and Colour of the Day - Unavailable | 0 | 0 | 0 | - | orphaned |
+| C2471478 | 1.9 Please Wait___ | 0 | 0 | 0 | - | orphaned |
+| C2471479 | 2 Main Screen - FLU | 0 | 0 | 0 | - | orphaned |
+| C2471480 | 2.0.1 Main Screen - Example Products Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471481 | 2.0.2 Main Screen - FLU - Change Boarding Stage | 0 | 0 | 0 | - | orphaned |
+| C2471482 | 2.0.3 FLU - Alighting Stages 06-09 | 0 | 0 | 0 | - | orphaned |
+| C2471483 | 2.0.3.1 FLU - Alighting Stages 23 _ 24 | 0 | 0 | 0 | - | orphaned |
+| C2471484 | 2.0.4 FLU - Fare-Based - Journeys | 0 | 0 | 0 | - | orphaned |
+| C2471485 | 2.0.4.1 FLU - Fav Journeys | 0 | 0 | 0 | - | orphaned |
+| C2471486 | 2.0.4.2 FLU - Transfer Journeys | 0 | 0 | 0 | - | orphaned |
+| C2471487 | 2.0.5 Easibus | 0 | 0 | 0 | - | orphaned |
+| C2471488 | 2.0.6 FLU - With example of No Connection Symbols | 0 | 0 | 0 | - | orphaned |
+| C2471489 | 2.1 Toggle Group - Group | 0 | 0 | 0 | - | orphaned |
+| C2471490 | 2.1.1 Toggle Groups - List | 0 | 0 | 0 | - | orphaned |
+| C2471491 | 2.1.2 Toggle Group - Flu Product Selected from Menu | 0 | 0 | 0 | - | orphaned |
+| C2471492 | 2.1.3 Flu Product Selected - Alighting Stage Selected | 0 | 0 | 0 | - | orphaned |
+| C2471493 | 2.2 Preset Product | 0 | 0 | 0 | - | orphaned |
+| C2471494 | 2.3 Menu Type | 0 | 0 | 0 | - | orphaned |
+| C2471495 | 2.3.1 Product Selected | 0 | 0 | 0 | - | orphaned |
+| C2471496 | 2.4 FLU Product | 0 | 0 | 0 | - | orphaned |
+| C2471497 | 2.4.1 Alighting Stage Selected | 0 | 0 | 0 | - | orphaned |
+| C2471498 | 2.5 Last Transaction Success | 0 | 0 | 0 | - | orphaned |
+| C2471499 | 2.5.1 Last Transaction 200 | 0 | 0 | 0 | - | orphaned |
+| C2471500 | 2.5.2 Last Transaction - Multiple Tickets in Basket - Success | 0 | 0 | 0 | - | orphaned |
+| C2471501 | 2.6 EMV Validated | 0 | 0 | 0 | - | orphaned |
+| C2471502 | 2.6.1 EMV Validation Failure | 0 | 0 | 0 | - | orphaned |
+| C2471503 | 2.7 FLU - Multiple Items - Basket Mode Selected | 0 | 0 | 0 | - | orphaned |
+| C2471504 | 2.7.1 FLU - Multiple Items - 1 Ticket Chosen | 0 | 0 | 0 | - | orphaned |
+| C2471505 | 2.7.2 FLU - Multiple Items - Basket - Page 1 | 0 | 0 | 0 | - | orphaned |
+| C2471506 | 2.7.3 FLU - Multiple Items - Basket - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471507 | 2.7.3.1 FLU - Multiple Items - Basket - Delete Item | 0 | 0 | 0 | - | orphaned |
+| C2471508 | 2.7.4 FLU - Multiple Items - Basket - Item Deleted | 0 | 0 | 0 | - | orphaned |
+| C2471509 | 2.7.5 FLU - Multiple Items - Basket - Confirmed | 0 | 0 | 0 | - | orphaned |
+| C2471510 | 2.7.8 Multiple Items - Basket is Full | 0 | 0 | 0 | - | orphaned |
+| C2471511 | 2.7.8.1 Multiple Items - Basket Full - Error | 0 | 0 | 0 | - | orphaned |
+| C2471512 | 2.9 Revenue Limit Approaching | 0 | 0 | 0 | - | orphaned |
+| C2471513 | 2.9.1 Revenue Limit Reached | 0 | 0 | 0 | - | orphaned |
+| C2471514 | 3 Promo Menu | 0 | 0 | 0 | - | orphaned |
+| C2471515 | 3.0.1 Promo Menu - Basket Mode | 0 | 0 | 0 | - | orphaned |
+| C2471516 | 3.0.1.1 Promo Menu - Ticket Purchased | 0 | 0 | 0 | - | orphaned |
+| C2471517 | 3.0.1.2 Promo Menu - Updated Last | 0 | 0 | 0 | - | orphaned |
+| C2471518 | 3.0.2 Promo Menu - Basket Mode - Ticket in Basket | 0 | 0 | 0 | - | orphaned |
+| C2471519 | 3.0.2.1 Promo Menu - Basket Mode - P_R Menu | 0 | 0 | 0 | - | orphaned |
+| C2471520 | 3.0.2.2 Promo Menu  - P_R Menu | 0 | 0 | 0 | - | orphaned |
+| C2471521 | 3.0.3 Promo Menu - Basket Mode - Ticket Selected | 0 | 0 | 0 | - | orphaned |
+| C2471522 | 4 Numeric Entry - 9 - Change & Alighting | 0 | 0 | 0 | - | orphaned |
+| C2471523 | 4.0.1 Numeric Entry - 9017 - Change & Alighting | 0 | 0 | 0 | - | orphaned |
+| C2471524 | 4.0.1.1 Numeric Entry - 500 - Change Calculated | 0 | 0 | 0 | - | orphaned |
+| C2471525 | 4.0.1.2 Numeric Entry - Change _ Alighting - Error Bar | 0 | 0 | 0 | - | orphaned |
+| C2471526 | 4.0.1.3 Main Screen - FLU - 9017 Alighting Stage Chosen | 0 | 0 | 0 | - | orphaned |
+| C2471527 | 4.1 FLU - Group Ticket - Payment | 0 | 0 | 0 | - | orphaned |
+| C2471528 | 5 Hotlisted Error | 0 | 0 | 0 | - | orphaned |
+| C2471529 | 5.0.1 FLU - Smartcard Top Up - No Journeys Left - Error | 0 | 0 | 0 | - | orphaned |
+| C2471530 | 5.0.2 FLU - DayLink Tap on - Success | 0 | 0 | 0 | - | orphaned |
+| C2471531 | 5.0.3 FLU - Smartcard Already Validated | 0 | 0 | 0 | - | orphaned |
+| C2471532 | 6 Present Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471533 | 6.0.1 FLU - Smart Card - Menu | 0 | 0 | 0 | - | orphaned |
+| C2471534 | 6.0.1.1 FLU - Smart Card - Mini Statement | 0 | 0 | 0 | - | orphaned |
+| C2471535 | 6.0.1.2 FLU - Smart Card - Top Up | 0 | 0 | 0 | - | orphaned |
+| C2471536 | 6.0.1.2.1 FLU - Smart Card - Top Up - Payment | 0 | 0 | 0 | - | orphaned |
+| C2471537 | 6.0.1.2.2 FLU - Smartcard Top Up - Confirmation | 0 | 0 | 0 | - | orphaned |
+| C2471538 | 6.0.1.2.3 FLU - Smartcard Top Up - Error | 0 | 0 | 0 | - | orphaned |
+| C2471539 | 6.0.1.3 FLU - Smartcard Top Up - Error - Remove Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471540 | 6.0.1.4 FLU - Smartcard - Outside Time Band | 0 | 0 | 0 | - | orphaned |
+| C2471541 | 6.0.2 FLU - Smartcard - Faulty - Select Card Type | 0 | 0 | 0 | - | orphaned |
+| C2471542 | 6.0.3 FLU - Smartcard - Faulty - Charge Full Fare | 0 | 0 | 0 | - | orphaned |
+| C2471543 | 6.0.4 FLU - Smartcard - Faulty - Issue Ticket | 0 | 0 | 0 | - | orphaned |
+| C2471544 | 6.0.5 Main Screen - FLU - yLink | 0 | 0 | 0 | - | orphaned |
+| C2471545 | 6.0.5.1 FLU Product - Alighting Stage Selected - yLink | 0 | 0 | 0 | - | orphaned |
+| C2471546 | 7 Printer Error | 0 | 0 | 0 | - | orphaned |
+| C2471547 | 7.0.1 Printer Error - Paper Jam | 0 | 0 | 0 | - | orphaned |
+| C2471548 | 7.0.2 Main Screen - FLU - Paper Low | 0 | 0 | 0 | - | orphaned |
+| C2471549 | 7.0.3 Out of Service Error | 0 | 0 | 0 | - | orphaned |
+| C2471550 | 7.0.4 Main Screen - Currency is Euro | 0 | 0 | 0 | - | orphaned |
+| C2471551 | 7.0.6 Main Screen - Travel Mode | 0 | 0 | 0 | - | orphaned |
+| C2471552 | 8 Driver Menu | 0 | 0 | 0 | - | orphaned |
+| C2471553 | 8.0.1 Inspector - Present Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471554 | 8.0.2 Driver Menu - Annulment - Top Up | 0 | 0 | 0 | - | orphaned |
+| C2471555 | 8.0.2.1 Annulment - Present Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471556 | 8.0.2.2 Driver Menu - Annulment Successful - Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471557 | 8.0.2.3 Driver Menu - Annulment unsuccessful - Incorrect Card | 0 | 0 | 0 | - | orphaned |
+| C2471558 | 8.0.3 Driver Menu - Annulment - Tickets | 0 | 0 | 0 | - | orphaned |
+| C2471559 | 8.0.3.1 Driver Menu - Annulment Successful | 0 | 0 | 0 | - | orphaned |
+| C2471560 | 8.0.3.2 Driver Menu - Annulment unsuccessful | 0 | 0 | 0 | - | orphaned |
+| C2471561 | 8.0.4 Driver Menu - Annulment - yLink | 0 | 0 | 0 | - | orphaned |
+| C2471562 | 8.0.5 Open Tickets | 0 | 0 | 0 | - | orphaned |
+| C2471563 | 8.0.5.1 Excess Ticket | 0 | 0 | 0 | - | orphaned |
+| C2471564 | 8.0.5.2 Excess Ticket - Error | 0 | 0 | 0 | - | orphaned |
+| C2471565 | 8.0.6 New Trip - Select New Route | 0 | 0 | 0 | - | orphaned |
+| C2471566 | 8.0.7 Idle Screen - On Break_Black | 0 | 0 | 0 | - | orphaned |
+| C2471567 | 8.0.7.1 Incorrect Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2471568 | 8.1 Driver Menu - Driver Options | 0 | 0 | 0 | - | orphaned |
+| C2471569 | 8.2 Driver Menu - Ticket History | 0 | 0 | 0 | - | orphaned |
+| C2471570 | 8.2.1 Driver Menu - Ticket History - View Ticket | 0 | 0 | 0 | - | orphaned |
+| C2471571 | 8.3 Driver Menu - Duty Totals | 0 | 0 | 0 | - | orphaned |
+| C2471572 | 8.3.1 Driver Menu - Journey Totals | 0 | 0 | 0 | - | orphaned |
+| C2471573 | 8.4 Driver Menu - Display Settings - Brightness and Volume | 0 | 0 | 0 | - | orphaned |
+| C2471574 | 8.5 Driver Menu - Paper Status | 0 | 0 | 0 | - | orphaned |
+| C2471575 | 8.6 Driver Menu - Word and Colour of the Day | 0 | 0 | 0 | - | orphaned |
+| C2471576 | 8.7 Driver Menu - Messages | 0 | 0 | 0 | - | orphaned |
+| C2471577 | 8.9 BV Devices | 0 | 0 | 0 | - | orphaned |
+| C2471578 | 8.9.1 BV Device Selected | 0 | 0 | 0 | - | orphaned |
+| C2471579 | 8.9.2 - BV Device Selected - Reboot? | 0 | 0 | 0 | - | orphaned |
+| C2471580 | 8.9.3 - BV Device Selected - Summary | 0 | 0 | 0 | - | orphaned |
+| C2471581 | 8.9.6 ETM Soft Reboot | 0 | 0 | 0 | - | orphaned |
+| C2471582 | 8.9.7 Card Reader Soft Reboot | 0 | 0 | 0 | - | orphaned |
+| C2471583 | 8.10.1 Report Faulty Device_ | 0 | 0 | 0 | - | orphaned |
+| C2471584 | 8.10.2 Driver Options - Faulty Device | 0 | 0 | 0 | - | orphaned |
+| C2471585 | 8.10.3 Faulty Device Already Reported | 0 | 0 | 0 | - | orphaned |
+| C2471586 | 8.10.4 FLU - Faulty Device | 0 | 0 | 0 | - | orphaned |
+| C2471587 | 9 Supervisor Menu | 0 | 0 | 0 | - | orphaned |
+| C2471588 | 9.1 Supervisor Menu - Force Communications | 0 | 0 | 0 | - | orphaned |
+| C2471589 | 9.2 Supervisor Menu - GPS Information | 0 | 0 | 0 | - | orphaned |
+| C2471590 | 9.2.1 Supervisor Menu - GPS Information - Error | 0 | 0 | 0 | - | orphaned |
+| C2471591 | 9.3 Supervisor Menu - Waybills - History | 0 | 0 | 0 | - | orphaned |
+| C2471592 | 9.3.1 Supervisor Menu - Waybills - History - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471593 | 9.3.2 Supervisor Menu - Waybills - Detailed | 0 | 0 | 0 | - | orphaned |
+| C2471594 | 9.3.2.1 Supervisor Menu - Waybills - Detailed - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471595 | 9.5 Supervisor Menu - Versioning | 0 | 0 | 0 | - | orphaned |
+| C2471596 | 9.5.1 Supervisor Menu - Serial Numbers | 0 | 0 | 0 | - | orphaned |
+| C2471597 | 9.5.2 Supervisor Menu - Software Versions | 0 | 0 | 0 | - | orphaned |
+| C2471598 | 9.5.3 Supervisor Menu - Configuration Versions | 0 | 0 | 0 | - | orphaned |
+| C2471599 | 9.5.3.1 Supervisor Menu - Configuration Versions - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471600 | 10 Technician Menu | 0 | 0 | 0 | - | orphaned |
+| C2471601 | 10.1 Technician - Device Settings | 0 | 0 | 0 | - | orphaned |
+| C2471602 | 10.1.1 Technician - Device Settings - Edit Input Field | 0 | 0 | 0 | - | orphaned |
+| C2471603 | 10.1.1.2 Technician - Device Settings - Confirm Input Field | 0 | 0 | 0 | - | orphaned |
+| C2471604 | 10.1.2 Technician - Device Settings - Edit Home location | 0 | 0 | 0 | - | orphaned |
+| C2471605 | 10.2 Technician - Display Settings | 0 | 0 | 0 | - | orphaned |
+| C2471606 | 10.3 Technician - Device Status | 0 | 0 | 0 | - | orphaned |
+| C2471607 | 10.3.1 Technician - Other Devices | 0 | 0 | 0 | - | orphaned |
+| C2471608 | 10.3.2 Technician - GPS Information | 0 | 0 | 0 | - | orphaned |
+| C2471609 | 10.3.3 Technician - Card Reader | 0 | 0 | 0 | - | orphaned |
+| C2471610 | 10.3.4 Technician - Paper Status | 0 | 0 | 0 | - | orphaned |
+| C2471611 | 10.4 Technician - Network Settings | 0 | 0 | 0 | - | orphaned |
+| C2471612 | 10.4.1 Technician - FEC1 | 0 | 0 | 0 | - | orphaned |
+| C2471613 | 10.4.1.1 Technician - Edit IP Addresses | 0 | 0 | 0 | - | orphaned |
+| C2471614 | 10.4.1.2 Technician - IP Address changed | 0 | 0 | 0 | - | orphaned |
+| C2471615 | 10.4.2 Technician - Cellular Modem | 0 | 0 | 0 | - | orphaned |
+| C2471616 | 10.5 Technician - Force Communications | 0 | 0 | 0 | - | orphaned |
+| C2471617 | 10.6 Technician - Network Routing Table | 0 | 0 | 0 | - | orphaned |
+| C2471618 | 10.7 Technician Menu - Versions | 0 | 0 | 0 | - | orphaned |
+| C2471619 | 10.7.1 Technician - Serial Numbers | 0 | 0 | 0 | - | orphaned |
+| C2471620 | 10.7.2 Technician Menu - Software Versions | 0 | 0 | 0 | - | orphaned |
+| C2471621 | 10.7.3 Technician Menu - Configuration Versions | 0 | 0 | 0 | - | orphaned |
+| C2471622 | 10.7.3.1 Technician Menu - Configuration Versions - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471623 | 11 Power Interruption | 0 | 0 | 0 | - | orphaned |
+| C2471624 | 11.1 Restarting | 0 | 0 | 0 | - | orphaned |
+| C2471625 | 11.2 Charging | 0 | 0 | 0 | - | orphaned |
+| C2471626 | 12 Barcode Reference | 0 | 0 | 0 | - | orphaned |
+| C2471627 | 12.0.1 Barcode Reference Entered | 0 | 0 | 0 | - | orphaned |
+| C2471628 | 12.1  Barcode Validation Failed | 0 | 0 | 0 | - | orphaned |
+| C2471629 | 12.1.1 Barcode Scan - Transaction Cancelled - Ticket Not Valid | 0 | 0 | 0 | - | orphaned |
+| C2471630 | 12.1.2 Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection | 0 | 0 | 0 | - | orphaned |
+| C2471631 | 12.2 Barcode - Validating Details | 0 | 0 | 0 | - | orphaned |
+| C2471632 | 12.2.1 Barcode - Offline Check | 0 | 0 | 0 | - | orphaned |
+| C2471633 | 12.4 Barcode Ticket - Printed_ | 0 | 0 | 0 | - | orphaned |
+| C2471634 | 12.4.1 Barcode Ticket - Print Error | 0 | 0 | 0 | - | orphaned |
+| C2471635 | 12.5.1 Barcode Scan - Ticket Valid inc_ Date and Depart Time | 0 | 0 | 0 | - | orphaned |
+| C2471636 | 12.5.2 Barcode Scan - Ticket Valid inc_ Date with Expiry and Depart Time | 0 | 0 | 0 | - | orphaned |
+| C2471637 | 12.5.3 Barcode Scan - Ticket Valid inc_ Outbound ands Return | 0 | 0 | 0 | - | orphaned |
+| C2471638 | 12.5.3.1 Barcode Scan - Ticket Valid inc_ Outbound ands Return - Page 2 | 0 | 0 | 0 | - | orphaned |
+| C2471639 | 12.5.4 Barcode Scan - Ticket Valid inc_ 3 Use Times | 0 | 0 | 0 | - | orphaned |
+| C2471640 | 12.5.4.1 Barcode Scan - Ticket Valid inc_ 3 Use Times | 0 | 0 | 0 | - | orphaned |
+| C2472243 | 1.1.3 Sign On - PIN Entry | 0 | 0 | 0 | - | orphaned |
+| C2475248 | Metro Single Ticket - Adult - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475267 | Metro Single Ticket - Adult - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475268 | Metro Single Ticket - Adult - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475269 | Metro Single Ticket - Adult - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475272 | Day Return Ticket - Adult - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475273 | Day Return Ticket - Adult - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475274 | Day Return Ticket - Adult - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475275 | Day Return Ticket - Adult - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475300 | Metro Single Ticket - Child - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475301 | Metro Single Ticket - Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475302 | Metro Single Ticket - Adult and Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475303 | Metro Single Ticket - Adult and Child - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475304 | iLink Single Ticket - Adult - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475305 | iLink Single Ticket - Adult - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475306 | iLink Single Ticket - Adult - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475307 | iLink Single Ticket - Adult - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475310 | Day Return Ticket - Child - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475311 | Day Return Ticket - Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475312 | Day Return Ticket - Adult and Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475313 | Day Return Ticket - Adult and Child - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475314 | iLink Single Ticket - Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475315 | iLink Single Ticket - Adult and Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475316 | iLink Single Ticket - Adult and Child - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475317 | iLink Single Ticket - Child - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475318 | 1 Month Return - Adult - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475319 | 1 Month Return Ticket - Adult - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475320 | 1 Month Return Ticket - Adult - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475321 | 1 Month Return Ticket - Adult - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475322 | 1 Month Return Ticket - Child - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475323 | 1 Month Return Ticket - Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475324 | 1 Month Return Ticket - Adult and Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475325 | 1 Month Return Ticket - Adult and Child - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475327 | Jobseeker Single - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475328 | Jobseeker Single - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475329 | Jobseeker Single - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475330 | Gateway Single - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475331 | Gateway Single - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475332 | Gateway Single - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475333 | Gateway Single - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475334 | Adult Warrant Return - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475335 | Adult Warrant Return - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475336 | Adult Warrant Return - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475337 | Adult Warrant Return - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475338 | Child Warrant Return - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475339 | Child Warrant Return - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475340 | Adult & Child Warrant Return - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475341 | Adult & Child Warrant Return - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475342 | Adult Bus Rambler - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475343 | Adult Bus Rambler - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475345 | Adult Bus Rambler  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475367 | Adult Bus Rambler - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475368 | Child Bus Rambler - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475369 | Child Bus Rambler - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475372 | Adult & Child Bus Rambler - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475373 | Adult Bus Rambler  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475374 | Jobseeker Single - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475375 | Metro Adult Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475376 | Metro Adult Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475377 | Metro Adult Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475378 | Metro Adult Day  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475379 | Metro Child Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475380 | Metro Child Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475381 | Metro Adult Day & Metro Child Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475382 | Metro Adult Day Metro Child Day  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475383 | Family & Friends Day Ticket - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475384 | Family & Friends Day Ticket - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475385 | Family & Friends Day Ticket - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475386 | Family & Friends Day Ticket   - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475387 | Family & Friends Add Child Ticket - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475388 | Family & Friends Add Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475389 | Family & Friends Day ticket and Add Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475390 | Family & Friends Day ticket and Add Child  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475391 | Metro Family Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475392 | Metro Family Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475393 | Metro Family Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475394 | Metro Family Day - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475395 | Metro Family Day Add Child - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475396 | Metro Family Day Add Child - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475397 | Metro Family Day & Add Child - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475398 | Metro Family Day & Add Child  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475407 | Metro Adult Evening - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475408 | Metro Adult Evening - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475409 | Metro Adult Evening - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475410 | Metro Adult Evening  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475411 | Metro Child Evening - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475412 | Metro Child Evening - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475413 | Metro Adult Evening & Metro Child Evening - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475414 | Metro Adult Evening Metro Child Evening  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475415 | Park & Ride Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2475416 | Park & Ride Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475417 | Park & Ride Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2475418 | Park & Ride Day  - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2475420 | Metro Single Ticket - Adult - Issue - Easibus Red | 0 | 0 | 0 | - | orphaned |
+| C2475421 | Metro Single Ticket - Adult - Issue - Easibus Orange | 0 | 0 | 0 | - | orphaned |
+| C2475422 | Metro Single Ticket - Adult - Issue - Easibus Yellow | 0 | 0 | 0 | - | orphaned |
+| C2475423 | Metro Single Ticket - Adult - Issue - Easibus Green | 0 | 0 | 0 | - | orphaned |
+| C2475424 | Metro Single Ticket - Adult - Issue - Easibus White | 0 | 0 | 0 | - | orphaned |
+| C2475425 | Metro Single Ticket - Adult - Issue - Easibus Buggy | 0 | 0 | 0 | - | orphaned |
+| C2475426 | Metro Single Ticket - Adult - Issue - Easibus Wheelchair | 0 | 0 | 0 | - | orphaned |
+| C2475427 | Metro Single Ticket - Adult - Issue - Easibus Other | 0 | 0 | 0 | - | orphaned |
+| C2475428 | Metro Single Ticket - Adult - Issue - Easibus Basket | 0 | 0 | 0 | - | orphaned |
+| C2475430 | Metro Single Ticket - Adult - Issue with Change Receipt | 0 | 0 | 0 | - | orphaned |
+| C2475431 | Change Receipt - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2478846 | Flat Fare Tap - Mastercard Debit | 0 | 0 | 0 | - | orphaned |
+| C2478847 | Flat Fare Tap - Mastercard Credit | 0 | 0 | 0 | - | orphaned |
+| C2478848 | Flat Fare Tap - Visa Debit | 0 | 0 | 0 | - | orphaned |
+| C2478849 | Flat Fare Tap - Visa Credit | 0 | 0 | 0 | - | orphaned |
+| C2478850 | Flat Fare Tap - Maestro Debit | 0 | 0 | 0 | - | orphaned |
+| C2480211 | Flat Fare Tap - International Payment Cards | 0 | 0 | 0 | - | orphaned |
+| C2480518 | Flat Fare Tap - Offline Transactions | 0 | 0 | 0 | - | orphaned |
+| C2481061 | Child Belfast Visitor Pass  - Top-Up - Successful with Use | 0 | 0 | 0 | - | orphaned |
+| C2481062 | Adult iLink Zone 2 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481063 | Adult iLink Zone 3 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481064 | Adult iLink Zone 4 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481065 | Child iLink Zone 2 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481066 | Adult iLink Zone NW Smartcard - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C2481067 | Child iLink Zone 1 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481068 | Child iLink Zone 3 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481069 | Child iLink Zone 4 Smartcard - Top-Up - Successful with use | 0 | 0 | 0 | - | orphaned |
+| C2481070 | Child iLink Zone NW Smartcard - Top-Up - Successful | 0 | 0 | 0 | - | orphaned |
+| C2481133 | Flash Pass - Plusbus Pass | 0 | 0 | 0 | - | orphaned |
+| C2481134 | Flash Pass - NIR Ticket Pass | 0 | 0 | 0 | - | orphaned |
+| C2481135 | Flash Pass - Special Pass | 0 | 0 | 0 | - | orphaned |
+| C2481136 | Flash Pass - School Pass | 0 | 0 | 0 | - | orphaned |
+| C2481137 | Driver options | 0 | 0 | 0 | - | orphaned |
+| C2481138 | Adult Belfast Visitor Pass - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481139 | Child Belfast Visitor Pass - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481140 | Adult iLink Zone 1 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481141 | Child iLink Zone 1 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481142 | Adult iLink Zone 2 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481143 | Child iLink Zone 2 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481144 | Adult iLink Zone 3 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481145 | Child iLink Zone 3 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481146 | Adult iLink Zone 4 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481147 | Child iLink Zone 4 Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481148 | Adult iLink Zone NW Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481149 | Child iLink Zone NW Smartcard - Top-up - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2481150 | EA Pupils Smartpass Rail Smartcard - Invalid Location | 0 | 0 | 0 | - | orphaned |
+| C2481151 | EA Further Education Smartpass Rail Smartcard - Invalid Location | 0 | 0 | 0 | - | orphaned |
+| C2481152 | Driver sign on - Smartcard -First Use | 0 | 0 | 0 | - | orphaned |
+| C2481153 | Driver Menu | 0 | 0 | 0 | - | orphaned |
+| C2481154 | Driver Menu - Staff Pass | 0 | 0 | 0 | - | orphaned |
+| C2481155 | Annul Transaction - Unsuccessful - Daily/WeeklyMonthly Pass 
+ Validated | 0 | 0 | 0 | - | orphaned |
+| C2481156 | Adult Metro Multi-Journey - Top-Up - Expired Journeys Removed | 0 | 0 | 0 | - | orphaned |
+| C2481157 | Child Metro Multi-Journey - Top-Up - Expired Journeys Removed | 0 | 0 | 0 | - | orphaned |
+| C2481158 | Driver sign on - Manual - First Use with Defects | 0 | 0 | 0 | - | orphaned |
+| C2481159 | Driver sign on - Smartcard -First Use with Defects | 0 | 0 | 0 | - | orphaned |
+| C2481160 | Driver sign on - Manual - Subsequent Use with Safety Check on board | 0 | 0 | 0 | - | orphaned |
+| C2481161 | Driver sign on - Manual - Subsequent Use without Safety Check on board | 0 | 0 | 0 | - | orphaned |
+| C2481162 | Driver sign on - Manual - Subsequent Use without Safety Check on board and over-ridden | 0 | 0 | 0 | - | orphaned |
+| C2481163 | Faulty Card - Faulty Dependants Pass Receipt | 0 | 0 | 0 | - | orphaned |
+| C2481164 | Faulty Card - Faulty Fare Paying Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2481165 | Child Ulsterbus Town Service Travelcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2481166 | Child Ulsterbus Town Service Travelcard - Top-Up unavailable | 0 | 0 | 0 | - | orphaned |
+| C2481167 | Adult iLink Zone 3 Smartcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C2481168 | Driver options - Report Faulty Reader | 0 | 0 | 0 | - | orphaned |
+| C2481169 | Comms Lock- Comms Restored | 0 | 0 | 0 | - | orphaned |
+| C2530876 | 301107 & 300367 - Power Glitch during Basket Purchase - Retry | 0 | 0 | 0 | - | orphaned |
+| C2530877 | 301058 - No Automatic Validation after Top-up - Verify Statement | 0 | 0 | 0 | - | orphaned |
+| C2531018 | 301074 - Sequence ID is Out of Sync During Power Loss | 0 | 0 | 0 | - | orphaned |
+| C2531472 | 301241 - Starting New Journey while Signed On - Filter is Still Applied | 0 | 0 | 0 | - | orphaned |
+| C2531473 | 301488 - ABT - Wrong Decline Reason Used for Passback  & BIN List | 0 | 0 | 0 | - | orphaned |
+| C2531474 | 301186 - Paper Jam for Multiple Tickets - Annul Before Jam is Cleared | 0 | 0 | 0 | - | orphaned |
+| C2536476 | 301106 -  Deny List is not Downloaded to Device | 0 | 0 | 0 | - | orphaned |
+| C2536477 | 300751 - ETM Customer Display - GDPR | 0 | 0 | 0 | - | orphaned |
+| C2536478 | 301245 - Promo Sub-menu - Incorrectly Returns to FLU | 0 | 0 | 0 | - | orphaned |
+| C2536479 | 301107 & 300367 - Power Glitch during Basket Purchase - Annul | 0 | 0 | 0 | - | orphaned |
+| C2536480 | 301263 - Paper Out During Basket Purchase - Reload & Cancel | 0 | 0 | 0 | - | orphaned |
+| C2536481 | 301272 - Parkeon Key -  Sign out Flow | 0 | 0 | 0 | - | orphaned |
+| C2536482 | 301599 - Sign In Flow - Press C at Route Selection | 0 | 0 | 0 | - | orphaned |
+| C2536497 | 301209 - ETM Freeze - Smartcard Removal Too Quick After Topup | 0 | 0 | 0 | - | orphaned |
+| C2536501 | 301598 - Driver Sign In Too Slow to Load | 0 | 0 | 0 | - | orphaned |
+| C2536502 | 301683 - Internal Error - Going Back From Adult/Child/Other + Menu | 0 | 0 | 0 | - | orphaned |
+| C2536503 | 301485 - Expired Multi-Journey with Journeys Remaining  - Topup - Journey Removal Receipt | 0 | 0 | 0 | - | orphaned |
+| C2543141 | Driver sign on - Abandon Sign-Off | 0 | 0 | 0 | - | orphaned |
+| C2543142 | Driver sign on - Abandon Sign-On prior to Route Selection | 0 | 0 | 0 | - | orphaned |
+| C2543143 | Driver sign on - Abandon Sign-On post Duty Number entry | 0 | 0 | 0 | - | orphaned |
+| C2543144 | Flat Fare Tap - Mobile Wallet | 0 | 0 | 0 | - | orphaned |
+| C2543145 | Flat Fare Tap - Payment card on the BINlist | 0 | 0 | 0 | - | orphaned |
+| C2543146 | ME Adult Rugby Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2543147 | ME Adult Rugby Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2543148 | ME Adult Rugby Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2543149 | ME Adult Rugby Day - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2543150 | ME Child Rugby Day - Issue | 0 | 0 | 0 | - | orphaned |
+| C2543151 | ME Child Rugby Day - Annulment | 0 | 0 | 0 | - | orphaned |
+| C2543152 | ME Adult Rugby Day & ME Child Rugby Day - Basket Issue | 0 | 0 | 0 | - | orphaned |
+| C2543153 | ME Adult Rugby Day & ME Child Rugby Day - Basket Annulment | 0 | 0 | 0 | - | orphaned |
+| C2543231 | 301597 - Route Selection Screen - Filtered Results Begin at First Page | 0 | 0 | 0 | - | orphaned |
+| C2543232 | 301564 - Shift Cash Totals - Annulment Totals are Deducted from Cash Totals | 0 | 0 | 0 | - | orphaned |
+| C2543236 | 301258 - Ticket Print Speed - 110mm | 0 | 0 | 0 | - | orphaned |
+| C2543237 | 301723 - Product Group Toggling Performance Optimised - Timing does Not Slow Down | 0 | 0 | 0 | - | orphaned |
+| C2543238 | 301934 & 301566 - Amending Boarding Stage - Products Still Available | 0 | 0 | 0 | - | orphaned |
+| C2543244 | 301937 - NOT FIXED | 0 | 0 | 0 | - | orphaned |
+| C2543245 | 301106 - Deny List Downloads Daily | 0 | 0 | 0 | - | orphaned |
+| C2543247 | 301324 - Annuled Ticket Printing Map Point Not StageID | 0 | 0 | 0 | - | orphaned |
+| C2543248 | 301200 & 302069 - Faulty Smartpass Receipt - References Previously Issued Ticket | 0 | 0 | 0 | - | orphaned |
+| C2543249 | 301210 - ABT - Passback of Payment Card Implies Succesful Tap | 0 | 0 | 0 | - | orphaned |
+| C2543250 | 301541 - ABT - Invalid Taps Are To Be Displayed in Back Office Under ABT | 0 | 0 | 0 | - | orphaned |
+| C2547102 | 301563 - Driver Sign In - Journey Number - Audit Record In Cloudfare | 0 | 0 | 0 | - | orphaned |
+| C2547103 | 301715 - Driver Totals Screen - Smartcard Use in Passes Total | 0 | 0 | 0 | - | orphaned |
+| C2547104 | 302090 - Open Payments Service - Deny or BIN List Updates while FEIG is doing Comms Call | 0 | 0 | 0 | - | orphaned |
+| C2554901 | 301621 - Inspector Report - Annulled Smartcard Topups Not Included Cancelled Tickets Count | 0 | 0 | 0 | - | orphaned |
+| C2554903 | 301801 - Label change for Calculate change - Now called Change receipt | 0 | 0 | 0 | - | orphaned |
+| C2554904 | 301828 | 0 | 0 | 0 | - | orphaned |
+| C2555172 | 301276 - Performance Degradation | 0 | 0 | 0 | - | orphaned |
+| C2579118 | No1 From Idle Screen to FLU (Manual Input) | 0 | 0 | 0 | - | orphaned |
+| C2579119 | No2 From Idle Screen to FLU (Card Input) | 0 | 0 | 0 | - | orphaned |
+| C2579127 | No3 Adult Single Ticket | 0 | 0 | 0 | - | orphaned |
+| C2579128 | No4 Child Single Ticket | 0 | 0 | 0 | - | orphaned |
+| C2579129 | No5 Annul Ticket | 0 | 0 | 0 | - | orphaned |
+| C2579130 | No6 Change Journey | 0 | 0 | 0 | - | orphaned |
+| C2579131 | No7 Print out Full Basket (Adult Day) | 0 | 0 | 0 | - | orphaned |
+| C2579132 | No8 Print out Full Basket (Metro Adult Day) | 0 | 0 | 0 | - | orphaned |
+| C2579133 | No9 Print out Full Basket (Metro Child day) | 0 | 0 | 0 | - | orphaned |
+| C2579134 | No10 Print out Full Basket (Family and Friends Day) | 0 | 0 | 0 | - | orphaned |
+| C2579135 | No11 Print out Full Basket (Family and Friends add Child) | 0 | 0 | 0 | - | orphaned |
+| C2579136 | No14 Print out Full Basket (Adult Warrant Return) | 0 | 0 | 0 | - | orphaned |
+| C2579137 | No12 Print out Full Basket (Metro Family Day) | 0 | 0 | 0 | - | orphaned |
+| C2579138 | No13 Print out Full Basket (Metro Family Day add Child) | 0 | 0 | 0 | - | orphaned |
+| C2579139 | No15 Print out Full Basket (child Warrant Return) | 0 | 0 | 0 | - | orphaned |
+| C2579140 | No16 Print out Full Basket (Job Seeker) | 0 | 0 | 0 | - | orphaned |
+| C2579141 | No17 Smartcard Presenting | 0 | 0 | 0 | - | orphaned |
+| C2602341 | Driver sign on - Manual - First Use - Not Communicating With CloudFare | 0 | 0 | 0 | - | orphaned |
+| C2602897 | Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602898 | Adult Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602899 | Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602900 | Adult Metro City Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602901 | Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602902 | Child Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602903 | Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602904 | Child Metro City Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602908 | Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602909 | Adult Metro Inner Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602910 | Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602911 | Child Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602912 | Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602913 | Child Metro Inner Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602915 | Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602916 | Adult Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602917 | Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602918 | Adult Metro Extended Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602919 | Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602920 | Child Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602921 | Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602922 | Child Metro Extended Zone Multi-Journey Smartcard - Invalid card presented - Wrong Zone | 0 | 0 | 0 | - | orphaned |
+| C2602926 | PV - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602927 | PV - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602928 | PV - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602929 | HHD - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602930 | HHD - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602931 | HHD - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602932 | ETM - ETM - Adult Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602933 | ETM - ETM - Adult City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602934 | ETM - ETM -Adult City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602935 | BV - ETM -Adult City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2602936 | BV - ETM -Adult City Zone Metro Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2602937 | BV - ETM -Adult City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2603009 | Ticket Issue - Resume Printing - Momentary Power Failure - Annul | 0 | 0 | 0 | - | orphaned |
+| C2603024 | EA Pupils Smartpass Bus Further Education (FE) Smartcard - Hotlisted | 0 | 0 | 0 | - | orphaned |
+| C2603025 | EA Pupils Smartpass Bus Smartcard - Hotlisted | 0 | 0 | 0 | - | orphaned |
+| C2604204 | PV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604205 | PV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604206 | PV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604207 | HHD - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604208 | HHD - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604209 | HHD - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604210 | ETM - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604211 | ETM - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604212 | ETM - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604213 | BV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604214 | BV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604215 | BV - ETM - Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604216 | Adult Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604218 | Adult Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604225 | PV - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604226 | PV - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604227 | PV - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604228 | HHD - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604229 | HHD - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604230 | HHD - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604231 | ETM - ETM - Child Metro City Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604232 | ETM - ETM - Child City Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604233 | ETM - ETM -Child City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604234 | BV - ETM -Child City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604235 | BV - ETM -Child City Zone Metro Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604236 | BV - ETM -Child City Zone Metro Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604244 | PV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604245 | PV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604246 | PV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604247 | HHD - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604248 | HHD - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604249 | HHD - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604250 | ETM - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604251 | ETM - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604252 | ETM - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604253 | BV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604254 | BV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604255 | BV - ETM - Child Metro Inner Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604256 | PV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604257 | PV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604258 | PV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604259 | HHD - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604260 | HHD - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604261 | HHD - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604262 | ETM - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604263 | ETM - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604264 | ETM - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604265 | BV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604266 | BV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604267 | BV - ETM - Adult Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604268 | PV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604269 | PV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604270 | PV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604271 | HHD - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604272 | HHD - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604273 | HHD - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604274 | ETM - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604275 | ETM - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604276 | ETM - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604277 | BV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2604278 | BV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2604279 | BV - ETM - Child Metro Extended Zone Multi-Journey Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2623704 | Adult Metro Travelcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623705 | Child Metro Travelcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623706 | Adult iLink Zone 1 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623707 | Child iLink Zone 1 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623708 | Adult iLink Zone 2 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623710 | Child iLink Zone 2 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623711 | Adult iLink Zone 3 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623712 | Child iLink Zone 3 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623713 | Adult iLink Zone 4 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623714 | Child iLink Zone 4 Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623715 | Adult iLink Zone NW Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2623716 | Child iLink Zone NW Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645053 | Adult iLink Zone 1 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645054 | Child iLink Zone 1 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645056 | Adult iLink Zone 2 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645057 | Child iLink Zone 2 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645058 | Adult iLink Zone 3 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645059 | Child iLink Zone 3 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645060 | Adult iLink Zone 4 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645061 | Child iLink Zone 4 Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645062 | Adult iLink Zone NW Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645063 | Child iLink Zone NW Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645064 | Adult Metro Travelcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645065 | Child Metro Travelcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645068 | PV - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645069 | PV - ETM - Adult Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645070 | PV - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645071 | HHD - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645072 | HHD - ETM - Adult Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645073 | HHD - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645074 | ETM - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645075 | ETM - ETM - Adult Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645076 | ETM - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645077 | BV - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645078 | BV - ETM - Adult Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645079 | BV - ETM - Adult Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645080 | PV - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645081 | PV - ETM - Child Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645082 | PV - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645083 | HHD - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645084 | HHD - ETM - Child Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645085 | HHD - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645086 | ETM - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645087 | ETM - ETM - Child Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645088 | ETM - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645089 | BV - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Within Transfer Period - Passback | 0 | 0 | 0 | - | orphaned |
+| C2645090 | BV - ETM - Child Ulsterbus Smartcard - Validation Different Direction, Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645091 | BV - ETM - Child Ulsterbus Smartcard - Validation Same Direction, Outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C2645138 | Alighting Stage Selection | 0 | 0 | 0 | - | orphaned |
+| C2645142 | Invalid Alighting Stage Selection | 0 | 0 | 0 | - | orphaned |
+| C2645168 | BV to ETM to BOS Communication | 0 | 0 | 0 | - | orphaned |
+| C2645189 | Adult Ulsterbus Town Service Travelcard Top-Up | 0 | 0 | 0 | - | orphaned |
+| C2645190 | Adult Ulsterbus Town Service Travelcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C2645194 | Child Ulsterbus Town Service Travelcard - Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C2645197 | Child Ulsterbus Town Service Travelcard Top-Up | 0 | 0 | 0 | - | orphaned |
+| C2645237 | Adult Metro City Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645238 | Child Metro City Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645239 | Adult Metro City Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645240 | Child Metro City Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645241 | Adult Metro Inner Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645242 | Child Metro Inner Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645243 | Adult Metro Inner Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645244 | Child Metro Inner Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645246 | Adult Metro Extended Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645247 | Adult Metro Extended Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645248 | Child Metro Extended Zone Smartcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645249 | Child Metro Extended Zone Smartcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645250 | Adult Ulsterbus Town Service Travelcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645251 | Child Ulsterbus Town Service Travelcard - POS (TGX150) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645252 | Adult Ulsterbus Town Service Travelcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2645253 | Child Ulsterbus Town Service Travelcard - POS (WAY6) Top-Up to ETM Validation | 0 | 0 | 0 | - | orphaned |
+| C2687291 | TODM-312 - Expired UBMJ card Top up followed by a Daylink Top up | 0 | 0 | 0 | - | orphaned |
+| C2794941 | Adult Bus Rambler - Not Available | 0 | 0 | 0 | - | orphaned |
+| C2794942 | Child Bus Rambler - Not Available | 0 | 0 | 0 | - | orphaned |
+| C3521670 | Downloading Printer Firmware Files | 0 | 0 | 0 | - | orphaned |
+| C3521671 | Paper Low | 0 | 0 | 0 | - | orphaned |
+| C3521672 | Paper Jam | 0 | 0 | 0 | - | orphaned |
+| C3521673 | Replacing the Paper Roll | 0 | 0 | 0 | - | orphaned |
+| C3521674 | Minor Power Outage - In Service | 0 | 0 | 0 | - | orphaned |
+| C3521675 | Major Power Outage  - In Service | 0 | 0 | 0 | - | orphaned |
+| C3521676 | Power Loss - Break Mode | 0 | 0 | 0 | - | orphaned |
+| C3521677 | Power Loss - In Service - Within Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C3521678 | Power Loss - In Service - Outside Recovery Period | 0 | 0 | 0 | - | orphaned |
+| C3522640 | Paper Almost Low *to be removed | 0 | 0 | 0 | - | orphaned |
+| C3522641 | Paper Out | 0 | 0 | 0 | - | orphaned |
+| C4048869 | Metro Multiple Zones | 0 | 0 | 0 | - | orphaned |
+| C4048870 | Metro Single Zone | 0 | 0 | 0 | - | orphaned |
+| C4048871 | Ulsterbus Multiple Zones | 0 | 0 | 0 | - | orphaned |
+| C4048872 | Boarding and Alighting within Ulsterbus ABT Zone | 0 | 0 | 0 | - | orphaned |
+| C4048873 | Boarding and Alighting within Ulsterbus ABT Zones | 0 | 0 | 0 | - | orphaned |
+| C4048874 | Boarding Stage only within Ulsterbus ABT Zones | 0 | 0 | 0 | - | orphaned |
+| C4048875 | Alighting Stage only within Ulsterbus ABT Zones | 0 | 0 | 0 | - | orphaned |
+| C4048876 | Invalid Zone Metro ABT Zone | 0 | 0 | 0 | - | orphaned |
+| C4049282 | Boarding and Alighting within Metro ABT Zone | 0 | 0 | 0 | - | orphaned |
+| C4049283 | Boarding Stage only within Metro ABT Zone | 0 | 0 | 0 | - | orphaned |
+| C4049284 | Alighting Stage only within Metro ABT Zone | 0 | 0 | 0 | - | orphaned |
+| C4051166 | Ulsterbus TOO Annulment | 0 | 0 | 0 | - | orphaned |
+| C4051167 | Metro TOO Annulment | 0 | 0 | 0 | - | orphaned |
+| C4062562 | Daily Capping Group | 0 | 0 | 0 | - | orphaned |
+| C4062563 | Two Capping Group Journeys reaching Cap - Same Day | 0 | 0 | 0 | - | orphaned |
+| C4062564 | Two Capping Group Journeys tapped without reaching Cap - Same Day | 0 | 0 | 0 | - | orphaned |
+| C4062565 | Weekly Capping Group | 0 | 0 | 0 | - | orphaned |
+| C4062566 | Two Capping Group Journeys reaching Cap - Week | 0 | 0 | 0 | - | orphaned |
+| C4062567 | Multiple Capping Group Journeys tapped without reaching Cap - Week | 0 | 0 | 0 | - | orphaned |
+| C4062568 | ABT reverts to Standard Fixed Fare if different Service/Journey/Rule Triggered | 0 | 0 | 0 | - | orphaned |
+| C4062569 | Journey Taps for Rule with Multiple Services | 0 | 0 | 0 | - | orphaned |
+| C4062570 | Journey Taps for Rule with Multiple Transportation Modes | 0 | 0 | 0 | - | orphaned |
+| C4075951 | PV: cEMV Card Transfer -Validation Same Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075952 | PV: cEMV Card Transfer -Validation Different Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075953 | PV: cEMV Card Transfer -Validation Same Direction outside Transfer Period | 0 | 0 | 0 | - | orphaned |

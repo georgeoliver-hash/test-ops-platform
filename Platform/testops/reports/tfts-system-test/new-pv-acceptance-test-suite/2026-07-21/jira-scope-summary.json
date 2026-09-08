@@ -1,0 +1,502 @@
+[
+  {
+    "key": "TIBU-24660",
+    "type": "Test Execution",
+    "status": "Closed",
+    "summary": "[PV] Glider Tap On Only - QA Run",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22311",
+    "type": "Technical Story",
+    "status": "Closed",
+    "summary": "Port Open Payment functionality from Edinburgh Trams",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22312",
+    "type": "Technical Story",
+    "status": "System Test",
+    "summary": "Port pilot list functionality from SRUP",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-24196",
+    "type": "Technical Story",
+    "status": "Closed",
+    "summary": "Implement TOO for Glider PV",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28453",
+    "type": "Technical Story",
+    "status": "System Test",
+    "summary": "Implement mechanism for recovering PV in the case that it fails to boot up",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22316",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink back office user I would like to be able to update software on the PV FEIG through the back office",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22317",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink financial officer I would like the PV to be capable of downloading and applying deny lists and BIN lists",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22318",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink back office user I would like the PV to be able to be updated remotely to a cEMV capable software build",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22319",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink ticketing manager I would like to ensure the PV only accepts cEMV taps if the right conditions are met",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22322",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink ticketing manager I would like to cEMV taps to be rejected by the PV in the right cases",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22323",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink ticketing manager I would like a success screen to be displayed if all validation checks passed",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22332",
+    "type": "Story",
+    "status": "Closed",
+    "summary": "As a Translink back office user I would like the PV to audit a Tap On Only transaction",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28098",
+    "type": "Story",
+    "status": "Ready for Release",
+    "summary": "As a back office user I'd like the auditing for a TOTO tap to be correct",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28386",
+    "type": "Story",
+    "status": "Ready for Release",
+    "summary": "As a back office user I'd like a transaction to be sent to MERIT every 24 hours as a heartbeat on PV",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-30476",
+    "type": "Story",
+    "status": "System Test",
+    "summary": "Audit the stop id in additional to the stage id when performing a cEMV tap",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-21910",
+    "type": "Epic",
+    "status": "Done",
+    "summary": "Release 5.0.0 TL Validators",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-22305",
+    "type": "Epic",
+    "status": "System Test",
+    "summary": "[Translink] Glider Tap On Only for PV",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28094",
+    "type": "Epic",
+    "status": "System Test",
+    "summary": "[Translink] NIR TOTO on PV",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-21950",
+    "type": "Bug",
+    "status": "Ready for Release",
+    "summary": "Barcodes & Cards not accepted banners don't match UI Spec",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-24428",
+    "type": "Bug",
+    "status": "Ready for Release",
+    "summary": "TL PV \"PrimaryCommsChannelFailed\" event spamming seen in CF on build 3.1.1 in TL Test Environment",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25446",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "TL PV - \"spamming\" of FEIG Manifest requests in the log file at least every second",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25548",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "TL PV : SIM ID is not being sent to CF and so not visible in Asset Manager",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25691",
+    "type": "Bug",
+    "status": "Closed",
+    "summary": "EMV Taps disabled for Glider PV",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25700",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "Incorrect screen shown for EMV Passback",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25702",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "Smartcard taps not possible on EMV Success/Failure screens ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25704",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "No transactions generated for failed EMV taps",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25705",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "EMV Success and Error screens persist too long",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25745",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "Device Failing to Download and Apply BIN list update",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-25842",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Device frozen on White Flowbird Screen",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-26048",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Device fails to perform Feig update via TMS ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-26303",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV V3.1.2 - Missing Network Interface screen is displayed when trying to access Network Setting on Technician Menu",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-26320",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "Device failing to download and apply Deny List ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-26522",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV DEV BUILD Glider TOO - After performing Feig update the device fails to detect EMV cards",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-26531",
+    "type": "Bug",
+    "status": "Closed",
+    "summary": "PV DEV BUILD Glider TOO - Two sets of Feig versions are displayed in Asset Manager for the device",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-27289",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV > No event for barcode reader dropouts",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-27324",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV 3.1.2 - Audible Beep functionality for MUB validation not performing as expected ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28139",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Remote logging isn't working for PV devices",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28240",
+    "type": "Bug",
+    "status": "Customer Test",
+    "summary": "PV - Device Frozen on black screen after reboot",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28645",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Payment Method for Glider TOO transaction is OpenPayments rather than ABT ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28649",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Deny List and BIN List URLs is incorrect for PV builds",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28770",
+    "type": "Bug",
+    "status": "Closed",
+    "summary": "PV - Transaction Service stops responding ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28805",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - EMV taps which are declined due to not being on the Pilot List are incorrectly creating audits ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-28856",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Device is auditing direction as OUT rather than IN",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-29165",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "TL PV : Appears to get \"stuck\" no longer downloading new distributions",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-29191",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV > QA > COMMS > FAILOVER > Sim remains \"connected\" when removed physically",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-29602",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Deployments via TMS are broken",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-31287",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Downloading Deny List with 200000 entries causes \"PollSocket: Send failed. Exception\" ",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-31705",
+    "type": "Bug",
+    "status": "Customer Test",
+    "summary": "Technician screen speed on processing sub menu screens",
+    "fixVersions": [
+      "TL Validators v5.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-30923",
+    "type": "Bug",
+    "status": "QA TEST",
+    "summary": "Devices cannot apply brand new configuration settings at the same time as a software update",
+    "fixVersions": [
+      "TL Validators v5.0.0",
+      "TL Validators v6.0.0"
+    ]
+  },
+  {
+    "key": "TIBU-24260",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Software version page doesn't display Application version ",
+    "fixVersions": [
+      "TL Validators v5.0.0",
+      "TL Validators v3.1.3"
+    ]
+  },
+  {
+    "key": "TIBU-25444",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "TL PV : Issue with barcode expiry date shown on PV when validating barcode (NIR)",
+    "fixVersions": [
+      "TL Validators v5.0.0",
+      "TL Validators v3.1.3"
+    ]
+  },
+  {
+    "key": "TIBU-26053",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Device does not display the version of PCA application that the device is running ",
+    "fixVersions": [
+      "TL Validators v5.0.0",
+      "TL Validators v3.1.3"
+    ]
+  },
+  {
+    "key": "TIBU-26054",
+    "type": "Bug",
+    "status": "System Test",
+    "summary": "PV - Feig Device ID isn't displayed on Asset Manager Associated Assets",
+    "fixVersions": [
+      "TL Validators v5.0.0",
+      "TL Validators v3.1.3"
+    ]
+  },
+  {
+    "key": "TIBU-31722",
+    "type": "Bug",
+    "status": "Ready for Release",
+    "summary": "PV - ABT Glider Metro not enabling even with ABT Tap Zone configured correctly",
+    "fixVersions": [
+      "TL Validators v5.0.1"
+    ]
+  },
+  {
+    "key": "TIBU-32037",
+    "type": "Bug",
+    "status": "Ready for Release",
+    "summary": "[TL PV] Failure to update FEIG PCA and FW due to watchdog kicking in",
+    "fixVersions": [
+      "TL Validators v5.0.3"
+    ]
+  }
+]

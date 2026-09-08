@@ -1,0 +1,142 @@
+[
+  {
+    "id": 4105305,
+    "title": "Basket — Pay Now reaches the Payment Process after a payment type is selected",
+    "section_id": 887786,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "All",
+    "created_by": 156,
+    "created_on": 1786010604,
+    "updated_by": 156,
+    "updated_on": 1786093164,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30284,
+    "display_order": 16,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm pressing Pay Now from the Basket reaches the Payment Process once\na payment type is selected.\n",
+    "custom_preconds": "**GIVEN** the Basket screen is displayed with at least one item and \"Pay Now\" available",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the customer presses Pay Now, then selects a payment type on the \"Select Payment\nType\" screen",
+        "expected": "**THEN** the Payment Process begins"
+      }
+    ],
+    "custom_expected": "Pressing Pay Now and selecting a payment type from the basket starts the Payment Process.",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      6
+    ]
+  },
+  {
+    "id": 4105306,
+    "title": "Basket — Pay Now (Basket - 2025 variant) continues the payment flow",
+    "section_id": 887786,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "All",
+    "created_by": 156,
+    "created_on": 1786010604,
+    "updated_by": 156,
+    "updated_on": 1786093164,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30284,
+    "display_order": 17,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm pressing Pay Now from the Basket, where the \"Select Payment Type\n(Basket - 2025)\" variant screen is shown, continues the payment flow as normal.\n",
+    "custom_preconds": "**GIVEN** the Basket screen is displayed with at least one item and \"Pay Now\" available",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the customer presses Pay Now and the \"Select Payment Type (Basket - 2025)\" screen\nis shown",
+        "expected": "**THEN** the payment flow continues as normal"
+      }
+    ],
+    "custom_expected": "From the Basket - 2025 variant of Select Payment Type, the payment flow continues as normal.",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      6
+    ]
+  },
+  {
+    "id": 4105383,
+    "title": "Smartcards — a card write error can end in Faulty smartcard No Update",
+    "section_id": 887911,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "All",
+    "created_by": 156,
+    "created_on": 1786010697,
+    "updated_by": 156,
+    "updated_on": 1786093223,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30284,
+    "display_order": 24,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card write error during the Payment Process, followed by the\nFaulty smartcard - Try Again message, can end at the Faulty smartcard - No Update message.\n",
+    "custom_preconds": "**GIVEN** the TVM has shown the \"Faulty smartcard - Try Again\" message following a card\nwrite error",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the customer retries and the write still fails",
+        "expected": "**THEN** the \"Faulty smartcard - No Update\" message is displayed\n**AND** **GAP** — the source flow-map does not label what determines this outcome versus\nthe \"No Update - Cash\" outcome from the same screen; confirm before running"
+      }
+    ],
+    "custom_expected": "A card write error can end in the Faulty smartcard No Update message (trigger for this vs. the Cash variant unconfirmed).",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      6
+    ]
+  },
+  {
+    "id": 4105384,
+    "title": "Smartcards — a card write error can end in Faulty smartcard No Update - Cash",
+    "section_id": 887911,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "All",
+    "created_by": 156,
+    "created_on": 1786010697,
+    "updated_by": 156,
+    "updated_on": 1786093224,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 30284,
+    "display_order": 25,
+    "custom_revstatus": 1,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a card write error during the Payment Process, followed by the\nFaulty smartcard - Try Again message, can end at the Faulty smartcard - No Update - Cash\nmessage.\n",
+    "custom_preconds": "**GIVEN** the TVM has shown the \"Faulty smartcard - Try Again\" message following a card\nwrite error",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the customer retries and the write still fails",
+        "expected": "**THEN** the \"Faulty smartcard - No Update - Cash\" message is displayed\n**AND** **GAP** — the source flow-map does not label what determines this outcome versus\nthe \"No Update\" outcome from the same screen; confirm before running"
+      }
+    ],
+    "custom_expected": "A card write error can end in the Faulty smartcard No Update - Cash message (trigger for this vs. the No Update variant unconfirmed).",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      6
+    ]
+  }
+]

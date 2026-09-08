@@ -1,0 +1,263 @@
+==== 4100416 Smartcard — 24+
+REFS: None
+PREFACE: This test is to confirm a 24+ smartcard is recognised at the point of sale and applies the 24+ entitlement to the fare.
+PRECONDS: **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+**AND** a 24+ entitlement smartcard is available (a personalised Funded card — FBD-100250)
+**AND** example: selling a NIR Adult Single, the 24+ entitlement is applied on presenting the card
+ STEP content: **WHEN** the operator presents the 24+ smartcard
+ STEP expected: **THEN** the card is recognised
+**AND** the 24+ entitlement is applied to the fare
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+ STEP content: **WHEN** the smartcard record is reviewed in SmartTrack
+ STEP expected: **THEN** the updated smartcard record appears in SmartTrack
+EXPECTED: A 24+ smartcard is recognised and applies the 24+ entitlement at sale. NIR + Ulsterbus only.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]
+
+==== 4100418 Smartcard — Dependents Pass
+REFS: None
+PREFACE: This test is to confirm a Dependents Pass smartcard is recognised at the point of sale and applies the dependents-pass entitlement to the fare.
+PRECONDS: **GIVEN** the POS is signed on and selling a fare in NIR or Ulsterbus mode
+**AND** a Dependents Pass entitlement smartcard is available (a Corporate card — FBD-100250)
+**AND** example: selling a NIR Adult Single, the dependents-pass entitlement is applied on presenting the card
+ STEP content: **WHEN** the operator presents the Dependents Pass smartcard
+ STEP expected: **THEN** the card is recognised
+**AND** the dependents-pass entitlement is applied to the fare
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+ STEP content: **WHEN** the smartcard record is reviewed in SmartTrack
+ STEP expected: **THEN** the updated smartcard record appears in SmartTrack
+EXPECTED: A Dependents Pass smartcard is recognised and applies the dependents-pass entitlement at sale. NIR + Ulsterbus only.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]
+
+==== 4099970 Rail FLU — sell a ticket
+REFS: TIBU-19374,TIBU-24862,TIBU-24853
+PREFACE: This test is to confirm the operator can build a rail fare from a boarding station, alighting station, passenger type and ticket type, that the correct price and field layout are shown, that the fare can be added to the basket, and that the correct stations are audited.
+PRECONDS: **GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen
+**AND** the POS is communicating with CloudFare
+**AND** example: Lisburn → Belfast Lanyon Place, Adult, Single (stations/price confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator selects a boarding station, an alighting station, a passenger type and a ticket type
+ STEP expected: **THEN** the selected fare is displayed
+**AND** the correct price is shown, including for Cross-Border tickets
+**AND** the field layout is correct
+ STEP content: **WHEN** the operator adds the fare to the basket
+ STEP expected: **THEN** the fare is added to the basket
+**AND** the correct boarding and alighting stations are audited
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: A rail fare is built with the correct price (including Cross-Border) and layout, added to the basket, and the correct boarding and alighting stations are audited. Stations and ticket types are data variations.
+
+[Automatable: Yes · Cross-check: CloudFare / MERIT]
+
+==== 4099971 Rail FLU — boarding = alighting rejected
+REFS: TIBU-19292
+PREFACE: This test is to confirm the POS rejects a rail fare whose boarding and alighting stations are the same station and does not offer issue buttons for it.
+PRECONDS: **GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode
+**AND** the POS is communicating with CloudFare
+**AND** example: setting both boarding and alighting to Belfast Lanyon Place (stations confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator sets the boarding and alighting stations to the same station
+ STEP expected: **THEN** the fare is not accepted
+**AND** no issue buttons are offered for it
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: Setting the boarding and alighting stations to the same station is rejected and no issue buttons are offered.
+
+[Automatable: Partial · Cross-check: CloudFare]
+
+==== 4099972 Rail FLU — station lists & numeric select
+REFS: TIBU-22953,TIBU-21771
+PREFACE: This test is to confirm the boarding and alighting station lists are displayed and that a station can be chosen by entering its station number.
+PRECONDS: **GIVEN** an operator is signed on and building a rail fare with the POS in rail (NIR) mode
+**AND** example: opening the boarding station list and keying the station number for Lisburn (station numbers confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator opens the station list
+ STEP expected: **THEN** the station list is displayed
+ STEP content: **WHEN** the operator enters the station number
+ STEP expected: **THEN** the matching station is selected from the list
+EXPECTED: The boarding/alighting station lists display and entering a station number selects the matching station.
+
+[Automatable: Yes]
+
+==== 4099976 Rail FLU — non-Adult-Single keeps state
+REFS: TIBU-24865
+PREFACE: This test is to confirm that issuing a rail ticket other than an Adult Single leaves the Rail FLU screen in the correct state and does not unexpectedly revert it.
+PRECONDS: **GIVEN** an operator is signed on and has built a non-Adult-Single rail fare (rail/NIR mode)
+**AND** example: a Child Single, Lisburn → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator issues the ticket
+ STEP expected: **THEN** the Rail FLU screen retains the correct state
+**AND** the screen does not unexpectedly revert
+EXPECTED: Issuing a ticket other than an Adult Single leaves the Rail FLU in the correct state and does not revert.
+
+[Automatable: Yes]
+
+==== 4100429 Rail FLU — cross-border ticket & currency toggle
+REFS: TIBU-19374
+PREFACE: This test is to confirm that when a cross-border station is selected on a Rail fare, cross-border (XB) ticket types are offered at the correct price with a working GBP/euro currency toggle. Cross-border is Rail-only.
+PRECONDS: **GIVEN** an operator is signed on and building a rail fare with a cross-border boarding or alighting station (rail/NIR mode)
+**AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border; stations/price confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator views the ticket types
+ STEP expected: **THEN** cross-border ticket types are shown at the correct price
+ STEP content: **WHEN** the operator presses the price button
+ STEP expected: **THEN** the currency toggles to euro
+ STEP content: **WHEN** the operator presses the price button again
+ STEP expected: **THEN** the currency toggles back to GBP
+EXPECTED: A cross-border journey offers XB ticket types at the correct price with a GBP↔euro toggle that works both ways; XB is available on Rail only.
+
+[Automatable: Yes]
+
+==== 4100501 Rail FLU — change boarding & alighting stations
+REFS: None
+PREFACE: This test is to confirm the operator can change the boarding and alighting stations on a rail fare and that the fare and price update to reflect each change.
+PRECONDS: **GIVEN** an operator is signed on and has selected a rail fare with boarding and alighting stations (rail/NIR mode)
+**AND** example: an Adult Single starting Lisburn → Belfast Lanyon Place, then re-pointed to Portadown → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator changes the boarding station
+ STEP expected: **THEN** the fare updates for the new boarding station
+ STEP content: **WHEN** the operator changes the alighting station
+ STEP expected: **THEN** the fare updates for the new alighting station
+EXPECTED: Changing the boarding or alighting station on a rail fare updates the fare and price correctly for each change.
+
+[Automatable: Yes]
+
+==== 4100502 Cross-Border — enable Euro currency
+REFS: None
+PREFACE: This test is to confirm that Euro currency can be enabled for Cross-Border products and that, once enabled, a Cross-Border fare can be priced and paid in Euros.
+PRECONDS: **GIVEN** an operator is signed on and has selected a Cross-Border product on the POS in rail (NIR) mode
+**AND** example: Belfast Lanyon Place → Dublin Connolly, Adult (Enterprise cross-border; fares confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** Euro currency is enabled and the price is toggled to Euro
+ STEP expected: **THEN** the Cross-Border fare is shown in Euros
+**AND** payment can be taken in the selected currency
+EXPECTED: With Euro currency enabled, Cross-Border products display and accept payment in Euros, and the GBP↔EUR toggle works.
+
+[Automatable: Partial]
+
+==== 4099977 Rail FLU — favourites: save & issue
+REFS: TIBU-19371,TIBU-24783,TIBU-24781,TIBU-19456
+PREFACE: This test is to confirm a favourite rail ticket can be saved, that the favourites list is shown with paging and correct alignment, that a favourite's ticket details are shown, and that selecting one proceeds to the payment screen.
+PRECONDS: **GIVEN** an operator is signed on with the POS on the Rail FLU screen (rail/NIR mode)
+**AND** the POS is communicating with CloudFare
+**AND** example: saving an Adult Single, Lisburn → Belfast Lanyon Place, as a favourite, then selecting it from the list (fares confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator saves a fare as a favourite and opens the favourites list
+ STEP expected: **THEN** the favourites list is shown with paging
+**AND** the list entries are correctly aligned
+ STEP content: **WHEN** the operator selects a favourite
+ STEP expected: **THEN** the favourite's ticket details are shown
+**AND** the flow proceeds to the payment screen
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: A favourite can be saved, listed with paging and correct alignment, shows its ticket details, and selecting one proceeds to the payment screen.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4099978 Rail FLU — favourites: overwrite
+REFS: TIBU-24095,TIBU-24776,TIBU-24886
+PREFACE: This test is to confirm that overwriting an existing favourite stores it in the correct slot without a fatal error, and that cancelling the overwrite aborts cleanly with no change.
+PRECONDS: **GIVEN** an operator is signed on and is overwriting an existing favourite on the Rail FLU (rail/NIR mode)
+**AND** the POS is communicating with CloudFare
+**AND** example: overwriting the favourite in slot 1 with an Adult Single, Lisburn → Belfast Lanyon Place (fares confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator confirms the overwrite
+ STEP expected: **THEN** the favourite is stored in the correct slot
+**AND** no fatal error occurs
+ STEP content: **WHEN** the operator instead cancels an overwrite
+ STEP expected: **THEN** the overwrite is aborted
+**AND** no change is made to the favourite
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: Confirming an overwrite saves the favourite to the correct slot without crashing, and cancelling aborts cleanly with no change.
+
+[Automatable: Yes · Cross-check: CloudFare]
+
+==== 4099979 Rail FLU — Advance Ticket
+REFS: TIBU-21792,TIBU-22824,TIBU-24826
+PREFACE: This test is to confirm an Advance Ticket accepts a valid in-range date, rejects an invalid or out-of-range date, can only be held one at a time (not combined with other basket items), and resets after inactivity.
+PRECONDS: **GIVEN** an operator is signed on and has selected Advance Ticket on the Rail FLU (rail/NIR mode)
+**AND** the POS is communicating with CloudFare
+**AND** example: an Adult Advance, Lisburn → Belfast Lanyon Place, for a valid future date within the advance window (fares/window confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator enters a valid future date within the advance range
+ STEP expected: **THEN** the advance ticket is added
+**AND** the basket shows 'Ticket Date DD/MM/YY'
+ STEP content: **WHEN** the operator enters an invalid date or one outside the valid advance range
+ STEP expected: **THEN** an error is shown (3s timeout, override with any key)
+**AND** the device does not crash
+ STEP content: **WHEN** the operator tries to add an advance ticket alongside other products
+ STEP expected: **THEN** the advance ticket cannot be combined with other basket items (one at a time)
+ STEP content: **WHEN** the advance ticket is left for 1 minute with no interaction
+ STEP expected: **THEN** the advance date, passenger and ticket type reset
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: The Advance Ticket accepts a valid in-range date, rejects invalid or out-of-range dates with an error, is one-at-a-time (cannot be combined with other basket items), and resets after 1 minute of inactivity.
+
+[Automatable: Yes · Cross-check: CloudFare / MERIT]
+
+==== 4099980 Rail FLU — 3 Day Select
+REFS: TIBU-24829,TIBU-24837
+PREFACE: This test is to confirm the 3 Day Select ticket lets the operator choose the travel days from the day list, including adjusting them with the + and - buttons.
+PRECONDS: **GIVEN** an operator is signed on and has selected a 3 Day Select ticket on the Rail FLU (rail/NIR mode)
+**AND** example: choosing three available travel days for an Adult 3 Day Select (fares/days confirm against the NIR fares reference table, FBD-100450)
+ STEP content: **WHEN** the operator chooses the available days from the day list and adjusts them with the + / - buttons
+ STEP expected: **THEN** the selected days are applied to the ticket
+EXPECTED: The 3 Day Select ticket allows the travel days to be chosen from the day list and adjusted with the + and - buttons.
+
+[Automatable: Yes]
+
+==== 4100374 Bus FLU — sell a ticket
+REFS: TIBU-19459,TIBU-19460
+PREFACE: This test is to confirm the operator can build a bus fare from a route number, boarding and alighting stages and a fare type, add it to the basket and purchase it, with the Fare Stage name (not the stop name) used throughout.
+PRECONDS: **GIVEN** an operator is signed on with the POS in Ulsterbus mode on the Main Screen
+**AND** the POS is communicating with CloudFare
+**AND** example: route 72b, Moygashel Busby Shop → Armagh Bus Centre, Adult Single (fares confirm against the fares export; Fare Stage names per FBD-100207)
+ STEP content: **WHEN** the operator enters a route number, sets the boarding and alighting stages and selects a fare type
+ STEP expected: **THEN** the fare and price are shown
+**AND** the Fare Stage name is shown rather than the stop name
+ STEP content: **WHEN** the operator adds the product to the basket and purchases it
+ STEP expected: **THEN** the product is added to the basket
+**AND** the product can be purchased
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+ STEP content: **WHEN** the data is reviewed in MERIT
+ STEP expected: **THEN** the transaction appears in MERIT
+EXPECTED: A bus fare built from route, boarding/alighting stages and fare type is added to the basket and can be purchased, showing the Fare Stage name. Specific routes and fares are data variations.
+
+[Automatable: Yes · Cross-check: CloudFare / MERIT]
+
+==== 4100360 Power — interruption duration determines resume state
+REFS: TIBU-29752
+PREFACE: This test is to confirm the POS resumes to the correct state after a power interruption, depending on how long power was lost relative to the Auto Sign Off time. **CONFIRMED (George, live-system confirmation, 2026-07-21)** — for a power interruption shorter than the Auto Sign Off time, the POS resumes via the Operator Break screen; break mode is used, not skipped. Closes gap-register.md Q18 and resolves the prior CONFLICT with C4100436 (audit 2026-07-17) — that case previously modelled the equivalent Auto-Sign-Off transition as skipping break mode and has been corrected to match this case.
+PRECONDS: **GIVEN** an operator is signed on during a shift
+ STEP content: **WHEN** power is interrupted briefly and restored
+ STEP expected: **THEN** the POS returns to the screen the operator was on
+ STEP content: **WHEN** power is lost for less than the Auto Sign Off time
+ STEP expected: **THEN** on restart the POS goes to the Operator Break screen
+ STEP content: **WHEN** power is lost for longer than the Auto Sign Off time
+ STEP expected: **THEN** on restart the POS goes to the Idle screen with no waybill printed
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: Resume state depends on outage length: brief → prior screen; < Auto Sign Off → Operator Break; > Auto Sign Off → Idle, no waybill. A pre-boot charge check protects state-saving (regression: TIBU-29752).
+
+[Automatable: No · Cross-check: CloudFare]
+
+==== 4100436 Sign Off / Suspend — inactivity timers
+REFS: None
+PREFACE: This test is to confirm the configurable inactivity behaviour: FLU timeout signs off via Operator Break; Idle timeout (or continued inactivity on the Operator Break screen) suspends; suspend duration auto-reboots. **CONFIRMED (George, live-system confirmation, 2026-07-21)** — break mode is used, not skipped, for the Auto Sign Off destination; closes gap-register.md Q18. This case previously modelled the FLU/Auto-Sign-Off timeout as skipping break mode ('break mode skipped'), in direct conflict with C4100360 (audit 2026-07-17). Corrected below to route through the Operator Break screen, matching C4100360's wording.
+PRECONDS: **GIVEN** the device is configured with Auto Sign Off, Auto Suspend and Suspend Duration periods
+ STEP content: **WHEN** the device is inactive on a FLU screen for the Auto Sign Off period
+ STEP expected: **THEN** the POS goes to the Operator Break screen with no waybill printed
+ STEP content: **WHEN** the device is then inactive on the Operator Break screen for the Auto Suspend period
+ STEP expected: **THEN** the POS turns the screen off and enters suspend
+ STEP content: **WHEN** the Suspend Duration elapses (or a key is pressed in suspend)
+ STEP expected: **THEN** the POS reboots and returns to the Idle screen
+ STEP content: **WHEN** the CloudFare activity log is checked
+ STEP expected: **THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log
+EXPECTED: FLU inactivity → Idle (no waybill, no break); Idle inactivity → suspend; suspend duration/keypress → reboot to Idle. All periods configurable.
+
+[Automatable: No · Cross-check: CloudFare]

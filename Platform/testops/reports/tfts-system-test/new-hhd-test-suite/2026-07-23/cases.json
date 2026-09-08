@@ -1,0 +1,3125 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "**NEW** HHD Test Suite",
+  "suite_id": 30285,
+  "generated_at": "2026-07-23T10:32:30.015780Z",
+  "cases": [
+    {
+      "case_id": 4104005,
+      "title": "Smoke — the operator signs on and reaches the main menu",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0050"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the sign-on screen\n**AND** a seeded operator's credentials are available",
+      "updated_on": "2026-07-22T09:50:22Z"
+    },
+    {
+      "case_id": 4104006,
+      "title": "Smoke — a paper ticket is sold and paid by cash",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0163"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on to the HHD\n**AND** an Adult Single at £2.30 is selected",
+      "updated_on": "2026-07-22T09:50:23Z"
+    },
+    {
+      "case_id": 4104007,
+      "title": "Smoke — a paper ticket is sold and paid by card on the M020",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100320",
+        "REQ-0163"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with the M020 paired over Bluetooth\n**AND** an Adult Single at £2.30 is selected",
+      "updated_on": "2026-07-22T09:50:24Z"
+    },
+    {
+      "case_id": 4104008,
+      "title": "Smoke — a just-sold ticket is annulled",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0300"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator has just sold an Adult Single paper ticket",
+      "updated_on": "2026-07-22T09:50:25Z"
+    },
+    {
+      "case_id": 4104009,
+      "title": "Smoke — a valid smartcard validates successfully",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0871"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on to the HHD\n**AND** a valid Multi-Journey smartcard is presented",
+      "updated_on": "2026-07-22T09:50:26Z"
+    },
+    {
+      "case_id": 4104010,
+      "title": "Smoke — the operator signs off and prints a waybill",
+      "section_id": 887829,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0329"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with a completed shift of activity",
+      "updated_on": "2026-07-22T09:50:27Z"
+    },
+    {
+      "case_id": 4103800,
+      "title": "M020 Pairing — Bluetooth pairing completes and enables card payment",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD whose Miura M020 reader is not yet paired\n**AND** the M020 is powered on and in Bluetooth pairing range",
+      "updated_on": "2026-07-17T08:22:19Z"
+    },
+    {
+      "case_id": 4103801,
+      "title": "M020 Commissioning — TID and TK download from TMS by serial after pairing",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD is being commissioned with its M020 already Bluetooth-paired\n**AND** TMS holds the device's TID and TK against its serial number",
+      "updated_on": "2026-07-17T08:22:20Z"
+    },
+    {
+      "case_id": 4103802,
+      "title": "Terminal Group — the M020 settles under the \"HHD Retailing\" group",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to a commissioned HHD with a paired M020\n**AND** the device's TID is boarded to the NMI Terminal Group \"HHD Retailing\"",
+      "updated_on": "2026-07-17T08:22:21Z"
+    },
+    {
+      "case_id": 4103803,
+      "title": "Payment Device Swap — a replacement M020 keeps the existing TID and TK",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD with an allocated TID and TK whose M020 has failed\n**AND** a replacement M020 is available to pair",
+      "updated_on": "2026-07-17T08:22:22Z"
+    },
+    {
+      "case_id": 4103804,
+      "title": "Chip and PIN — a Visa credit sale completes and prints a ticket",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a paper ticket priced at an Adult single of £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:33Z"
+    },
+    {
+      "case_id": 4103805,
+      "title": "Chip and PIN — a Mastercard debit sale completes",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:34Z"
+    },
+    {
+      "case_id": 4103806,
+      "title": "Contactless — a Visa contactless sale completes",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:35Z"
+    },
+    {
+      "case_id": 4103807,
+      "title": "Contactless — a mobile wallet sale completes",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:36Z"
+    },
+    {
+      "case_id": 4103808,
+      "title": "Card Declined — a declined card does not issue a ticket",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:37Z"
+    },
+    {
+      "case_id": 4103809,
+      "title": "Card Declined — an expired card is rejected",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** an expired card is to be presented for a £2.90 sale (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:37Z"
+    },
+    {
+      "case_id": 4103810,
+      "title": "Card Declined — a blocked card is rejected",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020 and a live payment connection\n**AND** a blocked card is to be presented for a £2.90 sale (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T09:48:38Z"
+    },
+    {
+      "case_id": 4103811,
+      "title": "EMV Timeout — no card presented within the timeout ends the sale",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the sale ends when no card is presented within the payment timeout.",
+      "updated_on": "2026-07-22T09:48:39Z"
+    },
+    {
+      "case_id": 4103812,
+      "title": "Cancel EMV — the Operator cancels before the card is presented",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has started a card sale for £2.90 on an HHD with a paired M020 (example fare, confirm against the NIR fares export)\n**AND** no card has yet been presented",
+      "updated_on": "2026-07-22T09:48:40Z"
+    },
+    {
+      "case_id": 4103813,
+      "title": "Cancel EMV — the sale cannot be cancelled after the card is presented",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has started a card sale for £2.90 on an HHD with a paired M020 (example fare, confirm against the NIR fares export)\n**AND** the passenger has already presented the card to the M020",
+      "updated_on": "2026-07-22T09:48:41Z"
+    },
+    {
+      "case_id": 4103814,
+      "title": "EMV Unavailable — payment resumes after communications re-establish",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD whose M020 payment communications are down",
+      "updated_on": "2026-07-22T10:27:06Z"
+    },
+    {
+      "case_id": 4103815,
+      "title": "PAN Masking — the printed ticket shows only a masked PAN",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100658",
+        "REQ-1722",
+        "REQ-1723"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has completed a Visa card sale for £2.90 on an HHD (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T15:20:45Z"
+    },
+    {
+      "case_id": 4103816,
+      "title": "PRN — a card sale prints a PRN in the H + IMEI + ticks + operator format",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with operator code YG has completed a card sale for £2.90 on an HHD (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-17T08:22:33Z"
+    },
+    {
+      "case_id": 4103817,
+      "title": "Payment Device On Charge — a card sale completes while the M020 is on charge",
+      "section_id": 887798,
+      "section_path": "Functional / Card Payment (M020)",
+      "refs": [
+        "FBD-100183",
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD whose paired M020 is on charge\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T10:27:08Z"
+    },
+    {
+      "case_id": 4103818,
+      "title": "Reference-Number Station — a card sale is keyed to the station reference number (NIR only)",
+      "section_id": 887799,
+      "section_path": "Functional / Card Payment (M020) / Reference-Number Stations",
+      "refs": [
+        "FBD-100383"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD in NIR-Rail mode at a reference-number station (e.g. Yorkgate)\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T10:27:09Z"
+    },
+    {
+      "case_id": 4103819,
+      "title": "Reference-Number Station — the sale settles while the payment device is on charge (NIR only)",
+      "section_id": 887799,
+      "section_path": "Functional / Card Payment (M020) / Reference-Number Stations",
+      "refs": [
+        "FBD-100383"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD in NIR-Rail mode at a reference-number station (e.g. Larne) with the M020 on charge\n**AND** a paper ticket priced at £2.90 is in the basket (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-22T10:27:08Z"
+    },
+    {
+      "case_id": 4103820,
+      "title": "Validate — an Adult iLink is accepted for a boarding within its zone",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "FBD-100389",
+        "REQ-0862",
+        "REQ-0863",
+        "REQ-0864",
+        "REQ-0871",
+        "REQ-0874",
+        "REQ-0879",
+        "REQ-0885",
+        "REQ-0912",
+        "REQ-0913",
+        "REQ-0914",
+        "REQ-0915",
+        "REQ-0919",
+        "REQ-0927",
+        "REQ-3473",
+        "REQ-3478"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** an Adult iLink Zone 3 smartcard is presented for a boarding at a Zone 3 stage",
+      "updated_on": "2026-07-23T10:18:36Z"
+    },
+    {
+      "case_id": 4103821,
+      "title": "Validate — an Adult iLink is rejected for a boarding outside its zone",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "FBD-100389"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** an Adult iLink Zone 1 smartcard is presented for a boarding at a Zone 3 stage",
+      "updated_on": "2026-07-22T09:48:43Z"
+    },
+    {
+      "case_id": 4103822,
+      "title": "Validate — a Senior Smartpass concession is accepted",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "REQ-0840",
+        "REQ-0841",
+        "REQ-0842",
+        "REQ-0843",
+        "REQ-0844",
+        "REQ-0845",
+        "REQ-0851",
+        "REQ-0852",
+        "REQ-0853"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a valid Senior Smartpass smartcard is presented",
+      "updated_on": "2026-07-23T10:18:37Z"
+    },
+    {
+      "case_id": 4103823,
+      "title": "Validate — an expired Smartpass is rejected",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a Senior Smartpass smartcard past its expiry date is presented",
+      "updated_on": "2026-07-22T09:48:43Z"
+    },
+    {
+      "case_id": 4103824,
+      "title": "Validate — a hotlisted Smartpass is rejected",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a current hotlist loaded\n**AND** a smartcard present on the hotlist is presented",
+      "updated_on": "2026-07-22T09:48:44Z"
+    },
+    {
+      "case_id": 4103825,
+      "title": "Validate — an unreadable smartcard is rejected",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a faulty smartcard whose data cannot be read is presented",
+      "updated_on": "2026-07-17T08:22:40Z"
+    },
+    {
+      "case_id": 4103826,
+      "title": "Validate — a Staff Pass is accepted",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "REQ-0855",
+        "REQ-0856",
+        "REQ-2025",
+        "REQ-2026"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a valid Translink Employee Staff Pass smartcard is presented",
+      "updated_on": "2026-07-23T10:18:38Z"
+    },
+    {
+      "case_id": 4103827,
+      "title": "Validate — a passback re-tap within the window is rejected",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100271",
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** an Adult iLink smartcard has just been validated on this device",
+      "updated_on": "2026-07-22T09:48:45Z"
+    },
+    {
+      "case_id": 4103828,
+      "title": "Validate — a successful validation posts an ABT audit record",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100307",
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has validated a valid Adult iLink smartcard on an HHD",
+      "updated_on": "2026-07-22T09:48:46Z"
+    },
+    {
+      "case_id": 4103829,
+      "title": "Top-Up — a cash top-up adds value to an Adult iLink and prints a receipt",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a valid Adult iLink smartcard is presented for a top-up (example amount, confirm against the product configuration)",
+      "updated_on": "2026-07-22T15:20:40Z"
+    },
+    {
+      "case_id": 4103830,
+      "title": "Top-Up — a card top-up adds value to a Child iLink",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD with a paired M020 and a live payment connection\n**AND** a valid Child iLink smartcard is presented for a top-up (example amount, confirm against the product configuration)",
+      "updated_on": "2026-07-22T15:20:41Z"
+    },
+    {
+      "case_id": 4103831,
+      "title": "ZZ_DELETE_REVIEW - Top-Up — a top-up on an expired card is rejected",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a top-up is rejected when the presented smartcard has expired.\n\n**CONFLICT** — same expired Adult iLink at top-up as C4103883, opposite outcome.",
+      "updated_on": "2026-07-22T15:20:37Z"
+    },
+    {
+      "case_id": 4103832,
+      "title": "Issue — issuing a new smartcard is not available on the HHD",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD",
+      "updated_on": "2026-07-17T08:22:46Z"
+    },
+    {
+      "case_id": 4103833,
+      "title": "ABT Tap — a Glider inspection tap audits as an inspection with product 5001",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD is in Glider mode Inspector Mode with a paired M020\n**AND** a valid EMV card is tapped for inspection",
+      "updated_on": "2026-07-17T11:02:30Z"
+    },
+    {
+      "case_id": 4103834,
+      "title": "ABT Tap — an HHD tap carries a CardDetails block with a masked PAN",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD in Inspector Mode has taken a valid EMV inspection tap",
+      "updated_on": "2026-07-17T11:02:30Z"
+    },
+    {
+      "case_id": 4103835,
+      "title": "ABT Tap — a card-expired inspection maps DeclinedReason to 1",
+      "section_id": 887800,
+      "section_path": "Functional / Smartcards & ABT",
+      "refs": [
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD in Inspector Mode with a paired M020\n**AND** an expired EMV card is tapped for inspection",
+      "updated_on": "2026-07-22T15:20:38Z"
+    },
+    {
+      "case_id": 4103836,
+      "title": "Annul — a cash paper-ticket sale is annulled before sign-off",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a paper ticket was just sold for £2.90 by cash (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-17T08:22:49Z"
+    },
+    {
+      "case_id": 4103837,
+      "title": "Annul — a card paper-ticket sale is annulled",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020\n**AND** a paper ticket was just sold for £2.90 by card (example fare, confirm against the NIR fares export)",
+      "updated_on": "2026-07-17T08:22:50Z"
+    },
+    {
+      "case_id": 4103838,
+      "title": "Annul — an iLink top-up paid by cash is annulled",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373",
+        "REQ-2836"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** an Adult iLink top-up of £20.00 was just completed by cash (example amount, confirm against the product configuration)",
+      "updated_on": "2026-07-22T15:20:42Z"
+    },
+    {
+      "case_id": 4103839,
+      "title": "Annul — an iLink top-up paid by card is annulled",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020\n**AND** a Child iLink top-up of £10.00 was just completed by card (example amount, confirm against the product configuration)",
+      "updated_on": "2026-07-22T09:48:54Z"
+    },
+    {
+      "case_id": 4103840,
+      "title": "Annul — a yLink discount sale is annulled",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD\n**AND** a yLink discount sale was just completed by cash",
+      "updated_on": "2026-07-23T10:18:38Z"
+    },
+    {
+      "case_id": 4103841,
+      "title": "Annul — nothing to annul shows a message",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD reports when there is no transaction available to annul.",
+      "updated_on": "2026-07-17T08:22:53Z"
+    },
+    {
+      "case_id": 4103842,
+      "title": "Annul — outstanding sales are annulled at sign-off",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with a just-completed sale is signing off an HHD",
+      "updated_on": "2026-07-17T08:22:54Z"
+    },
+    {
+      "case_id": 4103843,
+      "title": "Reversal — a card sale is reversed on the M020 before settlement",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has just completed a card sale of £2.90 on an HHD with a paired M020 (example fare, confirm against the NIR fares export)\n**AND** the transaction has not yet settled",
+      "updated_on": "2026-07-17T08:22:55Z"
+    },
+    {
+      "case_id": 4103844,
+      "title": "Annul Unique Reference — a card transaction is annulled by its PRN",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD with a paired M020\n**AND** a card sale printed a PRN in the H + IMEI + ticks + operator format (e.g. H81069695637665422474655130YG)",
+      "updated_on": "2026-07-17T08:22:56Z"
+    },
+    {
+      "case_id": 4103845,
+      "title": "No Refund — the HHD offers no refund function",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373",
+        "REQ-1630"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to an HHD",
+      "updated_on": "2026-07-21T15:37:12Z"
+    },
+    {
+      "case_id": 4103846,
+      "title": "No Refund — a refund of an HHD sale is performed on the POS only",
+      "section_id": 887801,
+      "section_path": "Functional / Annulment & Reversal",
+      "refs": [
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a refund of an HHD-originated sale is carried out on the POS, not the HHD, and only when cross-device refunds are enabled.",
+      "updated_on": "2026-07-21T15:37:13Z"
+    },
+    {
+      "case_id": 4103847,
+      "title": "Ticket Issue — a selected product is issued and printed",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD at the ticket-sales screen\n**AND** an example Glider Adult Single on route G1 boarding City Hall, priced per the fares export",
+      "updated_on": "2026-07-22T15:20:56Z"
+    },
+    {
+      "case_id": 4103848,
+      "title": "Ticket Issue — Adult single ticket",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD showing the Adult product range\n**AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30",
+      "updated_on": "2026-07-22T15:20:56Z"
+    },
+    {
+      "case_id": 4103849,
+      "title": "Ticket Issue — Child single ticket",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD showing the Child product range\n**AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per the fares export",
+      "updated_on": "2026-07-22T15:20:57Z"
+    },
+    {
+      "case_id": 4103850,
+      "title": "Ticket Issue — default passenger and ticket type on entry",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "REQ-0235"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD",
+      "updated_on": "2026-07-22T15:20:42Z"
+    },
+    {
+      "case_id": 4103851,
+      "title": "Ticket Issue — boarding and alighting stage selection",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113",
+        "REQ-0142"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the ticket-sales screen with a single product selected\n**AND** an example boarding stage nearer the alighting stage than the device home stage",
+      "updated_on": "2026-07-22T15:20:58Z"
+    },
+    {
+      "case_id": 4103852,
+      "title": "Ticket Issue — cash payment giving change",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator issuing a Metro Adult Single at £2.30\n**AND** an example cash tender greater than the fare",
+      "updated_on": "2026-07-17T08:23:03Z"
+    },
+    {
+      "case_id": 4103853,
+      "title": "Ticket Issue — warrant payment",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the ticket-sales screen with a product selected",
+      "updated_on": "2026-07-22T09:49:00Z"
+    },
+    {
+      "case_id": 4103854,
+      "title": "Ticket Issue — each issued ticket carries a unique ticket number",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has issued one ticket",
+      "updated_on": "2026-07-22T09:49:00Z"
+    },
+    {
+      "case_id": 4103855,
+      "title": "Ticket Issue — an advance-dated ticket",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "REQ-0142",
+        "REQ-0446",
+        "REQ-3094"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the ticket-sales screen with an advance-dateable ticket type selected\n**AND** an example future travel date within the configured advance-date period",
+      "updated_on": "2026-07-22T15:20:43Z"
+    },
+    {
+      "case_id": 4103856,
+      "title": "Ticket Issue — period product (Weekly / Monthly)",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the ticket-sales screen showing period products\n**AND** an example Student Monthly period product priced per the fares export",
+      "updated_on": "2026-07-22T09:49:02Z"
+    },
+    {
+      "case_id": 4103857,
+      "title": "Ticket Issue — Bus Rambler ticket",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the ticket-sales screen showing the Bus Rambler product within its availability\n**AND** an example Adult Bus Rambler priced per the fares export",
+      "updated_on": "2026-07-22T09:49:03Z"
+    },
+    {
+      "case_id": 4103858,
+      "title": "Ticket Issue — 3 Day Select ticket (NIR-Rail)",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100167",
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing the 3 Day Select product\n**AND** an example Adult 3 Day Select between Belfast Lanyon Place and Portadown priced per the NIR fares export",
+      "updated_on": "2026-07-22T09:49:04Z"
+    },
+    {
+      "case_id": 4103859,
+      "title": "Ticket Issue — issued ticket carries a barcode when the ticket type is barcode-enabled",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100167",
+        "FBD-100318"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a printed paper ticket carries a barcode at the end of the ticket when the ticket type has barcode printing enabled.",
+      "updated_on": "2026-07-21T15:37:01Z"
+    },
+    {
+      "case_id": 4103860,
+      "title": "Ticket Issue — a single ticket for multiple passengers carries no barcode",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm no barcode is printed when one ticket is issued covering multiple passengers.",
+      "updated_on": "2026-07-17T08:23:09Z"
+    },
+    {
+      "case_id": 4103861,
+      "title": "Ticket Issue — the sale posts an audit record to the back office",
+      "section_id": 887803,
+      "section_path": "Functional / Sales - Paper Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has completed a Metro Adult Single sale at £2.30",
+      "updated_on": "2026-07-21T15:37:02Z"
+    },
+    {
+      "case_id": 4103862,
+      "title": "Basket — a single product is added to the basket",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with an empty basket\n**AND** an example Metro Adult Single at £2.30",
+      "updated_on": "2026-07-22T09:49:05Z"
+    },
+    {
+      "case_id": 4103863,
+      "title": "Basket — tickets with different alighting stages form separate lines",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "FBD-100373",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with a Metro Adult Single (Casement Park to City Hall) in the basket",
+      "updated_on": "2026-07-22T15:20:59Z"
+    },
+    {
+      "case_id": 4103864,
+      "title": "Basket — a basket ticket is amended before purchase",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "FBD-100373",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with a single ticket in the basket\n**AND** an example ticket whose alighting stage is amended to one farther away",
+      "updated_on": "2026-07-22T15:20:59Z"
+    },
+    {
+      "case_id": 4103865,
+      "title": "Basket — a basket line is deleted",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with two or more lines in the basket",
+      "updated_on": "2026-07-22T09:49:07Z"
+    },
+    {
+      "case_id": 4103866,
+      "title": "Basket — the basket is cleared",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with one or more products in the basket",
+      "updated_on": "2026-07-22T09:49:08Z"
+    },
+    {
+      "case_id": 4103867,
+      "title": "Basket — a completed basket sale prints all tickets in one transaction",
+      "section_id": 887804,
+      "section_path": "Functional / Sales - Paper Tickets / Basket",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with several products in the basket",
+      "updated_on": "2026-07-22T09:49:09Z"
+    },
+    {
+      "case_id": 4103868,
+      "title": "Group Ticket Sales — a group of the same product is issued",
+      "section_id": 887805,
+      "section_path": "Functional / Sales - Paper Tickets / Group Ticket Sales",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the group ticket-sales screen\n**AND** an example group of Adult Singles for one boarding and alighting stage",
+      "updated_on": "2026-07-22T09:49:10Z"
+    },
+    {
+      "case_id": 4103869,
+      "title": "Group Ticket Sales — a group is built and amended in the basket",
+      "section_id": 887805,
+      "section_path": "Functional / Sales - Paper Tickets / Group Ticket Sales",
+      "refs": [
+        "FBD-100336",
+        "FBD-100373"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator building a group ticket sale in the basket",
+      "updated_on": "2026-07-22T09:49:11Z"
+    },
+    {
+      "case_id": 4103870,
+      "title": "Visual Inspection — a paper ticket is visually inspected",
+      "section_id": 887806,
+      "section_path": "Functional / Sales - Paper Tickets / Visual Inspection",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator on the HHD paper-ticket inspection screen\n**AND** an example previously issued Adult Single paper ticket",
+      "updated_on": "2026-07-22T10:27:23Z"
+    },
+    {
+      "case_id": 4103871,
+      "title": "Cross-Border — single with an ROI alighting stage",
+      "section_id": 887807,
+      "section_path": "Functional / Sales - Paper Tickets / Cross-Border Tickets",
+      "refs": [
+        "FBD-100450",
+        "REQ-1138"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing cross-border stations\n**AND** an example Cross-Border Adult Single from Newry to an ROI alighting stage at Dundalk, priced per the NIR fares export",
+      "updated_on": "2026-07-22T15:21:00Z"
+    },
+    {
+      "case_id": 4103872,
+      "title": "Cross-Border — single from an ROI boarding stage",
+      "section_id": 887807,
+      "section_path": "Functional / Sales - Paper Tickets / Cross-Border Tickets",
+      "refs": [
+        "FBD-100450",
+        "REQ-1138"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in NIR-Rail mode showing cross-border stations\n**AND** an example Cross-Border Adult Single from an ROI boarding stage at Dundalk to Newry, priced per the NIR fares export",
+      "updated_on": "2026-07-22T15:21:01Z"
+    },
+    {
+      "case_id": 4103873,
+      "title": "Cross-Border — cash tendered in Euro is accepted and change given",
+      "section_id": 887807,
+      "section_path": "Functional / Sales - Paper Tickets / Cross-Border Tickets",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator issuing a Cross-Border Adult Single from Newry to Dundalk\n**AND** an example Euro cash tender greater than the fare",
+      "updated_on": "2026-07-22T09:49:14Z"
+    },
+    {
+      "case_id": 4103874,
+      "title": "Cross-Border — ticket prints on the cross-border layout",
+      "section_id": 887807,
+      "section_path": "Functional / Sales - Paper Tickets / Cross-Border Tickets",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator issuing a Cross-Border Adult Single from Newry to Dundalk",
+      "updated_on": "2026-07-22T09:49:15Z"
+    },
+    {
+      "case_id": 4103875,
+      "title": "Metro Products — a Metro product ticket is issued",
+      "section_id": 887808,
+      "section_path": "Functional / Sales - Paper Tickets / Metro & Ulsterbus Products",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113",
+        "REQ-0863",
+        "REQ-0864",
+        "REQ-0871",
+        "REQ-0874",
+        "REQ-0914",
+        "REQ-0915"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in Glider mode showing the Metro product range\n**AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30",
+      "updated_on": "2026-07-23T10:18:40Z"
+    },
+    {
+      "case_id": 4103876,
+      "title": "Ulsterbus Products — an Ulsterbus product ticket is issued",
+      "section_id": 887808,
+      "section_path": "Functional / Sales - Paper Tickets / Metro & Ulsterbus Products",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336",
+        "REQ-0113",
+        "REQ-0879",
+        "REQ-0885"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in Glider mode showing the Ulsterbus product range\n**AND** an example Ulsterbus Adult Single, 72b Moygashel Busby Shop to Armagh Bus Centre, ref.60 £4.50",
+      "updated_on": "2026-07-23T10:18:41Z"
+    },
+    {
+      "case_id": 4103877,
+      "title": "Ulsterbus Town Service — a Town Service ticket is limited to the boarding town",
+      "section_id": 887808,
+      "section_path": "Functional / Sales - Paper Tickets / Metro & Ulsterbus Products",
+      "refs": [
+        "FBD-100207",
+        "FBD-100340",
+        "REQ-0113"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to an HHD in Glider mode on an Ulsterbus town-service route\n**AND** an example Town Service ticket boarding at Harryville Shops in the Ballymena zone area",
+      "updated_on": "2026-07-22T15:21:03Z"
+    },
+    {
+      "case_id": 4103878,
+      "title": "Ulsterbus Town Service — boarding outside the town-service zone is rejected",
+      "section_id": 887808,
+      "section_path": "Functional / Sales - Paper Tickets / Metro & Ulsterbus Products",
+      "refs": [
+        "FBD-100340"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a Town Service ticket cannot be issued when the boarding stop is outside the Ulsterbus Town Services zone.",
+      "updated_on": "2026-07-21T15:37:06Z"
+    },
+    {
+      "case_id": 4103879,
+      "title": "Top-Up — a smartcard top-up completes and prints a receipt",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261",
+        "FBD-100268",
+        "REQ-0873",
+        "REQ-0878",
+        "REQ-0881",
+        "REQ-0887",
+        "REQ-2065",
+        "REQ-2070",
+        "REQ-2461",
+        "REQ-2463",
+        "REQ-2618",
+        "REQ-2633"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD at the top-up screen\n**AND** an example Adult iLink smartcard presented, topped up by cash",
+      "updated_on": "2026-07-23T10:18:39Z"
+    },
+    {
+      "case_id": 4103880,
+      "title": "Top-Up — Multi-Journey top-up adds the selected journeys",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator at the top-up screen with a Multi-Journey smartcard presented\n**AND** an example Metro Multi-Journey 10-journey top-up at £20",
+      "updated_on": "2026-07-21T15:37:07Z"
+    },
+    {
+      "case_id": 4103881,
+      "title": "Top-Up — a Multi-Journey top-up exceeding the configured maximum is prevented",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator topping up a Multi-Journey smartcard already close to the configured maximum journey count\n**AND** the tester knows the currently configured maximum (50 journeys per prior test evidence) and an example top-up that would exceed it",
+      "updated_on": "2026-07-22T15:20:44Z"
+    },
+    {
+      "case_id": 4103882,
+      "title": "Top-Up — expired journeys are removed before an amount-entered top-up",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261",
+        "REQ-0001",
+        "REQ-0873",
+        "REQ-0878",
+        "REQ-0881",
+        "REQ-0887"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator topping up a Multi-Journey smartcard that holds expired journeys",
+      "updated_on": "2026-07-22T15:20:45Z"
+    },
+    {
+      "case_id": 4103883,
+      "title": "Top-Up — an expired smartcard is topped up and reactivated",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator at the top-up screen with an expired smartcard presented\n**AND** an example expired Adult iLink smartcard",
+      "updated_on": "2026-07-22T15:20:38Z"
+    },
+    {
+      "case_id": 4103884,
+      "title": "Top-Up — the Operator enters the exact amount owed manually",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator at the cash top-up payment screen",
+      "updated_on": "2026-07-17T08:23:30Z"
+    },
+    {
+      "case_id": 4103885,
+      "title": "Top-Up — a quick-select cash amount over the amount owed gives change",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator at the cash top-up payment screen\n**AND** an example quick-select amount greater than the amount owed",
+      "updated_on": "2026-07-17T08:23:30Z"
+    },
+    {
+      "case_id": 4103886,
+      "title": "Top-Up — the Operator starts a top-up and cancels it",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has started a top-up transaction",
+      "updated_on": "2026-07-17T08:23:31Z"
+    },
+    {
+      "case_id": 4103887,
+      "title": "Top-Up — presenting a different card when completing the top-up is rejected",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a top-up is rejected if a different smartcard is presented when completing the transaction.",
+      "updated_on": "2026-07-17T08:23:32Z"
+    },
+    {
+      "case_id": 4103888,
+      "title": "Top-Up — a non-Translink smartcard is rejected",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100236",
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD rejects a top-up when a non-Translink smartcard is presented.",
+      "updated_on": "2026-07-22T09:49:20Z"
+    },
+    {
+      "case_id": 4103889,
+      "title": "Top-Up — an unsuccessful top-up print is retried",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator whose top-up completed but the receipt print failed\n**AND** an example top-up paid by exact cash",
+      "updated_on": "2026-07-17T08:23:34Z"
+    },
+    {
+      "case_id": 4103890,
+      "title": "Top-Up — an unsuccessful top-up print is annulled and cash refunded",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator whose top-up completed but the receipt print failed\n**AND** an example top-up where cash was paid over the amount owed",
+      "updated_on": "2026-07-22T10:27:56Z"
+    },
+    {
+      "case_id": 4103891,
+      "title": "Top-Up — a mini-statement after a top-up shows the updated balance",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator with a smartcard just successfully topped up",
+      "updated_on": "2026-07-17T08:23:36Z"
+    },
+    {
+      "case_id": 4103892,
+      "title": "Top-Up — a completed top-up posts an audit record to the back office",
+      "section_id": 887809,
+      "section_path": "Functional / Top-Ups",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has completed a Metro Multi-Journey 10-journey top-up at £20",
+      "updated_on": "2026-07-22T09:49:22Z"
+    },
+    {
+      "case_id": 4103893,
+      "title": "Penalty Warning — a penalty warning is issued and printed",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-0062",
+        "REQ-1449",
+        "REQ-3048"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD\n**AND** an example passenger travelling without a valid ticket",
+      "updated_on": "2026-07-22T15:20:49Z"
+    },
+    {
+      "case_id": 4103894,
+      "title": "Penalty Warning — a penalty warning is issued during a smartcard inspection",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-0062",
+        "REQ-1449"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator inspecting a smartcard that is invalid for travel",
+      "updated_on": "2026-07-22T15:20:49Z"
+    },
+    {
+      "case_id": 4103895,
+      "title": "Penalty Fare — a penalty fare is issued from the operator menu",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-0062",
+        "REQ-1449",
+        "REQ-3048"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator signed on to the HHD at the operator menu",
+      "updated_on": "2026-07-22T15:20:50Z"
+    },
+    {
+      "case_id": 4103896,
+      "title": "Penalty Fare — a penalty fare is issued for an invalid or expired smartcard",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-1449",
+        "REQ-3049"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm an Operator can issue a penalty fare when an inspected smartcard is invalid or expired.",
+      "updated_on": "2026-07-22T15:20:51Z"
+    },
+    {
+      "case_id": 4103897,
+      "title": "Penalty Fare — the penalty ticket prints correct details for Operator and Supervisor",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-1449"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator issuing a penalty during a smartcard inspection",
+      "updated_on": "2026-07-22T15:20:52Z"
+    },
+    {
+      "case_id": 4103898,
+      "title": "Penalty Fare — only a whitelisted operator can issue a penalty fare",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-3049"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on by an operator who is not on the penalty-fare whitelist",
+      "updated_on": "2026-07-22T15:20:53Z"
+    },
+    {
+      "case_id": 4103899,
+      "title": "Penalty Fare — issuing a penalty fare posts an audit event to the back office",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-1449",
+        "REQ-2255"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has issued a penalty fare on the HHD",
+      "updated_on": "2026-07-22T15:20:53Z"
+    },
+    {
+      "case_id": 4103900,
+      "title": "Penalty Warning & Fares — a waybill reflects issued penalties",
+      "section_id": 887810,
+      "section_path": "Functional / Penalty Warning & Fares",
+      "refs": [
+        "REQ-0329",
+        "REQ-3047"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator who has issued penalty warnings and penalty fares during the shift",
+      "updated_on": "2026-07-22T15:20:54Z"
+    },
+    {
+      "case_id": 4103901,
+      "title": "Sign On — Operator sign on (manual and smartcard)",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0056",
+        "REQ-0396"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the Sign On screen\n**AND** the HHD is communicating with CloudFare\n**AND** the seeded Operator ID and PIN, and a valid staff smartcard, are available\n**AND** worked example: an Operator signing on at Yorkgate (NIR) reaches the Operator menu",
+      "updated_on": "2026-07-23T08:18:29Z"
+    },
+    {
+      "case_id": 4103902,
+      "title": "Sign On — invalid ID or password is rejected",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0056"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the Sign On screen\n**AND** the HHD is communicating with CloudFare\n**AND** an unrecognised ID or PIN is to be entered (the seeded Operator credentials are the valid reference)\n**AND** worked example: an Operator mistyping the PIN at Yorkgate (NIR)",
+      "updated_on": "2026-07-23T08:18:29Z"
+    },
+    {
+      "case_id": 4103903,
+      "title": "Sign On — device locks after the configured failed attempts",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the Sign On screen\n**AND** the failed-attempt lockout threshold is configured via TMS (use the configured value, e.g. 3)\n**AND** worked example: an Operator making repeated failed attempts at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T10:27:33Z"
+    },
+    {
+      "case_id": 4103904,
+      "title": "Sign On — Communication Locked when CloudFare comms are lost",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD has lost communication with CloudFare for longer than the configured period\n**AND** the seeded Operator ID and PIN are available to attempt sign-on\n**AND** worked example: an Operator attempting sign-on on an HHD out of coverage",
+      "updated_on": "2026-07-17T08:23:47Z"
+    },
+    {
+      "case_id": 4103905,
+      "title": "Sign On — duty number entry",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0050",
+        "REQ-0396"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is at the Sign On screen and the operator has entered valid credentials\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: an Operator entering duty number 0428 at Yorkgate (NIR)",
+      "updated_on": "2026-07-23T08:18:30Z"
+    },
+    {
+      "case_id": 4103906,
+      "title": "Sign On — Message and Word & Colour of the Day",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0056",
+        "REQ-0276"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off at the Sign On screen\n**AND** the seeded Operator ID and PIN are available to sign on\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: an Operator signing on at Yorkgate (NIR)",
+      "updated_on": "2026-07-23T08:18:31Z"
+    },
+    {
+      "case_id": 4103907,
+      "title": "Sign On — correct topology data is presented for the signed-on location",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100383"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off at the Sign On screen\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: an Operator signed on at Yorkgate (NIR) is presented NIR topology",
+      "updated_on": "2026-07-17T08:23:49Z"
+    },
+    {
+      "case_id": 4103908,
+      "title": "Sign On — route or service selection",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100296"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is at sign-on with a valid operator authenticated\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: an Operator selecting the G1 Glider route (Metro) at sign-on",
+      "updated_on": "2026-07-17T08:23:50Z"
+    },
+    {
+      "case_id": 4103909,
+      "title": "Sign Off — Operator sign off",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0396"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: an Operator signing off from the Operator menu at Yorkgate (NIR)",
+      "updated_on": "2026-07-23T08:18:32Z"
+    },
+    {
+      "case_id": 4103910,
+      "title": "Sign Off — automatic sign off after inactivity",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** the inactivity auto-sign-off period is configured (use the configured value)\n**AND** worked example: an Operator signed on then left with no interaction",
+      "updated_on": "2026-07-23T08:18:33Z"
+    },
+    {
+      "case_id": 4103911,
+      "title": "Sign Off — forced sign off when the HHD is docked",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "REQ-0384",
+        "REQ-1478"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm docking a signed-on HHD forces a sign-off, including when docked mid-transaction.",
+      "updated_on": "2026-07-23T08:18:34Z"
+    },
+    {
+      "case_id": 4103912,
+      "title": "Session — 15-minute staff-list heartbeat call-in",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD that is powered on and communicating with CloudFare\n**AND** worked example: an HHD left signed off and undocked for over 15 minutes",
+      "updated_on": "2026-07-17T08:23:53Z"
+    },
+    {
+      "case_id": 4103913,
+      "title": "Break-Mode Sign On — HHD resumes the same mode after an operator break",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100651",
+        "FBD-100690",
+        "REQ-0305"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD in a known mode\n**AND** worked example: an Operator in Glider Inspection Mode takes a driver break, then an enforced driver break (Glider TOO live; NIR TOTO future)",
+      "updated_on": "2026-07-22T15:21:04Z"
+    },
+    {
+      "case_id": 4104128,
+      "title": "Sign On — device resets to Inspector Mode after a full sign-off",
+      "section_id": 887811,
+      "section_path": "Functional / Sign On & Session",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD in Validation Mode (or Inspection Mode)\n**AND** worked example: an Operator on the Glider network completes a full sign-off, not a break",
+      "updated_on": "2026-07-23T10:18:56Z"
+    },
+    {
+      "case_id": 4103914,
+      "title": "Operator Menu — navigation and available options",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: an Operator on the Operator menu at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T10:27:40Z"
+    },
+    {
+      "case_id": 4103915,
+      "title": "Operator Menu — role scope excludes Supervisor and Technician functions",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "FBD-100342"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: an Operator looking for Set Home Location and TID/TK options",
+      "updated_on": "2026-07-17T08:23:56Z"
+    },
+    {
+      "case_id": 4103916,
+      "title": "Operator Menu — view totals for the current journey and duty",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "REQ-0299",
+        "REQ-0350"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on and has completed some sales in the shift\n**AND** worked example: an Operator who has sold three paper tickets on the G1 Glider route (Metro)",
+      "updated_on": "2026-07-23T08:18:35Z"
+    },
+    {
+      "case_id": 4103917,
+      "title": "Operator — print a mini-statement",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "REQ-2452"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on with duty activity to report\n**AND** worked example: an Operator printing a mini-statement after a morning duty at Yorkgate (NIR)",
+      "updated_on": "2026-07-23T08:18:35Z"
+    },
+    {
+      "case_id": 4103918,
+      "title": "Operator — manage sale favourites (add, modify, delete)",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "REQ-0307"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: an Operator managing a favourite for the Adult Single product",
+      "updated_on": "2026-07-22T15:20:46Z"
+    },
+    {
+      "case_id": 4103919,
+      "title": "Operator — take an operator break and resume in the same mode",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "FBD-100651",
+        "FBD-100690",
+        "REQ-0305"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on in a known mode\n**AND** worked example: an Operator in Glider Validation Mode starting an operator break (Glider TOO live; NIR TOTO future)",
+      "updated_on": "2026-07-22T15:21:05Z"
+    },
+    {
+      "case_id": 4103920,
+      "title": "Operator — view device status",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: an Operator checking status before starting a Glider (Metro) shift",
+      "updated_on": "2026-07-22T10:27:43Z"
+    },
+    {
+      "case_id": 4103921,
+      "title": "Operator — issue a penalty fare warning",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "FBD-100690",
+        "REQ-0062",
+        "REQ-1449"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: an Operator issuing a penalty warning during a Glider (Metro) inspection (Glider TOO live; NIR TOTO future)",
+      "updated_on": "2026-07-22T15:20:55Z"
+    },
+    {
+      "case_id": 4103922,
+      "title": "Operator — pair the printer",
+      "section_id": 887812,
+      "section_path": "Functional / Operator",
+      "refs": [
+        "FBD-100320",
+        "REQ-0819"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** an available HHD printer is in range to be paired\n**AND** worked example: an Operator pairing the printer at the start of a Glider (Metro) shift\n**GAP** — REQ-0819.6 confirms the HHD carries its own integrated 2\\\" thermal printer (not a separate paired accessory); REQ-0819.8 documents the HHD's Bluetooth/NFC short-range wireless as being for pairing to an *external payment card device* only. No source confirms an HHD-to-printer Bluetooth pairing workflow exists; likely conflated with the M020 payment-device pairing (C4104007) or invented — confirm on the live system before running",
+      "updated_on": "2026-07-22T15:21:08Z"
+    },
+    {
+      "case_id": 4103923,
+      "title": "Sign On — Supervisor sign on (manual and smartcard)",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0050"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the Sign On screen\n**AND** the HHD is communicating with CloudFare\n**AND** the seeded Supervisor ID and PIN, and a valid Supervisor smartcard, are available\n**AND** worked example: a Supervisor signing on at Yorkgate (NIR) reaches the Supervisor menu",
+      "updated_on": "2026-07-22T09:49:44Z"
+    },
+    {
+      "case_id": 4103924,
+      "title": "Supervisor — act as Operator (sign on, sign off, end duty)",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to the HHD\n**AND** worked example: a Supervisor covering duty 0428 at Yorkgate (NIR)\n**GAP** — no requirement or spec found confirming a Supervisor can act as an Operator on the HHD (sign on/off, end duty, as a distinct operator session); confirm on the live system before running",
+      "updated_on": "2026-07-22T10:27:45Z"
+    },
+    {
+      "case_id": 4103925,
+      "title": "Supervisor — override/end an operator break (ID entry and card)",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0305",
+        "REQ-0360",
+        "REQ-1137"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is in break mode on the HHD\n**AND** the seeded Supervisor ID and PIN, and a valid Supervisor card, are available\n**AND** worked example: a Supervisor overriding a break on the G1 Glider route (Metro)",
+      "updated_on": "2026-07-22T15:21:06Z"
+    },
+    {
+      "case_id": 4103926,
+      "title": "Sign On — Supervisor unlocks a PIN-locked HHD",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0099"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is PIN-locked after too many failed sign-on attempts\n**AND** the seeded Supervisor smartcard and PIN are available\n**AND** worked example: unlocking a PIN-locked HHD at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:46Z"
+    },
+    {
+      "case_id": 4103927,
+      "title": "Supervisor — view and print previous waybills",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0350"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to the HHD with previous waybills recorded\n**AND** worked example: a Supervisor reviewing the last shift's waybills at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:47Z"
+    },
+    {
+      "case_id": 4103928,
+      "title": "Supervisor — print software versions",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0353"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to the HHD\n**AND** worked example: a Supervisor printing versions during a Glider (Metro) shift check",
+      "updated_on": "2026-07-22T09:49:48Z"
+    },
+    {
+      "case_id": 4103929,
+      "title": "Supervisor — pair with a different payment device",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to an HHD paired to a Miura M020 over Bluetooth\n**AND** the HHD holds TID/TK allocated by serial in the \"HHD Retailing\" terminal group\n**AND** worked example: a Supervisor swapping to a replacement M020 mid-shift",
+      "updated_on": "2026-07-17T08:24:08Z"
+    },
+    {
+      "case_id": 4103930,
+      "title": "Supervisor Menu — navigation and role scope",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0656"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to the HHD\n**AND** worked example: a Supervisor on the Supervisor menu at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:49Z"
+    },
+    {
+      "case_id": 4103931,
+      "title": "Sign Off — Supervisor sign off",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "FBD-100358",
+        "REQ-0098"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Supervisor is signed on to the HHD\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: a Supervisor signing off from the Supervisor menu at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:50Z"
+    },
+    {
+      "case_id": 4104127,
+      "title": "Sign On — an incorrect Supervisor PIN leaves a PIN-locked HHD locked",
+      "section_id": 887813,
+      "section_path": "Functional / Supervisor",
+      "refs": [
+        "REQ-0099"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a PIN-locked HHD stays locked when the Supervisor override itself fails (incorrect PIN, or PIN-entry timeout) — the counterpart negative case to the Supervisor unlock case.",
+      "updated_on": "2026-07-23T10:18:55Z"
+    },
+    {
+      "case_id": 4103932,
+      "title": "Sign On — Technician sign on (manual and smartcard)",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "REQ-0050"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off and showing the Sign On screen\n**AND** the HHD is communicating with CloudFare\n**AND** the seeded Technician ID and PIN, and a valid Technician smartcard, are available\n**AND** worked example: a Technician signing on at Yorkgate (NIR) reaches the Technician menu",
+      "updated_on": "2026-07-22T09:49:51Z"
+    },
+    {
+      "case_id": 4103933,
+      "title": "Technician — set the device home location",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "REQ-0514"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD\n**AND** worked example: setting the home location to \"Glider HHD/PV/TVM Devices\" (verify current on the live system)",
+      "updated_on": "2026-07-22T09:49:51Z"
+    },
+    {
+      "case_id": 4103934,
+      "title": "Technician — set the Terminal ID and Transaction Key",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD\n**AND** TID/TK have been pre-configured on TMS for this HHD serial in the \"HHD Retailing\" group\n**AND** worked example: a Technician applying TID/TK after pairing the M020",
+      "updated_on": "2026-07-21T15:37:08Z"
+    },
+    {
+      "case_id": 4103935,
+      "title": "Technician — pair with the payment device",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD with an M020 available to pair\n**AND** worked example: a Technician commissioning an HHD before its first shift",
+      "updated_on": "2026-07-17T08:24:13Z"
+    },
+    {
+      "case_id": 4103936,
+      "title": "Technician — connect the printer (MAC entered or scanned)",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "REQ-0819"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD with an HHD printer available\n**AND** worked example: a Technician connecting a printer during commissioning\n**GAP** — REQ-0819.6 confirms the HHD's printer is integrated hardware, not a separate pairable accessory; REQ-0819.8's Bluetooth/NFC capability is documented only for pairing an external payment card device (the M020), not a printer. The MAC-entry-vs-barcode-scan connection workflow this case describes is not documented anywhere; likely conflated with M020 pairing or invented — confirm on the live system before running",
+      "updated_on": "2026-07-22T15:21:09Z"
+    },
+    {
+      "case_id": 4103937,
+      "title": "Technician Menu — navigation and role scope",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "REQ-0656"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD\n**AND** worked example: a Technician on the Technician menu at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:53Z"
+    },
+    {
+      "case_id": 4103938,
+      "title": "Sign Off — Technician sign off",
+      "section_id": 887814,
+      "section_path": "Functional / Technician",
+      "refs": [
+        "FBD-100358",
+        "REQ-0098"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Technician is signed on to the HHD\n**AND** the HHD is communicating with CloudFare\n**AND** worked example: a Technician signing off after commissioning at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:49:54Z"
+    },
+    {
+      "case_id": 4103939,
+      "title": "Ticket Format — travel-ticket layouts print to the approved format",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on and sells a paper travel ticket\n**AND** worked example: selling an Adult Single and inspecting the printed ticket (NIR Ticket Layout 1)",
+      "updated_on": "2026-07-22T09:49:55Z"
+    },
+    {
+      "case_id": 4103940,
+      "title": "Ticket Format — Cross-Border ticket format (NIR)",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on in NIR (rail) mode and sells a Cross-Border ticket\n**AND** worked example: an Adult Cross-Border single printed on NIR (Ticket Layout 6); Cross-Border is NIR only",
+      "updated_on": "2026-07-22T09:49:56Z"
+    },
+    {
+      "case_id": 4103941,
+      "title": "Ticket Format — concession, free and half-fare smartpass ticket formats",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on and issues a smartpass-discounted ticket\n**AND** worked example: a Half-Fare Smartpass Single printed on Glider (Format 8a), with the expiry variant (Format 8b)",
+      "updated_on": "2026-07-22T09:49:57Z"
+    },
+    {
+      "case_id": 4103942,
+      "title": "Ticket Format — smartcard top-up receipt formats",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on and completes a smartcard top-up\n**AND** worked example: a DayLink top-up receipt printed on Glider (Format 13)",
+      "updated_on": "2026-07-22T09:49:57Z"
+    },
+    {
+      "case_id": 4103943,
+      "title": "Ticket Format — annul or cancel ticket (Format 16) and Non-Issue",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has issued a transaction that is then annulled or cancelled\n**AND** worked example: annulling a Period Pass top-up prints the HHD Annul/Cancelled ticket (Glider Format 16)",
+      "updated_on": "2026-07-22T09:49:58Z"
+    },
+    {
+      "case_id": 4103944,
+      "title": "Ticket Format — faulty smartpass or smartcard receipt",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator presents a faulty smartpass or smartcard during a transaction\n**AND** worked example: a faulty Half-Fare Smartpass printed on NIR (Ticket Layout 18) / Glider Faulty Smartcard Receipt",
+      "updated_on": "2026-07-22T09:49:59Z"
+    },
+    {
+      "case_id": 4103945,
+      "title": "Ticket Format — travel receipt and print-test ticket",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator is signed on to the HHD\n**AND** worked example: printing a travel receipt (NIR Ticket Layout 17) then a print-test ticket (Layout 15)",
+      "updated_on": "2026-07-22T09:50:00Z"
+    },
+    {
+      "case_id": 4103946,
+      "title": "Ticket Format — penalty fare warning ticket",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "FBD-100363",
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the penalty fare warning ticket prints with the correct information when issued.",
+      "updated_on": "2026-07-22T09:50:01Z"
+    },
+    {
+      "case_id": 4103947,
+      "title": "Waybill — Operator Waybill prints the duty's transactions",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "REQ-0329"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has completed a mix of transactions during the duty\n**AND** worked example: a duty with paper-ticket sales, a warrant sale and a basket sale at Yorkgate (NIR)",
+      "updated_on": "2026-07-22T09:50:02Z"
+    },
+    {
+      "case_id": 4103948,
+      "title": "Waybill — end-of-shift waybill with no transactions",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "REQ-0329"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator ends a shift having completed no transactions\n**AND** worked example: an Operator printing the waybill after an empty duty on the G1 Glider route (Metro)",
+      "updated_on": "2026-07-22T09:50:03Z"
+    },
+    {
+      "case_id": 4103949,
+      "title": "Waybill — annulment lines are included",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has annulled transactions during the duty\n**AND** worked example: a duty containing a paper-ticket annulment and a top-up annulment",
+      "updated_on": "2026-07-22T09:50:03Z"
+    },
+    {
+      "case_id": 4103950,
+      "title": "Waybill — validation, inspection and barcode activity are included",
+      "section_id": 887815,
+      "section_path": "Functional / Ticket Formats & Waybill",
+      "refs": [
+        "REQ-0329"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Operator has performed validations, inspections and barcode activity during the duty\n**AND** worked example: a Glider (Metro) duty with multiple smartcard validations and inspections plus barcode redemptions",
+      "updated_on": "2026-07-22T09:50:04Z"
+    },
+    {
+      "case_id": 4103951,
+      "title": "Single-Use Barcode — encryption keys are fetched once per shift at sign-on",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed off with a NIR rail route home location\n**AND** the Corethree /encryptionkeys endpoint is reachable with the device x-api-key",
+      "updated_on": "2026-07-17T08:24:26Z"
+    },
+    {
+      "case_id": 4103952,
+      "title": "Single-Use Barcode — an encryption-key fetch failure does not block sign-on",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signing on with previously stored (still valid) encryption keys\n**AND** the /encryptionkeys endpoint returns 500 or does not respond within 30 seconds",
+      "updated_on": "2026-07-17T08:24:27Z"
+    },
+    {
+      "case_id": 4103953,
+      "title": "Single-Use Barcode — AES versus TripleDES is selected from the encrypted string",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD holds both AES and TripleDES encryption keys during migration\n**AND** a scanned barcode carries a pipe delimiter followed by a version number greater than 1 (AES)",
+      "updated_on": "2026-07-17T08:24:28Z"
+    },
+    {
+      "case_id": 4103954,
+      "title": "Single-Use Barcode — a valid decrypt has exactly 17 commas and a known type",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a NIR route\n**AND** a Type B (Adult Single) single-use barcode is presented",
+      "updated_on": "2026-07-17T08:24:29Z"
+    },
+    {
+      "case_id": 4103955,
+      "title": "Single-Use Barcode — a decrypt failure shows the decryption-failed message",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a NIR route\n**AND** a scanned barcode cannot be decrypted with any stored key",
+      "updated_on": "2026-07-17T08:24:30Z"
+    },
+    {
+      "case_id": 4103956,
+      "title": "Single-Use Barcode — a manual 12-digit reference is validated as the ShortID",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a NIR route on the Barcode Reference Entry screen\n**AND** an example 12-digit reference 012345678901 is available for a Type B Adult Single",
+      "updated_on": "2026-07-17T08:24:30Z"
+    },
+    {
+      "case_id": 4103957,
+      "title": "Single-Use Barcode — a locally used ShortID is rejected before going online",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD holds a ShortID in its local offline-validated list\n**AND** the same single-use barcode is presented again",
+      "updated_on": "2026-07-17T08:24:31Z"
+    },
+    {
+      "case_id": 4103958,
+      "title": "Single-Use Barcode — a redeemed barcode emits the Barcode Redemption event 1412",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a NIR route with a live Corethree connection\n**AND** a valid Type B Adult Single barcode has passed inspection and the operator selects Valid",
+      "updated_on": "2026-07-17T08:24:32Z"
+    },
+    {
+      "case_id": 4103959,
+      "title": "Single-Use Barcode — a redeem timeout queues offline and emits event 1416",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a NIR route and a valid single-use barcode has passed inspection\n**AND** the /redeem call returns 500 or does not respond within 30 seconds",
+      "updated_on": "2026-07-17T11:02:35Z"
+    },
+    {
+      "case_id": 4103960,
+      "title": "Single-Use Barcode — offline value above the ceiling limit is rejected",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is validating offline with a TMS Barcode Ceiling Limit of £10.00\n**AND** a single-use barcode carries a Value of £15.00",
+      "updated_on": "2026-07-17T08:24:34Z"
+    },
+    {
+      "case_id": 4103961,
+      "title": "Single-Use Barcode — the offline sweep redeems queued barcodes without CloudFare events",
+      "section_id": 887816,
+      "section_path": "Functional / Single-Use Barcodes (NIR)",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD holds queued ShortIDs in its offline redemptions list\n**AND** the Corethree connection is restored",
+      "updated_on": "2026-07-17T11:02:36Z"
+    },
+    {
+      "case_id": 4103962,
+      "title": "Multi-Use Barcode — a valid barcode shows a green tick and audio",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on with a route on which the barcode is valid\n**AND** an in-date Rail multi-use barcode boarding within the encoded window is presented",
+      "updated_on": "2026-07-17T08:24:36Z"
+    },
+    {
+      "case_id": 4103963,
+      "title": "Multi-Use Barcode — a route/location-only failure shows a yellow question mark",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a route that is not on the barcode's boarding-to-alighting path\n**AND** the barcode passes all checks except the route/location check",
+      "updated_on": "2026-07-17T08:24:36Z"
+    },
+    {
+      "case_id": 4103964,
+      "title": "Multi-Use Barcode — an invalid barcode shows a red cross and reason",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on to a valid route\n**AND** an expired multi-use barcode is presented",
+      "updated_on": "2026-07-17T08:24:37Z"
+    },
+    {
+      "case_id": 4103965,
+      "title": "Multi-Use Barcode — a re-presented barcode within the passback window is rejected",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD retains a barcode Unique ID after a successful validation\n**AND** the same barcode is presented again within the configured passback minutes",
+      "updated_on": "2026-07-17T08:24:38Z"
+    },
+    {
+      "case_id": 4103966,
+      "title": "Multi-Use Barcode — a rail location failure falls back to valid above the fare threshold",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a rail barcode failing location validation is treated as valid when its fare meets the configured threshold.",
+      "updated_on": "2026-07-21T15:37:14Z"
+    },
+    {
+      "case_id": 4103967,
+      "title": "Multi-Use Barcode — a successful validation audits a zero-fare BarcodeUsage transaction",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on with a live CloudFare connection\n**AND** a valid Rail multi-use barcode is presented",
+      "updated_on": "2026-07-17T11:02:37Z"
+    },
+    {
+      "case_id": 4103968,
+      "title": "Multi-Use Barcode — a failed validation sends an event with the Unique ID",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on with a live CloudFare connection\n**AND** an invalid multi-use barcode is presented",
+      "updated_on": "2026-07-17T08:24:40Z"
+    },
+    {
+      "case_id": 4103969,
+      "title": "Multi-Use Barcode — a midnight-to-4am expiry displays the previous day and no time",
+      "section_id": 887817,
+      "section_path": "Functional / Multi-Use Barcodes",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on with the CR116 expiry-display rule enabled\n**AND** a multi-use barcode with expiry 20240520-0400 is presented",
+      "updated_on": "2026-07-21T15:37:15Z"
+    },
+    {
+      "case_id": 4103970,
+      "title": "Old Barcode Redemption — a legacy BRS barcode is redeemed on Glider",
+      "section_id": 887818,
+      "section_path": "Functional / Multi-Use Barcodes / Old Barcode Redemption (BRS)",
+      "refs": [
+        "FBD-100317",
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on with a Glider (Metro) home location\n**AND** a legacy BRS barcode valid for the Glider network is presented",
+      "updated_on": "2026-07-22T10:27:48Z"
+    },
+    {
+      "case_id": 4103971,
+      "title": "Smartcard Inspection — a valid period pass is inspected successfully",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [
+        "REQ-0837",
+        "REQ-0840",
+        "REQ-0841",
+        "REQ-0842",
+        "REQ-0843",
+        "REQ-0844",
+        "REQ-0845",
+        "REQ-0851",
+        "REQ-0852",
+        "REQ-0853",
+        "REQ-0854",
+        "REQ-0862",
+        "REQ-3473",
+        "REQ-3478"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route\n**AND** a Senior Smartpass validated within the configurable time is presented",
+      "updated_on": "2026-07-23T10:18:42Z"
+    },
+    {
+      "case_id": 4103972,
+      "title": "Smartcard Inspection — an adult iLink pass shows the adult colour on inspection",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to a valid route\n**AND** a valid Adult iLink Zone 4 period pass is presented",
+      "updated_on": "2026-07-22T10:27:49Z"
+    },
+    {
+      "case_id": 4103973,
+      "title": "Smartcard Inspection — a child pass shows the child colour on inspection",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to a valid route\n**AND** a valid Child iLink Zone 4 period pass is presented",
+      "updated_on": "2026-07-22T10:27:50Z"
+    },
+    {
+      "case_id": 4103974,
+      "title": "Smartcard Inspection — an expired smartcard fails inspection",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to a valid route\n**AND** an expired iLink period pass with no remaining travel is presented",
+      "updated_on": "2026-07-22T09:50:09Z"
+    },
+    {
+      "case_id": 4103975,
+      "title": "Smartcard Inspection — a pass inspected within the passback window is accepted",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [
+        "REQ-3488"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route\n**AND** the tester knows the currently configured smartcard revalidation window\n**AND** a Multi-Journey smartcard validated inside that window is presented",
+      "updated_on": "2026-07-22T15:20:47Z"
+    },
+    {
+      "case_id": 4103976,
+      "title": "Smartcard Inspection — a pass inspected after the window offers revalidation",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [
+        "REQ-3488"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspector Mode signed on to an IN-direction route\n**AND** the tester knows the currently configured smartcard revalidation window\n**AND** a Multi-Journey smartcard last validated outside that window is presented",
+      "updated_on": "2026-07-22T15:20:48Z"
+    },
+    {
+      "case_id": 4103977,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Inspection — inspection is available in break mode",
+      "section_id": 887819,
+      "section_path": "Functional / Smartcard Inspection",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is signed on in break mode\n**AND** a valid period-pass smartcard is presented\n**GAP** — no CR78 spec found confirming break-mode smartcard inspection is supported; confirm on the live system before running",
+      "updated_on": "2026-07-22T15:21:06Z"
+    },
+    {
+      "case_id": 4103978,
+      "title": "Revenue Inspection — Inspection Mode is enabled on a Tap-On-Only route",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100651",
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm cEMV Inspection Mode is available when the signed-on route is Tap On Only (Flat Fare).",
+      "updated_on": "2026-07-17T08:24:49Z"
+    },
+    {
+      "case_id": 4103979,
+      "title": "Revenue Inspection — Inspection Mode is disabled on a non-Tap-On-Only route",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100651",
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm cEMV Inspection Mode is unavailable when the route is not Tap On Only (Flat Fare).",
+      "updated_on": "2026-07-17T08:24:49Z"
+    },
+    {
+      "case_id": 4103980,
+      "title": "Revenue Inspection — a valid card inspection succeeds and emits event 5008",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with a live connection\n**AND** a valid contactless EMV card not on the RID List is presented",
+      "updated_on": "2026-07-17T11:02:38Z"
+    },
+    {
+      "case_id": 4103981,
+      "title": "Revenue Inspection — a card on the RID List fails and emits event 5009",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with a live connection\n**AND** the presented card's FEIG token is on the local RID List",
+      "updated_on": "2026-07-17T08:24:51Z"
+    },
+    {
+      "case_id": 4103982,
+      "title": "Revenue Inspection — an expired card is declined and emits event 5010",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route\n**AND** an expired contactless EMV card is presented",
+      "updated_on": "2026-07-22T15:20:39Z"
+    },
+    {
+      "case_id": 4103983,
+      "title": "Revenue Inspection — a card failing ODA is declined and emits event 5011",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a card failing offline data authentication is declined with event 5011.",
+      "updated_on": "2026-07-17T08:24:53Z"
+    },
+    {
+      "case_id": 4103984,
+      "title": "Revenue Inspection — an unsupported scheme is declined and emits event 5012",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route\n**AND** a card of a scheme other than Visa, Mastercard or Maestro is presented",
+      "updated_on": "2026-07-17T08:24:54Z"
+    },
+    {
+      "case_id": 4103985,
+      "title": "Revenue Inspection — no connection to the back office shows the try-again message",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD is in Inspection Mode on a Glider Tap-On-Only route with no internet connection\n**AND** a valid contactless EMV card is presented",
+      "updated_on": "2026-07-17T08:24:54Z"
+    },
+    {
+      "case_id": 4103986,
+      "title": "Revenue Inspection — no card within 30 seconds times out to the Sales screen",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm Inspection Mode times out to the Sales screen when no card is presented within 30 seconds.",
+      "updated_on": "2026-07-17T08:24:55Z"
+    },
+    {
+      "case_id": 4103987,
+      "title": "Revenue Inspection — an inspection tap cannot be annulled",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD has completed a successful inspection tap",
+      "updated_on": "2026-07-17T08:24:56Z"
+    },
+    {
+      "case_id": 4103988,
+      "title": "Revenue Inspection — the full RID List is requested on application start-up",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD application is starting with comms available",
+      "updated_on": "2026-07-17T08:24:57Z"
+    },
+    {
+      "case_id": 4103989,
+      "title": "Revenue Inspection — a 15-minute poll requests a delta RID List update",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD requests a delta RID List update on the 15-minute poll when the stored list is current.",
+      "updated_on": "2026-07-17T08:24:58Z"
+    },
+    {
+      "case_id": 4103990,
+      "title": "Revenue Inspection — the first poll after End-of-Day requests a full RID List",
+      "section_id": 887820,
+      "section_path": "Functional / Revenue Inspection (cEMV/RID)",
+      "refs": [
+        "FBD-100716"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD holds a RID List timestamped before the most recent End-of-Day",
+      "updated_on": "2026-07-17T08:24:59Z"
+    },
+    {
+      "case_id": 4103991,
+      "title": "Power & Battery — the operator's session recovers after a power loss",
+      "section_id": 887823,
+      "section_path": "Non-Functional / Resilience / Power & Battery",
+      "refs": [
+        "REQ-0105"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on and mid-shift on the HHD\n**AND** the battery is removed during a cash payment",
+      "updated_on": "2026-07-22T09:55:02Z"
+    },
+    {
+      "case_id": 4103992,
+      "title": "Power & Battery — the operator can sign on after replacing the battery",
+      "section_id": 887823,
+      "section_path": "Non-Functional / Resilience / Power & Battery",
+      "refs": [
+        "REQ-0105"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on mid-shift with a low battery\n**AND** the battery is replaced with a charged battery",
+      "updated_on": "2026-07-22T09:50:13Z"
+    },
+    {
+      "case_id": 4103993,
+      "title": "Power & Battery — a low-battery warning is shown to the operator",
+      "section_id": 887823,
+      "section_path": "Non-Functional / Resilience / Power & Battery",
+      "refs": [
+        "REQ-1389"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD displays a low-battery warning when the device battery is low.",
+      "updated_on": "2026-07-22T09:50:14Z"
+    },
+    {
+      "case_id": 4103994,
+      "title": "Printer — a partially printed ticket is reported to the operator",
+      "section_id": 887824,
+      "section_path": "Non-Functional / Resilience / Printer",
+      "refs": [
+        "REQ-1741"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with the HHD paired to its printer\n**AND** the paper runs out during a ticket print",
+      "updated_on": "2026-07-22T09:50:15Z"
+    },
+    {
+      "case_id": 4103995,
+      "title": "ZZ_DELETE_REVIEW - Printer — the HHD pairs to a printer by presenting its NFC chip",
+      "section_id": 887824,
+      "section_path": "Non-Functional / Resilience / Printer",
+      "refs": [
+        "FBD-100320",
+        "REQ-0819"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD pairs to a printer when presented to the printer NFC chip.",
+      "updated_on": "2026-07-22T15:21:07Z"
+    },
+    {
+      "case_id": 4103996,
+      "title": "Heartbeat — the HHD calls in at least every 15 minutes even when signed off",
+      "section_id": 887825,
+      "section_path": "Non-Functional / Resilience / Comms / SaaS / Heartbeat",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the HHD updates CloudFare Last Communication at least every 15 minutes even when signed off.",
+      "updated_on": "2026-07-17T08:25:03Z"
+    },
+    {
+      "case_id": 4103997,
+      "title": "Heartbeat — a StaffList message resets Hours Since Last Communication to zero",
+      "section_id": 887825,
+      "section_path": "Non-Functional / Resilience / Comms / SaaS / Heartbeat",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** CloudFare shows a non-zero Hours Since Last Communication for the HHD",
+      "updated_on": "2026-07-17T08:25:04Z"
+    },
+    {
+      "case_id": 4103998,
+      "title": "Comms — a sustained network outage takes the HHD offline",
+      "section_id": 887825,
+      "section_path": "Non-Functional / Resilience / Comms / SaaS / Heartbeat",
+      "refs": [
+        "REQ-2576"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with a live CloudFare connection\n**AND** the HHD's own network connection is lost for a sustained period",
+      "updated_on": "2026-07-22T09:50:16Z"
+    },
+    {
+      "case_id": 4103999,
+      "title": "Comms — queued transactions are delivered to the back office on restore",
+      "section_id": 887825,
+      "section_path": "Non-Functional / Resilience / Comms / SaaS / Heartbeat",
+      "refs": [
+        "FBD-100359",
+        "REQ-2576"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the HHD holds transactions queued during a period its own network connection was down",
+      "updated_on": "2026-07-22T09:50:17Z"
+    },
+    {
+      "case_id": 4104000,
+      "title": "Network — the operator can view the HHD connectivity type and strength",
+      "section_id": 887826,
+      "section_path": "Non-Functional / Resilience / Network",
+      "refs": [
+        "REQ-2854"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on to the HHD",
+      "updated_on": "2026-07-22T09:50:18Z"
+    },
+    {
+      "case_id": 4104001,
+      "title": "Security — the panic button raises an alert",
+      "section_id": 887827,
+      "section_path": "Non-Functional / Resilience / Security",
+      "refs": [
+        "REQ-0437"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on to the HHD",
+      "updated_on": "2026-07-22T09:50:19Z"
+    },
+    {
+      "case_id": 4104002,
+      "title": "Security — the HHD upgrades from OS 7 to OS 8",
+      "section_id": 887827,
+      "section_path": "Non-Functional / Resilience / Security",
+      "refs": [
+        "REQ-0569",
+        "REQ-1618"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an HHD is available for a Translink-managed OS upgrade\n**AND** **GAP** — specific 'OS 7'/'OS 8' version numbers are not in requirements; confirm the actual current and target Android OS versions before running",
+      "updated_on": "2026-07-22T10:27:53Z"
+    },
+    {
+      "case_id": 4104003,
+      "title": "Timings — a smartcard validation completes within the expected time",
+      "section_id": 887828,
+      "section_path": "Non-Functional / Resilience / Timings",
+      "refs": [
+        "REQ-3364",
+        "REQ-3365"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with a valid smartcard",
+      "updated_on": "2026-07-22T09:50:21Z"
+    },
+    {
+      "case_id": 4104004,
+      "title": "Timings — a barcode read to beep completes within one second",
+      "section_id": 887828,
+      "section_path": "Non-Functional / Resilience / Timings",
+      "refs": [
+        "FBD-100167",
+        "REQ-3132"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator is signed on with a valid multi-use barcode",
+      "updated_on": "2026-07-22T09:50:21Z"
+    }
+  ]
+}

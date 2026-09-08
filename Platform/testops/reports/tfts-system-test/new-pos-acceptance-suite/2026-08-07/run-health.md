@@ -1,0 +1,825 @@
+# Run health — TFTS - System Test / **NEW** POS-Acceptance Suite
+
+- Generated: 2026-08-07T10:06:25.247887+00:00
+- Runs considered (last 10): 6 (run ids: 21978, 21742, 21495, 19352, 19087, 19074)
+- Cases tracked: 822
+- **Flagged for attention: 814**
+
+## Flagged cases
+
+| Case | Title | Exec | Pass | Fail | Block | Last | Flags |
+|---|---|---|---|---|---|---|---|
+| C2092782 | UnSuccessful Cloudfare SIgnOn - Administrator | 6 | 2 | 3 | 0 | Other | flaky, recently-regressed |
+| C2082941 | Verify "Dashboard Screen" Contents | 6 | 5 | 1 | 0 | Passed | flaky |
+| C2082942 | Verify "Events & Alerts Screen" Contents | 6 | 5 | 1 | 0 | Passed | flaky |
+| C2082943 | Verify "Topology & Fares Management Screen" Contents | 6 | 5 | 1 | 0 | Passed | flaky |
+| C2082944 | Verify "ABT Screen" Contents | 5 | 1 | 3 | 0 | Passed | flaky |
+| C2082945 | Verify "Schedule Management Screen" Contents | 6 | 3 | 3 | 0 | Passed | flaky |
+| C2082946 | Verify "Estate Management Screen" Contents | 6 | 4 | 2 | 0 | Passed | flaky |
+| C2082947 | Verify "Reports Screen" Contents | 6 | 3 | 3 | 0 | Passed | flaky |
+| C2082949 | Verify "Settings Screen" Contents | 6 | 3 | 3 | 0 | Passed | flaky |
+| C2082950 | Verify "Menu Screen" Contents | 6 | 5 | 1 | 0 | Passed | flaky |
+| C2092775 | Successful Cloudfare SignOn - Administrator | 6 | 5 | 1 | 0 | Passed | flaky |
+| C2092793 | Successful Cloudfare SignOn - AD CloudFare User | 5 | 3 | 1 | 0 | Passed | flaky |
+| C2131388 | Operators - Glider as an Operator | 4 | 3 | 1 | 0 | Passed | flaky |
+| C2132847 | Products - Create and Delete Product | 3 | 2 | 1 | 0 | Passed | flaky |
+| C2132848 | Rules - Create and Delete Rule | 4 | 1 | 3 | 0 | Passed | flaky |
+| C4099911 | ZZ_DELETE_REVIEW - Sign On — idle to Sign On screen (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099912 | Sign On — screen, field entry and the 'C' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099913 | Sign On — by role (manual and smartcard) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099914 | ZZ_DELETE_REVIEW - Sign On — Supervisor sign on (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099915 | ZZ_DELETE_REVIEW - Sign On — Technician sign on (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099916 | ZZ_DELETE_REVIEW - Sign On — Administrator sign on (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099917 | ZZ_DELETE_REVIEW - Sign On — Operator sign on (smartcard) (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099918 | ZZ_DELETE_REVIEW - Sign On — Supervisor sign on (smartcard) (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099919 | ZZ_DELETE_REVIEW - Sign On — Technician sign on (smartcard) (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099920 | ZZ_DELETE_REVIEW - Sign On — Administrator sign on (smartcard) (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099921 | Sign On — incorrect credentials | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099922 | Sign On — device locks after the configured failed attempts | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099923 | Sign On — unlock with Supervisor card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099924 | Sign On — Communication Locked | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099925 | Sign On — Message and Word & Colour of the Day | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099926 | ZZ_DELETE_REVIEW - Sign On — Message of the Day unavailable (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099927 | ZZ_DELETE_REVIEW - Sign On — Word & Colour of the Day (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099928 | ZZ_DELETE_REVIEW - Sign On — Word & Colour of the Day unavailable (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099929 | Sign Off — by role | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099930 | ZZ_DELETE_REVIEW - Sign Off — Supervisor (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099931 | ZZ_DELETE_REVIEW - Sign Off — Technician (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099932 | ZZ_DELETE_REVIEW - Sign Off — Administrator (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099933 | Sign Off — automatic (inactivity) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099934 | Sign Off — forced by power cycle | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099935 | Sign On — audit events | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099936 | Operator Options — correct options listed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099937 | Operator Options — cancel Soft Reboot | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099938 | Operator Options — brightness & volume | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099939 | Operator Break — enter Break | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099940 | Operator Break — leave Break | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099941 | ZZ_DELETE_REVIEW - Operator Break — no Out Of Service | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099942 | Ticket History — view, detail and paging | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099943 | ZZ_DELETE_REVIEW - Ticket History — ticket details (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099944 | ZZ_DELETE_REVIEW - Ticket History — scroll pages (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099945 | Totals — view & print | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099946 | Excess Ticket — available (rail) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099947 | Supervisor — Duty Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099948 | Supervisor — Day Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099949 | Supervisor — Sales Breakdown | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099950 | Supervisor — Print & Zero | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099951 | Supervisor — Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099952 | Supervisor — Force Comms | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099953 | Technician — Device Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099954 | Technician — Display Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099955 | Technician — Force Comms | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099956 | Technician — Soft Reboot | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099957 | Technician — Network Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099958 | Technician — Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099959 | Technician — Status panels | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099960 | Technician — card reader test | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099961 | Technician — menu options | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099962 | Technician — change operating mode | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099963 | Administrator — Clear Card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099964 | Administrator — Card Dump | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099965 | ZZ_DELETE_REVIEW - Administrator — Data Download (invented duplicate of Card Dump; no such screen documented) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099966 | Administrator — Device Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099967 | Administrator — Network Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099968 | Administrator — Force Comms | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099969 | Administrator — Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099970 | Rail FLU — sell a ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099971 | Rail FLU — boarding = alighting rejected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099972 | Rail FLU — station lists & numeric select | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099973 | Rail FLU — function keys | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099974 | Rail FLU — C returns | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099975 | Rail FLU — Main screen rail-only | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099976 | Rail FLU — non-Adult-Single keeps state | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099977 | Rail FLU — favourites: save & issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099978 | Rail FLU — favourites: overwrite | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099979 | Rail FLU — Advance Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099980 | Rail FLU — 3 Day Select | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099981 | Rail FLU — Misc button | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099982 | ZZ_DELETE_REVIEW - Bus FLU — sell a ticket: route number, boarding/alighting stages, fare type, basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099983 | ZZ_DELETE_REVIEW - Bus FLU — route number letters are shown via the '*' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099984 | ZZ_DELETE_REVIEW - Bus FLU — change boarding stage, alighting stages and fare type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099985 | ZZ_DELETE_REVIEW - Bus FLU — Misc product open fare: enter a valid amount and reject an invalid one | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099986 | ZZ_DELETE_REVIEW - Bus FLU — Default Boarding Stage: the '*' key behaves correctly | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099987 | FLU — passenger type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099988 | FLU — cash limit | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099989 | Basket — add & review | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099990 | Basket — clear basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099991 | Basket — checkout total | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099992 | Cash — pay a basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099993 | Cash — EOS total net | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099994 | Card Payment — pay by card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099995 | Card Payment — back from payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099996 | Annulment — annul last transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099997 | Annulment — newly issued smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099998 | Annulment — multi-journey top-up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4099999 | Annulment — receipt content | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100000 | Annulment — during paper jam | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100001 | Receipts — printed per transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100002 | Receipts — no duplicates | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100003 | Receipts — template & fonts | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100004 | Receipts — mini statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100005 | Receipts — day summary | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100006 | Numerical Input — keypad entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100007 | Top Up — top up a smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100008 | Top Up — cancel a top-up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100009 | Top Up — Multi-Journey limit | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100010 | ZZ_DELETE_REVIEW - Top Up — Metro Travelcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100011 | ZZ_DELETE_REVIEW - Top Up — Town Service Travelcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100012 | ZZ_DELETE_REVIEW - Top Up — DayLink (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100013 | ZZ_DELETE_REVIEW - Top Up — iLink (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100014 | ZZ_DELETE_REVIEW - Top Up — Belfast Visitor Pass (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100015 | ZZ_DELETE_REVIEW - Top Up — ABT smartcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100016 | ZZ_DELETE_REVIEW - Top Up — Monthly Season Pass (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100017 | Top Up — mini statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100018 | Validation — validate a smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100019 | Validation — already validated | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100020 | Validation — hotlisted card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100021 | Validation — outside time band | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100022 | Faulty Card — options | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100023 | Faulty Card — invalid card removal | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100024 | Issue Card — issue from blank | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100025 | ZZ_DELETE_REVIEW - Issue Card — Metro Multi-Journey (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100026 | ZZ_DELETE_REVIEW - Issue Card — Multi-Journey (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100027 | ZZ_DELETE_REVIEW - Issue Card — DayLink (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100028 | ZZ_DELETE_REVIEW - Issue Card — iLink (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100029 | ZZ_DELETE_REVIEW - Issue Card — Metro Travelcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100030 | ZZ_DELETE_REVIEW - Issue Card — Belfast Visitor Pass (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100031 | Issue Card — recognised by other devices | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100032 | ZZ_DELETE_REVIEW - Issue Card — Warrant option (rail) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100033 | Customer Display — passenger display | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100034 | Barcode — print barcode | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100035 | Barcode — scan barcode | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100036 | Screen Validation — Idle Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100037 | Screen Validation — Sign On - Empty Fields | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100038 | Screen Validation — Sign On - ID Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100039 | Screen Validation — Sign On - PIN Entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100040 | Screen Validation — Sign On - PIN Entry - 4 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100041 | Screen Validation — Communications Locked | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100042 | Screen Validation — Please Wait | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100043 | Screen Validation — Sign On - Incorrect Details | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100044 | Screen Validation — Message of the Day | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100045 | Screen Validation — Sign On - Device Locked | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100046 | Screen Validation — Word and Colour of the Day - Simpler UI | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100047 | Screen Validation — Message of the Day - Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100048 | Screen Validation — Word and Colour of the Day - Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100049 | Screen Validation — Main Screen-Rail selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100050 | Screen Validation — Metro Smartcard_Please Present Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100051 | Screen Validation — Supervisor Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100052 | Screen Validation — Supervisor Menu_Serial Numbers | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100053 | Screen Validation — Supervisor Menu_Duty Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100054 | Screen Validation — Supervisor Menu_Day Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100055 | Screen Validation — Supervisor Menu_Sale Breakdown | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100056 | Screen Validation — Supervisor Menu_Force Comms | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100057 | Screen Validation — Supervisor_Sign Out | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100058 | Screen Validation — Supervisor Menu_Duty Information - Details | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100059 | Screen Validation — Supervisor Menu_Duty Information - Page 2 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100060 | Screen Validation — Supervisor_Print_ZeroCurrent | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100061 | Screen Validation — Supervisor_Print_ZeroAccum | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100062 | Screen Validation — Supervisor Menu_Duty Information - page2 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100063 | Screen Validation — Supervisor Menu_Force Comms_Please Wait | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100064 | Screen Validation — Supervisor Menu_Duty Information_No Results | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100065 | Screen Validation — Technician_Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100066 | Screen Validation — Technician_Versions_Configuration Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100067 | Screen Validation — Technician_Versions_Software Versions | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100068 | Screen Validation — Technician_Versions_Configuration Versions Scroll | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100069 | Screen Validation — Technician Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100070 | Screen Validation — Technician_Device Settings - Changes | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100071 | Screen Validation — Technician_Device Settings - Summary | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100072 | Screen Validation — Soft Reboot - Confirm | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100073 | Screen Validation — Soft Reboot - Please Wait | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100074 | Screen Validation — Technician_Device Status | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100075 | Screen Validation — Technician_Network Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100076 | Screen Validation — Technician_Device Settings_Home Location | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100077 | Screen Validation — Technician_Network Settings_Cell Modem | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100078 | Screen Validation — Technician_Device Settings_POS Operating Company | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100079 | Screen Validation — Technician_Other Devices | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100080 | Screen Validation — Technician_Card Reader | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100081 | Screen Validation — Technician_PaperStatus | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100082 | Screen Validation — Technician_Serial Numbers | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100083 | Screen Validation — Force Comms - Please Wait | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100084 | Screen Validation — Administrator Mode_Device Settings_Boarding Location | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100085 | Screen Validation — Administrator Mode_Device Settings_Mounting Point_Active | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100086 | Screen Validation — Smartcard_iLink_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100087 | Screen Validation — Operator Menu_ConsoleSettings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100088 | Screen Validation — Technician_Device Settings_Tray ID - Letters | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100089 | Screen Validation — Technician_Device Settings_Tray ID | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100090 | Screen Validation — Administrator Mode Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100091 | Screen Validation — Administrator Mode_Force Comms | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100092 | Screen Validation — Administrator Mode_Network Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100093 | Screen Validation — Administrator Mode_Please Present Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100094 | Screen Validation — Please Wait - Reading Card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100095 | Screen Validation — Administrator Mode_Card Fail | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100096 | Screen Validation — Administrator Mode_Card Download Success | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100097 | Screen Validation — Administrator Mode_Card Cleared Success | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100098 | Screen Validation — Please Wait - Sending Data | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100099 | Screen Validation — Clear Card - Confirm | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100100 | Screen Validation — Administrator Mode_Device Settings | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100101 | Screen Validation — Administrator Mode_Device Settings_Mounting Point | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100102 | Screen Validation — Administrator Mode_Device Settings_Mounting Point_Letters | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100103 | Screen Validation — Customer Display - Out of Service | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100104 | Screen Validation — Customer Display - Please Wait | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100105 | Screen Validation — Customer Display - FLU | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100106 | Screen Validation — Customer Display - See Operator | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100107 | Screen Validation — Customer Display - FLU Selection | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100108 | Screen Validation — Customer Display - Transaction Summary - Multiple | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100109 | Screen Validation — Customer Display - Transaction Summary | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100110 | Screen Validation — Customer Display - Transaction Complete | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100111 | Screen Validation — Customer Display - Transaction Declined | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100112 | Screen Validation — Main Screen-Ulsterbus selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100113 | Screen Validation — Operator Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100114 | Screen Validation — Barcode - Offline Check | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100115 | Screen Validation — Barcode - Validating Details | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100116 | Screen Validation — Barcode Reference Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100117 | Screen Validation — Barcode Reference | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100118 | Screen Validation — Barcode Scan - Ticket Valid inc_ 3 Use Times | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100119 | Screen Validation — Barcode Scan - Ticket Valid inc_ Date and Depart Time | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100120 | Screen Validation — Barcode Scan - Ticket Valid inc_ Date with Expiry and Depart Time | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100121 | Screen Validation — Barcode Scan - Ticket Valid inc_ Outbound ands Return - Page 2 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100122 | Screen Validation — Barcode Scan - Ticket Valid inc_ Outbound ands Return | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100123 | Screen Validation — Barcode Scan - Transaction Cancelled - Ticket Not Passed Visual Inspection | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100124 | Screen Validation — Barcode Scan - Transaction Cancelled - Ticket Not Valid | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100125 | Screen Validation — Barcode Ticket - Print Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100126 | Screen Validation — Barcode Ticket - Printed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100127 | Screen Validation — Barcode Validation Failed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100128 | Screen Validation — Error - Printer Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100129 | Screen Validation — Main Menu-Paper Low | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100130 | Screen Validation — Error - Paper Jam | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100131 | Screen Validation — Power Interruption | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100132 | Screen Validation — Restarting | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100133 | Screen Validation — Charging | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100134 | Screen Validation — Main Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100135 | Screen Validation — Main Screen - digits entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100136 | Screen Validation — Bus FLU - Cash Limit | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100137 | Screen Validation — Route Number - Letters ETM - empty | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100138 | Screen Validation — Route Number - Letters ETM | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100139 | Screen Validation — Route Number - Letters - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100140 | Screen Validation — Main Screen - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100141 | Screen Validation — Main Screen - route entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100142 | Screen Validation — FLU - Misc Product Open Fare | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100143 | Screen Validation — FLU - Misc Product Open Fare Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100144 | Screen Validation — Main Screen - Misc | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100145 | Screen Validation — Main Screen - direction changed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100146 | Screen Validation — FLU - Misc Product Open Fare Invalid | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100147 | Screen Validation — Main Screen - FLU - Change Boarding Stage | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100148 | Screen Validation — Main Screen - FLU - Alighting Stages 23 _ 24 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100149 | Screen Validation — Main Screen - FLU - Change Fare type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100150 | Screen Validation — FLU - Other | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100151 | Screen Validation — Main Screen - FLU - Alighting Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100152 | Screen Validation — Main Screen - Added to Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100153 | Screen Validation — Main Screen - FLU - Change Ticket type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100154 | Screen Validation — Toggle Group - Flu Product Selected from Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100155 | Screen Validation — Main Screen - Last Transaction 200 - Confirm | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100156 | Screen Validation — FLU - Day Tour Product | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100157 | Screen Validation — FLU - Day Tour Product - Seat Number Entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100158 | Screen Validation — FLU - Day Tour Product - Seat Number Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100159 | Screen Validation — FLU - Day Tour Product - Date Entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100160 | Screen Validation — FLU - Day Tour Product - Date Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100161 | Screen Validation — Cash Limit Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100162 | Screen Validation — FLU_Bank Card_Basket Full | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100163 | Screen Validation — Payment-Tour | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100164 | Screen Validation — Payment-Misc Product | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100165 | Screen Validation — Smartcard_Top Up_Remove Smartcard_Expiry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100166 | Screen Validation — Main Screen-Euro currency | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100167 | Screen Validation — Day Tours - digits entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100168 | Screen Validation — Day Tours - empty | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100169 | Screen Validation — Day Tours - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100170 | Screen Validation — Day Tours - Letters - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100171 | Screen Validation — Day Tours - Letters ETM - empty | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100172 | Screen Validation — Day Tours - Letters ETM | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100173 | Screen Validation — Day Tours - route entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100174 | Screen Validation — Main Screen-Rail-FavTicketIssued | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100175 | Screen Validation — Main Screen-Rail-No Fav | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100176 | Screen Validation — Main Screen-Rail-v4 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100177 | Screen Validation — Main Screen-Rail-currency changed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100178 | Screen Validation — Main Screen-Rail-Board Stations | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100179 | Screen Validation — Main Screen-Rail-Alighting Stations | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100180 | Screen Validation — Passengers Type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100181 | Screen Validation — Ticket Type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100182 | Screen Validation — Favourite Tickets_List | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100183 | Screen Validation — Favourite Tickets_List-Next Page | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100184 | Screen Validation — Favourite Tickets_Overwrite | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100185 | Screen Validation — Main Screen-Rail-3DayTicket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100186 | Screen Validation — FLU Rail-Cash Limit | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100187 | Screen Validation — Main Screen-Advance TIcket Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100188 | Screen Validation — FLU-3DayTicket-Start | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100189 | Screen Validation — Main Screen-Rail-Added in Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100190 | Screen Validation — FLU-3DayTicket-Available Days | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100191 | Screen Validation — FLU-3DayTicket-Selected Days | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100192 | Screen Validation — Main Screen-Rail-Confirmed Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100193 | Screen Validation — Main Screen - FLU - Advance Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100194 | Screen Validation — Main Screen - FLU - Advance Ticket-complete | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100195 | Screen Validation — FLU_Invalid Date | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100196 | Screen Validation — Main Screen-Rail-boarding-alighting-same | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100197 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - 1Item | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100198 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - Page 1 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100199 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100200 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - Item removed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100201 | Screen Validation — Main Screen - FLU - Multiple Items - Basket is Full | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100202 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - Selected Added | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100203 | Screen Validation — Main Screen - FLU - Multiple Items - Basket - 1Item - Bus Advance Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100204 | Screen Validation — Main Screen - FLU - Multiple Items - Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100205 | Screen Validation — Main Screen - FLU - Multiple Items - Payment - Bank Card Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100206 | Screen Validation — FLU - Clear Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100207 | Screen Validation — Main Screen - FLU - Payment - Advance Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100208 | Screen Validation — Main Screen - FLU - Payment - Advance Ticket - Card Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100209 | Screen Validation — Main Screen - FLU - Payment - Popular - Card Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100210 | Screen Validation — Main Screen - FLU - Payment - Popular | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100211 | Screen Validation — Payment-3day ticket-card unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100212 | Screen Validation — Payment-3day ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100213 | Screen Validation — FLU_Bank Card_Initialising Transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100214 | Screen Validation — FLU_Bank Card_Present | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100215 | Screen Validation — FLU_Bank Card_Present Card PIN | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100216 | Screen Validation — FLU_Bank Card_Customer Confirmation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100217 | Screen Validation — FLU_Bank Card_User Confirming Amount | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100218 | Screen Validation — FLU_Bank Card_Transaction Declined | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100219 | Screen Validation — FLU_Transaction Approved | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100220 | Screen Validation — FLU_Transaction Approved-Confirmation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100221 | Screen Validation — FLU_Bank Card_Transaction Declined 2 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100222 | Screen Validation — FLU_Bank Card_Customer Signature | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100223 | Screen Validation — Main Screen-Rail-invalid station no | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100224 | Screen Validation — Main Screen-Rail-numerical input | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100225 | Screen Validation — Numeric Entry 9 Calculate Change and Group ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100226 | Screen Validation — Numeric Entry 90 All Numeric Functions Available | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100227 | Screen Validation — Numeric Entry - 9002 - Change Boarding and Alighting | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100228 | Screen Validation — FLU_Cash_Change | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100229 | Screen Validation — Payment - Group Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100230 | Screen Validation — Basket- Group Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100231 | Screen Validation — Numeric Entry - 9017 - Change _ Alighting - Unable to calculate change | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100232 | Screen Validation — Numeric Entry 9 No Alighting Stage | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100233 | Screen Validation — Numeric Entry 9 No Group Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100234 | Screen Validation — Numeric Entry 9 Group Ticket Unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100235 | Screen Validation — Main Screen-Validation-Confirmation-000 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100236 | Screen Validation — Rail-Validation-Confirmation-000 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100237 | Screen Validation — Main Screen-Validation-Confirmation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100238 | Screen Validation — Rail-Validation-Confirmation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100239 | Screen Validation — Smartcard - Faulty - Select Card Type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100240 | Screen Validation — Smartcard - Faulty - Charge Full Fare | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100241 | Screen Validation — Smartcard - Faulty - Issue Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100242 | Screen Validation — Smartcard - Faulty - Outside Time Band | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100243 | Screen Validation — FLU - Smartcard Already Validated | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100244 | Screen Validation — Hotlisted Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100245 | Screen Validation — Smartcard_Please Present Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100246 | Screen Validation — Smartcard_Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100247 | Screen Validation — Smartcard_Menu-ABT | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100248 | Screen Validation — Smartcard_Menu-ABT_NegativeList | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100249 | Screen Validation — Smartcard_Top Up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100250 | Screen Validation — Smartcard_Ulsterbus Multi Journey_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100251 | Screen Validation — Smartcard_Town Service Travelcard_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100252 | Screen Validation — Smartcard_Metro Multi Journey_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100253 | Screen Validation — Smartcard_Metro Travelcard_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100254 | Screen Validation — Smartcard_ABT_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100255 | Screen Validation — Smartcard_DayLink_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100256 | Screen Validation — Smartcard_Belfast Visitor Pass_Mini Statement | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100257 | Screen Validation — Smartcard_Top Up_iLink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100258 | Screen Validation — Smartcard_Top Up_iLink_Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100259 | Screen Validation — Smartcard_Top Up_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100260 | Screen Validation — Ulsterbus Smartcard_Top Up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100261 | Screen Validation — Smartcard_Top Up-Ulsterbus Travelcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100262 | Screen Validation — Smartcard_Top Up-Metro Travelcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100263 | Screen Validation — ABT Smartcard_Top Up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100264 | Screen Validation — ABT Smartcard_Top Up_NegativeList | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100265 | Screen Validation — Smartcard_Top Up-Daylink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100266 | Screen Validation — Smartcard_Top Up-Belfast Visitor | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100267 | Screen Validation — Smartcard_Top Up-Belfast Visitor_Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100268 | Screen Validation — Smartcard_Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100269 | Screen Validation — Smartcard_Top Up_Belfast Visitor_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100270 | Screen Validation — Smartcard_Top Up_iLink_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100271 | Screen Validation — Smartcard_Top Up_Remove Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100272 | Screen Validation — Smartcard_Top Up_Remove Smartcard_Daylink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100273 | Screen Validation — Smartcard_Top Up_Remove Smartcard_Value | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100274 | Screen Validation — Smartcard_Top Up_Ulsterbus Travelcard_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100275 | Screen Validation — Ulsterbus Smartcard_Top Up_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100276 | Screen Validation — Smartcard_Top Up_ABT_Basket_Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100277 | Screen Validation — Smartcard_Top UpMetro Travelcard_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100278 | Screen Validation — Smartcard_Top Up_Daylink_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100279 | Screen Validation — Top Up_Top Up Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100280 | Screen Validation — Smartcard_Top Up-Ulsterbus Travelcard-Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100281 | Screen Validation — Smartcard_Top Up-Metro Travelcard-Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100282 | Screen Validation — Top Up_Top Up Error Not Used | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100283 | Screen Validation — Bus Main Screen-Senior Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100284 | Screen Validation — Bus Main Screen-yLink Single-Alighting Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100285 | Screen Validation — Main Screen-Rail-yLink Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100286 | Screen Validation — Smartcard_Validation_yLink Single_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100287 | Screen Validation — Main Screen-Rail-24 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100288 | Screen Validation — Smartcard_Validation_24__Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100289 | Screen Validation — Bus Main Screen-Dependants Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100290 | Screen Validation — Bus Main Screen-yLink Single-Dependants Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100291 | Screen Validation — Main Screen-Rail-Dependants Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100292 | Screen Validation — Bus Main Screen-Senior Single-Alighting Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100293 | Screen Validation — Main Screen-Rail-Senior Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100294 | Screen Validation — Main Screen-Rail-Senior Single Cross Border | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100295 | Screen Validation — Bus Main Screen-DLA Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100296 | Screen Validation — Bus Main Screen-DLA Single-Alighting Selected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100297 | Screen Validation — Main Screen-Rail-DLA Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100298 | Screen Validation — Smartcard_Validation_DLA Single_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100299 | Screen Validation — Bus Main Screen-yLink Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100300 | Screen Validation — ABT Smartcard_Adult or Child | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100301 | Screen Validation — Smartcard_Issue Smartcard_Adult | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100302 | Screen Validation — Smartcard_Issue Smartcard_Adult_Metro | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100303 | Screen Validation — Ulsterbus Smartcard_Card Issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100304 | Screen Validation — Ulsterbus Smartcard_Reference Numbers | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100305 | Screen Validation — Ulsterbus Smartcard_Reference Numbers_Invalid | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100306 | Screen Validation — Smartcard_Card Issue-Ulsterbus Travelcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100307 | Screen Validation — ABT Smartcard_Card Issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100308 | Screen Validation — ABT Smartcard_Card Issue_Custom Amount | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100309 | Screen Validation — ABT Smartcard_Card Issue_Invalid Amount | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100310 | Screen Validation — Smartcard_Card Issue-Daylink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100311 | Screen Validation — Smartcard_Card Issue-Belfast Visitor | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100312 | Screen Validation — Smartcard_Card Issue_iLink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100313 | Screen Validation — Smartcard_Issue Smartcard_iLink1_BVP | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100314 | Screen Validation — Ulsterbus Smartcard_Card Issue_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100315 | Screen Validation — Smartcard_Card Issue_Ulsterbus Travelcard_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100316 | Screen Validation — Smartcard_Card Issue_ABT_Basket_Expired | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100317 | Screen Validation — Smartcard_Card Issue_Daylink_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100318 | Screen Validation — Smartcard_Card Issue_Belfast Visitor_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100319 | Screen Validation — Smartcard_Card Issue_iLink_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100320 | Screen Validation — Smartcard_Card Issue_iLink zone 3_Payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100321 | Screen Validation — Card Issue_Card Issue Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100322 | Screen Validation — Smartcard_Issue Card_Remove Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100323 | Screen Validation — Smartcard_Issue Smartcard_Metro Zone | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100324 | Screen Validation — Smartcard_Card Issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100325 | Screen Validation — Smartcard_Card Issue-Metro Travelcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100326 | Screen Validation — Smartcard_Card Issue_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100327 | Screen Validation — Smartcard_Card Issue_Metro Travelcard_Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100328 | Screen Validation — Operator Menu_Metro | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100329 | Screen Validation — Operator Menu - inactive annul bus ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100330 | Screen Validation — Operator Menu_Annul Rail_Misc Tickets | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100331 | Screen Validation — Operator Menu_Totals | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100332 | Screen Validation — Operator Menu_SignOff | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100333 | Screen Validation — Operator Menu_BreakMode | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100334 | Screen Validation — Operator Menu_Operator Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100335 | Screen Validation — Operator Menu_Operator Information_Metro | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100336 | Screen Validation — Operator Menu_Annul Previous Ticket entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100337 | Screen Validation — Operator Menu - Exccess Tickets | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100338 | Screen Validation — Operator Menu_Tickets _ Totals_Annul Previous Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100339 | Screen Validation — Operator Menu_Tickets _ Totals_Annulment Options - Card Top Up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100340 | Screen Validation — Idle Screen - Driver on Break | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100341 | Screen Validation — Operator - Message of the Day | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100342 | Screen Validation — Operator Menu_Tickets _ Totals_Annul Previous Ticket Rail | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100343 | Screen Validation — Operator Menu_Tickets _ Totals_Annulment Options - Card Issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100344 | Screen Validation — Operator Menu - Exccess Tickets- Enter Value | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100345 | Screen Validation — Operator Menu - Exccess Tickets- Value Entered | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100346 | Screen Validation — Operator Menu_Tickets _ Totals_Annulment Options - Confirmation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100347 | Screen Validation — Operator Menu_SignOff Printer Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100348 | Screen Validation — Operator - Word and Colour of the Day | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100349 | Screen Validation — Operator Menu_Operator Options_Ticket History | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100350 | Screen Validation — Operator Menu - Exccess Tickets- Value Exceeded | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100351 | Screen Validation — Operator Menu_Tickets _ Totals_Annulment Options - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100352 | Screen Validation — Operator Menu_Tickets _ Totals_Annulment - No Ticket - Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100353 | Screen Validation — Operator Menu_Operator Options_Ticket History_Ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100354 | Screen Validation — Operator Menu_Report Faulty Device | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100355 | Screen Validation — Operator Menu_Operator Information - Faulty Device | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100356 | Screen Validation — Main Screen-Ulsterbus selected - Faulty Device | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100357 | Screen Validation — Faulty Device Already Reported | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100358 | Printer — paper jam detected and recoverable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100359 | Printer — out of paper is handled | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100360 | Power — interruption duration determines resume state | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100361 | Audio — tones for success, error and timeout | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100362 | Comms — loss enters Communication Locked | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100363 | Comms — recovery reconnects and syncs | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100364 | Comms — token loss does not force Out Of Service | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100365 | Comms — card-reader failures do not flood CloudFare | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100366 | Comms — device status and Tray ID reported correctly | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100367 | Smoke — operator sign on | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100368 | Smoke — sell a ticket (cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100369 | Smoke — top up a smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100370 | Smoke — sign off | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100371 | Stability — recovers from 'Please Wait' without freezing | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100372 | Performance — responsive under sustained use | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100373 | Display — clock shows correct 24-hour time | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100374 | Bus FLU — sell a ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100375 | Bus FLU — route number letters via the '*' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100376 | Bus FLU — change boarding stage, alighting stage and fare type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100377 | Bus FLU — Misc open fare | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100378 | Bus FLU — Default Boarding Stage '*' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100379 | ZZ_DELETE_REVIEW - Bus FLU — sell a ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100380 | ZZ_DELETE_REVIEW - Bus FLU — route number letters via the '*' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100381 | ZZ_DELETE_REVIEW - Bus FLU — change boarding stage, alighting stage and fare type | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100382 | ZZ_DELETE_REVIEW - Bus FLU — Misc open fare | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100383 | ZZ_DELETE_REVIEW - Bus FLU — Default Boarding Stage '*' key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100384 | Technician — Paper Status back key | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100385 | Rail FLU — present smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100386 | Annulment — Belfast Visitor Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100387 | Annulment — re-present different card | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100388 | ZZ_DELETE_REVIEW - Top Up — half-fare / concession smartcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100389 | Top Up — non-toppable card handled | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100390 | Issue Card — blank card options | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100391 | Top Up — Metro Multi-Journey | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100392 | Top Up — Ulsterbus Multi-Journey (Cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100393 | NIR — Single (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100394 | NIR — Day Return (Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100395 | NIR — 1/3 Off Day Return (Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100396 | NIR — Weekly Season (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100397 | NIR — Monthly Season (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100398 | NIR — Warrant Return | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100399 | NIR — 3 Day Select (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100400 | NIR — Family & Friends Day (cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100401 | NIR — iLink Single (Zone 4, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100402 | NIR — Dependants Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100403 | Ulsterbus — Single (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100404 | Ulsterbus — Day Return (Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100405 | Ulsterbus — Month Return (Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100406 | Ulsterbus — Warrant Return | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100407 | Ulsterbus — Bus Rambler (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100408 | Ulsterbus — Family & Friends Day (cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100409 | Ulsterbus — Jobseeker Single | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100410 | Ulsterbus — iLink Single (Zone 4, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100411 | Rail Substitution Service | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100412 | ZZ_DELETE_REVIEW - Metro — sell a ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100413 | Smartcard — Half Fare (NDL) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100414 | ZZ_DELETE_REVIEW - Smartcard — Youth | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100415 | Smartcard — yLink | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100416 | Smartcard — 24+ | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100417 | ZZ_DELETE_REVIEW - Smartcard — Concession | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100418 | Smartcard — Dependants Pass | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100419 | Single ticket (Adult, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100420 | Day Return ticket (Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100421 | iLink Single (Zone 4, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100422 | Warrant Return | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100423 | Family & Friends Day ticket (cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100424 | Card Payment — declined, cancelled or error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100425 | Metro — payment is cash only | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100426 | Metro — no smartcard validation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100427 | Validation — entitlement smartcard sets the ticket type (Concession — Senior) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100428 | Validation — error mid-transaction voids the payment | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100429 | Rail FLU — cross-border ticket & currency toggle | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100430 | Numerical Input — group ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100431 | Numerical Input — calculate change | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100432 | Basket — maximum of 9 tickets | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100433 | Basket — entitlement passes cannot be basketed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100434 | Basket — bus basket is single-route | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100435 | Top Up — expired Multi-Journey clears existing journeys | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100436 | Sign Off / Suspend — inactivity timers | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100437 | Printer — paper low notification | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100438 | Printer — print-failure events are sent | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100439 | ZZ_DELETE_REVIEW - Barcode — validate a ticket by barcode (superseded, conflates manual reference entry with scan; doesn't match documented decrypt/validate/print pipeline) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100440 | Barcode — offline validations stored until reconnect | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100444 | ZZ_DELETE_REVIEW - Sign On — field entry and the 'C' key (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100445 | ZZ_DELETE_DUP (created in error) - 4100445 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100446 | ZZ_DELETE_DUP (created in error) - 4100446 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100447 | ZZ_DELETE_DUP (created in error) - 4100447 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100448 | ZZ_DELETE_DUP (created in error) - 4100448 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100449 | ZZ_DELETE_DUP (created in error) - 4100449 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100450 | ZZ_DELETE_DUP (created in error) - 4100450 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100451 | ZZ_DELETE_DUP (created in error) - 4100451 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100452 | ZZ_DELETE_DUP (created in error) - 4100452 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100453 | ZZ_DELETE_DUP (created in error) - 4100453 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100454 | ZZ_DELETE_DUP (created in error) - 4100454 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100455 | ZZ_DELETE_DUP (created in error) - 4100455 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100456 | ZZ_DELETE_DUP (created in error) - 4100456 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100457 | ZZ_DELETE_DUP (created in error) - 4100457 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100458 | ZZ_DELETE_DUP (created in error) - 4100458 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100459 | ZZ_DELETE_DUP (created in error) - 4100459 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100460 | ZZ_DELETE_DUP (created in error) - 4100460 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100461 | ZZ_DELETE_DUP (created in error) - 4100461 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100462 | ZZ_DELETE_DUP (created in error) - 4100462 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100463 | ZZ_DELETE_DUP (created in error) - 4100463 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100464 | ZZ_DELETE_DUP (created in error) - 4100464 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100465 | ZZ_DELETE_DUP (created in error) - 4100465 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100466 | ZZ_DELETE_DUP (created in error) - 4100466 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100467 | ZZ_DELETE_DUP (created in error) - 4100467 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100468 | ZZ_DELETE_DUP (created in error) - 4100468 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100469 | ZZ_DELETE_DUP (created in error) - 4100469 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100470 | ZZ_DELETE_DUP (created in error) - 4100470 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100471 | ZZ_DELETE_DUP (created in error) - 4100471 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100472 | ZZ_DELETE_DUP (created in error) - 4100472 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100473 | ZZ_DELETE_DUP (created in error) - 4100473 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100474 | ZZ_DELETE_DUP (created in error) - 4100474 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100475 | ZZ_DELETE_DUP (created in error) - 4100475 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100476 | ZZ_DELETE_DUP (created in error) - 4100476 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100477 | ZZ_DELETE_DUP (created in error) - 4100477 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100478 | ZZ_DELETE_DUP (created in error) - 4100478 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100479 | ZZ_DELETE_DUP (created in error) - 4100479 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100480 | ZZ_DELETE_DUP (created in error) - 4100480 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100481 | ZZ_DELETE_DUP (created in error) - 4100481 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100482 | ZZ_DELETE_DUP (created in error) - 4100482 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100483 | ZZ_DELETE_DUP (created in error) - 4100483 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100484 | ZZ_DELETE_DUP (created in error) - 4100484 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100485 | ZZ_DELETE_DUP (created in error) - 4100485 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100486 | ZZ_DELETE_DUP (created in error) - 4100486 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100487 | ZZ_DELETE_DUP (created in error) - 4100487 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100488 | ZZ_DELETE_DUP (created in error) - 4100488 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100489 | ZZ_DELETE_DUP (created in error) - 4100489 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100490 | ZZ_DELETE_DUP (created in error) - 4100490 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100491 | ZZ_DELETE_DUP (created in error) - 4100491 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100492 | ZZ_DELETE_DUP (created in error) - 4100492 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100493 | ZZ_DELETE_DUP (created in error) - 4100493 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100494 | ZZ_DELETE_DUP (created in error) - 4100494 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100495 | ZZ_DELETE_DUP (created in error) - 4100495 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100496 | ZZ_DELETE_DUP (created in error) - 4100496 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100497 | ZZ_DELETE_REVIEW - Issue Card — Ulsterbus Multi-Journey (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100498 | ZZ_DELETE_REVIEW - Issue Card — Town Service Travelcard (folded) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100499 | Customer Display — Rail passenger display | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100500 | Customer Display — Ulsterbus passenger display | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100501 | Rail FLU — change boarding & alighting stations | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100502 | Cross-Border — enable Euro currency | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100503 | NIR — Cross-Border Single (GBP, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100504 | NIR — Cross-Border Day Return (GBP, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100505 | Annulment — ticket issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100506 | Mini Statement — reflects usage and top-ups | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100507 | Technician — set Default Boarding Stage | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100508 | TMS — application update | 0 | 0 | 0 | 0 | — | orphaned |
+| C4100509 | TMS — topology update | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102559 | Fare-Paying Smartcard — validation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102560 | Validation — passback | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102561 | Fare-Paying Smartcard — top-up | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102562 | Top Up — on expiry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102563 | Faulty — Fare-Paying Smartcard | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102564 | Faulty — Smartpass Receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4102565 | Faulty — Dependants Pass Receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103533 | Cash Refund — valid URN and amount refunds and prints a receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103534 | Cash Refund — a URN that is not 23 characters is rejected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103535 | Cash Refund — an amount above the original sale value is rejected | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103536 | Cash Refund — a refund that would make shift totals negative is blocked | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103537 | Card Refund — valid PRN refunds via the payment provider and prints a receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103538 | Card Refund — no connection to the payment provider blocks the refund | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103539 | Card Refund — an amount above the original sale value is capped to the original | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103540 | Refund — only the Operator role can issue a refund | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103541 | Refund — the audit record posts a positive fare with the correct payment method and reference | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103542 | Refund — a completed refund is final and cannot be annulled | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103543 | Basket Refund — each ticket URN carries its own value while the card PRN is shared | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103544 | Cross-device Refund — a POS refunds a sale made on another device (CR115) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103570 | Barcode — a single-use barcode is validated online and shows a green tick | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103571 | Barcode — a multiple-use barcode is rejected as not accepted on the POS | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103572 | Barcode — a Manifest (type F) barcode is rejected as not accepted on the POS | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103573 | Barcode — offline single-use validation is allowed only at or below the Ceiling Limit | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103574 | Barcode — an offline single-use redemption syncs back to Corethree on reconnect | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103575 | Barcode — a successful single-use validation is audited as an event, not a MERIT transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103576 | Barcode — a failed validation is audited as an event carrying the Unique ID and reason | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103577 | Barcode — a damaged barcode is validated by keying its 12-digit BRID | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103578 | Fare-Stage Selection — the POS shows and prints the Fare Stage name, not the stop name | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103579 | Fare-Stage Selection — a zero-fare stage combination blocks ticket issue | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103580 | Fare-Stage Selection — the operator can reach a fare by keying the Fare Stage ID | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103581 | Heartbeat — a signed-off POS refreshes Last Communication every 15 minutes via the Staff List check | 0 | 0 | 0 | 0 | — | orphaned |
+| C4103582 | Revenue Allocation — a rail ticket sold on an Ulsterbus POS carries the rail route for NIR allocation | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104592 | Validation — entitlement smartcard sets the ticket type (Concession — 60+) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104593 | Validation — entitlement smartcard sets the ticket type (Concession — ROI Senior) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104594 | Validation — entitlement smartcard sets the ticket type (Concession — Blind) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104595 | Validation — entitlement smartcard sets the ticket type (Concession — War Pensioner) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104596 | Validation — entitlement smartcard sets the ticket type (yLink) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104597 | Validation — entitlement smartcard sets the ticket type (24+) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104598 | Validation — entitlement smartcard sets the ticket type (Half-Fare — Partially Sighted) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104599 | Validation — entitlement smartcard sets the ticket type (Half-Fare — Learning Disability) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104600 | Validation — entitlement smartcard sets the ticket type (Half-Fare — No Driving Licence) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104601 | Validation — entitlement smartcard sets the ticket type (Half-Fare — PIPS) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104602 | Validation — entitlement smartcard sets the ticket type (Half-Fare — DLA) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104603 | Validation — entitlement smartcard sets the ticket type (Dependants) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104604 | Smartcard — Half Fare (LD) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104605 | Smartcard — Half Fare (PIPS) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104606 | Smartcard — Half Fare (Partially Sighted) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104607 | Smartcard — Half Fare (DLA) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104608 | Single ticket (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104609 | Single ticket (concession, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104610 | Single ticket (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104611 | Single ticket (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104612 | Day Return ticket (Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104613 | iLink Single (Zone 1, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104614 | iLink Single (Zone 2, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104615 | iLink Single (Zone 3, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104616 | iLink Single (NW Zone, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104617 | iLink Single (Zone 4, Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104618 | Family & Friends Day ticket (card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104619 | Family & Friends Day ticket (warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104620 | NIR — Single (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104621 | NIR — Single (concession, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104622 | NIR — Single (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104623 | NIR — Single (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104624 | NIR — Day Return (Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104625 | NIR — 1/3 Off Day Return (Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104626 | NIR — Weekly Season (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104627 | NIR — Weekly Season (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104628 | NIR — Weekly Season (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104629 | NIR — Monthly Season (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104630 | NIR — Monthly Season (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104631 | NIR — Monthly Season (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104632 | NIR — 3 Day Select (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104633 | NIR — 3 Day Select (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104634 | NIR — 3 Day Select (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104635 | NIR — Family & Friends Day (card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104636 | NIR — Family & Friends Day (warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104637 | NIR — iLink Single (Zone 1, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104638 | NIR — iLink Single (Zone 2, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104639 | NIR — iLink Single (Zone 3, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104640 | NIR — iLink Single (NW Zone, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104641 | NIR — iLink Single (Zone 4, Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104642 | NIR — Cross-Border Single (EUR, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104643 | NIR — Cross-Border Single (GBP, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104644 | NIR — Cross-Border Single (GBP, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104645 | NIR — Cross-Border Day Return (EUR, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104646 | NIR — Cross-Border Day Return (GBP, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104647 | NIR — Cross-Border Day Return (GBP, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104648 | Top Up — Ulsterbus Multi-Journey (Warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104649 | Top Up — Ulsterbus Multi-Journey (Card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104650 | Ulsterbus — Single (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104651 | Ulsterbus — Single (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104652 | Ulsterbus — Single (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104653 | Ulsterbus — Day Return (Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104654 | Ulsterbus — Month Return (Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104655 | Ulsterbus — Bus Rambler (Child, cash) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104656 | Ulsterbus — Bus Rambler (Adult, card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104657 | Ulsterbus — Bus Rambler (Adult, warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104658 | Ulsterbus — Family & Friends Day (card) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104659 | Ulsterbus — Family & Friends Day (warrant) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104660 | Ulsterbus — iLink Single (Zone 1, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104661 | Ulsterbus — iLink Single (Zone 2, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104662 | Ulsterbus — iLink Single (Zone 3, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104664 | Ulsterbus — iLink Single (NW Zone, Adult) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4104666 | Ulsterbus — iLink Single (Zone 4, Child) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105016 | Comms — a CloudFare Remote Reboot command reboots the POS | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105062 | Barcode Scanning — data not retrieved after scan | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105063 | Barcode Scanning — decrypt/parse failure retries Validating Details | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105064 | Barcode Scanning — decrypt/parse failure returns to FLU | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105065 | Barcode Scanning — invalid ticket cancellation retries Validating Details | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105066 | Barcode Scanning — invalid ticket cancellation returns to FLU | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105067 | Barcode Scanning — additional background check failure cancels ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105068 | Barcode Scanning — failed visual inspection cancels valid ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105069 | Barcode Scanning — print error retries on first press | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105070 | Barcode Scanning — second print error press invalidates barcode | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105071 | Barcode Scanning — Printed? confirms still valid loops to print check | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105072 | Barcode Reference — unreadable barcode cancels to FLU | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105073 | Barcode Scanning — validation failure routes to manual Barcode Reference entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105074 | Barcode Scanning — Outbound and Return ticket paginates and returns | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105075 | Basket — increase or decrease passenger count on a basket line | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105076 | Basket — Bus Advance Ticket with a valid date is added to the basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105077 | Payment — Bank Card unavailable when no PCD is attached (Bus basket) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105078 | Payment — Popular ticket Bank Card unavailable when no PCD is attached | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105079 | Payment — 3-Day Ticket Bank Card unavailable when no PCD is attached | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105080 | Payment — Rail Advance Ticket payment confirms the ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105081 | Payment — Rail Advance Ticket Bank Card unavailable when no PCD is attached | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105082 | Basket — Rail Advance Ticket routing into the Bus Advance Ticket screen (GAP) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105083 | Payment — Rail ticket confirmation returns to the Rail main screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105084 | Payment — Rail ticket confirmation returns to the 3-Day Ticket screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105085 | Card Payment — over £45 prompts card insert for PIN entry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105086 | Card Payment — no Chip & PIN card falls back to User Confirming Amount | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105087 | Card Payment — Cancel on the Miura M020 during Present declines the transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105088 | Card Payment — matching signature completes approval and prints the ticket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105089 | Card Payment — printing a declined receipt returns to the FLU screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105090 | Card Payment — declining without a receipt still returns to the FLU screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105091 | Basket — Basket Full screen auto-returns to Added to Basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105092 | FLU — toggling to Rail mode and back returns to Main Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105093 | Day Tours — an associated route reaches the FLU Day Tour Product screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105094 | Day Tours — a non-associated route number shows the Day Tours Error screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105095 | Day Tours — a non-associated lettered route via Letters ETM shows the Letters Error screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105096 | Day Tours — Letters ETM entry returns to Day Tours empty | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105097 | Day Tours — selecting a product, seat and date reaches Payment-Tour | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105098 | Rail FLU — selecting Rail opens the Rail FLU working screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105099 | 3-Day Ticket — Available Days pages back to Start | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105100 | Advance Ticket — Cancel discards the advance ticket option | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105101 | Rail favourites — Down arrow shows Favourites 6-10, Up returns | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105102 | Rail FLU — L4 toggles the selected ticket type while depressed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105103 | Issue Card — invalid smartcard shows Error screen (Metro) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105104 | Issue Card — Card Write failure returns to basket to retry (Metro) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105105 | Issue Card — cancelling Card Issue Error voids the transaction (Metro) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105106 | Issue Card — ABT Card Write failure returns to Basket/Expired to retry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105107 | Issue Card — cancelling Card Issue Error voids the transaction (ABT) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105108 | Issue Card — invalid smartcard shows Error and returns to Main Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105109 | Issue Card — Card Write failure returns to basket to retry | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105110 | Issue Card — cancelling Card Issue Error voids the transaction | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105111 | Issue Card — invalid card reference number shows Reference Numbers/Invalid | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105112 | Issue Card — C button on Reference Numbers picks an alternative reference | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105113 | Issue Card — Ulsterbus Travelcard issue completes with a printed receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105114 | Numerical Input — FLU/Cash/Change back returns to Main Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105115 | Numerical Input — Basket Group Ticket back returns to Numeric Entry 9 | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105116 | Numerical Input — Basket Group Ticket routes to Advance Ticket Flow | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105117 | Numerical Input — Change Boarding and Alighting unlabeled decision node | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105118 | Annulment — paging through Rail tickets with up and down keys | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105119 | Sign Off — printer error still returns to the Idle Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105120 | Sign Off — cancelling returns to the Operator Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105121 | Break Mode — cancelling returns to the Operator Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105122 | Break Mode — driver on break for the configured time (GAP) | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105123 | Operator Information — Console Settings screen opens | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105124 | Operator Information — Word and Colour of the Day shown when available | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105125 | Operator Information — Word and Colour of the Day Unavailable screen shown when unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105126 | Operator Information — Message of the Day shown when available | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105127 | Operator Information — Message of the Day Unavailable screen shown when unavailable | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105128 | Ticket History — Back returns to Operator Information | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105129 | Report Faulty Device — reporting shows the Faulty Device icon on the Main Screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105130 | Report Faulty Device — already-reported device shows Already Reported | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105131 | Operator Information — Back returns to the Operator Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105132 | Excess Tickets — an over-limit value shows Value Exceeded | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105133 | Excess Tickets — cancelling Enter Value returns to Excess Tickets | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105134 | Printer Error — operator annuls via Operator Board annulment flow | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105135 | Printer Error — successful reprint returns to the screen where print was attempted | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105136 | Paper Jam — POS automatically reverses paper feed with no screen change | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105137 | Printer Error / Paper Jam — non-transaction print shows Continue without Printing | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105138 | Printer Error / Paper Jam — repeated print failure loops until annulled | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105139 | Sign Out — cancelling from Supervisor Menu Sign Out returns to Supervisor Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105140 | Duty Information — no duties to display shows No Results | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105141 | Sale Breakdown — declining the print confirmation leaves totals unzeroed | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105142 | Device Settings — Go Back from Device Settings Summary returns to Technician Menu | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105143 | Top Up — invalid smartcard presented shows Smartcard/Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105144 | Top Up — Recover Unique Code prints the smartcard code receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105145 | Top Up — Menu-ABT hands off into the Card Issue flow | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105146 | Top Up — ABT Basket/Expired Bank Card path | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105147 | Top Up — ABT Basket/Expired Warrant card write failure shows Top Up Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105148 | Top Up — DayLink top up success prints receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105149 | Top Up — DayLink card write failure shows Top Up Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105150 | Top Up — Belfast Visitor Pass top up success prints receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105151 | Top Up — Belfast Visitor Pass card write failure returns to payment screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105152 | Top Up — iLink top up success prints receipt | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105153 | Top Up — iLink card write failure returns to payment screen | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105154 | Top Up — Metro Multi-Journey card write failure returns to basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105155 | Top Up — Metro Travelcard FirstUse failure shows Top Up Error Not Used | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105156 | Top Up — Metro Travelcard card write failure returns to basket | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105157 | Top Up — Ulsterbus Multi Journey card write failure shows Top Up Error | 0 | 0 | 0 | 0 | — | orphaned |
+| C4105158 | Top Up — Ulsterbus Travelcard card write failure returns to basket | 0 | 0 | 0 | 0 | — | orphaned |

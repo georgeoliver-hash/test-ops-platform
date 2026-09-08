@@ -1,0 +1,41 @@
+==== 4100360 Power — interruption duration determines resume state
+REFS: TIBU-29752,George live-system confirmation 2026-07-21 (resolves gap-register Q18),supersedes conflict with C4100436, audit 2026-07-17
+PREFACE: This test is to confirm the POS resumes to the correct state after a power interruption, depending on how long power was lost relative to the Auto Sign Off time — for an interruption shorter than the Auto Sign Off time, the POS resumes via the Operator Break screen (break mode used, not skipped).
+PRECONDS: **GIVEN** an operator is signed on during a shift
+EXPECTED: Resume state depends on outage length: brief → prior screen; < Auto Sign Off → Operator Break; > Auto Sign Off → Idle, no waybill. A pre-boot charge check protects state-saving (regression: TIBU-29752).
+
+[Automatable: No · Cross-check: CloudFare]
+
+==== 4100436 Sign Off / Suspend — inactivity timers
+REFS: George live-system confirmation 2026-07-21 (resolves gap-register Q18),supersedes conflict with C4100360, audit 2026-07-17
+PREFACE: This test is to confirm the configurable inactivity behaviour: FLU timeout signs off via Operator Break; Idle timeout (or continued inactivity on the Operator Break screen) suspends; suspend duration auto-reboots.
+PRECONDS: **GIVEN** the device is configured with Auto Sign Off, Auto Suspend and Suspend Duration periods
+EXPECTED: Resume state depends on the configured timers: FLU inactivity for the Auto Sign Off period → Operator Break screen (no waybill); continued inactivity on Operator Break for the Auto Suspend period → suspend; Suspend Duration elapsed or a keypress → reboot to Idle. All periods configurable.
+
+==== 4099970 Rail FLU — sell a ticket
+REFS: TIBU-19374,TIBU-24862,TIBU-24853,FBD-100450
+PREFACE: This test is to confirm the operator can build a rail fare from a boarding station, alighting station, passenger type and ticket type, that the correct price and field layout are shown, that the fare can be added to the basket, and that the correct stations are audited.
+PRECONDS: **GIVEN** an operator is signed on with the POS in rail (NIR) mode on the Main Rail screen
+**AND** the POS is communicating with CloudFare
+**AND** example: Lisburn → Belfast Lanyon Place, Adult, Single (stations/price confirm against NIR fares reference table)
+EXPECTED: A rail fare is built with the correct price (including Cross-Border) and layout, added to the basket, and the correct boarding and alighting stations are audited. Stations and ticket types are data variations.
+
+[Automatable: Yes · Cross-check: CloudFare / MERIT]
+
+==== 4100007 Top Up — top up a smartcard
+REFS: TIBU-23016,TIBU-21280,TIBU-21119,TIBU-21184,TIBU-22985,FBD-100260
+PREFACE: This test is to confirm an operator can top up a smartcard, take payment, print a top-up receipt, and auto-validate the card for the current journey where applicable.
+PRECONDS: **GIVEN** the POS is signed on and idle
+**AND** a toppable smartcard is presented — example: an Adult iLink Zone 4 travelcard, top up 1 Week, paid by cash (Metro is cash-only, bank card / warrant available on NIR + Ulsterbus)
+EXPECTED: Top-up completes with a receipt and auto-validation where applicable. Run across products — Metro Travelcard, Ulsterbus Town Service Travelcard, DayLink, iLink, Belfast Visitor Pass, ABT smartcard, Monthly Season, half-fare/concession.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4102560 Validation — passback
+REFS: FBD-100271
+PREFACE: This test is to confirm a smartcard re-presented within the passback period is handled per the passback rules, with the outcome recorded in the back office.
+PRECONDS: **GIVEN** the POS is signed on in NIR or Ulsterbus mode
+**AND** a smartcard has just been validated on the POS (passback always applies and takes priority over transfer)
+EXPECTED: Passback is applied within the period and a new validation allowed after it, recorded in the CloudFare activity log, MERIT and SmartTrack.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT / SmartTrack]

@@ -1,0 +1,845 @@
+{
+  "4101079": {
+    "id": 4101079,
+    "title": "ABT \u2014 Deny and BIN list updates",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "TIBU-26320, TIBU-25745",
+    "created_by": 156,
+    "created_on": 1780919793,
+    "updated_by": 156,
+    "updated_on": 1784281551,
+    "estimate": "6m",
+    "estimate_forecast": "7m",
+    "suite_id": 30255,
+    "display_order": 9,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV downloads and applies delta and full Deny/BIN list updates, retries on failure, and validates against them.",
+    "custom_preconds": "**GIVEN** a Glider PV with cEMV and back-office comms is showing the Present screen\n**AND** the back office can publish delta and full Deny/BIN list updates\n**AND** you have a card on the Deny/BIN list and can verify the CloudFare activity log",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** delta and full Deny/BIN list updates are published",
+        "expected": "**THEN** the PV downloads and applies them, taking the full lists at end of day and deltas on schedule"
+      },
+      {
+        "content": "**WHEN** a list download is forced to fail",
+        "expected": "**THEN** the PV retries the download and application"
+      },
+      {
+        "content": "**WHEN** you present a Deny/BIN-listed card, then re-present it after it is removed from the list",
+        "expected": "**THEN** the listed card is rejected\n**AND** the removed card is accepted"
+      }
+    ],
+    "custom_expected": "Delta + full Deny/BIN updates download and apply (full at end-of-day, delta scheduled) with retries; listed cards rejected, removed cards accepted. Pins TIBU-26320 (Deny download fail) and TIBU-25745 (BIN download fail).\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101020": {
+    "id": 4101020,
+    "title": "PV to BOS \u2014 Deny and BIN list download",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780916072,
+    "updated_by": 156,
+    "updated_on": 1784281581,
+    "estimate": "5m",
+    "estimate_forecast": "4m",
+    "suite_id": 30255,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV downloads and applies the Deny and BIN lists to its FEIG.",
+    "custom_preconds": "**GIVEN** the back office has updated Deny and BIN lists\n**AND** the PV has cEMV and back-office comms\n**AND** you can verify the download in the CloudFare activity log",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the PV downloads the updated lists",
+        "expected": "**THEN** the lists are applied to the PV FEIG for cEMV validation"
+      },
+      {
+        "content": "**WHEN** you check the back office",
+        "expected": "**THEN** the list download is recorded in CloudFare"
+      }
+    ],
+    "custom_expected": "The Deny and BIN lists download and apply to the PV FEIG for cEMV validation; recorded in CloudFare.\n\n[Automatable: No \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101001": {
+    "id": 4101001,
+    "title": "cEMV \u2014 tap enablement by route, location and fare",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780915632,
+    "updated_by": 156,
+    "updated_on": 1784281547,
+    "estimate": "6m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm cEMV taps are enabled only where the route attribute, location and fare checks all permit.",
+    "custom_preconds": "**GIVEN** a Glider PV uses route-attribute, location and fare checks to enable cEMV\n**AND** you can place the PV in a context where all three checks pass, and one where a check fails\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the PV is in a context where the route attribute, location and fare checks all pass",
+        "expected": "**THEN** cEMV taps are enabled\n**AND** a tap is accepted"
+      },
+      {
+        "content": "**WHEN** any of the route, location or fare checks fail",
+        "expected": "**THEN** cEMV taps are disabled in that context and no cEMV tap is taken"
+      },
+      {
+        "content": "**WHEN** you check the back office for the accepted tap",
+        "expected": "**THEN** the tap appears in the CloudFare activity log and MERIT"
+      }
+    ],
+    "custom_expected": "cEMV is enabled only when route/location/fare checks all pass, and disabled otherwise; accepted taps recorded in CloudFare/MERIT.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101093": {
+    "id": 4101093,
+    "title": "cEMV \u2014 EMV result screens and transaction generation",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "TIBU-25700, TIBU-25702, TIBU-25704, TIBU-25705",
+    "created_by": 156,
+    "created_on": 1780922237,
+    "updated_by": 156,
+    "updated_on": 1784281556,
+    "estimate": "6m",
+    "estimate_forecast": "9m",
+    "suite_id": 30255,
+    "display_order": 15,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the EMV success, failure and passback screens behave correctly and that failed taps still generate a transaction.",
+    "custom_preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have a contactless card that can succeed and one that fails, plus a smartcard\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you make a cEMV tap that succeeds and one that fails",
+        "expected": "**THEN** the correct EMV success or failure screen is shown\n**AND** the EMV result screen times out after the configured period rather than persisting"
+      },
+      {
+        "content": "**WHEN** you present a smartcard while an EMV success/failure screen is shown, and re-present a card for EMV passback",
+        "expected": "**THEN** the smartcard tap is accepted\n**AND** the correct EMV passback screen is shown"
+      },
+      {
+        "content": "**WHEN** you inspect the back office for a failed EMV tap",
+        "expected": "**THEN** a transaction is still generated for the failed tap\n**AND** it is recorded in CloudFare/MERIT"
+      }
+    ],
+    "custom_expected": "EMV success/failure/passback screens are correct and time out (do not persist); smartcards tap on those screens; failed EMV taps still generate a transaction, recorded in CloudFare/MERIT.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101082": {
+    "id": 4101082,
+    "title": "PV to BOS \u2014 MERIT heartbeat",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780919795,
+    "updated_by": 156,
+    "updated_on": 1784281583,
+    "estimate": "5m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV sends a MERIT heartbeat transaction periodically and after a technician signs out.",
+    "custom_preconds": "**GIVEN** a PV is in service with comms available\n**AND** you can verify heartbeats in CloudFare / MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the configured 24-hour period elapses",
+        "expected": "**THEN** a MERIT heartbeat transaction is sent to the back office"
+      },
+      {
+        "content": "**WHEN** a technician signs out of the Technician Menu",
+        "expected": "**THEN** a heartbeat occurs"
+      }
+    ],
+    "custom_expected": "A MERIT 24-hour heartbeat transaction is sent, and a heartbeat occurs after technician sign-out; visible in CloudFare/MERIT.\n\n[Automatable: Yes \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101088": {
+    "id": 4101088,
+    "title": "cEMV \u2014 decline reasons and route-type enablement",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780920680,
+    "updated_by": 156,
+    "updated_on": 1784281553,
+    "estimate": "6m",
+    "estimate_forecast": "6m",
+    "suite_id": 30255,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm cEMV decline reasons show Please Try Again, and that taps enable per route type and are disabled where they should be.",
+    "custom_preconds": "**GIVEN** a Glider PV with cEMV is showing the Present screen\n**AND** you have cards for each decline condition (ODA fail, unsupported scheme e.g. AMEX, expired, invalid BIN, AID fail, card clash, deny/negative list, unreadable)\n**AND** you can verify records in the CloudFare activity log",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you present a card that hits one of those decline conditions",
+        "expected": "**THEN** the PV shows the Please Try Again outcome with the corresponding decline reason"
+      },
+      {
+        "content": "**WHEN** the route is \"Tap On Only (Flat Fare)\" or \"Tap On Tap Off\"",
+        "expected": "**THEN** cEMV taps are enabled for that route type"
+      },
+      {
+        "content": "**WHEN** no valid fare is found, the boarding location is outside the configured area, or cEMV is disabled in the Technician Menu",
+        "expected": "**THEN** cEMV taps are disabled"
+      }
+    ],
+    "custom_expected": "cEMV declines on ODA fail / unsupported scheme (AMEX) / expired / invalid BIN / AID fail / card clash / deny or negative list / unread, showing Please Try Again with the reason; enables for Tap-On-Only and Tap-On-Tap-Off routes; disables on no-fare / out-of-area / Technician-Menu-disable.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4100999": {
+    "id": 4100999,
+    "title": "ABT \u2014 declined or errored tap",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780915631,
+    "updated_by": 156,
+    "updated_on": 1784281545,
+    "estimate": "5m",
+    "estimate_forecast": "4m",
+    "suite_id": 30255,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a declined or errored ABT tap shows the correct outcome.",
+    "custom_preconds": "**GIVEN** a Glider PV has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a card that is declined, expired or deliberately mis-read\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you tap the declined/expired/mis-read card",
+        "expected": "**THEN** the PV rejects the tap\n**AND** the Please Try Again / decline outcome is shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the declined tap is recorded in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "custom_expected": "Declined/errored taps are rejected with the Please Try Again / decline outcome and recorded in CloudFare/MERIT.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101019": {
+    "id": 4101019,
+    "title": "PV to BOS \u2014 software and FEIG update via CloudFare TMS",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780916071,
+    "updated_by": 156,
+    "updated_on": 1784281580,
+    "estimate": "5m",
+    "estimate_forecast": "4m",
+    "suite_id": 30255,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV and its FEIG reader can be updated via CloudFare TMS.",
+    "custom_preconds": "**GIVEN** a PV software or FEIG firmware update is available from CloudFare TMS\n**AND** you can verify the reported version in the CloudFare activity log",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the update is distributed to the PV",
+        "expected": "**THEN** the PV applies the update\n**AND** the new version is reported to the back office"
+      },
+      {
+        "content": "**WHEN** you check the back office",
+        "expected": "**THEN** the new version is visible in CloudFare"
+      }
+    ],
+    "custom_expected": "PV/FEIG software updates apply via CloudFare TMS and the new version is reported and visible in CloudFare.\n\n[Automatable: No \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101006": {
+    "id": 4101006,
+    "title": "Barcode \u2014 multi-use validation",
+    "section_id": 887061,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780915636,
+    "updated_by": 156,
+    "updated_on": 1784281557,
+    "estimate": "6m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a multi-use barcode validates and tracks its remaining uses, for HHD- and TVM-produced barcodes.",
+    "custom_preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen with its barcode reader armed\n**AND** you have a valid multi-use barcode with uses remaining and one presented beyond its allowed uses\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you present the valid multi-use barcode",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)"
+      },
+      {
+        "content": "**WHEN** you present the barcode beyond its allowed uses or an invalid one",
+        "expected": "**THEN** the PV rejects it with the specific reason shown"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      }
+    ],
+    "custom_expected": "Multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid; recorded in CloudFare/MERIT. Variation \u2014 HHD-produced and TVM-produced. (In the live NIR regression.)\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4103563": {
+    "id": 4103563,
+    "title": "Pilot List \u2014 a non-enrolled token is rejected with no audit event",
+    "section_id": 887763,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100720",
+    "created_by": 156,
+    "created_on": 1784192729,
+    "updated_by": 156,
+    "updated_on": 1784281576,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30255,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a PV in pilot mode rejects a card whose FEIG token is not on the pilot list and performs no auditing.",
+    "custom_preconds": "**GIVEN** a PV deployed with Enable Pilot List = True and ABT enabled via the ABT Type route attribute\n**AND** example media: a cEMV card whose FEIG token is NOT in the imported pilotlist.dat\n**AND** you can confirm the absence of an audit event in the CloudFare activity log",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps the non-enrolled card",
+        "expected": "**THEN** the PV shows the standard rejection screen\n**AND** no ABT audit event is generated for the tap"
+      }
+    ],
+    "custom_expected": "A non-enrolled FEIG token is rejected with the standard rejection screen and NO audit event \u2014 the key negative assertion.\n\n[Automatable: No \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101084": {
+    "id": 4101084,
+    "title": "PV to BOS \u2014 configuration and topology distribution",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780920677,
+    "updated_by": 156,
+    "updated_on": 1784281585,
+    "estimate": "6m",
+    "estimate_forecast": "6m",
+    "suite_id": 30255,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV downloads and applies configuration and topology updates, including future-activation and corrupt-file handling.",
+    "custom_preconds": "**GIVEN** the back office has configuration and topology updates for the PV\n**AND** you have an immediate update, a future-dated update and a deliberately corrupt configuration file",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the PV downloads a configuration or topology update for immediate activation",
+        "expected": "**THEN** the update is applied"
+      },
+      {
+        "content": "**WHEN** the update has a future activation date",
+        "expected": "**THEN** it is stored and activated on that date"
+      },
+      {
+        "content": "**WHEN** a corrupt configuration file is downloaded",
+        "expected": "**THEN** it is rejected\n**AND** the current configuration is retained"
+      }
+    ],
+    "custom_expected": "Config/topology updates apply immediately or on a future date; corrupt files are rejected without disrupting the live config.\n\n[Automatable: Yes \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101087": {
+    "id": 4101087,
+    "title": "PV \u2014 validation and barcode performance timings",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780920680,
+    "updated_by": 156,
+    "updated_on": 1784281587,
+    "estimate": "7m",
+    "estimate_forecast": "7m",
+    "suite_id": 30255,
+    "display_order": 11,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm smartcard validation and barcode reading complete within the acceptable performance timings.",
+    "custom_preconds": "**GIVEN** a PV in service showing the Present SmartCard or Barcode screen\n**AND** you have a smartcard and a batch of barcodes with a stopwatch / captured timings",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you present a smartcard for validation",
+        "expected": "**THEN** the validation completes within the acceptable timing"
+      },
+      {
+        "content": "**WHEN** you validate barcodes at throughput",
+        "expected": "**THEN** each barcode reads within the acceptable timing and throughput"
+      }
+    ],
+    "custom_expected": "Smartcard validation and barcode reading meet their performance timing and throughput targets.\n\n[Automatable: No \u00b7 Cross-check: CloudFare / MERIT / SmartTrack]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101016": {
+    "id": 4101016,
+    "title": "Technician Menu \u2014 network settings",
+    "section_id": 887063,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780916068,
+    "updated_by": 156,
+    "updated_on": 1784281566,
+    "estimate": "1m",
+    "estimate_forecast": "1m",
+    "suite_id": 30255,
+    "display_order": 6,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a technician can view and edit the PV network settings.",
+    "custom_preconds": "**GIVEN** a technician is signed in to the Technician Menu\n**AND** the PV network interface shows its static IP (192.168.3.10 on the test rig)",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you open the Network Interfaces page, edit a network setting and confirm",
+        "expected": "**THEN** the network settings are updated to the new values"
+      }
+    ],
+    "custom_expected": "Network settings can be viewed and edited from the Technician Menu, and the updated values are applied.\n\n[Automatable: Yes]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101080": {
+    "id": 4101080,
+    "title": "FEIG \u2014 reader software management",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780919794,
+    "updated_by": 156,
+    "updated_on": 1784281552,
+    "estimate": "5m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 10,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the FEIG reader software and OS can be deployed and viewed via CloudFare TMS.",
+    "custom_preconds": "**GIVEN** a Glider PV with a FEIG reader is connected to CloudFare TMS\n**AND** newer Transparent, PCA and FEIG OS versions are staged for deployment",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you deploy the FEIG software over the air via TMS",
+        "expected": "**THEN** only the newest Transparent, PCA and FEIG OS versions are deployed to the reader"
+      },
+      {
+        "content": "**WHEN** the technician views the FEIG software versions on the PV",
+        "expected": "**THEN** the current FEIG software versions are displayed"
+      }
+    ],
+    "custom_expected": "FEIG software/OS deploys OTA via TMS (newest Transparent/PCA/OS only); the current FEIG versions are viewable on the PV.\n\n[Automatable: No \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101095": {
+    "id": 4101095,
+    "title": "PV \u2014 asset and version reporting",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "TIBU-24260, TIBU-26053, TIBU-25548, TIBU-26054",
+    "created_by": 156,
+    "created_on": 1780922238,
+    "updated_by": 156,
+    "updated_on": 1784281589,
+    "estimate": "5m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 13,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV reports its software, PCA and FEIG versions and identifiers to the back office and on the version page.",
+    "custom_preconds": "**GIVEN** a PV connected to the back office\n**AND** you can view the software version page and inspect CloudFare Asset Manager",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you view the software version page",
+        "expected": "**THEN** the Application version is displayed\n**AND** the PCA application version is displayed"
+      },
+      {
+        "content": "**WHEN** the PV reports to CloudFare",
+        "expected": "**THEN** the SIM ID is sent to CloudFare and visible in Asset Manager\n**AND** the FEIG Device ID is displayed in Asset Manager associated assets"
+      }
+    ],
+    "custom_expected": "The version page shows the Application and PCA versions; the SIM ID and FEIG Device ID are reported to CloudFare / Asset Manager.\n\n[Automatable: No \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4102428": {
+    "id": 4102428,
+    "title": "Barcode \u2014 early-morning expiry displays the previous day",
+    "section_id": 887061,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1781101160,
+    "updated_by": 156,
+    "updated_on": 1784281558,
+    "estimate": "5m",
+    "estimate_forecast": "4m",
+    "suite_id": 30255,
+    "display_order": 3,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a barcode whose expiry time falls between 00:00 and 04:00 shows the previous day as the expiry date on the validation success screen.",
+    "custom_preconds": "**GIVEN** the PV is in service showing the Present SmartCard or Barcode screen\n**AND** example media: a valid multiple-use barcode whose encoded expiry time falls between 00:00 and 04:00 (per the CR116 early-expiry rule)\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you present the barcode with the early-morning expiry",
+        "expected": "**THEN** the PV validates it\n**AND** the PV shows the barcode success screen\n**AND** the success screen displays the previous day as the expiry date"
+      },
+      {
+        "content": "**WHEN** you check the back office for the validation",
+        "expected": "**THEN** the validation is recorded in the CloudFare activity log and MERIT"
+      }
+    ],
+    "custom_expected": "A barcode expiring between 00:00 and 04:00 validates and the success screen shows the previous day as the expiry date; recorded in CloudFare/MERIT.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101094": {
+    "id": 4101094,
+    "title": "PV \u2014 stability and recovery",
+    "section_id": 887065,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "TIBU-25842, TIBU-26302, TIBU-28453, TIBU-28770, TIBU-29165, TIBU-29602",
+    "created_by": 156,
+    "created_on": 1780922237,
+    "updated_by": 156,
+    "updated_on": 1784281588,
+    "estimate": "6m",
+    "estimate_forecast": "6m",
+    "suite_id": 30255,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the PV stays responsive and recovers from failure conditions without manual intervention.",
+    "custom_preconds": "**GIVEN** a PV in service connected to CloudFare TMS\n**AND** you can force a failed boot and a white-startup-screen freeze, and run the PV over an extended period",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the device fails to boot",
+        "expected": "**THEN** the recovery mechanism restarts it to a working state"
+      },
+      {
+        "content": "**WHEN** the device would otherwise freeze on the white startup screen",
+        "expected": "**THEN** it recovers to service"
+      },
+      {
+        "content": "**WHEN** the PV runs over an extended period",
+        "expected": "**THEN** the transaction service stays responsive\n**AND** the PV continues to download and apply new distributions\n**AND** deployments via TMS succeed"
+      }
+    ],
+    "custom_expected": "The PV recovers from a failed boot and white-screen freeze; the transaction service stays responsive; it keeps downloading distributions and accepting TMS deployments.\n\n[Automatable: No \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101078": {
+    "id": 4101078,
+    "title": "ABT \u2014 Pilot List management and validation",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780919792,
+    "updated_by": 156,
+    "updated_on": 1784281550,
+    "estimate": "6m",
+    "estimate_forecast": "7m",
+    "suite_id": 30255,
+    "display_order": 8,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm the cEMV Pilot List can be configured and applied, and that EMV cards are handled per their pilot-list membership.",
+    "custom_preconds": "**GIVEN** a Glider PV with cEMV is configured for the Pilot List via TMS\n**AND** you have a pilotlist.zip to apply (including registration mode), an EMV card on the list and one not on the list\n**AND** you can verify records in the CloudFare activity log and export via Device Log Manager",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you apply the pilot list (pilotlist.zip) to the PV via TMS, including registration mode",
+        "expected": "**THEN** the PV applies the pilot list configuration"
+      },
+      {
+        "content": "**WHEN** you present an EMV card that is on the Pilot List, then one that is not",
+        "expected": "**THEN** the on-list card is accepted per the pilot rules\n**AND** the not-on-list card is handled per the not-included rule"
+      },
+      {
+        "content": "**WHEN** you export the pilot list",
+        "expected": "**THEN** it converts from CSV to DAT and downloads as CSV from Device Log Manager"
+      }
+    ],
+    "custom_expected": "Pilot List TMS config + registration mode apply; on-list EMV accepted, not-on-list handled; CSV-to-DAT conversion and Device Log Manager CSV download supported; recorded in CloudFare.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4103568": {
+    "id": 4103568,
+    "title": "Comms Lock \u2014 a sustained network outage drives the PV out of service",
+    "section_id": 887766,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": "FBD-100359",
+    "created_by": 156,
+    "created_on": 1784192734,
+    "updated_by": 156,
+    "updated_on": 1784281590,
+    "estimate": "4m",
+    "estimate_forecast": null,
+    "suite_id": 30255,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm an Ethernet PV enters a communication-locked, out-of-service state after a sustained Translink-network loss.",
+    "custom_preconds": "**GIVEN** an Ethernet PV routed to AWS through the Translink network (static IP 192.168.3.10)\n**AND** the Translink-network connection is lost and stays down for a significant period",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the outage is sustained beyond the device's offline tolerance",
+        "expected": "**THEN** the PV enters a communication-locked, out-of-service state\n**AND** the PV stops accepting taps"
+      }
+    ],
+    "custom_expected": "A sustained Translink-network outage drives the Ethernet PV into a communication-locked, out-of-service state.\n\n[Automatable: Yes \u00b7 Cross-check: CloudFare]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4100998": {
+    "id": 4100998,
+    "title": "ABT \u2014 contactless tap validation",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780915630,
+    "updated_by": 156,
+    "updated_on": 1784281545,
+    "estimate": "7m",
+    "estimate_forecast": "6m",
+    "suite_id": 30255,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm a valid contactless payment card is accepted for an ABT tap on a Glider PV.",
+    "custom_preconds": "**GIVEN** a Glider PV on a Tap-On-Only route has ABT/cEMV enabled and is showing the Present screen\n**AND** you have a valid contactless Visa payment card (or Mastercard / mobile wallet)\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** you tap the valid contactless card at the reader",
+        "expected": "**THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played"
+      },
+      {
+        "content": "**WHEN** you check the back office for the tap",
+        "expected": "**THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT"
+      }
+    ],
+    "custom_expected": "A valid contactless tap is accepted (ABT Tag successful) and recorded in CloudFare/MERIT. Variation \u2014 Visa, Mastercard, mobile wallet.\n\n[Automatable: No \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4101002": {
+    "id": 4101002,
+    "title": "Glider TOO \u2014 tap-on-only flat-fare journeys",
+    "section_id": 887060,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 1,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 156,
+    "created_on": 1780915633,
+    "updated_by": 156,
+    "updated_on": 1784281548,
+    "estimate": "6m",
+    "estimate_forecast": "5m",
+    "suite_id": 30255,
+    "display_order": 5,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "This test is to confirm tap-on-only flat-fare journeys and daily/duplicate tap rules on a Glider PV.",
+    "custom_preconds": "**GIVEN** a Glider PV is on a Tap-On-Only flat-fare route (e.g. Glider G1) and is showing the Present screen\n**AND** you have a valid contactless card\n**AND** you can verify records in the CloudFare activity log and MERIT",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the passenger taps on for a journey",
+        "expected": "**THEN** the PV records a flat-fare journey (ABT Tag successful)"
+      },
+      {
+        "content": "**WHEN** the same card taps again shortly after, and multiple times across the day",
+        "expected": "**THEN** the duplicate-tap and daily-tap rules are applied (the immediate re-tap is treated as passback, not a second fare)"
+      },
+      {
+        "content": "**WHEN** you check the back office for the journeys",
+        "expected": "**THEN** the flat-fare journey appears in the CloudFare activity log and MERIT"
+      }
+    ],
+    "custom_expected": "TOO flat-fare journeys record correctly; daily-tap and duplicate-tap rules apply; recorded in CloudFare/MERIT.\n\n[Automatable: Partial \u00b7 Cross-check: CloudFare / MERIT]",
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  }
+}

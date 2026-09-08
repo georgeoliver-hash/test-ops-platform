@@ -1,0 +1,2292 @@
+{
+  "generated_utc": "2026-06-22T10:01:28+00:00",
+  "source": "system-test-ops",
+  "project": {
+    "id": 42,
+    "name": "TFTS - System Test"
+  },
+  "suite": {
+    "id": 30255,
+    "name": "**NEW** PV-Acceptance Test Suite",
+    "device": "PV"
+  },
+  "contract": {
+    "traceability": "Reference `ref` (TestRail case id, e.g. C4099911) in each automated test so a result maps back to its case.",
+    "markers": "Mirror device + feature as pytest markers; add @pytest.mark.destructive where destructive is true (deselected by default).",
+    "cross_check": "cross_check lists the back-office systems the case asserts — the test must verify the event landed there (CloudFare / MERIT / SmartTrack).",
+    "note": "automatable/priority are system-test-ops judgements and a starting point; the automation engineer may override with rationale."
+  },
+  "counts": {
+    "total_cases": 122,
+    "automatable_full": 12,
+    "automatable_partial": 45,
+    "manual_only": 65,
+    "untagged": 0,
+    "destructive_in_backlog": 4
+  },
+  "cases": [
+    {
+      "ref": "C4100998",
+      "case_id": 4100998,
+      "title": "ABT — contactless tap validation",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV has ABT/cEMV enabled and is showing the Present screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid contactless payment card or device is presented",
+            "then": "**THEN** the tap is accepted for the journey\n**AND** the success outcome is shown to the passenger"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A valid contactless tap is accepted with a success outcome. Variation — Visa, Mastercard, mobile wallet."
+      }
+    },
+    {
+      "ref": "C4100999",
+      "case_id": 4100999,
+      "title": "ABT — declined or errored tap",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV has ABT/cEMV enabled",
+        "steps": [
+          {
+            "when": "**WHEN** a card that is declined, expired or mis-read is presented",
+            "then": "**THEN** the tap is rejected\n**AND** the See Driver / decline outcome is shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Declined/errored taps are rejected with the See Driver/decline outcome."
+      }
+    },
+    {
+      "ref": "C4101000",
+      "case_id": 4101000,
+      "title": "ABT — BIN, Deny and Pilot list handling",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV has the BIN, Deny and Pilot lists applied",
+        "steps": [
+          {
+            "when": "**WHEN** a card on the Deny or BIN list is presented",
+            "then": "**THEN** the tap is rejected per the list rules"
+          },
+          {
+            "when": "**WHEN** a card on the Pilot list is presented",
+            "then": "**THEN** the tap is handled per the pilot rules"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Deny/BIN-listed cards are rejected; Pilot-list cards follow the pilot rules."
+      }
+    },
+    {
+      "ref": "C4101001",
+      "case_id": 4101001,
+      "title": "cEMV — tap enablement by route, location and fare",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV uses route-attribute, location and fare checks to enable cEMV",
+        "steps": [
+          {
+            "when": "**WHEN** the PV is in a context where all checks pass",
+            "then": "**THEN** cEMV taps are enabled"
+          },
+          {
+            "when": "**WHEN** any of the route, location or fare checks fail",
+            "then": "**THEN** cEMV taps are disabled in that context"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "cEMV is enabled only when route/location/fare checks pass, and disabled otherwise."
+      }
+    },
+    {
+      "ref": "C4101002",
+      "case_id": 4101002,
+      "title": "Glider TOO — tap-on-only flat-fare journeys",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV is on a Tap-On-Only flat-fare route",
+        "steps": [
+          {
+            "when": "**WHEN** a passenger taps on for a journey",
+            "then": "**THEN** a flat-fare journey is recorded"
+          },
+          {
+            "when": "**WHEN** the same passenger taps multiple times in a day",
+            "then": "**THEN** the daily tap and duplicate-tap rules are applied"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "TOO flat-fare journeys record correctly; daily and duplicate-tap rules apply."
+      }
+    },
+    {
+      "ref": "C4101003",
+      "case_id": 4101003,
+      "title": "Glider — transfers",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a passenger has tapped a first Glider journey",
+        "steps": [
+          {
+            "when": "**WHEN** they tap a connecting journey within the transfer window",
+            "then": "**THEN** the transfer is recognised per the transfer rules"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Glider transfers are recognised within the transfer window."
+      }
+    },
+    {
+      "ref": "C4101004",
+      "case_id": 4101004,
+      "title": "ABT — end-to-end journey to back office",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV with ABT enabled and back-office comms available",
+        "steps": [
+          {
+            "when": "**WHEN** a passenger completes an ABT journey",
+            "then": "**THEN** the journey is recorded\n**AND** the journey is sent to the back office for settlement"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "An ABT journey is recorded and reaches the back office end-to-end."
+      }
+    },
+    {
+      "ref": "C4101078",
+      "case_id": 4101078,
+      "title": "ABT — Pilot List management and validation",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV is configured for the Pilot List via TMS",
+        "steps": [
+          {
+            "when": "**WHEN** a pilot list (pilotlist.zip) is applied to the PV via TMS, including registration mode",
+            "then": "**THEN** the PV applies the pilot list configuration"
+          },
+          {
+            "when": "**WHEN** an EMV card that is included on the Pilot List is presented",
+            "then": "**THEN** the card is accepted per the pilot rules"
+          },
+          {
+            "when": "**WHEN** an EMV card that is NOT on the Pilot List is presented",
+            "then": "**THEN** the card is handled per the not-included rule"
+          },
+          {
+            "when": "**WHEN** the pilot list is exported",
+            "then": "**THEN** it can be converted from CSV to DAT and downloaded as CSV from Device Log Manager"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Pilot List TMS config + registration mode apply; included EMV accepted, not-included handled; CSV↔DAT conversion and Device Log Manager CSV download supported."
+      }
+    },
+    {
+      "ref": "C4101079",
+      "case_id": 4101079,
+      "title": "ABT — Deny and BIN list updates",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-26320, TIBU-25745",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV and back-office comms",
+        "steps": [
+          {
+            "when": "**WHEN** delta and full Deny/BIN list updates are published",
+            "then": "**THEN** the PV downloads and applies them, taking the full lists at end of day and deltas on schedule"
+          },
+          {
+            "when": "**WHEN** a list download fails",
+            "then": "**THEN** the PV retries the download and application"
+          },
+          {
+            "when": "**WHEN** a card on the Deny or BIN list is presented",
+            "then": "**THEN** the tap is rejected"
+          },
+          {
+            "when": "**WHEN** a card is removed from the list and re-presented",
+            "then": "**THEN** the tap is accepted"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Delta + full Deny/BIN updates download/apply (full end-of-day, delta scheduled) with retries; listed cards rejected, removed cards accepted. Pins TIBU-26320 (Deny download fail) and TIBU-25745 (BIN download fail)."
+      }
+    },
+    {
+      "ref": "C4101088",
+      "case_id": 4101088,
+      "title": "cEMV — decline reasons and route-type enablement",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV",
+        "steps": [
+          {
+            "when": "**WHEN** a card fails Offline Data Authentication, is an unsupported scheme (e.g. AMEX), is expired, has an invalid BIN, fails the AID check, is a card clash, is on the deny or negative list, or is not read successfully",
+            "then": "**THEN** the Please Try Again outcome is shown with the corresponding decline reason"
+          },
+          {
+            "when": "**WHEN** the route is \"Tap On Only (Flat Fare)\" or \"Tap On Tap Off\"",
+            "then": "**THEN** cEMV taps are enabled for that route type"
+          },
+          {
+            "when": "**WHEN** no valid fare is found, the boarding location is outside the configured area, or cEMV is disabled in the Technician Menu",
+            "then": "**THEN** cEMV taps are disabled"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "cEMV declines on ODA fail / unsupported scheme (AMEX) / expired / invalid BIN / AID fail / card clash / deny or negative list / unread, showing Please Try Again with the reason; enables for Tap-On-Only and Tap-On-Tap-Off route types; disables on no-fare / out-of-area / Technician-Menu-disable."
+      }
+    },
+    {
+      "ref": "C4101089",
+      "case_id": 4101089,
+      "title": "cEMV — JourneyTap audit and alighting-stage derivation",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV on a Tap-On-Only route",
+        "steps": [
+          {
+            "when": "**WHEN** a successful cEMV tap is made",
+            "then": "**THEN** the tap is audited as a \"JourneyTap\" in CloudFare\n**AND** the alighting stage is derived from the Furthest Alighting Point file"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A successful cEMV tap is audited as a JourneyTap, with the alighting stage derived from the Furthest Alighting Point file."
+      }
+    },
+    {
+      "ref": "C4101092",
+      "case_id": 4101092,
+      "title": "cEMV — tap audit content (JourneyTap, stop/stage, direction, payment method)",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "TIBU-22332, TIBU-30476, TIBU-28856, TIBU-28645",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV on a Tap On Only route",
+        "steps": [
+          {
+            "when": "**WHEN** a successful cEMV tap is made",
+            "then": "**THEN** the tap is audited as a \"JourneyTap\" in CloudFare\n**AND** the audit records both the stop id and the stage id\n**AND** the tap direction is audited correctly as IN\n**AND** the payment method is audited correctly for the Glider TOO transaction"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A cEMV TOO tap audits as a JourneyTap with both stop id and stage id, the correct direction (IN, not OUT), and the correct payment method."
+      }
+    },
+    {
+      "ref": "C4101093",
+      "case_id": 4101093,
+      "title": "cEMV — EMV result screens and transaction generation",
+      "section_path": [
+        "Functional",
+        "ABT (Glider)"
+      ],
+      "feature": "ABT (Glider)",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "TIBU-25700, TIBU-25702, TIBU-25704, TIBU-25705",
+      "gherkin": {
+        "given": "**Given** a Glider PV with cEMV",
+        "steps": [
+          {
+            "when": "**WHEN** a cEMV tap succeeds or fails",
+            "then": "**THEN** the correct EMV success or failure screen is shown\n**AND** the EMV result screen times out after the configured period rather than persisting"
+          },
+          {
+            "when": "**WHEN** a smartcard is presented while an EMV success or failure screen is shown",
+            "then": "**THEN** the smartcard tap is accepted"
+          },
+          {
+            "when": "**WHEN** an EMV tap fails",
+            "then": "**THEN** a transaction is still generated for the failed tap"
+          },
+          {
+            "when": "**WHEN** a card is re-presented for EMV passback",
+            "then": "**THEN** the correct EMV passback screen is shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "EMV success/failure/passback screens are correct and time out (don't persist); smartcards tap on those screens; failed EMV taps still generate a transaction."
+      }
+    },
+    {
+      "ref": "C4101005",
+      "case_id": 4101005,
+      "title": "Barcode — single-use validation",
+      "section_path": [
+        "Functional",
+        "Barcodes"
+      ],
+      "feature": "Barcodes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid single-use barcode is presented",
+            "then": "**THEN** the barcode is validated\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** an invalid single-use barcode is presented",
+            "then": "**THEN** the barcode is rejected with the specific reason shown"
+          }
+        ],
+        "expected": "Single-use barcodes validate when valid and reject with a reason when invalid (already used, expired, decryption failed, invalid product)."
+      }
+    },
+    {
+      "ref": "C4101006",
+      "case_id": 4101006,
+      "title": "Barcode — multi-use validation",
+      "section_path": [
+        "Functional",
+        "Barcodes"
+      ],
+      "feature": "Barcodes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid multi-use barcode is presented",
+            "then": "**THEN** the barcode is validated\n**AND** a use is recorded\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** the barcode is presented beyond its allowed uses or is invalid",
+            "then": "**THEN** the barcode is rejected with the specific reason shown"
+          }
+        ],
+        "expected": "Multi-use barcodes validate and decrement remaining uses; reject when exhausted/invalid. Variation — HHD-produced and TVM-produced. (In the live NIR regression.)"
+      }
+    },
+    {
+      "ref": "C4102428",
+      "case_id": 4102428,
+      "title": "Barcode — early-morning expiry displays the previous day",
+      "section_path": [
+        "Functional",
+        "Barcodes"
+      ],
+      "feature": "Barcodes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid barcode with an expiry time between 00:00 and 04:00 is presented",
+            "then": "**THEN** the barcode is validated\n**AND** the validation success screen displays the previous day as the expiry date\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          }
+        ],
+        "expected": "A barcode expiring between 00:00 and 04:00 validates and the success screen shows the previous day as the expiry date."
+      }
+    },
+    {
+      "ref": "C4102430",
+      "case_id": 4102430,
+      "title": "PV commissioning — uncommissioned until location programmed",
+      "section_path": [
+        "Functional",
+        "Commissioning"
+      ],
+      "feature": "Commissioning",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an uncommissioned PV with an unprogrammed Plinth-ID",
+        "steps": [
+          {
+            "when": "**WHEN** the device starts up before any location is programmed",
+            "then": "**THEN** the status bar shows no programmed Device ID, Sub Location or Location values"
+          },
+          {
+            "when": "**WHEN** the PV has comms and a technician signs in and programs the location details",
+            "then": "**THEN** the status bar displays the programmed Device ID, Sub Location and Location"
+          }
+        ],
+        "expected": "An uncommissioned PV shows unprogrammed status-bar values; once a technician signs in (with comms) and programs the location, the Device ID, Sub Location and Location are displayed."
+      }
+    },
+    {
+      "ref": "C4101007",
+      "case_id": 4101007,
+      "title": "Legacy smartcard support",
+      "section_path": [
+        "Functional",
+        "Legacy & Card Tech"
+      ],
+      "feature": "Legacy & Card Tech",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid legacy journey-based or time-based smartcard is presented",
+            "then": "**THEN** the card is validated per its legacy rules"
+          },
+          {
+            "when": "**WHEN** an invalid legacy smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Legacy journey-based and time-based smartcards validate/reject correctly."
+      }
+    },
+    {
+      "ref": "C4101008",
+      "case_id": 4101008,
+      "title": "Card technology — MIFARE and DESFire",
+      "section_path": [
+        "Functional",
+        "Legacy & Card Tech"
+      ],
+      "feature": "Legacy & Card Tech",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service",
+        "steps": [
+          {
+            "when": "**WHEN** a MIFARE Classic EV1 or DESFire card is presented",
+            "then": "**THEN** the PV reads and validates the card per its type\n**AND** the validation is recorded in the back office (CloudFare, MERIT and SmartTrack)"
+          }
+        ],
+        "expected": "The PV reads and validates the supported card technologies (MIFARE Classic EV1, DESFire)."
+      }
+    },
+    {
+      "ref": "C4101009",
+      "case_id": 4101009,
+      "title": "Passback handling",
+      "section_path": [
+        "Functional",
+        "Legacy & Card Tech"
+      ],
+      "feature": "Legacy & Card Tech",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a card has just been validated at the PV",
+        "steps": [
+          {
+            "when": "**WHEN** the same card is presented again within the passback window",
+            "then": "**THEN** passback is applied per the product rules"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Passback is applied on re-presentation within the window (smartcard and payment card)."
+      }
+    },
+    {
+      "ref": "C4101010",
+      "case_id": 4101010,
+      "title": "PV operating times",
+      "section_path": [
+        "Functional",
+        "Legacy & Card Tech"
+      ],
+      "feature": "Legacy & Card Tech",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV has configured operating times",
+        "steps": [
+          {
+            "when": "**WHEN** a card is presented within the operating times",
+            "then": "**THEN** the card is validated normally"
+          },
+          {
+            "when": "**WHEN** a card is presented outside the operating times",
+            "then": "**THEN** the PV does not validate\n**AND** shows the out-of-service state"
+          }
+        ],
+        "expected": "The PV validates within operating times and is out of service outside them."
+      }
+    },
+    {
+      "ref": "C4100996",
+      "case_id": 4100996,
+      "title": "Rail — NIR transfer validation",
+      "section_path": [
+        "Functional",
+        "Rail-specific"
+      ],
+      "feature": "Rail-specific",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Rail PV is in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid transfer-eligible smartcard is presented for an NIR transfer",
+            "then": "**THEN** the transfer is validated per the transfer rules"
+          },
+          {
+            "when": "**WHEN** the card is not eligible for the transfer",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "NIR transfers validate for eligible products and reject otherwise. Variation — iLink, Belfast Visitor, Staff Smartpass, aLink, EA Pupil/FE; Adult and Child. (Rail mode.)"
+      }
+    },
+    {
+      "ref": "C4100997",
+      "case_id": 4100997,
+      "title": "Rail — zone validation",
+      "section_path": [
+        "Functional",
+        "Rail-specific"
+      ],
+      "feature": "Rail-specific",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Rail PV is in service in a defined zone",
+        "steps": [
+          {
+            "when": "**WHEN** a valid zonal smartcard is presented within its zone",
+            "then": "**THEN** the card is validated for the zone"
+          },
+          {
+            "when": "**WHEN** the card is presented outside its valid zone",
+            "then": "**THEN** the card is rejected as wrong zone"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Zonal validation accepts in-zone and rejects out-of-zone. (Rail mode.)"
+      }
+    },
+    {
+      "ref": "C4102429",
+      "case_id": 4102429,
+      "title": "Rail — ABT tap success shows the Northern Ireland travel line",
+      "section_path": [
+        "Functional",
+        "Rail-specific"
+      ],
+      "feature": "Rail-specific",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Rail/NIR PV has ABT enabled and is showing the Present screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid contactless card is tapped and accepted",
+            "then": "**THEN** the ABT tap success screen is shown\n**AND** the success screen displays the additional line \"Northern Ireland Travel Only\""
+          }
+        ],
+        "expected": "On a Rail/NIR PV, a successful ABT tap shows the success screen with the additional \"Northern Ireland Travel Only\" line."
+      }
+    },
+    {
+      "ref": "C4100981",
+      "case_id": 4100981,
+      "title": "Validate a Concession SmartPass",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid concession SmartPass is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid concession SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Concession SmartPasses validate when valid and reject with a reason when invalid. Variation — 60+, Blind, Senior, ROI Senior, War Pensioner. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100982",
+      "case_id": 4100982,
+      "title": "Validate a Half-Fare SmartPass",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Half-Fare SmartPass is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid Half-Fare SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Half-Fare SmartPasses validate/reject correctly. Variation — DLA, Learning Disability, No Driving Licence, PIPS, Partially Sighted. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100983",
+      "case_id": 4100983,
+      "title": "Validate a Metro Daylink smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Metro Daylink smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid Metro Daylink smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Metro Daylink validates/rejects correctly. Run for Adult and Child, under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100984",
+      "case_id": 4100984,
+      "title": "Validate a Metro Multi-Journey smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Metro Multi-Journey smartcard is presented within its zone",
+            "then": "**THEN** the card is validated\n**AND** a journey is deducted with the passback rules applied"
+          },
+          {
+            "when": "**WHEN** the card is presented out of zone or is otherwise invalid",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Metro Multi-Journey validates within its zone and rejects out-of-zone/invalid. Variation — City, Inner, Extended zones; Adult and Child. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100985",
+      "case_id": 4100985,
+      "title": "Validate a Metro Travelcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Metro Travelcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid Metro Travelcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Metro Travelcard validates/rejects correctly. Run for Adult and Child, under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100986",
+      "case_id": 4100986,
+      "title": "Validate an Ulsterbus Multi-Journey smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Ulsterbus Multi-Journey smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** a journey is deducted with the passback rules applied"
+          },
+          {
+            "when": "**WHEN** an invalid Ulsterbus Multi-Journey smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Ulsterbus Multi-Journey validates/rejects correctly. Run for Adult and Child, under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100987",
+      "case_id": 4100987,
+      "title": "Validate an iLink smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid iLink smartcard is presented within its zone",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** the card is presented out of zone or is otherwise invalid",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "iLink validates within zone and rejects invalid. Variation — Zones 1-4 and NW, plus Belfast Visitor Pass; Adult and Child. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100988",
+      "case_id": 4100988,
+      "title": "Validate an aLink smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid aLink smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid aLink smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "aLink validates/rejects correctly. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100989",
+      "case_id": 4100989,
+      "title": "Validate a yLink or 24+ smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid yLink or 24+ smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid yLink or 24+ smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "yLink/24+ validates/rejects correctly. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100990",
+      "case_id": 4100990,
+      "title": "Validate a Translink Employee smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Translink employee smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** an invalid Translink employee smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Employee smartcards validate/reject correctly. Variation — Staff, Staff Partner, Retired Staff, External Staff, Dependents Pass. Run under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4100991",
+      "case_id": 4100991,
+      "title": "Validate an EA Smartpass (Pupil and Further Education)",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid EA Smartpass is presented within its valid time",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          },
+          {
+            "when": "**WHEN** it is presented before start date, after expiry, outside the valid time, at a weekend or during a school holiday",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "EA Smartpasses validate within valid times and reject outside (start/expiry/time/weekend/holiday). Variation — Pupil, Further Education; EA Bus (Glider) and EA Rail."
+      }
+    },
+    {
+      "ref": "C4101090",
+      "case_id": 4101090,
+      "title": "Smartcard — inter-device top-up then validate on PV",
+      "section_path": [
+        "Functional",
+        "Smartcard Validation"
+      ],
+      "feature": "Smartcard Validation",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a smartcard has been topped up on another device (e.g. POS) or a legacy device",
+        "steps": [
+          {
+            "when": "**WHEN** the card is presented to the PV for validation",
+            "then": "**THEN** the PV validates the card reflecting the top-up made elsewhere"
+          },
+          {
+            "when": "**WHEN** the card was topped up on its last day of travel, with expired journeys, or with no days remaining",
+            "then": "**THEN** the PV applies the corresponding outcome"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A card topped up elsewhere (POS/legacy) validates on the PV; last-day / expired-journeys / no-days-remaining edge cases handled. Run for Metro Travelcard and iLink Zones 1-4/NW, Adult and Child, under Glider and Rail."
+      }
+    },
+    {
+      "ref": "C4101011",
+      "case_id": 4101011,
+      "title": "Technician Menu — login",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service displaying the Technician Menu login screen",
+        "steps": [
+          {
+            "when": "**WHEN** a technician presents a valid technician smartcard and enters the correct PIN",
+            "then": "**THEN** the Technician Menu home screen is displayed"
+          },
+          {
+            "when": "**WHEN** an invalid technician smartcard or an incorrect PIN is presented",
+            "then": "**THEN** the incorrect-details message is shown\n**AND** access to the Technician Menu is refused"
+          }
+        ],
+        "expected": "A valid technician smartcard + PIN reaches the menu (PV requires the card, unlike ETM/POS which are PIN-only); invalid credentials are refused."
+      }
+    },
+    {
+      "ref": "C4101014",
+      "case_id": 4101014,
+      "title": "Technician Menu — software and configuration versions",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is in the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the technician views the Software Versions page",
+            "then": "**THEN** the software versions are listed (OS, BSP, EBoot, Configuration Version, application software and operating files)"
+          },
+          {
+            "when": "**WHEN** the technician views the Configuration Versions page",
+            "then": "**THEN** the configuration versions are listed (Configuration Version, Furthest Alighting file, TD.Product, TD.Topology, Staff List)"
+          }
+        ],
+        "expected": "The Software Versions page lists OS/BSP/EBoot/config/application/operating files; the Configuration Versions page lists Configuration Version, Furthest Alighting file, TD.Product, TD.Topology and Staff List."
+      }
+    },
+    {
+      "ref": "C4101015",
+      "case_id": 4101015,
+      "title": "Technician Menu — force communications",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is in the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the technician opens the Force Communications page",
+            "then": "**THEN** the page summarises the comms status — pending audit-record count, last successful audit send, last manifest download attempt, last successful manifest download, pending software/configuration file count"
+          },
+          {
+            "when": "**WHEN** the technician presses Call Now",
+            "then": "**THEN** the PV checks the back-office manifest and attempts to send any pending audit records"
+          },
+          {
+            "when": "**WHEN** the technician presses Refresh",
+            "then": "**THEN** the displayed values update to the most recent information"
+          }
+        ],
+        "expected": "The Force Communications page summarises pending audit count, last successful audit send, last manifest attempt, last successful manifest download and pending file count; Call Now triggers a manifest check and audit send; Refresh updates the displayed values."
+      }
+    },
+    {
+      "ref": "C4102166",
+      "case_id": 4102166,
+      "title": "Technician Menu — sign off",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is signed in to the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the technician selects Sign Off",
+            "then": "**THEN** the technician is signed off\n**AND** the PV returns to its in-service state"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A technician can sign off and the PV returns to service."
+      }
+    },
+    {
+      "ref": "C4102181",
+      "case_id": 4102181,
+      "title": "Technician Menu — auto sign-off and page timeouts",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is signed in to the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** no input is made on a page and it times out",
+            "then": "**THEN** the PV returns to the Technician Menu home screen"
+          },
+          {
+            "when": "**WHEN** the inactivity period elapses",
+            "then": "**THEN** the PV auto signs the technician off with a tone\n**AND** the sign-off is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Inactive pages time out to the Technician Menu home; continued inactivity auto signs-off the technician (with a tone) and audits the sign-off."
+      }
+    },
+    {
+      "ref": "C4100992",
+      "case_id": 4100992,
+      "title": "Validation — invalid reasons displayed",
+      "section_path": [
+        "Functional",
+        "Validation Outcomes"
+      ],
+      "feature": "Validation Outcomes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a card is presented that cannot be validated",
+            "then": "**THEN** the specific reason screen is displayed\n**AND** the denied validation is recorded in the back office (CloudFare, MERIT and SmartTrack)"
+          }
+        ],
+        "expected": "The correct reason is shown — Not Valid At This Location, Invalid Time Of Day, Product Expired, outside time band, hotlisted, wrong zone, Unable to Validate, Represent Card."
+      }
+    },
+    {
+      "ref": "C4100993",
+      "case_id": 4100993,
+      "title": "Validation — passback",
+      "section_path": [
+        "Functional",
+        "Validation Outcomes"
+      ],
+      "feature": "Validation Outcomes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a card has just been validated on the PV",
+        "steps": [
+          {
+            "when": "**WHEN** the same card is presented again within the passback period",
+            "then": "**THEN** passback is applied per the product rules\n**AND** the journeys or period remaining is shown where applicable\n**AND** the validation is recorded in the back office (CloudFare, MERIT and SmartTrack)"
+          }
+        ],
+        "expected": "Passback is applied on re-presentation within the period, showing journeys/period left."
+      }
+    },
+    {
+      "ref": "C4100994",
+      "case_id": 4100994,
+      "title": "Validation — machine not in service",
+      "section_path": [
+        "Functional",
+        "Validation Outcomes"
+      ],
+      "feature": "Validation Outcomes",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is out of service",
+        "steps": [
+          {
+            "when": "**WHEN** a passenger presents a card",
+            "then": "**THEN** the Machine Not In Service screen is displayed and no validation occurs"
+          }
+        ],
+        "expected": "An out-of-service PV shows Machine Not In Service and does not validate."
+      }
+    },
+    {
+      "ref": "C4101021",
+      "case_id": 4101021,
+      "title": "PV to BOS — transaction upload",
+      "section_path": [
+        "Non-Functional",
+        "PV"
+      ],
+      "feature": "PV",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV has recorded validation and tap transactions",
+        "steps": [
+          {
+            "when": "**WHEN** the PV communicates with the back office",
+            "then": "**THEN** the transactions are uploaded to the back office"
+          }
+        ],
+        "expected": "The PV uploads its transactions to the back office."
+      }
+    },
+    {
+      "ref": "C4101082",
+      "case_id": 4101082,
+      "title": "PV to BOS — MERIT heartbeat",
+      "section_path": [
+        "Non-Functional",
+        "PV"
+      ],
+      "feature": "PV",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a PV is in service",
+        "steps": [
+          {
+            "when": "**WHEN** the configured 24-hour period elapses",
+            "then": "**THEN** a MERIT heartbeat transaction is sent to the back office"
+          },
+          {
+            "when": "**WHEN** a technician signs out of the Technician Menu",
+            "then": "**THEN** a heartbeat occurs"
+          }
+        ],
+        "expected": "A MERIT 24-hour heartbeat transaction is sent, and a heartbeat occurs after technician sign-out."
+      }
+    },
+    {
+      "ref": "C4101084",
+      "case_id": 4101084,
+      "title": "PV to BOS — configuration and topology distribution",
+      "section_path": [
+        "Non-Functional",
+        "PV"
+      ],
+      "feature": "PV",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the back office has a configuration or topology update for the PV",
+        "steps": [
+          {
+            "when": "**WHEN** the PV downloads a configuration or topology update for immediate activation",
+            "then": "**THEN** the update is applied"
+          },
+          {
+            "when": "**WHEN** the update has a future activation date",
+            "then": "**THEN** it is stored and activated on that date"
+          },
+          {
+            "when": "**WHEN** a corrupt configuration file is downloaded",
+            "then": "**THEN** it is rejected\n**AND** the current configuration is retained"
+          }
+        ],
+        "expected": "Config/topology updates apply immediately or on a future date; corrupt files are rejected without disrupting the live config."
+      }
+    },
+    {
+      "ref": "C4101085",
+      "case_id": 4101085,
+      "title": "PV to BOS — communications resilience and failover",
+      "section_path": [
+        "Non-Functional",
+        "PV"
+      ],
+      "feature": "PV",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a PV in service communicating with the back office",
+        "steps": [
+          {
+            "when": "**WHEN** communications are interrupted or lost",
+            "then": "**THEN** the PV continues to validate and queues data to upload\n**AND** data due for download is retrieved once comms return"
+          },
+          {
+            "when": "**WHEN** the primary comms channel fails",
+            "then": "**THEN** the PV fails over to the secondary communication method"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The PV keeps validating with comms interrupted/lost (queuing upload, catching up download) and fails over to the secondary channel."
+      }
+    },
+    {
+      "ref": "C4101072",
+      "case_id": 4101072,
+      "title": "Smoke — valid smartcard validates",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid smartcard is presented",
+            "then": "**THEN** the card is validated\n**AND** the success outcome is shown"
+          }
+        ],
+        "expected": "A valid smartcard validates with a success outcome."
+      }
+    },
+    {
+      "ref": "C4101073",
+      "case_id": 4101073,
+      "title": "Smoke — invalid smartcard shows a reason",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** an invalid smartcard is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          }
+        ],
+        "expected": "An invalid smartcard is rejected with the reason displayed."
+      }
+    },
+    {
+      "ref": "C4101074",
+      "case_id": 4101074,
+      "title": "Smoke — valid barcode validates",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service showing the Present SmartCard or Barcode screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid barcode is presented",
+            "then": "**THEN** the barcode is validated"
+          }
+        ],
+        "expected": "A valid barcode validates."
+      }
+    },
+    {
+      "ref": "C4101075",
+      "case_id": 4101075,
+      "title": "Smoke — ABT contactless tap succeeds",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Glider PV has ABT enabled and is showing the Present screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid contactless card is tapped",
+            "then": "**THEN** the tap is accepted with a success outcome"
+          }
+        ],
+        "expected": "A valid ABT tap is accepted."
+      }
+    },
+    {
+      "ref": "C4101076",
+      "case_id": 4101076,
+      "title": "Smoke — Technician Menu login",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service displaying the Technician Menu login screen",
+        "steps": [
+          {
+            "when": "**WHEN** a technician presents a valid technician smartcard and enters a valid PIN",
+            "then": "**THEN** the Technician Menu home screen is displayed"
+          }
+        ],
+        "expected": "A valid technician smartcard and PIN reach the Technician Menu."
+      }
+    },
+    {
+      "ref": "C4101077",
+      "case_id": 4101077,
+      "title": "Smoke — PV communicates with the back office",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "PV",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the PV is in service",
+        "steps": [
+          {
+            "when": "**WHEN** communications with the back office are forced",
+            "then": "**THEN** the PV exchanges data with the back office successfully"
+          }
+        ],
+        "expected": "The PV communicates with the back office on demand."
+      }
+    },
+    {
+      "ref": "C4101016",
+      "case_id": 4101016,
+      "title": "Technician Menu — network settings",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is in the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the technician views and edits the network settings and confirms",
+            "then": "**THEN** the network settings are updated"
+          }
+        ],
+        "expected": "Network settings can be viewed and edited."
+      }
+    },
+    {
+      "ref": "C4101017",
+      "case_id": 4101017,
+      "title": "Technician Menu — operating times",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "PV",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a technician is in the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the technician reconfigures the operating start time",
+            "then": "**THEN** the new operating times are applied\n**AND** the PV goes out of service and then into service per the configured times"
+          }
+        ],
+        "expected": "Reconfiguring the operating times applies them and the PV transitions out of service then into service per the schedule."
+      }
+    },
+    {
+      "ref": "C4101086",
+      "case_id": 4101086,
+      "title": "PV — scheduled maintenance",
+      "section_path": [
+        "Non-Functional",
+        "PV"
+      ],
+      "feature": "PV",
+      "device": "PV",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a scheduled maintenance window is configured",
+        "steps": [
+          {
+            "when": "**WHEN** the PV is in idle mode during the window",
+            "then": "**THEN** the scheduled maintenance is performed"
+          },
+          {
+            "when": "**WHEN** the PV comes out of the suspended state",
+            "then": "**THEN** the PV resumes to service"
+          }
+        ],
+        "expected": "Scheduled maintenance runs from idle; the PV resumes cleanly out of suspend."
+      }
+    }
+  ]
+}

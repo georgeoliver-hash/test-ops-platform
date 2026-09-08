@@ -1,0 +1,175 @@
+{
+  "4069405": {
+    "id": 4069405,
+    "title": "TIBU-24428: TL PV \"PrimaryCommsChannelFailed\" event spamming seen in CF on build 3.1.1 in TL Test Environment",
+    "section_id": 880318,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 93,
+    "created_on": 1755761381,
+    "updated_by": 93,
+    "updated_on": 1755761985,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 2,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Description\r\n\r\nWe have an apparent issue with the 3.1.1 PV build reported by Translink when testing in their test environment, where it is frequently \u201cspamming\u201d CF with the \u201cPrimaryCommsChannelFailed\u201d event, suggesting that the PV is frequently flipping between ethernet and cellular. \r\n\r\nWe do not see the same issues in our own Poole test environment, so this may be a pointer that the issue is a Translink network problem.\r\n\r\nTL have reported that they do not see the spamming if the cellular SIM is removed from the PV, and the PV will continue to communicate over ethernet with no \u201cPrimaryCommsChannelFailed\u201d event spamming. At face value this is odd, but it may simply be another indication of a poor network, and the lack of any \u201cPrimaryCommsChannelFailed\u201d event spamming in this scenario may be simply because we have no secondary comms channel to fail over to with the SIM removed.\r\n\r\nDEBUG logs have been attached along with a screenshot of the event spamming to better direct investigation.\r\n\r\nSome possible points of interest within the logs:\r\n\r\nFailed to send an audit record, and then 5 seconds later failed over to cellular (GFTS.log1.txt):\r\n\r\n2025-07-07 14:02:00.771 WARN [BackOfficeAgent] - BOSRecordHandler batch send ended - send failure \\SD Memory\\GFTS\\BOSRecords\\000000\\00000060.evt\r\n2025-07-07 14:02:05.710 INFO [NetworkConfiguration] - [Network Route] Monitor Route: Adaptor FEC1, Route backofficeprimary, available False\r\n\r\nModem IP Comparison Oddity:\r\n\r\n2025-07-07 14:02:07.595 DEBUG [NetworkConfiguration] - ConnectionState: OS IP 10.100.211.23 and Modem IP 100.103.117.238 do not match\r\n2025-07-07 14:02:07.596 DEBUG [NetworkConfiguration] - ConnectionState: OS IP 100.103.117.238 and Modem IP 100.103.117.238 match\r\n\r\nThe above maybe normal, it is logged often. It looks like it is first comparing the IP address of the ethernet with the Modem IP and finding they don\u2019t match (as expected) but on the very next line after it does correctly match the Modem IP so this is probably nothing to be concerned about?\r\n\r\nException:\r\n\r\n2025-07-07 14:02:05.694 WARN [NetworkConfiguration] - [NetworkRouteDestinationClient] SendWebRequest WebException: Error while processing request./jikdl.atufc: Error while processing request. ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond\r\n\r\n\r\nThe above exception seems to be what is consistently aligning with when we raise the PrimaryCommsChannelFailed \u201cset\u201d event and fail over to cellular.\r\n\r\nNOTE: The screenshot added of CF is showing \u201cpairs\u201d of the PrimaryCommsChannelFailed\u201d event which is not immediatley obvious from the screenshot. the PrimaryCommsChannelFailed event is a set/clear event.\r\n\r\nEnvironment\r\n\r\n\r\nTL test environment (t2-env2) with PV 3.1.1 build\r\n\r\nClosure Reason\r\n\r\n\r\nNone\r\nRequirements\r\n\r\n\r\nGIVEN I have a reliable ethernet connection\r\nWHEN The PV is powered on\r\nTHEN The PV should continue to communicate over ethernet\r\nAND Not fail over to cellular",
+    "custom_preconds": "**GIVEN** The PV is in Service\r\n**AND** The PV has an ethernet connection",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** The Cloudfare/Activity Logs are inspected for the PV",
+        "expected": "**THEN** the PV continues to communicate over ethernet\n**AND** Does not fail over to cellular"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null
+  },
+  "4091894": {
+    "id": 4091894,
+    "title": "TIBU-24428: TL PV \"PrimaryCommsChannelFailed\" event spamming seen in CF on build 3.1.1 in TL Test Environment",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": null,
+    "created_by": 135,
+    "created_on": 1769425331,
+    "updated_by": 135,
+    "updated_on": 1769425331,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 1,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Description\r\n\r\nWe have an apparent issue with the 3.1.1 PV build reported by Translink when testing in their test environment, where it is frequently \u201cspamming\u201d CF with the \u201cPrimaryCommsChannelFailed\u201d event, suggesting that the PV is frequently flipping between ethernet and cellular. \r\n\r\nWe do not see the same issues in our own Poole test environment, so this may be a pointer that the issue is a Translink network problem.\r\n\r\nTL have reported that they do not see the spamming if the cellular SIM is removed from the PV, and the PV will continue to communicate over ethernet with no \u201cPrimaryCommsChannelFailed\u201d event spamming. At face value this is odd, but it may simply be another indication of a poor network, and the lack of any \u201cPrimaryCommsChannelFailed\u201d event spamming in this scenario may be simply because we have no secondary comms channel to fail over to with the SIM removed.\r\n\r\nDEBUG logs have been attached along with a screenshot of the event spamming to better direct investigation.\r\n\r\nSome possible points of interest within the logs:\r\n\r\nFailed to send an audit record, and then 5 seconds later failed over to cellular (GFTS.log1.txt):\r\n\r\n2025-07-07 14:02:00.771 WARN [BackOfficeAgent] - BOSRecordHandler batch send ended - send failure \\SD Memory\\GFTS\\BOSRecords\\000000\\00000060.evt\r\n2025-07-07 14:02:05.710 INFO [NetworkConfiguration] - [Network Route] Monitor Route: Adaptor FEC1, Route backofficeprimary, available False\r\n\r\nModem IP Comparison Oddity:\r\n\r\n2025-07-07 14:02:07.595 DEBUG [NetworkConfiguration] - ConnectionState: OS IP 10.100.211.23 and Modem IP 100.103.117.238 do not match\r\n2025-07-07 14:02:07.596 DEBUG [NetworkConfiguration] - ConnectionState: OS IP 100.103.117.238 and Modem IP 100.103.117.238 match\r\n\r\nThe above maybe normal, it is logged often. It looks like it is first comparing the IP address of the ethernet with the Modem IP and finding they don\u2019t match (as expected) but on the very next line after it does correctly match the Modem IP so this is probably nothing to be concerned about?\r\n\r\nException:\r\n\r\n2025-07-07 14:02:05.694 WARN [NetworkConfiguration] - [NetworkRouteDestinationClient] SendWebRequest WebException: Error while processing request./jikdl.atufc: Error while processing request. ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond\r\n\r\n\r\nThe above exception seems to be what is consistently aligning with when we raise the PrimaryCommsChannelFailed \u201cset\u201d event and fail over to cellular.\r\n\r\nNOTE: The screenshot added of CF is showing \u201cpairs\u201d of the PrimaryCommsChannelFailed\u201d event which is not immediatley obvious from the screenshot. the PrimaryCommsChannelFailed event is a set/clear event.\r\n\r\nEnvironment\r\n\r\n\r\nTL test environment (t2-env2) with PV 3.1.1 build\r\n\r\nClosure Reason\r\n\r\n\r\nNone\r\nRequirements\r\n\r\n\r\nGIVEN I have a reliable ethernet connection\r\nWHEN The PV is powered on\r\nTHEN The PV should continue to communicate over ethernet\r\nAND Not fail over to cellular",
+    "custom_preconds": "**GIVEN** The PV is in Service\r\n**AND** The PV has an ethernet connection",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** The Cloudfare/Activity Logs are inspected for the PV",
+        "expected": "**THEN** the PV continues to communicate over ethernet\n**AND** Does not fail over to cellular"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null
+  },
+  "4091897": {
+    "id": 4091897,
+    "title": "TIBU-25446 - TL PV - \"spamming\" of FEIG Manifest requests in the log file at least every second",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-25446",
+    "created_by": 135,
+    "created_on": 1769427365,
+    "updated_by": 135,
+    "updated_on": 1769429142,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 4,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "Similar to an issue we had on the GV (fixed in TIBU-22904) , the PV is constantly requesting a FEIG manifest far too often (every 1 second) despite there being no manifest for the FEIGs. This causes not only lots of noise in the log, but also unnecessary strain on the CF back office.\r\n\r\nSimilar changes that were made on the GV need to be made to the PV, ensuring the manifest is requested at a more sensible frequency (for example every 15 mins).\r\n\r\nSee log attached for example PV with lots of FEIG manifest spamming",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the PV has been running for atleast a few hours ",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user switches off the power to the PV",
+        "expected": "**THEN** the PV switches off"
+      },
+      {
+        "content": "**WHEN** the user removes the primary SD from the PV\n**AND** the user inserts the primary SD card into their computer\n**AND** the user navigates to the logs folder on the SD card\n**AND** the user opens the logs file on their computer",
+        "expected": "**THEN** the log file is displayed\n**AND** the log file is not spamming the log file with FEIG Manifest requests"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091905": {
+    "id": 4091905,
+    "title": "TIBU-26048 - Device fails to perform Feig update via TMS",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-26048",
+    "created_by": 135,
+    "created_on": 1769598951,
+    "updated_by": 135,
+    "updated_on": 1769599213,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 12,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "PV 3.1.2.15214\r\n\r\nDevice fails to perform Feig update via TMS. I have send down new versions of Smartcard PCA Application, Smartcard Reader Firmware, and Smartcard Transparent Application within a TMS dataset and then deployed that dataset down to the Feig\u2019s device ID which in this case was 17F138C2. It appears that the device never tries to download a manifest for the Feig update, I would if the download had started I would of expected to see a FeigUpdate folder within the State folder but this was not present on my device. Another thing worth noting is that in the logs I am not seeing the device ID of Feig which previously could be commonly found when checking the device logs.\r\n\r\nExpected Result:\r\n\r\nTMS Feig update is successful on the PV\r\n\r\nActual Result:\r\n\r\nTMS Feig update is unsuccessful on the PV",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the PV is communicating with BOS\r\n**AND** a dataset has been created which includes the new Feig versions",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user deploys the dataset contains the new Feig versions down to the PV",
+        "expected": "**THEN** the PV successfully updates to the new Feig version deployed\n**AND** the Feig reader is able to perform Smartcard and EMV taps"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  },
+  "4091910": {
+    "id": 4091910,
+    "title": "TIBU-26522 - PV DEV BUILD Glider TOO - After performing Feig update the device fails to detect EMV cards",
+    "section_id": 885684,
+    "template_id": 1,
+    "type_id": 2,
+    "priority_id": 3,
+    "milestone_id": null,
+    "refs": "TIBU-26048",
+    "created_by": 135,
+    "created_on": 1769613240,
+    "updated_by": 135,
+    "updated_on": 1769613289,
+    "estimate": null,
+    "estimate_forecast": null,
+    "suite_id": 10047,
+    "display_order": 17,
+    "custom_revstatus": 2,
+    "custom_autoconfirmation": false,
+    "custom_preface": "PV 3.1.2.15214\r\n\r\nDevice fails to perform Feig update via TMS. I have send down new versions of Smartcard PCA Application, Smartcard Reader Firmware, and Smartcard Transparent Application within a TMS dataset and then deployed that dataset down to the Feig\u2019s device ID which in this case was 17F138C2. It appears that the device never tries to download a manifest for the Feig update, I would if the download had started I would of expected to see a FeigUpdate folder within the State folder but this was not present on my device. Another thing worth noting is that in the logs I am not seeing the device ID of Feig which previously could be commonly found when checking the device logs.\r\n\r\nExpected Result:\r\n\r\nTMS Feig update is successful on the PV\r\n\r\nActual Result:\r\n\r\nTMS Feig update is unsuccessful on the PV",
+    "custom_preconds": "**GIVEN** the PV is In Service\r\n**AND** the PV is communicating with BOS\r\n**AND** a dataset has been created which includes the new Feig versions",
+    "custom_steps_seperated": [
+      {
+        "content": "**WHEN** the user deploys the dataset contains the new Feig versions down to the PV",
+        "expected": "**THEN** the PV successfully updates to the new Feig version deployed\n**AND** the Feig reader is able to perform Smartcard and EMV taps"
+      }
+    ],
+    "custom_expected": null,
+    "custom_expmiss": null,
+    "custom_expgoal": null,
+    "custom_automation_script": null,
+    "custom_devtypes": [
+      10
+    ]
+  }
+}

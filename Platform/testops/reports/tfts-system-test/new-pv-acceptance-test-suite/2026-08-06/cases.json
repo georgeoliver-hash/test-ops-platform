@@ -1,0 +1,2681 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "**NEW** PV-Acceptance Test Suite",
+  "suite_id": 30255,
+  "generated_at": "2026-08-06T10:15:24.536456Z",
+  "cases": [
+    {
+      "case_id": 4101072,
+      "title": "Smoke — valid smartcard validates",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a valid smartcard is presented\n-> **THEN** the card is validated\n**AND** the success outcome is shown",
+      "updated_on": "2026-07-28T07:48:01Z"
+    },
+    {
+      "case_id": 4101073,
+      "title": "Smoke — invalid smartcard shows a reason",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** an invalid smartcard is presented\n-> **THEN** the card is rejected with the specific reason shown",
+      "updated_on": "2026-07-28T07:48:02Z"
+    },
+    {
+      "case_id": 4101074,
+      "title": "Smoke — valid barcode validates",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a valid barcode is presented\n-> **THEN** the barcode is validated",
+      "updated_on": "2026-07-28T07:48:03Z"
+    },
+    {
+      "case_id": 4101075,
+      "title": "Smoke — ABT contactless tap succeeds",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a valid contactless card is tapped\n-> **THEN** the tap is accepted with a success outcome",
+      "updated_on": "2026-07-27T12:34:49Z"
+    },
+    {
+      "case_id": 4101076,
+      "title": "Smoke — Technician Menu login",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a technician presents a valid technician smartcard and enters a valid PIN\n-> **THEN** the Technician Menu home screen is displayed",
+      "updated_on": "2026-07-27T12:34:50Z"
+    },
+    {
+      "case_id": 4101077,
+      "title": "Smoke — PV communicates with the back office",
+      "section_id": 887069,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** communications with the back office are forced\n-> **THEN** the PV exchanges data with the back office successfully",
+      "updated_on": "2026-07-27T12:34:51Z"
+    },
+    {
+      "case_id": 4100981,
+      "title": "Validate a 60+ Concession SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100335"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid 60+ SmartPass to the reader\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired concession SmartPass\n-> **THEN** the PV shows the Product Expired reject screen\n**AND** no successful validation is recorded\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:04Z"
+    },
+    {
+      "case_id": 4100982,
+      "title": "Validate a DLA Half-Fare SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid DLA Half-Fare SmartPass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the Half-Fare SmartPass that is invalid\n-> **THEN** the PV shows the Invalid reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:04Z"
+    },
+    {
+      "case_id": 4100983,
+      "title": "Validate a Metro Daylink smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Metro Daylink\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired Metro Daylink\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:05Z"
+    },
+    {
+      "case_id": 4100984,
+      "title": "Validate a City-zone Metro Multi-Journey smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100261",
+        "FBD-100271",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the City-zone Multi-Journey card within its zone\n-> **THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied\n**WHEN** you present the out-of-zone (Inner) Multi-Journey card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:06Z"
+    },
+    {
+      "case_id": 4100985,
+      "title": "Validate a Metro Travelcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100260"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Metro Travelcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired Metro Travelcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:07Z"
+    },
+    {
+      "case_id": 4100986,
+      "title": "Validate an Ulsterbus Multi-Journey smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100261",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card with journeys remaining\n-> **THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied\n**WHEN** you present the card with no journeys left\n-> **THEN** the PV shows the 'No Journeys Left' screen — confirmed 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow screen list: `1.3.11 No Journeys Left`), consistent with the old suite's (10047) product-type pattern (Multi-Journey products test 'used all available Journeys').\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:08Z"
+    },
+    {
+      "case_id": 4100987,
+      "title": "Validate an iLink Zone 4 smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone iLink card\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the invalid iLink card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:34Z"
+    },
+    {
+      "case_id": 4100988,
+      "title": "Validate an aLink smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid aLink smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired aLink smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:09Z"
+    },
+    {
+      "case_id": 4100989,
+      "title": "Validate a yLink smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100236",
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the yLink card after its concessionary-period expiry date\n-> **THEN** the PV rejects it as an expired product (Product Expired) — resolved 2026-07-22: expiry is date-based only (end of the concessionary period), per FBD-100236 para 328 (\"the expiry date is expected to be set to the end of the concessionary period\"); no intraday time-of-day band exists for this product, confirmed by the total absence of any such case across the old suite's (10047) otherwise exhaustive coverage (hotlist/passback/days-left/zone), unlike the genuinely time-banded EA Pupil Smartpass / EA Bus Further Education products (old-suite cases confirm Mon-Fri/weekend/school-holiday time restrictions for those, a different product family).",
+      "updated_on": "2026-07-28T07:48:10Z"
+    },
+    {
+      "case_id": 4100990,
+      "title": "Validate a Staff Translink Employee smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Staff smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired/withdrawn employee smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:11Z"
+    },
+    {
+      "case_id": 4100991,
+      "title": "Validate an EA Pupil Smartpass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the EA Smartpass within its valid time on a school day\n-> **THEN** the PV shows the Tag successful screen\n**WHEN** you present it at a weekend or during a school holiday\n-> **THEN** the PV shows the Invalid Time Of Day reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:12Z"
+    },
+    {
+      "case_id": 4101090,
+      "title": "Smartcard — inter-device top-up then validate on PV",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100261",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the last-day-of-travel card and the no-days-remaining card\n-> **THEN** the PV accepts the last-valid-day card (Tag successful)\n**AND** the PV shows the 'No Days Left' screen for the no-days-remaining card — confirmed 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator flow screen list: `1.3.15 No Days Left`), matching the day-based product type under test (Metro Travelcard) per the old suite's (10047) product-type pattern (Daylink products test 'used all available days').",
+      "updated_on": "2026-07-28T07:48:12Z"
+    },
+    {
+      "case_id": 4104432,
+      "title": "Validate a Blind Concession SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100335"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Blind SmartPass to the reader\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired Blind Concession SmartPass\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:13Z"
+    },
+    {
+      "case_id": 4104433,
+      "title": "Validate a Senior Concession SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100335"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Senior SmartPass to the reader\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired Senior Concession SmartPass\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:14Z"
+    },
+    {
+      "case_id": 4104435,
+      "title": "Validate a ROI Senior Concession SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100335"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid ROI Senior SmartPass to the reader\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired ROI Senior Concession SmartPass\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:15Z"
+    },
+    {
+      "case_id": 4104436,
+      "title": "Validate a War Pensioner Concession SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100335"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid War Pensioner SmartPass to the reader\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired War Pensioner Concession SmartPass\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:16Z"
+    },
+    {
+      "case_id": 4104438,
+      "title": "Validate a Learning Disability Half-Fare SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Learning Disability Half-Fare SmartPass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the Half-Fare SmartPass that is not valid here\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:16Z"
+    },
+    {
+      "case_id": 4104440,
+      "title": "Validate a No Driving Licence Half-Fare SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid No Driving Licence Half-Fare SmartPass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the Half-Fare SmartPass that is not valid here\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:17Z"
+    },
+    {
+      "case_id": 4104442,
+      "title": "Validate a PIPS Half-Fare SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid PIPS Half-Fare SmartPass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the Half-Fare SmartPass that is not valid here\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:18Z"
+    },
+    {
+      "case_id": 4104444,
+      "title": "Validate a Partially Sighted Half-Fare SmartPass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Partially Sighted Half-Fare SmartPass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the Half-Fare SmartPass that is not valid here\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:19Z"
+    },
+    {
+      "case_id": 4104446,
+      "title": "Validate a Inner-zone Metro Multi-Journey smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100261",
+        "FBD-100271",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the Inner-zone Multi-Journey card within its zone\n-> **THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied\n**WHEN** you present the invalid Multi-Journey card\n-> **THEN** the PV shows the Invalid screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:19Z"
+    },
+    {
+      "case_id": 4104448,
+      "title": "Validate a Extended-zone Metro Multi-Journey smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100261",
+        "FBD-100271",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the Extended-zone Multi-Journey card within its zone\n-> **THEN** the PV shows the Tag successful screen\n**AND** one journey is deducted with the passback rules applied\n**WHEN** you present the out-of-zone (City) Multi-Journey card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation and journey deduction appear in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:20Z"
+    },
+    {
+      "case_id": 4104450,
+      "title": "Validate an iLink Zone 1 smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone iLink card\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the out-of-zone iLink card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:35Z"
+    },
+    {
+      "case_id": 4104451,
+      "title": "Validate an iLink Zone 2 smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone iLink card\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the out-of-zone iLink card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:36Z"
+    },
+    {
+      "case_id": 4104453,
+      "title": "Validate an iLink Zone 3 smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone iLink card\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the out-of-zone iLink card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:36Z"
+    },
+    {
+      "case_id": 4104455,
+      "title": "Validate an iLink NW smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone iLink NW card\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the out-of-zone iLink card\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:37Z"
+    },
+    {
+      "case_id": 4104457,
+      "title": "Validate a Belfast Visitor Pass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid in-zone Belfast Visitor Pass\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the out-of-zone Belfast Visitor Pass\n-> **THEN** the PV shows the Not Valid At This Location reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-08-03T13:15:38Z"
+    },
+    {
+      "case_id": 4104459,
+      "title": "Validate a 24+ smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100236",
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the 24+ card after its concessionary-period expiry date\n-> **THEN** the PV rejects it as an expired product (Product Expired) — resolved 2026-07-22: expiry is date-based only (end of the concessionary period), per FBD-100236 para 328 (\"the expiry date is expected to be set to the end of the concessionary period\"); no intraday time-of-day band exists for this product, confirmed by the total absence of any such case across the old suite's (10047) otherwise exhaustive coverage (hotlist/passback/days-left/zone), unlike the genuinely time-banded EA Pupil Smartpass / EA Bus Further Education products (old-suite cases confirm Mon-Fri/weekend/school-holiday time restrictions for those, a different product family).",
+      "updated_on": "2026-07-28T07:48:25Z"
+    },
+    {
+      "case_id": 4104461,
+      "title": "Validate a Staff Partner Translink Employee smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Staff Partner smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired/withdrawn Staff Partner employee smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:26Z"
+    },
+    {
+      "case_id": 4104464,
+      "title": "Validate a Retired Staff Translink Employee smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Retired Staff smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired/withdrawn Retired Staff employee smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:27Z"
+    },
+    {
+      "case_id": 4104465,
+      "title": "Validate a External Staff Translink Employee smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid External Staff smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired/withdrawn External Staff employee smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:27Z"
+    },
+    {
+      "case_id": 4104467,
+      "title": "Validate a Dependents Pass Translink Employee smartcard",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Dependents Pass smartcard\n-> **THEN** the PV shows the Tag successful screen\n**AND** the success audio tone is played\n**WHEN** you present the expired/withdrawn Dependents Pass employee smartcard\n-> **THEN** the PV shows the Product Expired reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:28Z"
+    },
+    {
+      "case_id": 4104469,
+      "title": "Validate an EA Further Education Smartpass",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the EA Further Education Smartpass within its valid time on a school day\n-> **THEN** the PV shows the Tag successful screen\n**WHEN** you present it at a weekend or during a school holiday\n-> **THEN** the PV shows the Invalid Time Of Day reject screen\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation appears in the CloudFare activity log\n**AND** the transaction appears in MERIT\n**AND** the updated smartcard record appears in SmartTrack",
+      "updated_on": "2026-07-28T07:48:29Z"
+    },
+    {
+      "case_id": 4105412,
+      "title": "Operator Card — mismatched Technician ID leaves the device unresponsive",
+      "section_id": 887057,
+      "section_path": "Functional / Smartcard Validation",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the operator card is presented to the reader\n-> **THEN** the device will not respond",
+      "updated_on": "2026-08-06T10:14:46Z"
+    },
+    {
+      "case_id": 4100992,
+      "title": "Validation — invalid reasons displayed",
+      "section_id": 887058,
+      "section_path": "Functional / Validation Outcomes",
+      "refs": [
+        "FBD-100250",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present a card that cannot be validated for a given reason\n-> **THEN** the PV shows the matching reason screen for that condition\n**WHEN** you check the back office after the denied presentation\n-> **THEN** the denied validation is recorded in the CloudFare activity log, MERIT and SmartTrack",
+      "updated_on": "2026-07-28T07:48:30Z"
+    },
+    {
+      "case_id": 4100993,
+      "title": "Validation — passback",
+      "section_id": 887058,
+      "section_path": "Functional / Validation Outcomes",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the same card again within the passback period\n-> **THEN** the PV shows the Passback Journeys Left screen (or Passback Days Left for a period product)\n**AND** passback is applied per the product rules with no extra journey deducted\n**WHEN** you check the back office for the passback event\n-> **THEN** the passback validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-28T07:48:30Z"
+    },
+    {
+      "case_id": 4100994,
+      "title": "Validation — machine not in service",
+      "section_id": 887058,
+      "section_path": "Functional / Validation Outcomes",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a passenger presents a valid smartcard\n-> **THEN** the PV continues to show the Machine Not In Service screen\n**AND** no validation occurs and no journey is deducted",
+      "updated_on": "2026-07-28T07:48:31Z"
+    },
+    {
+      "case_id": 4100995,
+      "title": "Validation — offline transaction",
+      "section_id": 887058,
+      "section_path": "Functional / Validation Outcomes",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid card while comms are down\n-> **THEN** the PV validates it offline within the offline rules (Tag successful) and queues the transaction on-device\n**WHEN** communications are restored and the PV next communicates\n-> **THEN** the queued offline transactions are uploaded and appear in the CloudFare activity log",
+      "updated_on": "2026-07-28T07:48:32Z"
+    },
+    {
+      "case_id": 4100996,
+      "title": "Rail — NIR transfer validation (iLink)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:33:48Z"
+    },
+    {
+      "case_id": 4100997,
+      "title": "Rail — zone validation",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100167",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the in-zone zonal smartcard\n-> **THEN** the PV validates it for the zone (Tag successful)\n**WHEN** you present the out-of-zone smartcard\n-> **THEN** the PV rejects it as not valid for this zone (Not Valid At This Location)\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:33:49Z"
+    },
+    {
+      "case_id": 4102429,
+      "title": "Rail — ABT tap success shows the Northern Ireland travel line",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid contactless card and it is accepted\n-> **THEN** the PV shows the ABT Tag successful screen\n**AND** the success screen displays an additional Northern-Ireland-only travel line reading \"Northern Ireland Travel Only\" — confirmed 2026-07-22 via the Overflow UX design source (`knowledge/flows/pv-flow-annotations.md`, Platform Validator-Barcode flow annotation: \"'1.6.1.1 ABT Tag successful' screen can display an additional line of text. For NIR/Rail PVs this will state 'Northern Ireland Travel Only'.\")",
+      "updated_on": "2026-07-27T12:35:10Z"
+    },
+    {
+      "case_id": 4104471,
+      "title": "Rail — NIR transfer validation (Belfast Visitor)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible Belfast Visitor card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:35:38Z"
+    },
+    {
+      "case_id": 4104473,
+      "title": "Rail — NIR transfer validation (Staff Smartpass)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible Staff Smartpass card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:35:39Z"
+    },
+    {
+      "case_id": 4104475,
+      "title": "Rail — NIR transfer validation (aLink)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible aLink card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:35:40Z"
+    },
+    {
+      "case_id": 4104477,
+      "title": "Rail — NIR transfer validation (EA Pupil)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible EA Pupil card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:35:41Z"
+    },
+    {
+      "case_id": 4104478,
+      "title": "Rail — NIR transfer validation (EA Further Education)",
+      "section_id": 887059,
+      "section_path": "Functional / Rail-specific",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the transfer-eligible EA Further Education card for the connecting NIR journey inside the transfer window\n-> **THEN** the PV validates it as a transfer per the transfer rules (no new journey charged)\n**WHEN** you present the non-eligible card for the transfer\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the transfer\n-> **THEN** the transfer validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-27T12:35:42Z"
+    },
+    {
+      "case_id": 4100998,
+      "title": "ABT — Visa Debit contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:33:49Z"
+    },
+    {
+      "case_id": 4100999,
+      "title": "ABT — declined or errored tap",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the declined/expired/mis-read card\n-> **THEN** the PV rejects the tap\n**AND** the Please Try Again / decline outcome is shown\n**WHEN** you check the back office for the tap\n-> **THEN** the declined tap is recorded in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:33:50Z"
+    },
+    {
+      "case_id": 4101000,
+      "title": "ABT — BIN, Deny and Pilot list handling",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "FBD-100720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the Deny-listed or BIN-blocked card\n-> **THEN** the PV rejects the tap per the list rules\n**WHEN** you present the Pilot-list card\n-> **THEN** the PV handles the tap per the pilot rules (accepted if enrolled, rejected if not)\n**WHEN** you check the back office\n-> **THEN** the outcomes are recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:33:51Z"
+    },
+    {
+      "case_id": 4101001,
+      "title": "cEMV — tap enablement by route, location and fare",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-31722"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the PV is in a context where the route attribute, location and fare checks all pass\n-> **THEN** cEMV taps are enabled\n**AND** a tap is accepted\n**WHEN** any of the route, location or fare checks fail\n-> **THEN** cEMV taps are disabled in that context and no cEMV tap is taken\n**WHEN** you check the back office for the accepted tap\n-> **THEN** the tap appears in the CloudFare activity log and MERIT\n**WHEN** the Glider Tap On Only Zone TMS parameter is configured correctly and matches the device's boarding location\n-> **THEN** cEMV taps enable for the Glider Metro route (regression check — previously failed to enable despite correct configuration, pins TIBU-31722)",
+      "updated_on": "2026-07-27T12:33:52Z"
+    },
+    {
+      "case_id": 4101002,
+      "title": "Glider TOO — tap-on-only flat-fare journeys",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger taps on for a journey\n-> **THEN** the PV records a flat-fare journey (ABT Tag successful)\n**WHEN** the same card taps again immediately after (same reader), and taps multiple times across the day\n-> **THEN** the immediate re-tap is declined as Passback, not charged as a second fare\n**AND** the day's taps are aggregated under the applicable capping rule\n**WHEN** you check the back office for the journeys\n-> **THEN** the flat-fare journey appears in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-27T12:33:53Z"
+    },
+    {
+      "case_id": 4101003,
+      "title": "Glider — transfers",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the card taps a connecting Glider journey within the transfer window\n-> **THEN** the PV recognises the tap as a transfer per the transfer rules (no second fare)\n**WHEN** you check the back office for the connecting tap\n-> **THEN** the transfer appears in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-27T12:33:53Z"
+    },
+    {
+      "case_id": 4101004,
+      "title": "ABT — end-to-end journey to back office",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100307"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger completes an ABT journey by tapping the card\n-> **THEN** the PV records the journey (ABT Tag successful)\n**AND** the journey is sent to the back office for settlement\n**WHEN** you check the back office end-to-end\n-> **THEN** the journey appears in the CloudFare activity log and in MERIT",
+      "updated_on": "2026-07-27T12:33:54Z"
+    },
+    {
+      "case_id": 4101078,
+      "title": "ABT — Pilot List management and validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the pilot list dataset is deployed to the PV via TMS\n-> **THEN** the PV applies the pilot list configuration\n**WHEN** you present an EMV card that is on the Pilot List, then one that is not\n-> **THEN** the on-list card is accepted per the pilot rules\n**AND** the not-on-list card is rejected with the standard rejection screen\n**WHEN** you check the back office\n-> **THEN** the outcomes are recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:34:51Z"
+    },
+    {
+      "case_id": 4101079,
+      "title": "ABT — Deny and BIN list updates",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-25745",
+        "TIBU-26320",
+        "TIBU-31287"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** delta and full Deny/BIN list updates are published\n-> **THEN** the PV downloads and applies them, taking the full lists at end of day and deltas on schedule\n**WHEN** a list download is forced to fail\n-> **THEN** the PV retries the download and application\n**WHEN** you present a Deny/BIN-listed card, then re-present it after it is removed from the list\n-> **THEN** the listed card is rejected\n**AND** the removed card is accepted\n**WHEN** a full-size (~200,000-entry) Deny list is downloaded and applied\n-> **THEN** the download and application complete without an unhandled exception\n**AND** the PV's transaction service remains responsive throughout (pins TIBU-31287)",
+      "updated_on": "2026-07-27T12:34:52Z"
+    },
+    {
+      "case_id": 4101080,
+      "title": "FEIG — reader software management",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-25446",
+        "TIBU-25691",
+        "TIBU-26048",
+        "TIBU-26522",
+        "TIBU-32037"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you deploy the FEIG software over the air via TMS\n-> **THEN** only the newest Transparent, PCA and FEIG OS versions are deployed to the reader\n**WHEN** the technician views the FEIG software versions on the PV\n-> **THEN** the current FEIG software versions are displayed\n**WHEN** the FEIG software update is deployed via TMS\n-> **THEN** the update completes without the PV application watchdog interrupting it mid-update (pins TIBU-32037)\n**AND** the deployment does not stall waiting on a manifest download that never starts (pins TIBU-26048)\n**WHEN** the FEIG update has completed\n-> **THEN** the reader still detects and reads EMV cards (pins TIBU-26522)\n**AND** cEMV taps remain enabled (pins TIBU-25691)\n**WHEN** the PV's FEIG manifest polling is inspected in the device log\n-> **THEN** it requests a manifest at a sensible interval (approximately every 15 minutes), not continuously every second (pins TIBU-25446; migrated from old-suite C4091897)",
+      "updated_on": "2026-07-27T12:34:53Z"
+    },
+    {
+      "case_id": 4101081,
+      "title": "FEIG — card reading",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100236"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the WTS smartcard\n-> **THEN** the FEIG reads and validates the smartcard\n**WHEN** you tap the valid EMV card, then the invalid EMV card\n-> **THEN** the valid EMV tap is accepted\n**AND** the invalid one is rejected with the reason\n**WHEN** you check the back office\n-> **THEN** the taps are recorded in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-27T12:34:54Z"
+    },
+    {
+      "case_id": 4101088,
+      "title": "cEMV — route-type enablement and passback distinctness",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the route is \"Tap On Only (Flat Fare)\" or \"Tap On Tap Off\"\n-> **THEN** cEMV taps are enabled for that route type\n**WHEN** no valid fare is found or the boarding location is outside the configured area\n-> **THEN** cEMV taps are disabled\n**WHEN** a card is re-presented within the configured ABT Passback window\n-> **THEN** the PV shows the Passback outcome, not a decline error\n**AND** no second fare is taken for the re-presented card (pins TIBU-22322)",
+      "updated_on": "2026-07-27T12:34:59Z"
+    },
+    {
+      "case_id": 4101089,
+      "title": "cEMV — JourneyTap audit and alighting-stage derivation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100658",
+        "TIBU-22332"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you make a successful cEMV tap\n-> **THEN** the tap is audited as a \"JourneyTap\" in CloudFare\n**AND** the alighting stage is derived from the Furthest Alighting Point file\n**WHEN** you review the data in MERIT\n-> **THEN** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:00Z"
+    },
+    {
+      "case_id": 4101092,
+      "title": "cEMV — tap audit content (JourneyTap, stop/stage, direction, payment method)",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-22332",
+        "TIBU-28645",
+        "TIBU-28856",
+        "TIBU-30476"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you make a successful cEMV tap\n-> **THEN** the tap is audited as a \"JourneyTap\" in CloudFare\n**AND** the audit records both the stop id and the stage id\n**AND** the tap direction is audited correctly as IN\n**AND** the payment method is audited correctly for the Glider TOO transaction\n**WHEN** you review the data in MERIT\n-> **THEN** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:03Z"
+    },
+    {
+      "case_id": 4101093,
+      "title": "cEMV — EMV result screens and transaction generation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-25700",
+        "TIBU-25702",
+        "TIBU-25704",
+        "TIBU-25705"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you make a cEMV tap that succeeds and one that fails\n-> **THEN** the correct EMV success or failure screen is shown\n**AND** the EMV result screen times out after the configured period rather than persisting\n**WHEN** you present a smartcard while an EMV success/failure screen is shown, and re-present a card for EMV passback\n-> **THEN** the smartcard tap is accepted\n**AND** the correct EMV passback screen is shown\n**WHEN** you inspect the back office for a failed EMV tap\n-> **THEN** a transaction is still generated for the failed tap\n**AND** it is recorded in CloudFare/MERIT",
+      "updated_on": "2026-07-27T12:35:03Z"
+    },
+    {
+      "case_id": 4104108,
+      "title": "FEIG — update without TID/TK fails safely, PV app software still updates",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "TIBU-22318",
+        "TIBU-24606"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the dataset is deployed to the device group via TMS\n-> **THEN** the PV application software updates successfully\n**AND** the FEIG firmware update fails (does not apply) because the TID/TK are missing\n**AND** the FEIG remains on its previous version\n**AND** a failure status or exception is logged in CloudFare for the FEIG update",
+      "updated_on": "2026-07-27T12:35:20Z"
+    },
+    {
+      "case_id": 4104480,
+      "title": "ABT — Visa Credit contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid Visa Credit contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:42Z"
+    },
+    {
+      "case_id": 4104482,
+      "title": "ABT — Mastercard Debit contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid Mastercard Debit contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:43Z"
+    },
+    {
+      "case_id": 4104484,
+      "title": "ABT — Mastercard Credit contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid Mastercard Credit contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:44Z"
+    },
+    {
+      "case_id": 4104486,
+      "title": "ABT — Maestro contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid Maestro contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:45Z"
+    },
+    {
+      "case_id": 4104487,
+      "title": "ABT — mobile wallet contactless tap validation",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the valid mobile wallet contactless card at the reader\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the tap\n-> **THEN** the accepted tap appears in the CloudFare activity log\n**AND** the transaction appears in MERIT",
+      "updated_on": "2026-07-27T12:35:46Z"
+    },
+    {
+      "case_id": 4104505,
+      "title": "cEMV — decline reason: card not read",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the card not read condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:54Z"
+    },
+    {
+      "case_id": 4104507,
+      "title": "cEMV — decline reason: unsupported scheme (AMEX or Diners)",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the unsupported scheme condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:54Z"
+    },
+    {
+      "case_id": 4104509,
+      "title": "cEMV — decline reason: expired",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the expired card condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:55Z"
+    },
+    {
+      "case_id": 4104510,
+      "title": "cEMV — decline reason: ODA fail",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the ODA (offline data authentication) fail condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:56Z"
+    },
+    {
+      "case_id": 4104512,
+      "title": "cEMV — decline reason: on BIN list",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the card on the BIN list condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:57Z"
+    },
+    {
+      "case_id": 4104513,
+      "title": "cEMV — decline reason: on Deny list",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the card on the Deny list condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:58Z"
+    },
+    {
+      "case_id": 4104515,
+      "title": "cEMV — decline reason: card clash",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "TIBU-22322"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the card that hits the card clash condition\n-> **THEN** the PV shows the Please Try Again outcome with that specific reason\n**WHEN** you check the back office for the declined tap\n-> **THEN** the decline is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:58Z"
+    },
+    {
+      "case_id": 4104931,
+      "title": "Duplicate tap — a same-stage re-tap within the Same Location Time still shows Tap Successful",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "KNOWLEDGE-2026"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the same card again at the same boarding stage, within the configured Same Location Time\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**AND** the PV gives no different indication that this is a repeat tap\n**WHEN** you check the back office for the second tap\n-> **THEN** the second tap is recorded as a duplicate\n**AND** it is not charged\n**AND** the first tap's charge is unaffected",
+      "updated_on": "2026-07-27T12:35:59Z"
+    },
+    {
+      "case_id": 4104932,
+      "title": "Duplicate tap — a same-stage re-tap outside the Same Location Time is a genuine new tap",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "KNOWLEDGE-2026"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap the same card again at the same boarding stage\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** you check the back office for the second tap\n-> **THEN** the second tap is recorded as a genuine new journey\n**AND** it is charged",
+      "updated_on": "2026-07-27T12:36:00Z"
+    },
+    {
+      "case_id": 4104939,
+      "title": "Cross-device duplicate — a PV tap followed by an ETM tap at the same halt within the Same Location Time still shows Tap Successful",
+      "section_id": 887060,
+      "section_path": "Functional / ABT (Glider)",
+      "refs": [
+        "FBD-100651",
+        "KNOWLEDGE-2026"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you tap a valid contactless payment card at the PV\n-> **THEN** the PV shows the ABT Tag successful screen to the passenger\n**AND** the success audio tone is played\n**WHEN** the same card is then tapped at the shared-halt ETM, within the configured Same Location Time\n-> **THEN** the ETM also shows its own normal successful-tap outcome\n**AND** neither device gives any indication that the other device's tap occurred\n**WHEN** you check the back office for both taps\n-> **THEN** the second (ETM) tap is recorded as a same-location duplicate\n**AND** it is not charged\n**AND** the PV tap's charge is unaffected",
+      "updated_on": "2026-07-27T15:29:27Z"
+    },
+    {
+      "case_id": 4101006,
+      "title": "Barcode — multi-use validation (Adult)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Adult multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Adult barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Adult multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Adult — single (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:33Z"
+    },
+    {
+      "case_id": 4102428,
+      "title": "Barcode — early-morning expiry displays the previous day",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-25444"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the barcode with the early-morning expiry\n-> **THEN** the PV validates it\n**AND** the PV shows the barcode success screen\n**AND** the success screen displays the previous day as the expiry date\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-28T07:48:34Z"
+    },
+    {
+      "case_id": 4104109,
+      "title": "PV — barcode/smartcard reader disconnect shows the correct banner and raises an event",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "TIBU-21950",
+        "TIBU-27289"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the barcode reader is disconnected\n-> **THEN** the \"barcode not available\" banner is displayed on the idle screen, matching the approved UI spec (pins TIBU-21950)\n**AND** event code 941 is raised in the CloudFare Activity Log (pins TIBU-27289; migrated from old-suite C4091911)\n**WHEN** the barcode reader is reconnected\n-> **THEN** event code 941 is cleared in the Activity Log\n**AND** the banner fully disappears from the screen, with no residual fragment left showing (migrated from old-suite C4060881, TIBU-22250)\n**WHEN** the smartcard reader is disconnected\n-> **THEN** the \"smartcard reader not available\" banner is displayed, matching the approved UI spec",
+      "updated_on": "2026-07-27T12:35:21Z"
+    },
+    {
+      "case_id": 4104489,
+      "title": "Barcode — multi-use validation (Child)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Child multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Child barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Child multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Child — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:34Z"
+    },
+    {
+      "case_id": 4104491,
+      "title": "Barcode — multi-use validation (3 Day Select)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid 3 Day Select multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the 3 Day Select barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid 3 Day Select multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for 3 Day Select — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:35Z"
+    },
+    {
+      "case_id": 4104493,
+      "title": "Barcode — multi-use validation (1/3 Off Day Return)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid 1/3 Off Day Return multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the 1/3 Off Day Return barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid 1/3 Off Day Return multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for 1/3 Off Day Return — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:36Z"
+    },
+    {
+      "case_id": 4104495,
+      "title": "Barcode — multi-use validation (24+)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid 24+ multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the 24+ barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid 24+ multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for 24+ — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:37Z"
+    },
+    {
+      "case_id": 4104496,
+      "title": "Barcode — multi-use validation (Ylink)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Ylink multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Ylink barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Ylink multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Ylink — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:37Z"
+    },
+    {
+      "case_id": 4104498,
+      "title": "Barcode — multi-use validation (Concession)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Concession multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Concession barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Concession multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Concession — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:38Z"
+    },
+    {
+      "case_id": 4104500,
+      "title": "Barcode — multi-use validation (Half Fare)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Half Fare multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Half Fare barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Half Fare multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Half Fare — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:39Z"
+    },
+    {
+      "case_id": 4104501,
+      "title": "Barcode — multi-use validation (Day Tracker)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Day Tracker multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Day Tracker barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Day Tracker multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Day Tracker — double (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:40Z"
+    },
+    {
+      "case_id": 4104503,
+      "title": "Barcode — multi-use validation (Unemployed Day Return)",
+      "section_id": 887061,
+      "section_path": "Functional / Barcodes",
+      "refs": [
+        "FBD-100167",
+        "TIBU-27324"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid Unemployed Day Return multi-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the success result\n**AND** one use is recorded (remaining uses decremented)\n**WHEN** you present the Unemployed Day Return barcode beyond its allowed uses or an invalid one\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT\n**WHEN** a valid Unemployed Day Return multi-use barcode is presented\n-> **THEN** the audible validation beep pattern is correct for Unemployed Day Return — single (pins TIBU-27324; migrated from old-suite C4091912)",
+      "updated_on": "2026-07-28T07:48:41Z"
+    },
+    {
+      "case_id": 4101007,
+      "title": "Legacy Smartcard — journey- and time-based cards validate",
+      "section_id": 887062,
+      "section_path": "Functional / Legacy & Card Tech",
+      "refs": [
+        "FBD-100250",
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid legacy journey-based or time-based smartcard\n-> **THEN** the PV validates it per its legacy rules (Tag successful)\n**WHEN** you present the invalid legacy smartcard\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the accepted presentation\n-> **THEN** the validation is recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-28T07:48:41Z"
+    },
+    {
+      "case_id": 4101008,
+      "title": "Card technology — MIFARE and DESFire",
+      "section_id": 887062,
+      "section_path": "Functional / Legacy & Card Tech",
+      "refs": [
+        "FBD-100236",
+        "FBD-100250",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the MIFARE Classic EV1 card, then the DESFire card\n-> **THEN** the FEIG reads each card\n**AND** the PV validates each card per its type (Tag successful)\n**WHEN** you check the back office for the presentations\n-> **THEN** the validations are recorded in CloudFare, MERIT and SmartTrack",
+      "updated_on": "2026-07-28T07:48:42Z"
+    },
+    {
+      "case_id": 4101009,
+      "title": "Passback — re-presentation within the window is handled per product rules",
+      "section_id": 887062,
+      "section_path": "Functional / Legacy & Card Tech",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the same card again within the passback window\n-> **THEN** the PV applies passback per the product rules (no extra fare/journey)\n**WHEN** you check the back office for the passback event\n-> **THEN** the passback is recorded in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-28T07:48:43Z"
+    },
+    {
+      "case_id": 4101010,
+      "title": "Operating Times — validates in-hours, out of service outside them",
+      "section_id": 887062,
+      "section_path": "Functional / Legacy & Card Tech",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid card within the operating times\n-> **THEN** the PV validates it normally (Tag successful)\n**WHEN** you present the card outside the operating times\n-> **THEN** the PV does not validate\n**AND** it shows the Machine Not In Service (out-of-service) state",
+      "updated_on": "2026-07-28T07:48:44Z"
+    },
+    {
+      "case_id": 4101011,
+      "title": "Technician Menu — login",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid technician smartcard and enter the correct PIN\n-> **THEN** the Technician Menu home screen is displayed\n**WHEN** you present an invalid technician smartcard or enter an incorrect PIN\n-> **THEN** the incorrect-details message is shown\n**AND** access to the Technician Menu is refused",
+      "updated_on": "2026-07-27T12:33:59Z"
+    },
+    {
+      "case_id": 4101012,
+      "title": "Technician Menu — location settings",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you open Location Settings and view the current home location\n-> **THEN** the current home location is displayed\n**WHEN** you select a new home location and confirm\n-> **THEN** the home location is updated\n**AND** the device reboots to apply the new home location\n**WHEN** you clear the entry during editing, then repeat with comms unavailable so the server list cannot be retrieved\n-> **THEN** the location field is cleared during editing\n**AND** a \"Failed to retrieve locations from server\" error is shown when the list cannot be retrieved",
+      "updated_on": "2026-07-27T12:34:00Z"
+    },
+    {
+      "case_id": 4101013,
+      "title": "Technician Menu — display settings",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you adjust the screen backlight brightness manually\n-> **THEN** the brightness indicator moves\n**AND** the backlight changes accordingly\n**WHEN** you enable ambient mode and change the surrounding light\n-> **THEN** the backlight adjusts automatically to the ambient light without manual input",
+      "updated_on": "2026-07-27T12:34:00Z"
+    },
+    {
+      "case_id": 4101014,
+      "title": "Technician Menu — software and configuration versions",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "REQ-0513"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you open the Software Versions page\n-> **THEN** the software versions are listed: OS (Internal), BSP, EBoot, Configuration Version, DM.applicationSoftwareFile, DM.operatingSystemSoftwareFile, Smartcard Reader Firmware Version, Smartcard Reader Application Version — confirmed 2026-07-22 against old-suite (10047) cases C2667038/C3275920 (REQ-0513.0)\n**WHEN** you open the Configuration Versions page\n-> **THEN** the configuration versions are listed: Configuration Version, DM.furthestAlightingFile, TD.Product, TD.Topology, Staff List, Action List — confirmed 2026-07-22 against old-suite (10047) cases C2667047/C3275921 (REQ-0513.0)",
+      "updated_on": "2026-07-27T12:34:01Z"
+    },
+    {
+      "case_id": 4101015,
+      "title": "Technician Menu — force communications",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you open the Force Communications page\n-> **THEN** the page summarises the comms status — pending audit-record count, last successful audit send, last manifest download attempt, last successful manifest download and pending software/configuration file count\n**WHEN** you press Call Now\n-> **THEN** the PV checks the back-office manifest and attempts to send any pending audit records\n**WHEN** you press Refresh\n-> **THEN** the displayed values update to the most recent information",
+      "updated_on": "2026-07-27T12:34:02Z"
+    },
+    {
+      "case_id": 4101016,
+      "title": "Technician Menu — network settings",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "TIBU-26303",
+        "TIBU-29191"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you open the Network Interfaces page, edit a network setting and confirm\n-> **THEN** the network settings are updated to the new values\n**WHEN** Network Settings is opened on the Technician Menu\n-> **THEN** the Network Interfaces screen displays\n**AND** it shows both the Ethernet and Cellular interfaces (pins TIBU-26303; migrated from old-suite C4091908)\n**WHEN** the cellular SIM is physically removed from the PV\n-> **THEN** the Cellular interface updates to show disconnected\n**AND** it does not continue to be shown as connected (pins TIBU-29191)",
+      "updated_on": "2026-07-27T12:34:03Z"
+    },
+    {
+      "case_id": 4101017,
+      "title": "Technician Menu — operating times",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "REQ-0594"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you reconfigure the operating start time and apply it\n-> **THEN** the new operating times are applied\n**AND** the PV goes out of service and then into service per the configured times",
+      "updated_on": "2026-07-27T12:34:03Z"
+    },
+    {
+      "case_id": 4101091,
+      "title": "Technician Menu — backup, layout and audible feedback",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "REQ-0796",
+        "REQ-1685",
+        "REQ-1687"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you enable data mirroring (backup)\n-> **THEN** data mirroring is enabled — confirmed 2026-07-22 (gap Q31 resolved) via old-suite (10047) cases C2224530/C2668492 (REQ-1685.0/REQ-1685.3): mirroring is configured by editing `BOSAgentService\\Configuration\\BackOfficeAgentConfig.json` (mirroring enabled + a mirror path) followed by a Sales App restart, not a Technician Menu on-screen toggle — confirm the current configuration entry point on the live system\n**WHEN** you amend the main-screen background colour\n-> **THEN** the main-screen background is updated (a supplier/Parkeon-executed config-file change — `homescreenlayout.scn` BackColour R/G/B values, applied once per annum per REQ-0796.0 — confirmed 2026-07-22, gap Q31 resolved, via old-suite 10047 C2224529/C2668256)\n**WHEN** a card is presented to the PV\n-> **THEN** the configured audible feedback is played — confirmed 2026-07-22 (gap Q31 resolved) via old-suite (10047) cases C3275577/C3275969 (REQ-1687.0): a valid card presentation plays an approving tone, an invalid card presentation plays a declining tone",
+      "updated_on": "2026-07-27T12:35:02Z"
+    },
+    {
+      "case_id": 4102166,
+      "title": "Technician Menu — sign off",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you select Sign Off and confirm\n-> **THEN** the technician is signed off\n**AND** the PV returns to its in-service state\n**WHEN** you check the back office\n-> **THEN** the sign-off is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:06Z"
+    },
+    {
+      "case_id": 4102167,
+      "title": "Technician Menu — reboot",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you select Reboot\n-> **THEN** the PV reboots\n**AND** the PV returns to service after the reboot\n**WHEN** you check the back office\n-> **THEN** the reboot is recorded in the CloudFare activity log",
+      "updated_on": "2026-08-06T08:42:11Z"
+    },
+    {
+      "case_id": 4102168,
+      "title": "Technician Menu — audio settings",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you adjust the audio volume and play the test tone\n-> **THEN** the audio volume changes accordingly",
+      "updated_on": "2026-07-27T12:35:07Z"
+    },
+    {
+      "case_id": 4102181,
+      "title": "Technician Menu — auto sign-off and page timeouts",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "REQ-0656"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you leave a page with no input until it times out\n-> **THEN** the PV returns to the Technician Menu home screen (after 60 seconds of inactivity on the sub-menu page — confirmed 2026-07-22, gap Q32 resolved, via old-suite (10047) case C2667023/C3275917 'Page Timeouts', REQ-0656.0)\n**WHEN** the inactivity period then elapses on the home screen\n-> **THEN** the PV auto signs the technician off, signalised by a tone — confirmed 2026-07-22 (gap Q32 resolved) via old-suite (10047) cases C2667020/C3275916 ('Auto Sign-Off') and C2667023/C3275917 ('Page Timeouts'), REQ-0656.0: a sub-menu page times out to the Technician Menu home screen after 60 seconds of inactivity, then a further 60 seconds of inactivity on the home screen triggers auto sign-off with a tone\n**AND** the sign-off is recorded in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:08Z"
+    },
+    {
+      "case_id": 4105413,
+      "title": "Technician Menu — retry after incorrect PIN reaches Home Screen",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Technician retries PIN entry with a valid PIN\n-> **THEN** the Home Screen is displayed",
+      "updated_on": "2026-08-06T10:14:49Z"
+    },
+    {
+      "case_id": 4105414,
+      "title": "Technician Menu — abandoning at Login Screen returns to card presentment",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Technician abandons sign-on from the Login Screen\n-> **THEN** the Present SmartCard or Barcode screen is displayed",
+      "updated_on": "2026-08-06T10:14:50Z"
+    },
+    {
+      "case_id": 4105415,
+      "title": "Technician Menu — abandoning PIN entry returns to Login Screen",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Technician abandons PIN entry\n-> **THEN** the Login Screen is displayed",
+      "updated_on": "2026-08-06T10:14:51Z"
+    },
+    {
+      "case_id": 4105416,
+      "title": "Technician Menu — Sign Off from Home Screen",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Technician selects Sign Off\n-> **THEN** **GAP** — whether Sign Off returns to the Home Screen or to Present SmartCard/Barcode is not confirmed; the source lists both connections with no distinguishing trigger label; confirm on the live system before running",
+      "updated_on": "2026-08-06T10:14:52Z"
+    },
+    {
+      "case_id": 4105417,
+      "title": "Technician Menu — Location Settings unchanged returns without reboot",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Home Location has not changed\n-> **THEN** the Location Settings screen is displayed\n**AND** the device does not reboot",
+      "updated_on": "2026-08-06T10:14:52Z"
+    },
+    {
+      "case_id": 4105418,
+      "title": "Technician Menu — Location Settings Edit returns without changes",
+      "section_id": 887063,
+      "section_path": "Functional / Technician Menu",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Technician returns from the Edit screen without making changes\n-> **THEN** the Location Settings screen is displayed",
+      "updated_on": "2026-08-06T10:14:53Z"
+    },
+    {
+      "case_id": 4102430,
+      "title": "PV commissioning — uncommissioned until location programmed",
+      "section_id": 887505,
+      "section_path": "Functional / Commissioning",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device starts up before any location is programmed\n-> **THEN** the status bar shows no programmed Device ID, Sub Location or Location values\n**WHEN** the technician signs in (with comms) and programs the location details\n-> **THEN** the status bar displays the programmed Device ID, Sub Location and Location\n**WHEN** you check the back office\n-> **THEN** the commissioning is reflected in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:35:10Z"
+    },
+    {
+      "case_id": 4105408,
+      "title": "Boot — a fully commissioned PV boots to Present SmartCard or Barcode",
+      "section_id": 887505,
+      "section_path": "Functional / Commissioning",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device completes the Loading sequence\n-> **THEN** the Present SmartCard or Barcode screen is displayed",
+      "updated_on": "2026-08-06T10:14:42Z"
+    },
+    {
+      "case_id": 4103559,
+      "title": "Single-Use Barcode — rejected as not accepted on this device",
+      "section_id": 887762,
+      "section_path": "Functional / Barcode Validation",
+      "refs": [
+        "FBD-100167",
+        "FBD-100317"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** a passenger presents the single-use barcode to the PV reader\n-> **THEN** the barcode is rejected\n**AND** the screen shows \"This Barcode Type is not accepted on this device\"\n**AND** no successful validation is recorded",
+      "updated_on": "2026-07-27T12:35:11Z"
+    },
+    {
+      "case_id": 4103560,
+      "title": "Multiple-Use Barcode — a valid barcode shows the green success result",
+      "section_id": 887762,
+      "section_path": "Functional / Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger presents the valid multiple-use barcode\n-> **THEN** the PV displays a green-tick success result\n**AND** a success audio tone is played",
+      "updated_on": "2026-07-28T07:48:45Z"
+    },
+    {
+      "case_id": 4103561,
+      "title": "Multiple-Use Barcode — an invalid barcode shows the red failure result",
+      "section_id": 887762,
+      "section_path": "Functional / Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger presents the expired multiple-use barcode\n-> **THEN** the PV displays a red-cross failure result\n**AND** the screen shows the failure reason",
+      "updated_on": "2026-07-28T07:48:45Z"
+    },
+    {
+      "case_id": 4103562,
+      "title": "Pilot List — an enrolled FEIG token validates and audits normally",
+      "section_id": 887763,
+      "section_path": "Functional / Pilot List",
+      "refs": [
+        "FBD-100720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger taps the enrolled card\n-> **THEN** the PV proceeds down the normal cEMV success flow\n**AND** an ABT audit record is generated for the tap",
+      "updated_on": "2026-07-27T12:35:13Z"
+    },
+    {
+      "case_id": 4103563,
+      "title": "Pilot List — a non-enrolled token is rejected with no audit event",
+      "section_id": 887763,
+      "section_path": "Functional / Pilot List",
+      "refs": [
+        "FBD-100720",
+        "TIBU-28805"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the passenger taps the non-enrolled card\n-> **THEN** the PV shows the standard rejection screen\n**AND** no ABT audit event is generated for the tap",
+      "updated_on": "2026-07-27T12:35:14Z"
+    },
+    {
+      "case_id": 4103564,
+      "title": "Pilot Registration — the registration file uploads once per day at End-of-Day",
+      "section_id": 887763,
+      "section_path": "Functional / Pilot List",
+      "refs": [
+        "FBD-100720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the configured End-of-Day time is reached\n-> **THEN** the registration file is uploaded as a zip to CloudFare Device Logging\n**AND** the file is not uploaded in real time as tokens are captured",
+      "updated_on": "2026-07-27T12:35:15Z"
+    },
+    {
+      "case_id": 4103565,
+      "title": "NIR Audit — a rail TOTO tap posts a conformant PV audit record",
+      "section_id": 887764,
+      "section_path": "Functional / ABT Audit",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the tap posts its ABT audit record to CloudFare\n-> **THEN** the record uses the TotoTap/Location structure with a single tap location\n**AND** the product id is 6000\n**AND** the paymentType is \"ABT\"\n**AND** the revenue is 0",
+      "updated_on": "2026-07-27T12:35:16Z"
+    },
+    {
+      "case_id": 4103566,
+      "title": "Legacy Transfer — decided by the product Transfer Time, not a route property",
+      "section_id": 887765,
+      "section_path": "Functional / Legacy Transfer",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the card is re-presented inside the transfer window\n-> **THEN** the PV records a transfer with no journey deducted\n**AND** a WTS SmartTransfer transaction is audited",
+      "updated_on": "2026-07-27T12:35:17Z"
+    },
+    {
+      "case_id": 4103567,
+      "title": "Legacy Transfer — re-validation outside the product Transfer Time counts as a journey",
+      "section_id": 887765,
+      "section_path": "Functional / Legacy Transfer",
+      "refs": [
+        "FBD-100271"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the card is re-presented outside the transfer window\n-> **THEN** the PV deducts a journey\n**AND** a WTS SmartUse transaction is audited",
+      "updated_on": "2026-07-27T12:35:17Z"
+    },
+    {
+      "case_id": 4101018,
+      "title": "Power — recovers to service with transactions intact",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** power is interrupted\n-> **THEN** the PV shuts down safely without corrupting the stored transactions\n**WHEN** power is restored\n-> **THEN** the PV restarts and returns to service\n**AND** the stored transactions are intact and still upload to the back office",
+      "updated_on": "2026-07-27T12:34:04Z"
+    },
+    {
+      "case_id": 4101019,
+      "title": "PV to BOS — software and FEIG update via CloudFare TMS",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [
+        "TIBU-26048",
+        "TIBU-32037"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the update is distributed to the PV\n-> **THEN** the PV applies the update\n**AND** the new version is reported to the back office\n**WHEN** you check the back office\n-> **THEN** the new version is visible in CloudFare",
+      "updated_on": "2026-07-27T12:34:05Z"
+    },
+    {
+      "case_id": 4101020,
+      "title": "PV to BOS — Deny and BIN list download",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the PV downloads the updated lists\n-> **THEN** the lists are applied to the PV FEIG for cEMV validation\n**WHEN** you check the back office\n-> **THEN** the list download is recorded in CloudFare",
+      "updated_on": "2026-07-27T12:34:06Z"
+    },
+    {
+      "case_id": 4101021,
+      "title": "PV to BOS — transaction upload",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the PV communicates with the back office\n-> **THEN** the transactions are uploaded to the back office\n**WHEN** you check the back office\n-> **THEN** the uploaded transactions appear in the CloudFare activity log",
+      "updated_on": "2026-07-27T12:34:07Z"
+    },
+    {
+      "case_id": 4101022,
+      "title": "Clock — GMT/BST change carries into time-based validation",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the daylight saving change occurs\n-> **THEN** the PV clock adjusts to the new time\n**WHEN** you present the time-limited card after the change\n-> **THEN** time-based validation uses the new (adjusted) time",
+      "updated_on": "2026-07-27T12:34:07Z"
+    },
+    {
+      "case_id": 4101082,
+      "title": "PV to BOS — MERIT heartbeat",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [
+        "FBD-100266",
+        "TIBU-28386"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the configured 24-hour period elapses\n-> **THEN** a MERIT heartbeat transaction is sent to the back office\n**WHEN** the PV enters an in-service state by any means — an automatic or manual reboot (including a CloudFare remote reboot), a technician signing out, or returning from a temporary automatic out-of-service state\n-> **THEN** a MERIT heartbeat transaction is sent, not only after a technician sign-out (pins TIBU-28386)",
+      "updated_on": "2026-07-27T12:34:55Z"
+    },
+    {
+      "case_id": 4101083,
+      "title": "PV — scheduled reboot",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the configured reboot time is reached\n-> **THEN** the device reboots\n**AND** the PV returns to service after the reboot\n**WHEN** you check the back office\n-> **THEN** the scheduled reboot is recorded in CloudFare",
+      "updated_on": "2026-07-27T12:34:55Z"
+    },
+    {
+      "case_id": 4101084,
+      "title": "PV to BOS — configuration and topology distribution",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the PV downloads a configuration or topology update for immediate activation\n-> **THEN** the update is applied\n**WHEN** the update has a future activation date\n-> **THEN** it is stored and activated on that date\n**WHEN** a corrupt configuration file is downloaded\n-> **THEN** it is rejected\n**AND** the current configuration is retained",
+      "updated_on": "2026-07-27T12:34:56Z"
+    },
+    {
+      "case_id": 4101086,
+      "title": "PV — scheduled maintenance",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the maintenance window is reached while the PV is idle\n-> **THEN** the scheduled maintenance is performed\n**WHEN** the PV comes out of the suspended state\n-> **THEN** the PV resumes to service",
+      "updated_on": "2026-07-27T12:34:58Z"
+    },
+    {
+      "case_id": 4101087,
+      "title": "PV — validation and barcode performance timings",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present a smartcard for validation\n-> **THEN** the validation completes within the acceptable timing\n**WHEN** you validate barcodes at throughput\n-> **THEN** each barcode reads within the acceptable timing and throughput",
+      "updated_on": "2026-07-27T12:34:59Z"
+    },
+    {
+      "case_id": 4101094,
+      "title": "PV — stability and recovery",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [
+        "TIBU-25842",
+        "TIBU-26302",
+        "TIBU-28240",
+        "TIBU-28453",
+        "TIBU-28770",
+        "TIBU-29165",
+        "TIBU-29602"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device fails to boot\n-> **THEN** the recovery mechanism restarts it to a working state\n**WHEN** the device would otherwise freeze on the white startup screen, or go black-screen mid-update after a reboot\n-> **THEN** it recovers to service without manual intervention (pins TIBU-25842 and TIBU-28240)\n**WHEN** the PV runs over an extended period\n-> **THEN** the transaction service stays responsive\n**AND** the PV continues to download and apply new distributions\n**AND** deployments via TMS succeed",
+      "updated_on": "2026-07-27T12:35:04Z"
+    },
+    {
+      "case_id": 4101095,
+      "title": "PV — asset and version reporting",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [
+        "FBD-100263",
+        "TIBU-24260",
+        "TIBU-25548",
+        "TIBU-26053",
+        "TIBU-26054",
+        "TIBU-26531"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you view the software version page\n-> **THEN** the Application version is displayed\n**AND** the PCA application version is displayed\n**WHEN** the PV reports to CloudFare\n-> **THEN** the SIM ID is sent to CloudFare and visible in Asset Manager\n**AND** the FEIG Device ID is displayed in Asset Manager associated assets\n**WHEN** the FEIG versions are viewed in CloudFare Asset Manager for the device\n-> **THEN** only one set of FEIG versions is shown, not duplicated (pins TIBU-26531)",
+      "updated_on": "2026-07-27T12:35:05Z"
+    },
+    {
+      "case_id": 4104110,
+      "title": "PV to BOS — Device Log Manager retrieves device logs on request",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [
+        "TIBU-28139"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you select the PV's Device Type and Device ID in Device Log Manager and request its logs (Get Files, with the to-date set to cover today)\n-> **THEN** the requested logs become available to download from Device Log Manager after a short wait (refresh after a few minutes)",
+      "updated_on": "2026-07-27T12:35:21Z"
+    },
+    {
+      "case_id": 4105409,
+      "title": "Device Fault — Smartcard Reader fault reboot attempt returns to Loading",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device reboots in an attempt to recover the reader\n-> **THEN** the Loading screen is displayed",
+      "updated_on": "2026-08-06T10:14:43Z"
+    },
+    {
+      "case_id": 4105410,
+      "title": "Device Fault — Machine Not in Service recovers to Present SmartCard or Barcode when corrected",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the fault is corrected\n-> **THEN** the Present SmartCard or Barcode screen is displayed",
+      "updated_on": "2026-08-06T10:14:44Z"
+    },
+    {
+      "case_id": 4105411,
+      "title": "Device Fault — Machine Not in Service reboot attempt returns to Loading",
+      "section_id": 887065,
+      "section_path": "Non-Functional / PV",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the device reboots in an attempt to recover the reader\n-> **THEN** the Loading screen is displayed",
+      "updated_on": "2026-08-06T10:14:45Z"
+    },
+    {
+      "case_id": 4103568,
+      "title": "Comms Lock — a sustained loss of both Ethernet and cellular drives the PV out of service",
+      "section_id": 887766,
+      "section_path": "Non-Functional / Comms",
+      "refs": [
+        "FBD-100359",
+        "TIBU-24428"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the loss of both channels is sustained beyond the device's offline tolerance\n-> **THEN** the PV enters a communication-locked, out-of-service state\n**AND** the PV stops accepting taps",
+      "updated_on": "2026-07-27T12:35:18Z"
+    },
+    {
+      "case_id": 4103569,
+      "title": "Comms Recovery — transactions queued during an outage are delivered on restore",
+      "section_id": 887766,
+      "section_path": "Non-Functional / Comms",
+      "refs": [
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Translink-network connection is restored\n-> **THEN** the queued transactions are delivered to the back office\n**AND** no queued transaction is lost",
+      "updated_on": "2026-07-27T12:35:19Z"
+    },
+    {
+      "case_id": 4101085,
+      "title": "Comms Failover — Ethernet loss fails the PV over to cellular",
+      "section_id": 887766,
+      "section_path": "Non-Functional / Comms",
+      "refs": [
+        "REQ-2746",
+        "TIBU-24428"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the Ethernet connection is disconnected\n-> **THEN** a PrimaryCommsChannelFailed (812) set event is raised in the CloudFare Activity Log\n**AND** the PV fails over to the cellular connection\n**WHEN** the operator presents the smartcard to the PV while it is running on cellular\n-> **THEN** the 'Validation Success' screen is displayed\n**AND** the transaction is identifiable in the back office (CloudFare, SmarTrack, MERIT)\n**WHEN** the Ethernet connection is reconnected\n-> **THEN** a PrimaryCommsChannelFailed (812) clear event is raised in the CloudFare Activity Log\n**AND** the PV fails back to operating over Ethernet",
+      "updated_on": "2026-07-27T12:34:57Z"
+    },
+    {
+      "case_id": 4101023,
+      "title": "Screen Validation — 0_0 Loading",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"0_0 Loading\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:08Z"
+    },
+    {
+      "case_id": 4101024,
+      "title": "Screen Validation — 1_0_1 Present SmartCard or Barcode",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_0_1 Present SmartCard or Barcode\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:09Z"
+    },
+    {
+      "case_id": 4101025,
+      "title": "Screen Validation — 1_1_0 Present SmartCard no Tickets",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_1_0 Present SmartCard no Tickets\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:10Z"
+    },
+    {
+      "case_id": 4101026,
+      "title": "Screen Validation — 1_1_1 Present Ticket no SmartCard",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_1_1 Present Ticket no SmartCard\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:11Z"
+    },
+    {
+      "case_id": 4101027,
+      "title": "Screen Validation — 1_2_1 Machine Not in Service",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_2_1 Machine Not in Service\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:11Z"
+    },
+    {
+      "case_id": 4101028,
+      "title": "Screen Validation — 1_3_1 Represent Card",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_3_1 Represent Card\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:12Z"
+    },
+    {
+      "case_id": 4101029,
+      "title": "Screen Validation — 1_3_16 Unable to Validate",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_3_16 Unable to Validate\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:13Z"
+    },
+    {
+      "case_id": 4101030,
+      "title": "Screen Validation — 1_3_7 Not Valid At This Location",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_3_7 Not Valid At This Location\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:14Z"
+    },
+    {
+      "case_id": 4101031,
+      "title": "Screen Validation — 1_3_8 Invalid Time Of Day",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_3_8 Invalid Time Of Day\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:14Z"
+    },
+    {
+      "case_id": 4101032,
+      "title": "Screen Validation — 1_3_9 Product Expired",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_3_9 Product Expired\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:15Z"
+    },
+    {
+      "case_id": 4101033,
+      "title": "Screen Validation — 1_4_3 Passback Journeys Left",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_4_3 Passback Journeys Left\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:16Z"
+    },
+    {
+      "case_id": 4101034,
+      "title": "Screen Validation — 1_4_4 Passback Days Left",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_4_4 Passback Days Left \"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:17Z"
+    },
+    {
+      "case_id": 4101035,
+      "title": "Screen Validation — 1_5_0 Tag successful",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_5_0 Tag successful\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:18Z"
+    },
+    {
+      "case_id": 4101036,
+      "title": "Screen Validation — 1_6_1_1 ABT Tag successful - Rail",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_1_1 ABT Tag successful - Rail\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:18Z"
+    },
+    {
+      "case_id": 4101037,
+      "title": "Screen Validation — 1_6_1_1 ABT Tag successful",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_1_1 ABT Tag successful\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:19Z"
+    },
+    {
+      "case_id": 4101038,
+      "title": "Screen Validation — 1_6_2 ABT deny list_negative list",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_2 ABT deny list_negative list\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-28T07:48:46Z"
+    },
+    {
+      "case_id": 4101039,
+      "title": "Screen Validation — 1_6_3 ABT Error reading card",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_3 ABT Error reading card\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-28T07:48:47Z"
+    },
+    {
+      "case_id": 4101040,
+      "title": "Screen Validation — 1_6_4 ABT Hot listed card",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_4 ABT Hot listed card\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-28T07:48:48Z"
+    },
+    {
+      "case_id": 4101041,
+      "title": "Screen Validation — 1_6_6 Passback - No Entry",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_6_6 Passback - No Entry\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:22Z"
+    },
+    {
+      "case_id": 4101042,
+      "title": "Screen Validation — 1_7_1_1 Barcode Validation Successful - Adult",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_1_1 Barcode Validation Successful - Adult\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:23Z"
+    },
+    {
+      "case_id": 4101043,
+      "title": "Screen Validation — 1_7_99_2 Barcode Validation Fail - Service",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_99_2 Barcode Validation Fail - Service\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:24Z"
+    },
+    {
+      "case_id": 4101044,
+      "title": "Screen Validation — 1_7_99_3 Barcode Validation Fail - Time",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_99_3 Barcode Validation Fail - Time\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:25Z"
+    },
+    {
+      "case_id": 4101045,
+      "title": "Screen Validation — 1_7_99_4 Barcode Validation Fail - Location",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_99_4 Barcode Validation Fail - Location\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:25Z"
+    },
+    {
+      "case_id": 4101046,
+      "title": "Screen Validation — 1_7_99_5 Barcode Validation Fail - Expired",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_99_5 Barcode Validation Fail - Expired\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:26Z"
+    },
+    {
+      "case_id": 4101047,
+      "title": "Screen Validation — 1_7_99_6 Barcode Validation Fail - Passback PV",
+      "section_id": 887067,
+      "section_path": "HMI Screen Validation / Validation Screens",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_7_99_6 Barcode Validation Fail - Passback PV\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:27Z"
+    },
+    {
+      "case_id": 4101048,
+      "title": "Screen Validation — 10_00_01 Technician Menu - Login Screen",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_00_01 Technician Menu - Login Screen\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:28Z"
+    },
+    {
+      "case_id": 4101049,
+      "title": "Screen Validation — 10_00_02 Technician Menu -Enter PIN",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_00_02 Technician Menu -Enter PIN\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:28Z"
+    },
+    {
+      "case_id": 4101050,
+      "title": "Screen Validation — 10_00_03 Technician Menu - Incorrect Details",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_00_03 Technician Menu - Incorrect Details\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:29Z"
+    },
+    {
+      "case_id": 4101051,
+      "title": "Screen Validation — 10_02_01 Technician Menu - Sign Off",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_02_01 Technician Menu - Sign Off\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:30Z"
+    },
+    {
+      "case_id": 4101052,
+      "title": "Screen Validation — 10_02_02 Technician Menu - Please Wait",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_02_02 Technician Menu - Please Wait\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:31Z"
+    },
+    {
+      "case_id": 4101053,
+      "title": "Screen Validation — 10_02_03 Technician Menu - Rebooting",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"10_02_03 Technician Menu - Rebooting\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:32Z"
+    },
+    {
+      "case_id": 4101054,
+      "title": "Screen Validation — 11_00_00 Technician Menu - Home Screen",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_00_00 Technician Menu - Home Screen\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:32Z"
+    },
+    {
+      "case_id": 4101055,
+      "title": "Screen Validation — 11_01_01 Technician Menu - Location Settings",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_01 Technician Menu - Location Settings\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:33Z"
+    },
+    {
+      "case_id": 4101056,
+      "title": "Screen Validation — 11_01_02 Technician Menu - Location Settings - Edit",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_02 Technician Menu - Location Settings - Edit\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:34Z"
+    },
+    {
+      "case_id": 4101057,
+      "title": "Screen Validation — 11_01_03 Technician Menu - Location Settings - Edit - Clear",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_03 Technician Menu - Location Settings - Edit - Clear\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:35Z"
+    },
+    {
+      "case_id": 4101058,
+      "title": "Screen Validation — 11_01_05 Technician Menu - Location Settings - Fail",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_05 Technician Menu - Location Settings - Fail\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:35Z"
+    },
+    {
+      "case_id": 4101059,
+      "title": "Screen Validation — 11_01_10 Technician Menu - Select Location - Selected",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_10 Technician Menu - Select Location - Selected\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:36Z"
+    },
+    {
+      "case_id": 4101060,
+      "title": "Screen Validation — 11_01_10 Technician Menu - Select Location",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_01_10 Technician Menu - Select Location\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:37Z"
+    },
+    {
+      "case_id": 4101061,
+      "title": "Screen Validation — 11_02_01 Technician Menu - Software Version",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_02_01 Technician Menu - Software Version\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:38Z"
+    },
+    {
+      "case_id": 4101062,
+      "title": "Screen Validation — 11_03_01 Technician Menu - Brightness",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_03_01 Technician Menu - Brightness\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:39Z"
+    },
+    {
+      "case_id": 4101063,
+      "title": "Screen Validation — 11_04_01 Technician Menu - Force communications",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_04_01 Technician Menu - Force communications\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:39Z"
+    },
+    {
+      "case_id": 4101064,
+      "title": "Screen Validation — 11_05_01 Technician Menu - Network Interfaces",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_05_01 Technician Menu - Network Interfaces\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:40Z"
+    },
+    {
+      "case_id": 4101065,
+      "title": "Screen Validation — 11_05_02 Technician Menu - Network interfaces - Details",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_05_02 Technician Menu - Network interfaces - Details\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:41Z"
+    },
+    {
+      "case_id": 4101066,
+      "title": "Screen Validation — 11_05_03 Technician Menu - Network interfaces - FecDetails",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_05_03 Technician Menu - Network interfaces - FecDetails\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:42Z"
+    },
+    {
+      "case_id": 4101067,
+      "title": "Screen Validation — 11_05_04 Technician Menu - Network interfaces -ChangeIP",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_05_04 Technician Menu - Network interfaces -ChangeIP\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:43Z"
+    },
+    {
+      "case_id": 4101068,
+      "title": "Screen Validation — 11_05_05 Technician Menu - Network Routing Table",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_05_05 Technician Menu - Network Routing Table\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:43Z"
+    },
+    {
+      "case_id": 4101069,
+      "title": "Screen Validation — 11_06_01 Technician Menu - Configuration Version",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_06_01 Technician Menu - Configuration Version\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:44Z"
+    },
+    {
+      "case_id": 4101070,
+      "title": "Screen Validation — 11_07_01 Technician Menu - Audio",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"11_07_01 Technician Menu - Audio\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:45Z"
+    },
+    {
+      "case_id": 4101071,
+      "title": "Screen Validation — 1_0 Present SmartCard or Barcode",
+      "section_id": 887068,
+      "section_path": "HMI Screen Validation / Technician Menu",
+      "refs": [],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** the screen is displayed\n-> **THEN** the screen matches the approved design for \"1_0 Present SmartCard or Barcode\"\n**AND** all labels, icons and on-screen indicators are present and correctly positioned",
+      "updated_on": "2026-07-27T12:34:46Z"
+    },
+    {
+      "case_id": 4101005,
+      "title": "ZZ_DELETE_REVIEW - Barcode — single-use validation",
+      "section_id": 887840,
+      "section_path": "Delete",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**WHEN** you present the valid single-use barcode\n-> **THEN** the PV validates it\n**AND** the PV shows the barcode success result\n**WHEN** you present the invalid single-use barcode\n-> **THEN** the PV rejects it with the specific reason shown\n**WHEN** you check the back office for the validation\n-> **THEN** the validation is recorded in the CloudFare activity log and MERIT",
+      "updated_on": "2026-07-21T14:50:40Z"
+    }
+  ]
+}

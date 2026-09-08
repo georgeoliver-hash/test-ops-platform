@@ -1,0 +1,55 @@
+==== 4103578 Fare-Stage Selection — the POS shows and prints the Fare Stage name, not the stop name
+REFS: FBD-100207
+PREFACE: This test is to confirm the POS displays and prints the Fare Stage name rather than the individual stop name.
+PRECONDS: **GIVEN** an operator is signed on to a POS building a bus fare
+**AND** the POS presents fares by Fare Stage, not by individual stop
+**AND** example: on route 72b the boarding stop Moygashel Busby Shop belongs to a Fare Stage (Fare Stage name taken from the fare triangle — confirm against the fares export)
+ STEP content: **WHEN** the operator selects the boarding and alighting stages and issues the ticket
+ STEP expected: **THEN** the result screen shows the Fare Stage name, not the stop name
+**AND** the printed ticket shows the Fare Stage name, not the stop name
+EXPECTED: The POS shows and prints the Fare Stage name rather than the underlying stop name.
+
+[Automatable: Partial]
+
+==== 4099987 FLU — passenger type
+REFS: None
+PREFACE: This test is to confirm the operator can select a passenger type while building a fare and that the chosen type is applied to the fare, updating the displayed price.
+PRECONDS: **GIVEN** an operator is signed on and building a fare on the POS
+**AND** the fare's passenger type can be changed from the passenger-type list
+**AND** example: on route 72b, Moygashel Busby Shop → Armagh Bus Centre, changing the passenger type from Adult to Child (fares confirm against the fares export)
+ STEP content: **WHEN** the operator selects a passenger type from the list
+ STEP expected: **THEN** the selected passenger type is applied to the fare
+**AND** the displayed price updates to the price for that passenger type
+EXPECTED: Selecting a passenger type applies it to the fare and updates the displayed price. Each passenger type (Adult, Child, concession, etc.) is a data variation of the same behaviour.
+
+[Automatable: Yes]
+
+==== 4103533 Cash Refund — valid URN and amount refunds and prints a receipt
+REFS: FBD-100373
+PREFACE: This test is to confirm the Operator can issue a cash refund against a valid ticket URN.
+PRECONDS: **GIVEN** an Operator is signed on to the POS
+**AND** a paper ticket was sold for £13.00 with URN 01122400428500078601300 (23 chars)
+ STEP content: **WHEN** the Operator selects Operator Menu, Issue Refund, Cash Refund
+**AND** keys the URN and a refund amount of £13.00
+ STEP expected: **THEN** the refund is accepted
+**AND** a success message shows the amount refunded
+ STEP content: **WHEN** the refund completes
+ STEP expected: **THEN** a refund receipt is printed with a customer and operator copy
+EXPECTED: The cash refund is accepted, a two-part receipt prints, and the refunded amount is confirmed on screen.
+
+[Automatable: Partial · Cross-check: CloudFare / MERIT]
+
+==== 4100376 Bus FLU — change boarding stage, alighting stage and fare type
+REFS: None
+PREFACE: This test is to confirm the operator can change the boarding stage, the alighting stage and the fare type while building a bus fare, and that the fare updates to reflect each change.
+PRECONDS: **GIVEN** an operator is signed on and building a bus fare (Ulsterbus mode)
+**AND** example: route 72b starting Moygashel Busby Shop → Armagh Bus Centre, Adult Single, then re-pointed to a different boarding/alighting stage and Child fare (fares confirm against the fares export)
+ STEP content: **WHEN** the operator changes the boarding stage
+ STEP expected: **THEN** the fare updates for the new boarding stage
+ STEP content: **WHEN** the operator changes the alighting stage
+ STEP expected: **THEN** the fare updates for the new alighting stage
+ STEP content: **WHEN** the operator changes the fare type
+ STEP expected: **THEN** the fare updates for the new fare type
+EXPECTED: The boarding stage, alighting stage and fare type can each be changed and the fare updates to reflect each change.
+
+[Automatable: Yes]

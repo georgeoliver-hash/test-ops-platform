@@ -1,0 +1,3019 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "**NEW** TVM Test Suite",
+  "suite_id": 30284,
+  "generated_at": "2026-07-23T10:33:09.785320Z",
+  "cases": [
+    {
+      "case_id": 4103620,
+      "title": "Ticket Collection — a valid booking reference collects and prints the pre-paid ticket",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100317",
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a valid Type B single-use booking reference for a Rail Adult Single",
+      "updated_on": "2026-07-21T15:15:02Z"
+    },
+    {
+      "case_id": 4103621,
+      "title": "Ticket Collection — the booking reference is validated against the back office",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a valid Type B booking reference whose ProductId, StartPointId and EndPointId exist in CloudFare",
+      "updated_on": "2026-07-16T12:00:45Z"
+    },
+    {
+      "case_id": 4103622,
+      "title": "Ticket Collection — a successful redemption emits a Barcode Redemption event",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen with a live connection to the back office\n**AND** a valid Type E booking reference for a Rail Adult Single",
+      "updated_on": "2026-07-16T12:00:45Z"
+    },
+    {
+      "case_id": 4103623,
+      "title": "Ticket Collection — an offline redemption still prints and queues an offline event",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen with the redeem call timing out\n**AND** a valid Type B booking reference below the barcode ceiling limit",
+      "updated_on": "2026-07-16T12:00:46Z"
+    },
+    {
+      "case_id": 4103624,
+      "title": "Ticket Collection — a redemption above the barcode ceiling limit cannot validate offline",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100317",
+        "FBD-100483"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen with no back-office connection\n**AND** a booking reference whose ticket value exceeds the configured barcode ceiling limit",
+      "updated_on": "2026-07-16T12:00:47Z"
+    },
+    {
+      "case_id": 4103625,
+      "title": "Booking Reference — an invalid booking reference is rejected",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a booking reference whose station does not match the product",
+      "updated_on": "2026-07-21T15:15:03Z"
+    },
+    {
+      "case_id": 4103626,
+      "title": "Booking Reference — a malformed reference entry is rejected before submission",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets entry screen\n**AND** an incomplete booking reference shorter than the required length",
+      "updated_on": "2026-07-16T12:00:49Z"
+    },
+    {
+      "case_id": 4103627,
+      "title": "Ticket Collection — a collection against a legacy stage resolves the legacy stage name",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a Type B booking reference whose alighting point is the legacy stage \"Any NIR Station\"",
+      "updated_on": "2026-07-16T12:00:50Z"
+    },
+    {
+      "case_id": 4103628,
+      "title": "Single-Use only — a multi-use ticket's Collect Ticket Code is rejected",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100167",
+        "FBD-100317"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a Collect Ticket Code for a multiple-use (mLink/Flowbird) ticket that the TVM does not support",
+      "updated_on": "2026-07-21T15:15:03Z"
+    },
+    {
+      "case_id": 4103629,
+      "title": "Single-Use only — collection accepts a booking reference and not a scanned barcode",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100317",
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a manifest Collect Ticket Code that is only enterable as a booking reference",
+      "updated_on": "2026-07-16T12:00:51Z"
+    },
+    {
+      "case_id": 4103630,
+      "title": "Ticket Collection — a business error shows an error screen and returns to Home after the timeout",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a booking reference that the back office answers with a 400-family business error",
+      "updated_on": "2026-07-16T12:00:52Z"
+    },
+    {
+      "case_id": 4103631,
+      "title": "Ticket Collection — repeated server errors retry and then fall back",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a booking reference for which the back office returns 500-family errors",
+      "updated_on": "2026-07-16T12:00:53Z"
+    },
+    {
+      "case_id": 4103632,
+      "title": "Ticket Collection — an already-redeemed booking reference is rejected as used",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100483"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM Collect Tickets screen\n**AND** a booking reference that has already been redeemed and locally recorded",
+      "updated_on": "2026-07-16T12:00:54Z"
+    },
+    {
+      "case_id": 4103633,
+      "title": "Barcode Ticket Format — a collected ticket prints in the barcode ticket layout",
+      "section_id": 887776,
+      "section_path": "Functional / Barcode Redemption",
+      "refs": [
+        "FBD-100167",
+        "FBD-100318"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has collected a valid single-use ticket on the TVM\n**AND** a Rail Adult Single collected via a Type B booking reference",
+      "updated_on": "2026-07-16T12:00:55Z"
+    },
+    {
+      "case_id": 4103634,
+      "title": "Coins — valid coins pay for a transaction and change is returned",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)\n**AND** cash payment is enabled and change is available",
+      "updated_on": "2026-07-22T14:29:49Z"
+    },
+    {
+      "case_id": 4103635,
+      "title": "Coins — a valid coin is accepted after an invalid coin is inserted",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction\n**AND** an invalid coin has just been rejected and returned to the tray",
+      "updated_on": "2026-07-22T14:29:50Z"
+    },
+    {
+      "case_id": 4103636,
+      "title": "Coins — coins inserted during the \"More Time Required\" screen complete the payment",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has a part-paid cash transaction showing the \"More Time Required\" screen",
+      "updated_on": "2026-07-22T14:29:51Z"
+    },
+    {
+      "case_id": 4103637,
+      "title": "Coins — out-of-circulation and sub-value coins are rejected",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction",
+      "updated_on": "2026-07-22T14:29:52Z"
+    },
+    {
+      "case_id": 4103638,
+      "title": "Coins — foreign coins are rejected",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction",
+      "updated_on": "2026-07-22T14:29:53Z"
+    },
+    {
+      "case_id": 4103639,
+      "title": "Banknotes — a valid banknote in any orientation pays for a transaction",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction\n**AND** a valid Bank of England £5 polymer banknote is to be used",
+      "updated_on": "2026-07-22T14:29:53Z"
+    },
+    {
+      "case_id": 4103640,
+      "title": "Banknotes — withdrawn paper notes are rejected",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction",
+      "updated_on": "2026-07-22T14:29:54Z"
+    },
+    {
+      "case_id": 4103641,
+      "title": "Banknotes — a Scottish banknote is accepted as valid sterling",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339",
+        "REQ-1491"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash transaction\n**AND** a valid Scottish-issued banknote (e.g. Bank of Scotland / RBS / Clydesdale Bank) is to be used",
+      "updated_on": "2026-07-22T14:29:55Z"
+    },
+    {
+      "case_id": 4103642,
+      "title": "Cash — mixed coins and banknotes pay for a transaction",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a Metro Adult Day Ticket of £3.90 (example fare against the loaded fares table)",
+      "updated_on": "2026-07-22T14:29:56Z"
+    },
+    {
+      "case_id": 4103643,
+      "title": "Cash — overpayment returns the correct change",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM returns the correct change when the customer overpays a cash transaction.",
+      "updated_on": "2026-07-22T14:29:57Z"
+    },
+    {
+      "case_id": 4103644,
+      "title": "Cash — pressing Back returns the inserted cash before the escrow limit",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm inserted cash is returned when the customer presses Back before an escrow limit is reached.",
+      "updated_on": "2026-07-22T14:29:57Z"
+    },
+    {
+      "case_id": 4103645,
+      "title": "Cash — pressing Cancel returns the inserted cash after the escrow limit",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm inserted cash is returned when the customer presses Cancel after an escrow limit has been reached.",
+      "updated_on": "2026-07-22T14:29:58Z"
+    },
+    {
+      "case_id": 4103646,
+      "title": "Cash — the coin escrow limit stops further coins being accepted",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has a cash transaction where the coin escrow limit has been reached",
+      "updated_on": "2026-07-22T14:29:59Z"
+    },
+    {
+      "case_id": 4103647,
+      "title": "Cash — the banknote escrow limit stops further notes being accepted",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has a cash transaction where the banknote escrow limit has been reached",
+      "updated_on": "2026-07-22T14:30:00Z"
+    },
+    {
+      "case_id": 4103648,
+      "title": "Cash — a print failure returns the inserted cash",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM returns the customer's cash when the ticket fails to print on a cash sale.",
+      "updated_on": "2026-07-16T12:01:07Z"
+    },
+    {
+      "case_id": 4103649,
+      "title": "Cash — a completed cash sale posts audit data to CloudFare",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has completed a cash sale of a Glider Adult Single (example product)",
+      "updated_on": "2026-07-17T11:02:03Z"
+    },
+    {
+      "case_id": 4104116,
+      "title": "Cash — a coin or note jam is cleared successfully during payment or change",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has commenced inserting coins or notes, or is receiving change, for a product purchase",
+      "updated_on": "2026-07-23T10:07:55Z"
+    },
+    {
+      "case_id": 4104117,
+      "title": "Cash — a coin or note jam that cannot be cleared fails the transaction cleanly",
+      "section_id": 887777,
+      "section_path": "Functional / Payments - Cash",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM fails a transaction cleanly (no ticket issued, no fare charged) when a coin or note jam occurring during payment or change cannot be cleared.",
+      "updated_on": "2026-07-23T10:07:56Z"
+    },
+    {
+      "case_id": 4103650,
+      "title": "BNR — a note left in the exit beak leaves the recycler non-functional",
+      "section_id": 887778,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Astreo only)",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Astreo BNR is reported non-functional when a dispensed note is left in the exit beak.",
+      "updated_on": "2026-07-16T12:01:08Z"
+    },
+    {
+      "case_id": 4103651,
+      "title": "BNR — a rejected invalid note left hanging from the exit beak leaves the recycler non-functional",
+      "section_id": 887778,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Astreo only)",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Astreo BNR is reported non-functional when a rejected invalid note is left hanging from the exit beak.",
+      "updated_on": "2026-07-16T12:01:09Z"
+    },
+    {
+      "case_id": 4103652,
+      "title": "BNA — a note-acceptor error makes note payment unavailable",
+      "section_id": 887778,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Astreo only)",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Astreo TVM is at the payment screen for a cash transaction",
+      "updated_on": "2026-07-16T12:01:10Z"
+    },
+    {
+      "case_id": 4103653,
+      "title": "Change — insufficient change prints a Refuse Change Voucher for the balance",
+      "section_id": 887778,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Astreo only)",
+      "refs": [
+        "FBD-100341",
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Astreo TVM prints a Refuse Change Voucher when it cannot return the full change due.",
+      "updated_on": "2026-07-22T14:30:01Z"
+    },
+    {
+      "case_id": 4103654,
+      "title": "Change — a Refuse Change Voucher is printed when cash is inserted during the \"More Time Required\" screen",
+      "section_id": 887778,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Astreo only)",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Astreo TVM is in a low-change state and cannot return the full change due\n**AND** the customer inserts coins during the \"More Time Required\" screen",
+      "updated_on": "2026-07-22T14:30:01Z"
+    },
+    {
+      "case_id": 4103655,
+      "title": "Coin recycler — a Cash Content Report is produced after a hopper is replaced",
+      "section_id": 887779,
+      "section_path": "Functional / Payments - Cash / Coin Recycler Hopper (Kiosk only)",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk TVM has had a coin recycler hopper replaced by an engineer",
+      "updated_on": "2026-07-22T14:30:02Z"
+    },
+    {
+      "case_id": 4103656,
+      "title": "Coin recycler — replenishing a hopper restores change-giving from a low-change state",
+      "section_id": 887779,
+      "section_path": "Functional / Payments - Cash / Coin Recycler Hopper (Kiosk only)",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk TVM is in a low-change state because a coin recycler hopper is depleted",
+      "updated_on": "2026-07-22T14:30:03Z"
+    },
+    {
+      "case_id": 4104113,
+      "title": "BNR — a note left in the exit beak remains functional on Kiosk",
+      "section_id": 887843,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Kiosk only)",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Kiosk BNR remains functional when a dispensed note is left in the exit beak, unlike the Astreo BNR which is reported non-functional in the same scenario (see the Astreo-only sibling case).",
+      "updated_on": "2026-07-23T10:07:53Z"
+    },
+    {
+      "case_id": 4104114,
+      "title": "BNR — a rejected note left hanging from the exit beak remains functional on Kiosk",
+      "section_id": 887843,
+      "section_path": "Functional / Payments - Cash / Note Recycler & Change (Kiosk only)",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Kiosk BNR remains functional when a rejected invalid banknote is left hanging from the exit beak, unlike the Astreo BNR which is reported non-functional in the same scenario.",
+      "updated_on": "2026-07-23T10:07:53Z"
+    },
+    {
+      "case_id": 4103657,
+      "title": "Chip & PIN — a valid card completes payment and prints the ticket",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-0097",
+        "REQ-0295",
+        "REQ-0340",
+        "REQ-1488",
+        "REQ-1515",
+        "REQ-1722",
+        "REQ-2583"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a Glider Adult Single of £2.20 (example fare against the loaded fares table)\n**AND** a valid Visa Debit Chip & PIN card is to be used",
+      "updated_on": "2026-07-23T10:08:15Z"
+    },
+    {
+      "case_id": 4103658,
+      "title": "Chip & PIN — a payment with no PIN entered does not complete",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a Chip & PIN payment does not complete when the customer enters no PIN.",
+      "updated_on": "2026-07-22T14:04:26Z"
+    },
+    {
+      "case_id": 4103659,
+      "title": "Chip & PIN — American Express and Diners cards are accepted",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "C3546400-402",
+        "REQ-0097",
+        "REQ-0295",
+        "REQ-0340",
+        "REQ-1722"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a cash-or-card transaction\n**AND** a valid American Express credit Chip & PIN card is to be used",
+      "updated_on": "2026-07-22T14:04:27Z"
+    },
+    {
+      "case_id": 4103660,
+      "title": "Chip & PIN — transaction value limits are enforced",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "C3546435-438",
+        "REQ-1489"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the Chip & PIN payment screen",
+      "updated_on": "2026-07-22T14:04:28Z"
+    },
+    {
+      "case_id": 4103661,
+      "title": "Contactless — a tap at or below the contactless limit is approved",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "C1831356-396",
+        "C3546403-410",
+        "REQ-1488",
+        "REQ-1489",
+        "REQ-1630",
+        "REQ-2519"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)\n**AND** a valid Visa contactless card is to be used",
+      "updated_on": "2026-07-22T14:04:29Z"
+    },
+    {
+      "case_id": 4103662,
+      "title": "Contactless — a tap above the contactless limit falls back to Chip & PIN",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1488",
+        "REQ-1489",
+        "REQ-2519"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen with the contactless limit set to £100.00 (loaded configuration)",
+      "updated_on": "2026-07-22T14:04:29Z"
+    },
+    {
+      "case_id": 4103663,
+      "title": "Contactless — a mobile wallet payment is approved",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "C3546411-434",
+        "REQ-1488",
+        "REQ-1490",
+        "REQ-2519"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the payment screen for a £30.00 transaction\n**AND** an Apple Pay Mastercard credit device is to be used",
+      "updated_on": "2026-07-22T14:04:30Z"
+    },
+    {
+      "case_id": 4103664,
+      "title": "EMV — a declined card offers retry or cancel",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1409",
+        "REQ-1515",
+        "REQ-1591"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the EMV payment screen with a card that will be declined",
+      "updated_on": "2026-07-23T10:08:14Z"
+    },
+    {
+      "case_id": 4103665,
+      "title": "EMV — cancelling at the pinpad ends the payment without a ticket",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1515",
+        "REQ-1591"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has an EMV payment in progress at the pinpad",
+      "updated_on": "2026-07-22T14:04:32Z"
+    },
+    {
+      "case_id": 4103666,
+      "title": "EMV — a payment that times out is not completed",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1591"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has an EMV payment in progress",
+      "updated_on": "2026-07-22T14:04:33Z"
+    },
+    {
+      "case_id": 4103667,
+      "title": "EMV — a print failure voids the card payment",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-0847",
+        "REQ-1515",
+        "REQ-1591"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has taken an approved card payment for a ticket",
+      "updated_on": "2026-07-22T14:04:33Z"
+    },
+    {
+      "case_id": 4103668,
+      "title": "EMV — an expired or blocked card is rejected",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1519"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM is at the EMV payment screen",
+      "updated_on": "2026-07-22T14:04:34Z"
+    },
+    {
+      "case_id": 4103669,
+      "title": "EMV — the PAN is masked on the receipt and back-office systems",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-1630",
+        "REQ-1723"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has completed a Chip & PIN card sale",
+      "updated_on": "2026-07-22T14:04:35Z"
+    },
+    {
+      "case_id": 4103670,
+      "title": "EMV — selecting card after a cash transaction returns any inserted cash and pays by card",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-0097",
+        "REQ-0295",
+        "REQ-0340",
+        "REQ-1489",
+        "REQ-1722",
+        "REQ-2583"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has a cash transaction selected with coins already inserted",
+      "updated_on": "2026-07-22T14:04:36Z"
+    },
+    {
+      "case_id": 4103671,
+      "title": "EMV — a completed card sale posts audit data to CloudFare under the TVM terminal ID",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "FBD-100320",
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM has completed a card sale using its allocated TID from the NMI \"TVM\" terminal group",
+      "updated_on": "2026-07-17T11:02:06Z"
+    },
+    {
+      "case_id": 4103672,
+      "title": "EMV — a card payment receipt is printed when selected",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [
+        "REQ-0097",
+        "REQ-0295",
+        "REQ-0340"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM prints a card payment receipt when the customer requests one.",
+      "updated_on": "2026-07-22T14:04:36Z"
+    },
+    {
+      "case_id": 4104115,
+      "title": "EMV — a card removed before the transaction completes is handled safely",
+      "section_id": 887780,
+      "section_path": "Functional / Payments - EMV & Contactless",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM transaction is at the EMV payment step",
+      "updated_on": "2026-07-23T10:07:54Z"
+    },
+    {
+      "case_id": 4103680,
+      "title": "Ticket Issue — a selected product is issued and printed",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM at its home stage on the multi-modal home screen\n**AND** an example product of a Metro Adult Single from 10A (IN) Casement Park to City Hall at £2.30 (fares export FBD-100336)",
+      "updated_on": "2026-07-16T12:01:27Z"
+    },
+    {
+      "case_id": 4103681,
+      "title": "Ticket Issue — Adult single ticket",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Adult product range\n**AND** an example Metro Adult Single, 10A (IN) Casement Park to City Hall, £2.30 (Ulsterbus example: 72b Moygashel Busby Shop to Armagh Bus Centre, ref.60 £4.50)",
+      "updated_on": "2026-07-16T12:01:28Z"
+    },
+    {
+      "case_id": 4103682,
+      "title": "Ticket Issue — Child single ticket",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Child product range\n**AND** an example Metro Child Single, 10A (IN) Casement Park to City Hall, at the Child fare per the fares export",
+      "updated_on": "2026-07-16T12:01:29Z"
+    },
+    {
+      "case_id": 4103683,
+      "title": "Ticket Issue — Family and Friends day ticket",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Family and Friends product\n**AND** an example Metro Family and Friends Day ticket priced per the fares export",
+      "updated_on": "2026-07-16T12:01:30Z"
+    },
+    {
+      "case_id": 4103684,
+      "title": "Ticket Issue — Family and Friends additional child",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Family and Friends day ticket selected\n**AND** the fares export defines a Family and Friends Additional Child price",
+      "updated_on": "2026-07-16T12:01:31Z"
+    },
+    {
+      "case_id": 4103685,
+      "title": "Ticket Issue — Popular tickets shortcut",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Popular Tickets shortcuts\n**AND** an example Popular shortcut for a Metro Adult Single at £2.30",
+      "updated_on": "2026-07-16T12:01:31Z"
+    },
+    {
+      "case_id": 4103686,
+      "title": "Ticket Issue — Evening ticket",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM inside the Metro Evening validity window\n**AND** an example Metro Evening Adult ticket priced per the fares export",
+      "updated_on": "2026-07-16T12:01:32Z"
+    },
+    {
+      "case_id": 4103687,
+      "title": "Ticket Issue — Day and Day Return tickets",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Day and Day Return products\n**AND** an example Metro Adult Day ticket priced per the fares export",
+      "updated_on": "2026-07-16T12:01:33Z"
+    },
+    {
+      "case_id": 4103688,
+      "title": "Ticket Issue — Summer Bus Rambler ticket",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the Summer Bus Rambler product within its seasonal availability\n**AND** an example Summer Bus Rambler Adult ticket priced per the fares export",
+      "updated_on": "2026-07-16T12:01:34Z"
+    },
+    {
+      "case_id": 4103689,
+      "title": "Ticket Issue — concessionary half-fare single",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the concessionary product range\n**AND** an example half-fare concessionary single at half the Adult fares-export single fare",
+      "updated_on": "2026-07-16T12:01:35Z"
+    },
+    {
+      "case_id": 4103690,
+      "title": "Ticket Issue — buy a product in a different language",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM on the multi-modal home screen\n**AND** the interface language has been switched from English to an alternative language",
+      "updated_on": "2026-07-16T12:01:35Z"
+    },
+    {
+      "case_id": 4103691,
+      "title": "Ticket Issue — issued ticket carries a single-use barcode",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100167",
+        "FBD-100317"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a printed ticket carries a single-use barcode when the ticket type has barcode printing enabled.",
+      "updated_on": "2026-07-23T10:08:16Z"
+    },
+    {
+      "case_id": 4103692,
+      "title": "Ticket Issue — a single ticket for multiple passengers carries no barcode",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm no barcode is printed when one ticket is issued covering multiple passengers.",
+      "updated_on": "2026-07-16T12:01:37Z"
+    },
+    {
+      "case_id": 4103693,
+      "title": "Ticket Issue — the sale posts an audit record to the back office",
+      "section_id": 887783,
+      "section_path": "Functional / Sales - Tickets / Ticket Issue",
+      "refs": [
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has completed a Metro Adult Single sale at £2.30",
+      "updated_on": "2026-07-21T15:15:06Z"
+    },
+    {
+      "case_id": 4103694,
+      "title": "3-Day — a 3-day ticket is issued",
+      "section_id": 887784,
+      "section_path": "Functional / Sales - Tickets / Advance & 3-Day",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing the 3-day product\n**AND** an example Adult 3-Day ticket priced per the fares export",
+      "updated_on": "2026-07-16T12:01:39Z"
+    },
+    {
+      "case_id": 4103695,
+      "title": "3-Day — the ticket is valid across three consecutive days",
+      "section_id": 887784,
+      "section_path": "Functional / Sales - Tickets / Advance & 3-Day",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM issuing an Adult 3-Day ticket with today as the start date",
+      "updated_on": "2026-07-16T12:01:39Z"
+    },
+    {
+      "case_id": 4103696,
+      "title": "NI Rail — Adult single between two stations",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100207",
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode showing the rail from/to station selection\n**AND** an example Adult single from Belfast Lanyon Place to Portadown priced per the NIR fares export",
+      "updated_on": "2026-07-21T15:15:07Z"
+    },
+    {
+      "case_id": 4103697,
+      "title": "NI Rail — Day Return, Weekly and Monthly products",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode with stations selected\n**AND** an example Adult Day Return from Belfast Lanyon Place to Portadown priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:41Z"
+    },
+    {
+      "case_id": 4103698,
+      "title": "NI Rail — 3-Day Select ticket",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100167",
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode showing the 3-Day Select product\n**AND** an example Adult 3-Day Select between Belfast Lanyon Place and Portadown priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:42Z"
+    },
+    {
+      "case_id": 4103699,
+      "title": "Cross-Border — Adult single",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100207",
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode showing cross-border stations\n**AND** an example Cross-Border Adult single from Newry to Dundalk priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:43Z"
+    },
+    {
+      "case_id": 4103700,
+      "title": "Cross-Border — Return, Monthly and 1-Month-Return products",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode with cross-border stations selected\n**AND** an example Cross-Border Adult Day Return from Newry to Dundalk priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:43Z"
+    },
+    {
+      "case_id": 4103701,
+      "title": "Cross-Border — 1st Class ticket",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode showing 1st Class cross-border products\n**AND** an example 1st Class Cross-Border Adult 1 Month Return priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:44Z"
+    },
+    {
+      "case_id": 4103702,
+      "title": "NI Rail — concessionary single",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100450"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode showing rail concessionary products\n**AND** an example Senior concessionary single from Belfast Lanyon Place to Portadown priced per the NIR fares export",
+      "updated_on": "2026-07-16T12:01:45Z"
+    },
+    {
+      "case_id": 4103703,
+      "title": "NI Rail — grouped-station area name prints on a cross-border ticket",
+      "section_id": 887785,
+      "section_path": "Functional / Sales - Tickets / Rail & Cross-Border (Kiosk)",
+      "refs": [
+        "FBD-100450",
+        "FBD-100515"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk in NIR-Rail mode whose station belongs to a configured grouped Area (rail stations only)\n**AND** an example Belfast-stations Area grouping Lanyon Place with linked city stations",
+      "updated_on": "2026-07-21T15:15:07Z"
+    },
+    {
+      "case_id": 4103704,
+      "title": "Basket — adding a product increases the basket quantity",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with an empty basket\n**AND** an example Metro Adult Single at £2.30",
+      "updated_on": "2026-07-16T12:01:47Z"
+    },
+    {
+      "case_id": 4103705,
+      "title": "Basket — adding more of the same product increases the quantity",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with one Metro Adult Single already in the basket",
+      "updated_on": "2026-07-16T12:01:48Z"
+    },
+    {
+      "case_id": 4103706,
+      "title": "Basket — an identical product merges into the existing basket line",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Metro Adult Single (Casement Park to City Hall) in the basket",
+      "updated_on": "2026-07-16T12:01:48Z"
+    },
+    {
+      "case_id": 4103707,
+      "title": "Basket — the same product with different stages is a separate line",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Metro Adult Single (Casement Park to City Hall) in the basket",
+      "updated_on": "2026-07-16T12:01:49Z"
+    },
+    {
+      "case_id": 4103708,
+      "title": "Basket — reducing an item quantity lowers the total",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with two Metro Adult Singles in one basket line",
+      "updated_on": "2026-07-16T12:01:50Z"
+    },
+    {
+      "case_id": 4103709,
+      "title": "Basket — removing a product with the bin icon deletes the line",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a basket line holding two or more of a product",
+      "updated_on": "2026-07-16T12:01:51Z"
+    },
+    {
+      "case_id": 4103710,
+      "title": "Basket — removing the final product empties the basket",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a single product remaining in the basket",
+      "updated_on": "2026-07-16T12:01:52Z"
+    },
+    {
+      "case_id": 4103711,
+      "title": "Basket — remaining ticket numbers are contiguous after a removal",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with three products in the basket",
+      "updated_on": "2026-07-16T12:01:53Z"
+    },
+    {
+      "case_id": 4103712,
+      "title": "Basket — amending the boarding stage reduces the fare",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a single ticket in the basket\n**AND** an example ticket whose boarding stage is amended to one closer to the alighting stage",
+      "updated_on": "2026-07-16T12:01:54Z"
+    },
+    {
+      "case_id": 4103713,
+      "title": "Basket — amending the alighting stage increases the fare",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100207",
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a single ticket in the basket\n**AND** an example ticket whose alighting stage is amended to one farther from the boarding stage",
+      "updated_on": "2026-07-16T12:01:54Z"
+    },
+    {
+      "case_id": 4103714,
+      "title": "Basket — Family and Friends quantity set to zero removes the line",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with one or more Family and Friends products in the basket",
+      "updated_on": "2026-07-16T12:01:55Z"
+    },
+    {
+      "case_id": 4103715,
+      "title": "Basket — increasing the Family and Friends quantity raises the total",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with one Family and Friends product in the basket",
+      "updated_on": "2026-07-16T12:01:56Z"
+    },
+    {
+      "case_id": 4103716,
+      "title": "Basket — cash overpayment is handled after amending the basket",
+      "section_id": 887786,
+      "section_path": "Functional / Sales - Tickets / Basket",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a basket that has had items added and amended\n**AND** an example basket total below the cash tendered",
+      "updated_on": "2026-07-16T12:01:57Z"
+    },
+    {
+      "case_id": 4103717,
+      "title": "Ticket Numbering — identical products in separate transactions",
+      "section_id": 887787,
+      "section_path": "Functional / Sales - Tickets / Ticket Numbering",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has issued one Metro Adult Single",
+      "updated_on": "2026-07-16T12:01:58Z"
+    },
+    {
+      "case_id": 4103718,
+      "title": "Ticket Numbering — different products in separate transactions",
+      "section_id": 887787,
+      "section_path": "Functional / Sales - Tickets / Ticket Numbering",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has issued a Metro Adult Single",
+      "updated_on": "2026-07-16T12:01:59Z"
+    },
+    {
+      "case_id": 4103719,
+      "title": "Ticket Numbering — identical products in a single transaction",
+      "section_id": 887787,
+      "section_path": "Functional / Sales - Tickets / Ticket Numbering",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with several identical Metro Adult Singles in the basket",
+      "updated_on": "2026-07-16T12:02:00Z"
+    },
+    {
+      "case_id": 4103720,
+      "title": "Ticket Numbering — different products in a single transaction",
+      "section_id": 887787,
+      "section_path": "Functional / Sales - Tickets / Ticket Numbering",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with several different products in the basket",
+      "updated_on": "2026-07-16T12:02:00Z"
+    },
+    {
+      "case_id": 4103721,
+      "title": "Ticket Numbering — cancelling a selection does not skip a number",
+      "section_id": 887787,
+      "section_path": "Functional / Sales - Tickets / Ticket Numbering",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with an initial product selected but not paid",
+      "updated_on": "2026-07-16T12:02:01Z"
+    },
+    {
+      "case_id": 4103722,
+      "title": "Grouped Stops — a grouped TVM defaults to the group boarding stage",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM whose farestage belongs to a configured Area group\n**AND** an example Area grouping several city-centre bus stages under one Area name (bus-only group)",
+      "updated_on": "2026-07-16T12:02:02Z"
+    },
+    {
+      "case_id": 4103723,
+      "title": "Grouped Stops — alighting list spans all stops in the group",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM defaulted to a group boarding Area",
+      "updated_on": "2026-07-16T12:02:03Z"
+    },
+    {
+      "case_id": 4103724,
+      "title": "Grouped Stops — the cheapest non-zero fare combination is selected",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100336",
+        "FBD-100515"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm that when several boarding/alighting combinations have fares, the lowest non-zero fare is selected.",
+      "updated_on": "2026-07-16T12:02:04Z"
+    },
+    {
+      "case_id": 4103725,
+      "title": "Grouped Stops — a fare tie is broken by the first combination",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm that when multiple combinations share the lowest fare, the first combination in the list is chosen.",
+      "updated_on": "2026-07-16T12:02:04Z"
+    },
+    {
+      "case_id": 4103726,
+      "title": "Grouped Stops — the printed boarding stop need not be nearest the TVM",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a grouped boarding Area where the cheapest combination is not the TVM's physical stage",
+      "updated_on": "2026-07-16T12:02:05Z"
+    },
+    {
+      "case_id": 4103727,
+      "title": "Grouped Stops — the group name shows on screen and prints on the ticket",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM defaulted to a group boarding Area",
+      "updated_on": "2026-07-16T12:02:06Z"
+    },
+    {
+      "case_id": 4103728,
+      "title": "Grouped Stops — no valid fare shows an error screen",
+      "section_id": 887788,
+      "section_path": "Functional / Sales - Tickets / Grouped Stops",
+      "refs": [
+        "FBD-100515"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM shows an error screen when no boarding/alighting combination in the group has a valid fare.",
+      "updated_on": "2026-07-16T12:02:07Z"
+    },
+    {
+      "case_id": 4103729,
+      "title": "Ticket Collection — collect a pre-paid ticket using a booking reference (Collect Ticket Code)",
+      "section_id": 887789,
+      "section_path": "Functional / Sales - Tickets / Ticket Collection",
+      "refs": [
+        "FBD-100317",
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM on the ticket collection screen\n**AND** an example valid booking reference (Collect Ticket Code) for a pre-paid ticket",
+      "updated_on": "2026-07-21T15:15:08Z"
+    },
+    {
+      "case_id": 4103730,
+      "title": "Ticket Collection — an incomplete booking reference is rejected",
+      "section_id": 887789,
+      "section_path": "Functional / Sales - Tickets / Ticket Collection",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM on the ticket collection screen\n**AND** an example partial booking reference shorter than the required length",
+      "updated_on": "2026-07-16T12:02:09Z"
+    },
+    {
+      "case_id": 4103731,
+      "title": "Ticket Collection — an invalid-character booking reference is rejected",
+      "section_id": 887789,
+      "section_path": "Functional / Sales - Tickets / Ticket Collection",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM on the ticket collection screen\n**AND** an example booking reference containing an invalid character",
+      "updated_on": "2026-07-16T12:02:09Z"
+    },
+    {
+      "case_id": 4103732,
+      "title": "Ticket Collection — a full-length valid reference is accepted",
+      "section_id": 887789,
+      "section_path": "Functional / Sales - Tickets / Ticket Collection",
+      "refs": [
+        "FBD-100336"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM on the ticket collection screen\n**AND** an example valid booking reference at the maximum character length",
+      "updated_on": "2026-07-16T12:02:10Z"
+    },
+    {
+      "case_id": 4103738,
+      "title": "Commissioning — a TVM downloads its config and credentials by serial",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an uncommissioned TVM (example serial TVM0043) whose TID/TK are pre-configured on TMS against that serial\n**AND** the payment device is an embedded Ingenico terminal in NMI Terminal Group \"TVM\"",
+      "updated_on": "2026-07-16T12:02:15Z"
+    },
+    {
+      "case_id": 4103739,
+      "title": "Commissioning — credentials stay within the TVM Terminal Group",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100320"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM being commissioned with a payment device in NMI Terminal Group \"TVM\"\n**AND** an example TID/TK that belongs to the \"HHD Retailing\" group is offered",
+      "updated_on": "2026-07-16T12:02:16Z"
+    },
+    {
+      "case_id": 4103740,
+      "title": "Commissioning — topology makes home-location products sellable",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100383",
+        "PSPEC-0014",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a freshly commissioned TVM with home location set to Europa Buscentre\n**AND** the topology defines the products sellable from that location's fares triangle",
+      "updated_on": "2026-07-22T14:04:37Z"
+    },
+    {
+      "case_id": 4103741,
+      "title": "Software Deployment — immediate dataset installs and updates versions",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-0551",
+        "REQ-0553",
+        "REQ-0608",
+        "REQ-2727"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM in service\n**AND** a complete dataset (example release CR8.7) is available on CloudFare for immediate activation",
+      "updated_on": "2026-07-22T14:04:43Z"
+    },
+    {
+      "case_id": 4103742,
+      "title": "Software Deployment — future dataset downloads but waits to activate",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-0551",
+        "REQ-0553",
+        "REQ-0608",
+        "REQ-0680",
+        "REQ-2727"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM in service\n**AND** a complete dataset is scheduled on CloudFare for activation at a future date/time",
+      "updated_on": "2026-07-22T14:04:44Z"
+    },
+    {
+      "case_id": 4103743,
+      "title": "Software Deployment — report separates downloaded from installed",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "C1831389-392",
+        "C3546250-253",
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has downloaded a future-dated dataset that has not yet activated",
+      "updated_on": "2026-07-22T14:04:44Z"
+    },
+    {
+      "case_id": 4103744,
+      "title": "Failed Deployment — partial update reports both success and failure",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm that when some components update and others fail, the Software Versions report reflects both outcomes.",
+      "updated_on": "2026-07-22T14:04:45Z"
+    },
+    {
+      "case_id": 4103745,
+      "title": "Topology Deployment — new fares deploy for future activation",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-0063"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM at home location Europa Buscentre selling the current fares\n**AND** a topology with amended ticket fares is scheduled on CloudFare for a future activation date",
+      "updated_on": "2026-07-22T14:04:46Z"
+    },
+    {
+      "case_id": 4103746,
+      "title": "Topology Deployment — changing location changes sellable products",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100383",
+        "PSPEC-0014",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM whose home location is Europa Buscentre\n**AND** the topology is amended to move the TVM to a new location (example Cairnshill Park & Ride)",
+      "updated_on": "2026-07-22T14:04:38Z"
+    },
+    {
+      "case_id": 4103747,
+      "title": "Configuration Deployment — coin vault threshold set in TMS applies",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-0847"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM in service\n**AND** a coin vault threshold (example £400) is set for the device in TMS",
+      "updated_on": "2026-07-22T14:04:47Z"
+    },
+    {
+      "case_id": 4103748,
+      "title": "Configuration Deployment — EMV-only mode disables cash",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "REQ-3294"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM that currently accepts cash and card\n**AND** EMV-only mode is configured for the device on CloudFare",
+      "updated_on": "2026-07-22T14:04:47Z"
+    },
+    {
+      "case_id": 4103749,
+      "title": "BOS Interface — CloudFare forces communication with the TVM",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM in service",
+      "updated_on": "2026-07-16T12:05:02Z"
+    },
+    {
+      "case_id": 4103750,
+      "title": "BOS Interface — a secure connection is required for uVNC",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an operator attempting to open a uVNC session to a TVM via the back office",
+      "updated_on": "2026-07-16T12:05:03Z"
+    },
+    {
+      "case_id": 4104123,
+      "title": "Commissioning — the ticket-collection server address is configured via TMS",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** TMS has a ticket-collection server address configured for the TVM",
+      "updated_on": "2026-07-23T10:08:01Z"
+    },
+    {
+      "case_id": 4104124,
+      "title": "Topology — a device rejects topology intended for another device type",
+      "section_id": 887791,
+      "section_path": "Functional / Commissioning & Deployment",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM remains stable and unaffected when topology intended for another device type (HHD, PV, Glider or Rail-specific) is sent to it in error.",
+      "updated_on": "2026-07-23T10:08:01Z"
+    },
+    {
+      "case_id": 4103673,
+      "title": "Power-On — a cold boot reaches the Sales home screen",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0326"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM (Kiosk or Astreo) is powered off with its current configuration deployed\n**AND** an example device such as a Metro-mode Kiosk with the Sales app installed",
+      "updated_on": "2026-07-16T12:05:04Z"
+    },
+    {
+      "case_id": 4103674,
+      "title": "Screensaver Wake — touching the idle screen returns to the Sales home screen",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0270",
+        "REQ-0277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a TVM in screensaver wakes to the Sales home screen when the screen is touched.",
+      "updated_on": "2026-07-16T12:05:04Z"
+    },
+    {
+      "case_id": 4103675,
+      "title": "Ticket Sale — a basic single ticket is issued and printed when paid by cash",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "REQ-0782",
+        "REQ-1877"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM (Kiosk or Astreo) is at the Sales home screen with ticket paper loaded and coin change available\n**AND** an example product of a Metro Single Adult ticket (fare per the current fares export — needs confirming)",
+      "updated_on": "2026-07-17T11:41:44Z"
+    },
+    {
+      "case_id": 4103676,
+      "title": "Ticket Sale — a basic single ticket is issued and printed when paid by contactless card",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100320",
+        "FBD-100353",
+        "REQ-0095",
+        "REQ-0097"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM (Kiosk or Astreo) is at the Sales home screen with a live connection to the payment provider\n**AND** an example product of a Metro Single Adult ticket paid by a contactless Mastercard",
+      "updated_on": "2026-07-17T11:41:45Z"
+    },
+    {
+      "case_id": 4103677,
+      "title": "Ticket Collection — a pre-paid ticket is collected and printed",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100317",
+        "REQ-1576"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM (Kiosk or Astreo) is at the Sales home screen with ticket paper loaded\n**AND** an example pre-paid order identified by a valid booking reference (Collect Ticket Code)",
+      "updated_on": "2026-07-21T15:15:05Z"
+    },
+    {
+      "case_id": 4103678,
+      "title": "EMS Access — an engineer opens the EMS/TMS screen and returns to Sales",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM (Kiosk or Astreo) is at the Sales home screen\n**AND** an example engineer holding the seeded technician credentials",
+      "updated_on": "2026-07-17T11:02:11Z"
+    },
+    {
+      "case_id": 4103679,
+      "title": "Comms — the TVM reports to CloudFare and updates Last Communication",
+      "section_id": 887781,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100266",
+        "FBD-100341"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM (Kiosk or Astreo) is powered on with a working network connection\n**AND** an example device visible in the CloudFare Comms Monitor",
+      "updated_on": "2026-07-16T12:05:08Z"
+    },
+    {
+      "case_id": 4103751,
+      "title": "EMS Access — a Technician signs in with a staff-list ID",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100266",
+        "REQ-2731"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has received the current staff list from CloudFare\n**AND** a Technician whose seeded staff ID is on that list",
+      "updated_on": "2026-07-22T14:30:04Z"
+    },
+    {
+      "case_id": 4103752,
+      "title": "EMS Access — only authorised roles can sign into EMS",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100266",
+        "REQ-2731"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has received the current staff list from CloudFare",
+      "updated_on": "2026-07-22T14:30:05Z"
+    },
+    {
+      "case_id": 4103753,
+      "title": "Remote Control — remote Out of Service persists across reboot",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM that is In Service",
+      "updated_on": "2026-07-16T12:05:11Z"
+    },
+    {
+      "case_id": 4103754,
+      "title": "Remote Control — CloudFare returns the TVM to In Service",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM currently Out of Service",
+      "updated_on": "2026-07-16T12:05:12Z"
+    },
+    {
+      "case_id": 4103755,
+      "title": "Remote Control — remote reboot, de-activate and re-activate",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM in service",
+      "updated_on": "2026-07-17T11:02:11Z"
+    },
+    {
+      "case_id": 4103756,
+      "title": "Cash Collection — an Engineer prints a Cash Content Report",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM holding cash, with an Engineer signed into EMS",
+      "updated_on": "2026-07-22T14:30:05Z"
+    },
+    {
+      "case_id": 4103757,
+      "title": "Cash Collection — prints collection and reload reports",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with an Engineer signed into EMS after a cash collection",
+      "updated_on": "2026-07-22T14:30:06Z"
+    },
+    {
+      "case_id": 4103758,
+      "title": "Configuration Topology — home location sets the selling operator",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100383",
+        "PSPEC-0014",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with home location set to Europa Buscentre",
+      "updated_on": "2026-07-22T14:04:39Z"
+    },
+    {
+      "case_id": 4103759,
+      "title": "Configuration Topology — destination outside triangle unavailable",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100383",
+        "PSPEC-0014",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with home location Europa Buscentre and its defined fares triangle",
+      "updated_on": "2026-07-22T14:04:40Z"
+    },
+    {
+      "case_id": 4103760,
+      "title": "Location Settings — amend home location to another valid location",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100383",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a TVM with home location Europa Buscentre",
+      "updated_on": "2026-07-22T14:04:40Z"
+    },
+    {
+      "case_id": 4103761,
+      "title": "Location Settings — an invalid location ID is rejected",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100383",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on the Location setting screen\n**AND** an example invalid 12-digit location ID that maps to no location",
+      "updated_on": "2026-07-22T14:04:41Z"
+    },
+    {
+      "case_id": 4103762,
+      "title": "Sub Location — a sub-location must be a valid 3-digit ID",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "C1831422-425",
+        "REQ-2710"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on the Sub Location setting screen",
+      "updated_on": "2026-07-22T14:04:42Z"
+    },
+    {
+      "case_id": 4103763,
+      "title": "Ticket Roll Length — an Engineer corrects the roll length",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-0847",
+        "REQ-0848"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS after fitting a replacement ticket roll",
+      "updated_on": "2026-07-22T14:30:07Z"
+    },
+    {
+      "case_id": 4103764,
+      "title": "Transaction Report — prints after multiple transactions",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM that has completed several sales, with an Engineer signed into EMS",
+      "updated_on": "2026-07-22T14:30:08Z"
+    },
+    {
+      "case_id": 4103765,
+      "title": "Volume Control — volume adjusts within limits and persists",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-0511"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on the Volume Control screen",
+      "updated_on": "2026-07-22T14:30:08Z"
+    },
+    {
+      "case_id": 4103766,
+      "title": "Screen Brightness — backlight change persists into the Sales App",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "REQ-0511"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a backlight brightness change made in EMS is maintained when the Sales App reloads.",
+      "updated_on": "2026-07-22T14:30:09Z"
+    },
+    {
+      "case_id": 4103767,
+      "title": "Config Export — Product List reflects the TVM's configuration",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [
+        "FBD-100385"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM with a known product configuration",
+      "updated_on": "2026-07-16T12:05:22Z"
+    },
+    {
+      "case_id": 4104118,
+      "title": "Security — unauthorised door access or repeated failed EMS logins raises a burglary event",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the TVM is in service and not integrated with CloudFare",
+      "updated_on": "2026-07-23T10:07:57Z"
+    },
+    {
+      "case_id": 4104119,
+      "title": "EMS — Battery Saver Mode is maintained during a mains power failure",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** the TVM is disconnected from mains power and running on internal batteries, showing the Home screen",
+      "updated_on": "2026-07-23T10:07:57Z"
+    },
+    {
+      "case_id": 4104120,
+      "title": "Cash vault — swapping coin and note vaults on power-up raises no panic event",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk TVM has powered down out of service after a mains outage and its coin and note vaults have been swapped",
+      "updated_on": "2026-07-23T10:07:58Z"
+    },
+    {
+      "case_id": 4104121,
+      "title": "EMS — exit returns to Sales with or without a General Reboot",
+      "section_id": 887793,
+      "section_path": "Non-Functional / EMS & TMS Maintenance",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer is signed into EMS with no other activity taken place",
+      "updated_on": "2026-07-23T10:07:59Z"
+    },
+    {
+      "case_id": 4103768,
+      "title": "Alarmboard — an Engineer tests the siren",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:23Z"
+    },
+    {
+      "case_id": 4103769,
+      "title": "Alarmboard — an Engineer tests the status LEDs",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:24Z"
+    },
+    {
+      "case_id": 4103770,
+      "title": "Alarmboard — an Engineer measures the enclosure temperature",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:25Z"
+    },
+    {
+      "case_id": 4103771,
+      "title": "Alarmboard — an Engineer reads the UPS status",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:26Z"
+    },
+    {
+      "case_id": 4103772,
+      "title": "Alarmboard — an Engineer runs the door and sensor tests",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:26Z"
+    },
+    {
+      "case_id": 4103773,
+      "title": "Alarmboard — an Engineer tests the speaker",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:27Z"
+    },
+    {
+      "case_id": 4103774,
+      "title": "Alarmboard — an Engineer tests the ticket-chute fan",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the Alarmboard maintenance screen",
+      "updated_on": "2026-07-16T12:05:28Z"
+    },
+    {
+      "case_id": 4103775,
+      "title": "Printer — an Engineer adjusts the print alignment",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the TL80 printer maintenance screen",
+      "updated_on": "2026-07-23T10:08:17Z"
+    },
+    {
+      "case_id": 4103776,
+      "title": "Touchscreen — an Engineer runs the touchscreen test",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM at the touchscreen maintenance screen",
+      "updated_on": "2026-07-16T12:05:30Z"
+    },
+    {
+      "case_id": 4103777,
+      "title": "Comms Configuration — an Engineer kills the on-screen keyboard",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS on a Kiosk TVM with the on-screen keyboard shown at the comms configuration screen",
+      "updated_on": "2026-07-16T12:05:30Z"
+    },
+    {
+      "case_id": 4104122,
+      "title": "Alarmboard — an Engineer requests the alarmboard firmware version",
+      "section_id": 887794,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Alarmboard & Enclosure / Kiosk only",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Engineer signed into EMS Maintenance on a Kiosk TVM with alarmboard functions",
+      "updated_on": "2026-07-23T10:08:00Z"
+    },
+    {
+      "case_id": 4103778,
+      "title": "Coin Recycler Hopper — Cash Content Report after replacement",
+      "section_id": 887795,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Coin Recycler Hopper / Kiosk only",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk TVM with an Engineer signed into EMS who has replaced a coin recycler hopper",
+      "updated_on": "2026-07-22T14:30:10Z"
+    },
+    {
+      "case_id": 4103779,
+      "title": "Coin Recycler Hopper — reloading updates recorded cash content",
+      "section_id": 887795,
+      "section_path": "Non-Functional / EMS & TMS Maintenance / Coin Recycler Hopper / Kiosk only",
+      "refs": [
+        "REQ-2720"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a Kiosk TVM with an Engineer signed into EMS at the Load Hoppers screen",
+      "updated_on": "2026-07-22T14:30:11Z"
+    },
+    {
+      "case_id": 4103780,
+      "title": "Degraded Service — payment hardware failure transitions to amber",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM enters a degraded (amber) state and disables the affected payment method when its hardware fails.",
+      "updated_on": "2026-07-17T11:02:12Z"
+    },
+    {
+      "case_id": 4103781,
+      "title": "Degraded Service — low printer stock raises an amber status",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM in service whose ticket stock falls below the configured low threshold",
+      "updated_on": "2026-07-16T12:05:34Z"
+    },
+    {
+      "case_id": 4103782,
+      "title": "Low Change — change unavailable notifies customer and CloudFare",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM notifies the customer and CloudFare when it cannot give change.",
+      "updated_on": "2026-07-22T14:30:12Z"
+    },
+    {
+      "case_id": 4103783,
+      "title": "Low Change — a change voucher is issued on request",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM issues a change voucher when change cannot be given and the customer requests one.",
+      "updated_on": "2026-07-22T14:30:13Z"
+    },
+    {
+      "case_id": 4103784,
+      "title": "Print Failure — cash is returned when a ticket fails to print",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM returns the customer's cash when a paid paper ticket fails to print.",
+      "updated_on": "2026-07-16T12:05:36Z"
+    },
+    {
+      "case_id": 4103785,
+      "title": "Mains Power Failure — runs on battery and keeps vaults secure",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM in service on mains power with cash and coin vaults secured",
+      "updated_on": "2026-07-16T12:05:37Z"
+    },
+    {
+      "case_id": 4103786,
+      "title": "Device Lockout — cash sale at the lockout limit goes Out of Service",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-2690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM goes Out of Service when a cash transaction meets or exceeds the configured lockout sales limit.",
+      "updated_on": "2026-07-22T14:30:13Z"
+    },
+    {
+      "case_id": 4103787,
+      "title": "Device Lockout — card sale at the lockout limit stays In Service",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-2690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM whose cash sales are near the configured lockout sales limit",
+      "updated_on": "2026-07-22T14:30:14Z"
+    },
+    {
+      "case_id": 4103788,
+      "title": "Device Lockout — a cancelled cash sale stays In Service",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-2690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM does not lock out when a cash sale that would reach the lockout limit is cancelled.",
+      "updated_on": "2026-07-22T14:30:15Z"
+    },
+    {
+      "case_id": 4103789,
+      "title": "Heartbeat — idle TVM updates Last Communication every 15 minutes",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned TVM that is idle and has taken no sales",
+      "updated_on": "2026-07-16T12:05:40Z"
+    },
+    {
+      "case_id": 4103790,
+      "title": "Heartbeat — a StaffList message resets Hours Since Last Comms",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM shown in the CloudFare Comms Monitor with a non-zero Hours Since Last Communication",
+      "updated_on": "2026-07-16T12:05:41Z"
+    },
+    {
+      "case_id": 4103791,
+      "title": "Comms Lock — sustained outage drives the TVM to comms-locked OOS",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100359",
+        "REQ-2576"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an Ethernet-connected TVM routed to AWS through the Translink network",
+      "updated_on": "2026-07-22T14:30:16Z"
+    },
+    {
+      "case_id": 4103792,
+      "title": "Comms Recovery — returns to service and delivers queued sales",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266",
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a communication-locked TVM returns to service and its queued transactions reach the back office when comms are restored.",
+      "updated_on": "2026-07-16T12:05:43Z"
+    },
+    {
+      "case_id": 4103793,
+      "title": "Comms Reporting — WAN-to-SIM failover reported to CloudFare",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266",
+        "REQ-2399",
+        "REQ-2450",
+        "REQ-2589",
+        "REQ-2741",
+        "REQ-2746",
+        "TIBU-13485"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the TVM reports a comms failover from WAN to SIM to CloudFare and reverts when WAN returns.",
+      "updated_on": "2026-07-22T14:04:48Z"
+    },
+    {
+      "case_id": 4103794,
+      "title": "Screensaver Wake-Up — a screen tap wakes to the mode home",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM with the idle screensaver active",
+      "updated_on": "2026-07-16T12:05:44Z"
+    },
+    {
+      "case_id": 4103795,
+      "title": "ZZ_DELETE_REVIEW - Screensaver Wake-Up — a smartcard starts the smartcard flow",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM with the screensaver active",
+      "updated_on": "2026-07-21T09:00:26Z"
+    },
+    {
+      "case_id": 4103796,
+      "title": "Multi-Modal Home — selecting Bus or Rail shows the right home",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM showing the multi-modal home with a mode-of-transport choice",
+      "updated_on": "2026-07-16T12:05:46Z"
+    },
+    {
+      "case_id": 4103797,
+      "title": "Audio Prompts — speech prompts and payment feedback play",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-0279",
+        "REQ-1687"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM with audio enabled at the configured volume",
+      "updated_on": "2026-07-22T14:30:17Z"
+    },
+    {
+      "case_id": 4103798,
+      "title": "Performance — workflows launch from idle within tolerance",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM at the idle screensaver",
+      "updated_on": "2026-07-21T09:00:28Z"
+    },
+    {
+      "case_id": 4103799,
+      "title": "Performance — the TVM accepts at least 98% of valid cash",
+      "section_id": 887796,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "REQ-0339"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an in-service TVM accepting cash, with a batch of valid tender coins and banknotes",
+      "updated_on": "2026-07-22T14:30:17Z"
+    },
+    {
+      "case_id": 4103599,
+      "title": "ZZ_DELETE_REVIEW - Buy a Smartcard — issuing a new journey-based card writes the product and prints a receipt",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250",
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a blank pre-encoded Smartlink card, buying a Metro City Multi-Journey product of 10 journeys (£20.00) per FBD-100261",
+      "updated_on": "2026-07-21T09:00:05Z"
+    },
+    {
+      "case_id": 4103600,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Top-up — adding journeys to a Multi-Journey card updates the balance and prints a receipt",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100260",
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** an existing Metro City Multi-Journey card with 2 journeys remaining, topping up 10 journeys (£20.00)",
+      "updated_on": "2026-07-21T09:00:06Z"
+    },
+    {
+      "case_id": 4103601,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Top-up — a Travelcard or Period Pass top-up adds a period and prints a receipt",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100260",
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** an existing Adult iLink Zone 4 card with 0 days remaining, topping up a 1 Week period",
+      "updated_on": "2026-07-21T09:00:07Z"
+    },
+    {
+      "case_id": 4103602,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Top-up — top-up amount labels come from the recharge product Display Descriptions",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100260"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has presented a Multi-Journey smartcard to the TVM\n**AND** SmartRecharge products configured with Device Display Descriptions \"5 Journeys\" and \"10 Journeys\" per FBD-100260",
+      "updated_on": "2026-07-21T09:00:07Z"
+    },
+    {
+      "case_id": 4103603,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Details — presenting a card displays its details screen",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100277"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** an Adult Metro City Multi-Journey card with 6 journeys remaining",
+      "updated_on": "2026-07-21T09:00:08Z"
+    },
+    {
+      "case_id": 4103604,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — a mini-statement prints the card balance after a top-up",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100260"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has just completed a Multi-Journey top-up on the TVM\n**AND** the topped-up Adult Metro City Multi-Journey card now holds 12 journeys",
+      "updated_on": "2026-07-21T09:00:09Z"
+    },
+    {
+      "case_id": 4103605,
+      "title": "ZZ_DELETE_REVIEW - Concession — a yLink smartcard prices a ticket at the yLink concessionary fare",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100260",
+        "FBD-100293"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid yLink concession smartcard, buying a Metro yLink Single",
+      "updated_on": "2026-07-21T09:00:10Z"
+    },
+    {
+      "case_id": 4103606,
+      "title": "ZZ_DELETE_REVIEW - Concession — a 24+ smartcard prices a ticket at the 24+ discounted fare",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100236",
+        "FBD-100260"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid personalised 24+ smartcard, buying a Metro Single",
+      "updated_on": "2026-07-21T09:00:10Z"
+    },
+    {
+      "case_id": 4103607,
+      "title": "ZZ_DELETE_REVIEW - Concession — a half-fare Smartpass prices a single at half fare",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid Half-Fare Smartpass, buying an Ulsterbus single",
+      "updated_on": "2026-07-21T09:00:11Z"
+    },
+    {
+      "case_id": 4103608,
+      "title": "ZZ_DELETE_REVIEW - Concession — a free-concession Smartpass issues a free pass ticket",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid Senior (Fare Foregone) Smartpass, requesting a concession single",
+      "updated_on": "2026-07-21T09:00:12Z"
+    },
+    {
+      "case_id": 4103609,
+      "title": "ZZ_DELETE_REVIEW - Concession — funded-disability Smartpasses are accepted for concessionary travel",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid Disability Living Allowance Smartpass, requesting a concession single",
+      "updated_on": "2026-07-21T09:00:13Z"
+    },
+    {
+      "case_id": 4103610,
+      "title": "ZZ_DELETE_REVIEW - Staff Pass — a staff smartcard issues a staff free-travel ticket",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a valid Staff Pass smartcard, requesting a free-travel ticket",
+      "updated_on": "2026-07-21T09:00:14Z"
+    },
+    {
+      "case_id": 4103611,
+      "title": "ZZ_DELETE_REVIEW - Invalid Smartcard — a faulty or unreadable card is rejected",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a faulty smartcard whose LRC/CRC checksum fails to recompute",
+      "updated_on": "2026-07-21T09:00:14Z"
+    },
+    {
+      "case_id": 4103612,
+      "title": "ZZ_DELETE_REVIEW - Invalid Smartcard — an expired card cannot be topped up",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a Multi-Journey card whose expiry date has passed",
+      "updated_on": "2026-07-21T09:00:15Z"
+    },
+    {
+      "case_id": 4103613,
+      "title": "ZZ_DELETE_REVIEW - Invalid Smartcard — presenting two cards simultaneously is rejected",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** two smartcards held together over the reader",
+      "updated_on": "2026-07-21T09:00:16Z"
+    },
+    {
+      "case_id": 4103614,
+      "title": "ZZ_DELETE_REVIEW - Invalid Smartcard — re-presenting a card within the passback period is rejected",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has just used a concession smartcard at the TVM\n**AND** a 24+ smartcard re-presented before its passback window expires",
+      "updated_on": "2026-07-21T09:00:17Z"
+    },
+    {
+      "case_id": 4103615,
+      "title": "ZZ_DELETE_REVIEW - Smartcard Top-up — presenting a different card mid top-up aborts the top-up",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer has started a Multi-Journey top-up with one card presented\n**AND** a different smartcard is offered before the top-up completes",
+      "updated_on": "2026-07-21T09:00:18Z"
+    },
+    {
+      "case_id": 4103616,
+      "title": "ZZ_DELETE_REVIEW - Smartcard removed early — removing the card during payment cancels the transaction",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100250"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is paying for a Multi-Journey top-up with the card presented\n**AND** the card is removed from the reader before payment completes",
+      "updated_on": "2026-07-21T09:00:18Z"
+    },
+    {
+      "case_id": 4103617,
+      "title": "ZZ_DELETE_REVIEW - ABT — issuing an ABT smartcard registers a personalised card",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100236"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a blank DESFire ABT card being issued as a personalised 24+ card with passenger name and email per FBD-100236",
+      "updated_on": "2026-07-21T09:00:19Z"
+    },
+    {
+      "case_id": 4103618,
+      "title": "ZZ_DELETE_REVIEW - ABT — a card with the ABT application but no ABT Tracking application is rejected",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100236"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer is at the TVM sales home screen\n**AND** a DESFire card carrying the ABT application (AID 0x414254) but missing the ABT Tracking application (AID 0x54524B)",
+      "updated_on": "2026-07-21T09:00:20Z"
+    },
+    {
+      "case_id": 4103619,
+      "title": "ZZ_DELETE_REVIEW - ABT — an ABT product top-up posts a transaction to the back office",
+      "section_id": 887775,
+      "section_path": "Delete / Smartcards & ABT",
+      "refs": [
+        "FBD-100236",
+        "FBD-100260"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a customer holds a valid personalised 24+ ABT card\n**AND** the customer tops up an ABT product and pays by card",
+      "updated_on": "2026-07-21T09:00:21Z"
+    },
+    {
+      "case_id": 4103733,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — Multi-Journey smartcard after a top-up",
+      "section_id": 887790,
+      "section_path": "Delete / Mini Statement",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Multi-Journey smartcard just successfully topped up",
+      "updated_on": "2026-07-21T09:00:22Z"
+    },
+    {
+      "case_id": 4103734,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — Multi-Journey smartcard after a validation",
+      "section_id": 887790,
+      "section_path": "Delete / Mini Statement",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Multi-Journey smartcard just successfully validated",
+      "updated_on": "2026-07-21T09:00:22Z"
+    },
+    {
+      "case_id": 4103735,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — Period Pass smartcard after a top-up",
+      "section_id": 887790,
+      "section_path": "Delete / Mini Statement",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a Period Pass smartcard just successfully topped up",
+      "updated_on": "2026-07-21T09:00:23Z"
+    },
+    {
+      "case_id": 4103736,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — DayLink smartcard after a top-up",
+      "section_id": 887790,
+      "section_path": "Delete / Mini Statement",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM with a DayLink smartcard just successfully topped up",
+      "updated_on": "2026-07-21T09:00:24Z"
+    },
+    {
+      "case_id": 4103737,
+      "title": "ZZ_DELETE_REVIEW - Mini Statement — the printed layout matches the HMI",
+      "section_id": 887790,
+      "section_path": "Delete / Mini Statement",
+      "refs": [
+        "FBD-100261"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a TVM showing a smartcard's mini-statement details on the HMI",
+      "updated_on": "2026-07-21T09:00:25Z"
+    }
+  ]
+}

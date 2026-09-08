@@ -1,0 +1,1416 @@
+{
+  "project": "TFTS - System Test",
+  "suite": "**NEW** GV Test Suite",
+  "suite_id": 30286,
+  "generated_at": "2026-07-23T10:32:35.546158Z",
+  "cases": [
+    {
+      "case_id": 4104011,
+      "title": "ABT Tap — a valid contactless card tap succeeds and the gate opens",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a route whose ABT Type is \"Tap On Tap Off\"\n**AND** its home location is within the configured \"Northern Ireland Zone\"\n**AND** the \"ABT Tap Product Name\" product (Product ID 6000) is configured\n**AND** a valid, in-date Visa Debit card is presented to the reader",
+      "updated_on": "2026-07-17T11:02:17Z"
+    },
+    {
+      "case_id": 4104012,
+      "title": "ABT Tap — a successful tap posts an ABT audit record with zero revenue",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head has accepted a valid contactless tap at a rail station gate\n**AND** the configured travel product is the NIR TOTO product (Product ID 6000)",
+      "updated_on": "2026-07-17T11:02:18Z"
+    },
+    {
+      "case_id": 4104013,
+      "title": "ABT Tap — the TapId is composed of DeviceId, TID and UNIX timestamp",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head with DeviceId 042002 and Terminal ID 20115688 has accepted a tap\n**AND** an example composed TapId of 042002201156881725545715",
+      "updated_on": "2026-07-22T08:56:47Z"
+    },
+    {
+      "case_id": 4104014,
+      "title": "ABT Tap — an expired card is declined with Declined Reason 1",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service at a rail station gate\n**AND** a contactless card whose expiry date has passed is presented",
+      "updated_on": "2026-07-17T11:02:19Z"
+    },
+    {
+      "case_id": 4104015,
+      "title": "ABT Tap — a card failing ODA is declined with Declined Reason 3",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a card that fails Offline Data Authentication is declined and audited with Declined Reason 3.",
+      "updated_on": "2026-07-17T11:02:19Z"
+    },
+    {
+      "case_id": 4104016,
+      "title": "ABT Tap — a card on the BIN List is declined with Declined Reason 15",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head has the daily BIN List downloaded from CloudFare\n**AND** a contactless card whose BIN is on that BIN List is presented",
+      "updated_on": "2026-07-17T11:02:20Z"
+    },
+    {
+      "case_id": 4104017,
+      "title": "ABT Tap — a card on the Deny List is rejected in entry mode with Declined Reason 2",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a card on the Deny List is rejected and the gate stays closed when the GV is in an entry-only mode.",
+      "updated_on": "2026-07-17T11:02:21Z"
+    },
+    {
+      "case_id": 4104018,
+      "title": "ABT Tap — every declined check still posts an audit record",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service at a rail station gate\n**AND** a card that will fail one of the card checks is presented",
+      "updated_on": "2026-07-17T08:43:30Z"
+    },
+    {
+      "case_id": 4104019,
+      "title": "ABT Tap — an offline transaction is accepted and queued for the back office",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service with the BIN List and Deny List already downloaded\n**AND** the connection to the ABT back office is currently unavailable\n**AND** a valid, in-date contactless card is presented",
+      "updated_on": "2026-07-17T11:02:22Z"
+    },
+    {
+      "case_id": 4104020,
+      "title": "ABT Tap — the reader stays disarmed when the route ABT Type is not Tap On Tap Off",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV reader does not arm when the first route at the home location is not an ABT Tap On Tap Off route.",
+      "updated_on": "2026-07-17T08:43:31Z"
+    },
+    {
+      "case_id": 4104021,
+      "title": "ABT Tap — the reader stays disarmed when the home location is outside the Northern Ireland Zone",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV reader does not arm when its home location falls outside the configured Northern Ireland Zone.",
+      "updated_on": "2026-07-17T08:43:32Z"
+    },
+    {
+      "case_id": 4104022,
+      "title": "ABT Tap — the reader stays disarmed when the ABT Tap Product is not configured",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV reader does not arm when no product matching the TMS \"ABT Tap Product Name\" exists.",
+      "updated_on": "2026-07-17T08:43:33Z"
+    },
+    {
+      "case_id": 4104023,
+      "title": "ABT Tap — an unreadable card presentation gives an error and the gate stays closed",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an armed NIR GV head at a rail station gate\n**AND** a card that cannot be read is presented to the reader",
+      "updated_on": "2026-07-17T08:43:34Z"
+    },
+    {
+      "case_id": 4104024,
+      "title": "ABT Tap — a Maestro card is not accepted at the GV",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an armed NIR GV head at a rail station gate\n**AND** a Maestro card is presented to the reader",
+      "updated_on": "2026-07-17T08:43:34Z"
+    },
+    {
+      "case_id": 4104025,
+      "title": "ABT Tap — an exit-capable gate opens for a deny-listed card but audits the tap invalid",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is running in an exit or bi-directional Direction configuration\n**AND** the Deny List is downloaded and a card on that Deny List is presented",
+      "updated_on": "2026-07-17T11:02:23Z"
+    },
+    {
+      "case_id": 4104026,
+      "title": "ABT Tap — an entry-configured gate audits the tap as a Tap On",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head running in an entry Direction configuration\n**AND** a valid contactless card is tapped and accepted",
+      "updated_on": "2026-07-17T08:43:36Z"
+    },
+    {
+      "case_id": 4104027,
+      "title": "ABT Tap — an exit-configured gate audits the tap as a Tap Off",
+      "section_id": 887831,
+      "section_path": "Functional / ABT cEMV Taps",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head running in an exit Direction configuration\n**AND** a valid contactless card is tapped and accepted",
+      "updated_on": "2026-07-17T08:43:37Z"
+    },
+    {
+      "case_id": 4104028,
+      "title": "Barcode — a valid multi-use barcode is accepted with a green tick and the gate opens",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid, in-date multi-use barcode for an Adult product is presented (Scheme ID 5720, format 01 Flowbird, mode RAIL 0002)",
+      "updated_on": "2026-07-17T11:02:24Z"
+    },
+    {
+      "case_id": 4104029,
+      "title": "Barcode — a barcode on a mobile device screen validates the same as a printed one",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid Corethree mLink barcode (format 02) is shown on a passenger's mobile device screen",
+      "updated_on": "2026-07-22T08:56:48Z"
+    },
+    {
+      "case_id": 4104030,
+      "title": "Barcode — a TVM-produced barcode validates at the GV",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode ticket printed on a TVM is presented",
+      "updated_on": "2026-07-17T08:43:39Z"
+    },
+    {
+      "case_id": 4104031,
+      "title": "Barcode — an HHD-produced barcode validates at the GV",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode ticket printed on an HHD is presented",
+      "updated_on": "2026-07-17T08:43:40Z"
+    },
+    {
+      "case_id": 4104032,
+      "title": "Barcode — a route/location-only failure gives a yellow question mark",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode valid on time, mode, product and zone but not for this gate's location is presented",
+      "updated_on": "2026-07-17T08:43:41Z"
+    },
+    {
+      "case_id": 4104033,
+      "title": "Barcode — a failed validation gives a red cross with a reason",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode that fails a check other than route/location is presented",
+      "updated_on": "2026-07-17T11:02:24Z"
+    },
+    {
+      "case_id": 4104034,
+      "title": "Barcode — an already-validated barcode is rejected",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a barcode already validated is rejected when presented again at the GV.",
+      "updated_on": "2026-07-17T08:43:42Z"
+    },
+    {
+      "case_id": 4104035,
+      "title": "Barcode — an expired barcode is rejected",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a multi-use barcode whose encoded expiry time has passed is presented",
+      "updated_on": "2026-07-17T08:43:43Z"
+    },
+    {
+      "case_id": 4104036,
+      "title": "Barcode — a rail barcode failing the location check is treated valid when the fare is at least the £90 fallback",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the rail fare-fallback (CR105.3) treats a location-failing barcode as valid when the product rule value is at least £90.",
+      "updated_on": "2026-07-17T08:43:44Z"
+    },
+    {
+      "case_id": 4104037,
+      "title": "Barcode — a rail barcode failing the location check is rejected when the fare is below the £90 fallback",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a rail barcode whose product rule value is below £90 fails the rail location check",
+      "updated_on": "2026-07-17T08:43:45Z"
+    },
+    {
+      "case_id": 4104039,
+      "title": "Barcode — an expiry between midnight and 4am shows the previous day and no time",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head with CR116 enabled is in service\n**AND** a barcode with an encoded expiry of 20240520-0400 is presented",
+      "updated_on": "2026-07-17T08:43:47Z"
+    },
+    {
+      "case_id": 4104040,
+      "title": "Barcode — an expiry just after 4am shows the same day with a time",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head with CR116 enabled is in service\n**AND** a barcode with an encoded expiry of 20240520-0401 is presented",
+      "updated_on": "2026-07-17T08:43:47Z"
+    },
+    {
+      "case_id": 4104041,
+      "title": "Barcode — the read-to-beep response is within one second",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use barcode is presented",
+      "updated_on": "2026-07-17T08:43:48Z"
+    },
+    {
+      "case_id": 4104042,
+      "title": "Barcode — a new barcode presented during a result screen is processed immediately",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is showing a barcode result screen\n**AND** a second valid multi-use barcode is presented before the screen times out",
+      "updated_on": "2026-07-17T08:43:49Z"
+    },
+    {
+      "case_id": 4104043,
+      "title": "Barcode — a successful validation posts a zero-fare BarcodeUsage transaction",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head has accepted a valid multi-use barcode with a green tick",
+      "updated_on": "2026-07-17T11:02:25Z"
+    },
+    {
+      "case_id": 4104044,
+      "title": "Barcode — a failed validation posts an event carrying the Unique ID and reason",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head has rejected a barcode with a red cross",
+      "updated_on": "2026-07-17T11:02:26Z"
+    },
+    {
+      "case_id": 4104045,
+      "title": "Barcode — the GV validates multi-use barcodes",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a valid multi-use (not single-use) barcode is presented",
+      "updated_on": "2026-07-17T08:43:52Z"
+    },
+    {
+      "case_id": 4104046,
+      "title": "Barcode — a 3-Day Select ticket is valid on its start, additional and end dates",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a 3-Day Select barcode whose current date equals its Start date is presented",
+      "updated_on": "2026-07-17T08:43:52Z"
+    },
+    {
+      "case_id": 4104047,
+      "title": "Barcode — a barcode encoded for bus mode only is rejected on a rail gate",
+      "section_id": 887832,
+      "section_path": "Functional / Multi-Use Barcode Validation",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a barcode encoded with mode BUS (0001) only is presented",
+      "updated_on": "2026-07-17T08:43:53Z"
+    },
+    {
+      "case_id": 4104048,
+      "title": "Passback — a barcode re-presented within the passback window is rejected",
+      "section_id": 887833,
+      "section_path": "Functional / Passback",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head is in service on a rail route\n**AND** a multi-use barcode was just validated successfully with a green tick",
+      "updated_on": "2026-07-17T08:43:54Z"
+    },
+    {
+      "case_id": 4104049,
+      "title": "Passback — a barcode re-presented after other transactions is still rejected within the window",
+      "section_id": 887833,
+      "section_path": "Functional / Passback",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head validated a multi-use barcode, then processed other transactions\n**AND** the original barcode's passback window has not yet elapsed",
+      "updated_on": "2026-07-17T08:43:55Z"
+    },
+    {
+      "case_id": 4104050,
+      "title": "Passback — a card re-tapped within the passback time is declined with Declined Reason 20",
+      "section_id": 887833,
+      "section_path": "Functional / Passback",
+      "refs": [
+        "FBD-100658",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head accepted a valid contactless tap\n**AND** the same card is re-tapped within the configured TMS passback time",
+      "updated_on": "2026-07-17T11:02:27Z"
+    },
+    {
+      "case_id": 4104051,
+      "title": "Passback — a barcode presented on a second gateline head is rejected as passback",
+      "section_id": 887833,
+      "section_path": "Functional / Passback",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** two NIR GV heads share barcode Unique IDs as one gateline (CR105.2)\n**AND** a barcode was validated on the first head within the passback window",
+      "updated_on": "2026-07-17T08:43:57Z"
+    },
+    {
+      "case_id": 4104052,
+      "title": "Passback — a barcode presented after the passback window elapses is accepted",
+      "section_id": 887833,
+      "section_path": "Functional / Passback",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** an NIR GV head validated a multi-use barcode whose product permits re-use\n**AND** the configured passback window has fully elapsed",
+      "updated_on": "2026-07-17T08:43:57Z"
+    },
+    {
+      "case_id": 4104053,
+      "title": "Commissioning — both GV heads boot into service after live software load",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane commissioned with the primary app zip on the P microSD and the secondary app zip on the S microSD\n**AND** an example lane at York Street with the current live app pair loaded",
+      "updated_on": "2026-07-21T13:56:43Z"
+    },
+    {
+      "case_id": 4104054,
+      "title": "Commissioning — Primary head is Entry/unpaid and Secondary head is Exit/paid (roles not swapped)",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane with the P image on one head and the S image on the other\n**AND** the entry/unpaid side is physically the approach side of an example York Street lane",
+      "updated_on": "2026-07-17T08:43:59Z"
+    },
+    {
+      "case_id": 4104055,
+      "title": "Commissioning — SkyLane interface firmware is HF03",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100653",
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane whose SkyLane interface board is reachable at 192.168.0.200",
+      "updated_on": "2026-07-17T08:44:00Z"
+    },
+    {
+      "case_id": 4104056,
+      "title": "Commissioning — correct gate width variant (Standard vs Wide) is installed",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane that is physically a Standard 600 mm aisle\n**AND** the SkyLane firmware ships in distinct Standard and Wide (disabled-access) variants",
+      "updated_on": "2026-07-17T08:44:01Z"
+    },
+    {
+      "case_id": 4104057,
+      "title": "Commissioning — one-wire homeLocation and zoneNo match the install spreadsheet",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned head whose one-wire chip was programmed in Maintenance Mode\n**AND** the example install spreadsheet row gives homeLocation \"RA\" and zoneNo \"128\"",
+      "updated_on": "2026-07-17T08:44:02Z"
+    },
+    {
+      "case_id": 4104058,
+      "title": "Commissioning — Technician Location Settings match the install spreadsheet",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned head signed in to the Technician Location Settings screen\n**AND** an example install-spreadsheet row for the York Street lane giving Home Location, Stop Location, Zone Number, Install Point ID and ID",
+      "updated_on": "2026-07-17T08:44:02Z"
+    },
+    {
+      "case_id": 4104059,
+      "title": "Router — each lane has a unique static WAN IP per the install spreadsheet",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100653"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane whose MicroTik router WAN is set to Mode Router, Address Acquisition Static\n**AND** an example install-spreadsheet row allocating a unique WAN IP, netmask and gateway to the York Street lane",
+      "updated_on": "2026-07-17T08:44:03Z"
+    },
+    {
+      "case_id": 4104060,
+      "title": "Router — SkyLane at .200 with eth0 gateway .0.1 and a port-80 NAT rule",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100653"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane with the SkyLane board at 192.168.0.200 and its eth0 gateway set to 192.168.0.1\n**AND** a NAT rule redirecting the router WAN IP port 80 to the interface board port 80",
+      "updated_on": "2026-07-17T08:44:04Z"
+    },
+    {
+      "case_id": 4104061,
+      "title": "Router — the router admin password is set (not blank)",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100653"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane router managed over SSH",
+      "updated_on": "2026-07-17T08:44:05Z"
+    },
+    {
+      "case_id": 4104062,
+      "title": "Software Distribution — a software / configuration / barcode-data file downloads to the GV",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service with a new software, configuration or barcode-data file staged for it in the back office",
+      "updated_on": "2026-07-17T08:44:06Z"
+    },
+    {
+      "case_id": 4104063,
+      "title": "Software Distribution — a configuration file with a future activation date applies on that date",
+      "section_id": 887834,
+      "section_path": "Functional / Commissioning & Router",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV that has downloaded a configuration file with an example activation date of tomorrow",
+      "updated_on": "2026-07-17T08:44:07Z"
+    },
+    {
+      "case_id": 4104064,
+      "title": "Technician Sign On — valid technician card reaches the Technician Menu",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service showing the idle Present Card or Barcode screen\n**AND** the seeded technician card and PIN are available",
+      "updated_on": "2026-07-17T08:44:07Z"
+    },
+    {
+      "case_id": 4104065,
+      "title": "Technician Sign On — an invalid PIN is rejected",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654",
+        "REQ-0050"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV showing the technician PIN entry screen after a valid technician card",
+      "updated_on": "2026-07-22T13:21:56Z"
+    },
+    {
+      "case_id": 4104066,
+      "title": "Technician Sign On — an abandoned sign-on returns to the idle screen",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV showing the technician PIN entry screen after a valid technician card",
+      "updated_on": "2026-07-17T08:44:09Z"
+    },
+    {
+      "case_id": 4104067,
+      "title": "Technician Menu — the session auto signs off after the inactivity timeout",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654",
+        "REQ-3129"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician signed on to the Technician Menu\n**AND** the configured inactivity timeout is in force",
+      "updated_on": "2026-07-22T13:21:56Z"
+    },
+    {
+      "case_id": 4104068,
+      "title": "Technician Menu — a technician navigates the menu pages",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician signed on to the Technician Menu",
+      "updated_on": "2026-07-17T08:44:11Z"
+    },
+    {
+      "case_id": 4104069,
+      "title": "Location Settings — a technician sets the GV location",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician on the Location Settings screen with comms to the back office\n**AND** an example install-spreadsheet row giving Home Location, Stop Location, Zone Number, Install Point ID and ID",
+      "updated_on": "2026-07-17T08:44:12Z"
+    },
+    {
+      "case_id": 4104070,
+      "title": "Location Settings — a no-comms condition is indicated when changing location without back-office comms",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the Location Settings screen behaves correctly when the GV has no back-office comms.",
+      "updated_on": "2026-07-22T08:56:49Z"
+    },
+    {
+      "case_id": 4104071,
+      "title": "Software Versions — the Software Versions screen lists all software versions",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician signed on to the Technician Menu",
+      "updated_on": "2026-07-17T08:44:13Z"
+    },
+    {
+      "case_id": 4104072,
+      "title": "Configuration Versions — the Configuration Versions screen lists all configuration versions",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 4,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician signed on to the Technician Menu",
+      "updated_on": "2026-07-17T08:44:14Z"
+    },
+    {
+      "case_id": 4104073,
+      "title": "Display Brightness — a technician adjusts the screen brightness",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654",
+        "REQ-0511"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician on the Display Brightness screen",
+      "updated_on": "2026-07-22T13:21:57Z"
+    },
+    {
+      "case_id": 4104074,
+      "title": "Audio Volume — a technician adjusts the audio volume",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100654",
+        "REQ-0511"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician on the Audio Volume screen",
+      "updated_on": "2026-07-22T13:21:58Z"
+    },
+    {
+      "case_id": 4104075,
+      "title": "Force Communications — a technician forces a comms session with the back office",
+      "section_id": 887835,
+      "section_path": "Functional / Technician Menu",
+      "refs": [
+        "FBD-100266",
+        "FBD-100654",
+        "REQ-0348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a technician on the Force Communications screen with a reachable back office",
+      "updated_on": "2026-07-22T13:21:59Z"
+    },
+    {
+      "case_id": 4104076,
+      "title": "Idle Screen — Present Card or Barcode",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service with no card or barcode presented",
+      "updated_on": "2026-07-17T08:44:17Z"
+    },
+    {
+      "case_id": 4104077,
+      "title": "Idle Screen — Not In Service",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV that is out of service",
+      "updated_on": "2026-07-17T08:44:18Z"
+    },
+    {
+      "case_id": 4104078,
+      "title": "Error Screen — Re-present Card",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV shows the Re-present Card screen when a card read must be retried.",
+      "updated_on": "2026-07-17T08:44:19Z"
+    },
+    {
+      "case_id": 4104079,
+      "title": "Error Screen — Not Valid At This Location",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service at an example location where the presented product is not valid",
+      "updated_on": "2026-07-17T08:44:20Z"
+    },
+    {
+      "case_id": 4104080,
+      "title": "Error Screen — Invalid Time Of Day",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and a card whose product is not valid at the current time of day",
+      "updated_on": "2026-07-17T08:44:21Z"
+    },
+    {
+      "case_id": 4104081,
+      "title": "Error Screen — Product Expired",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and a card whose product has expired",
+      "updated_on": "2026-07-17T08:44:22Z"
+    },
+    {
+      "case_id": 4104082,
+      "title": "Error Screen — Faulty Card",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and an example faulty (unreadable) card",
+      "updated_on": "2026-07-17T08:44:22Z"
+    },
+    {
+      "case_id": 4104083,
+      "title": "Error Screen — Not Accepted",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and a card that is not accepted",
+      "updated_on": "2026-07-17T08:44:23Z"
+    },
+    {
+      "case_id": 4104084,
+      "title": "Passback Screen — Card Already Validated",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV shows the Card Already Validated screen when a card is re-presented within the passback window.",
+      "updated_on": "2026-07-17T08:44:24Z"
+    },
+    {
+      "case_id": 4104085,
+      "title": "Success Screen — Successful",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and a valid card",
+      "updated_on": "2026-07-17T08:44:25Z"
+    },
+    {
+      "case_id": 4104086,
+      "title": "Barcode Error Screen — Barcode Already Validated",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the GV shows the Barcode Already Validated screen when a used barcode is re-presented.",
+      "updated_on": "2026-07-17T08:44:26Z"
+    },
+    {
+      "case_id": 4104087,
+      "title": "Barcode Error Screen — Barcode Has Expired",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and an expired multi-use barcode",
+      "updated_on": "2026-07-17T08:44:26Z"
+    },
+    {
+      "case_id": 4104088,
+      "title": "Barcode Error Screen — Barcode Not Valid At This Location",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV at an example location where the presented barcode product is not valid",
+      "updated_on": "2026-07-17T08:44:27Z"
+    },
+    {
+      "case_id": 4104089,
+      "title": "Barcode Error Screen — Barcode Type Invalid",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and an example barcode of an unrecognised type",
+      "updated_on": "2026-07-17T08:44:28Z"
+    },
+    {
+      "case_id": 4104090,
+      "title": "Barcode Success Screen — Barcode Use",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service and a valid multi-use barcode",
+      "updated_on": "2026-07-17T08:44:29Z"
+    },
+    {
+      "case_id": 4104111,
+      "title": "Barcode Error Screen — Barcode Not Valid At The Current Time",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV presented with a barcode for a product that is not valid at the current time",
+      "updated_on": "2026-07-23T09:42:43Z"
+    },
+    {
+      "case_id": 4104112,
+      "title": "Barcode Error Screen — Barcode Not Valid On This Service",
+      "section_id": 887837,
+      "section_path": "Non-Functional / HMI Screens",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV presented with a barcode that is not a valid Rail barcode for this service",
+      "updated_on": "2026-07-23T09:42:44Z"
+    },
+    {
+      "case_id": 4104091,
+      "title": "Power — the gate stays open when mains fails with a user inside the aisle",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service with a user positioned inside the aisle",
+      "updated_on": "2026-07-21T13:56:44Z"
+    },
+    {
+      "case_id": 4104092,
+      "title": "Power — a power loss of two seconds or less does not force a reboot",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348",
+        "TIBU-14160"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service",
+      "updated_on": "2026-07-21T13:56:44Z"
+    },
+    {
+      "case_id": 4104093,
+      "title": "Emergency Release — the Emergency Release Button opens the gate",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348",
+        "TIBU-16813",
+        "TIBU-18635"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service in a controlled mode",
+      "updated_on": "2026-07-21T13:56:45Z"
+    },
+    {
+      "case_id": 4104094,
+      "title": "Heartbeat — loss of a validator heartbeat raises a major fault",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266",
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service with the gate-to-validator heartbeat running at its configured rate of at least one per second",
+      "updated_on": "2026-07-21T13:56:46Z"
+    },
+    {
+      "case_id": 4104095,
+      "title": "Power-up — the gate is Out of Service until both validators communicate",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane powered off",
+      "updated_on": "2026-07-17T08:44:33Z"
+    },
+    {
+      "case_id": 4104096,
+      "title": "Mains restore — the gate returns to its previous operational mode",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348"
+      ],
+      "priority_id": 3,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm the gate returns to its previous operational mode when mains power is restored, absent a major fault.",
+      "updated_on": "2026-07-17T08:44:34Z"
+    },
+    {
+      "case_id": 4104097,
+      "title": "BOS Comms — the GV keeps validating and queues audit data while the back office is unreachable",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100263",
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "This test is to confirm a GV continues validating and queues its audit data when it cannot reach the back office.",
+      "updated_on": "2026-07-21T13:56:47Z"
+    },
+    {
+      "case_id": 4104098,
+      "title": "BOS Comms — queued audit data uploads to CloudFare when comms is restored",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100263",
+        "FBD-100359",
+        "TIBU-16455",
+        "TIBU-17104",
+        "TIBU-18566"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV holding audit data queued during a back-office outage",
+      "updated_on": "2026-07-21T13:56:48Z"
+    },
+    {
+      "case_id": 4104099,
+      "title": "SaaS — a sustained Translink-network outage drives the GV to a communication-locked Out of Service state",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100359"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV routed to AWS through the Translink network",
+      "updated_on": "2026-07-21T13:56:49Z"
+    },
+    {
+      "case_id": 4104100,
+      "title": "Comms — the GV updates CloudFare Last Communication at least every 15 minutes via the StaffList refresh",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100266",
+        "TIBU-18310"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a GV in service with no validations occurring",
+      "updated_on": "2026-07-22T08:56:50Z"
+    },
+    {
+      "case_id": 4104101,
+      "title": "Throughput — Primary and Secondary heads sustain back-to-back validations",
+      "section_id": 887838,
+      "section_path": "Non-Functional / Resilience",
+      "refs": [
+        "FBD-100348",
+        "TIBU-16221",
+        "TIBU-18597",
+        "TIBU-21005"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service with both heads accepting validations\n**AND** an example burst of valid cards and barcodes presented in quick succession to one head",
+      "updated_on": "2026-07-21T13:56:50Z"
+    },
+    {
+      "case_id": 4104102,
+      "title": "Smoke — both heads boot into service",
+      "section_id": 887839,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100348",
+        "FBD-100654"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a commissioned lane powered off",
+      "updated_on": "2026-07-17T08:44:38Z"
+    },
+    {
+      "case_id": 4104103,
+      "title": "Smoke — a valid card opens the gate with a success screen and beep",
+      "section_id": 887839,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100348",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service and an example valid card",
+      "updated_on": "2026-07-17T11:02:28Z"
+    },
+    {
+      "case_id": 4104104,
+      "title": "Smoke — a valid multi-use barcode opens the gate with a success screen",
+      "section_id": 887839,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service and an example valid multi-use barcode",
+      "updated_on": "2026-07-17T08:44:40Z"
+    },
+    {
+      "case_id": 4104105,
+      "title": "Smoke — an immediate re-present of the same card is rejected as passback",
+      "section_id": 887839,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100167",
+        "FBD-100690"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a lane in service and a card just validated on the entry head",
+      "updated_on": "2026-07-17T08:44:41Z"
+    },
+    {
+      "case_id": 4104106,
+      "title": "Smoke — a technician can sign on to the Technician Menu",
+      "section_id": 887839,
+      "section_path": "Smoke",
+      "refs": [
+        "FBD-100654"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** a head in service showing the idle screen\n**AND** the seeded technician card and PIN are available",
+      "updated_on": "2026-07-17T08:44:41Z"
+    },
+    {
+      "case_id": 4104038,
+      "title": "ZZ_DELETE_REVIEW - Barcode — a barcode validated on one gate head is rejected on another head of the same gateline",
+      "section_id": 887841,
+      "section_path": "delete",
+      "refs": [
+        "FBD-100167"
+      ],
+      "priority_id": 1,
+      "type_id": 2,
+      "template_id": 1,
+      "custom_steps": "**GIVEN** two NIR GV heads form a single gateline sharing barcode Unique IDs (CR105.2)\n**AND** a multi-use barcode was already validated on the first head within the passback window",
+      "updated_on": "2026-07-22T12:21:05Z"
+    }
+  ]
+}

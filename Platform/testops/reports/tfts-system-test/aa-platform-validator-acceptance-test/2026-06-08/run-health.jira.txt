@@ -1,0 +1,1201 @@
+h2. Run health — TFTS - System Test / AA-Platform Validator Acceptance Test
+Runs considered: last 20 (ids: 47490, 21978, 21742, 21495, 20643, 19352, 19087, 19074)
+Flagged for attention: *1196*
+
+|| Case || Title || Exec || Pass || Fail || Last || Flags ||
+| C2082941 | Verify "Dashboard Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082942 | Verify "Events & Alerts Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082943 | Verify "Topology & Fares Management Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2082944 | Verify "ABT Screen" Contents | 5 | 1 | 3 | Passed | flaky |
+| C2082945 | Verify "Schedule Management Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082946 | Verify "Estate Management Screen" Contents | 6 | 4 | 2 | Passed | flaky |
+| C2082947 | Verify "Reports Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082949 | Verify "Settings Screen" Contents | 6 | 3 | 3 | Passed | flaky |
+| C2082950 | Verify "Menu Screen" Contents | 6 | 5 | 1 | Passed | flaky |
+| C2092775 | Successful Cloudfare SignOn - Administrator | 6 | 5 | 1 | Passed | flaky |
+| C2092782 | UnSuccessful Cloudfare SIgnOn - Administrator | 6 | 2 | 3 | Other | flaky, recently-regressed |
+| C2092793 | Successful Cloudfare SignOn - AD CloudFare User | 5 | 3 | 1 | Passed | flaky |
+| C2131388 | Operators - Glider as an Operator | 4 | 3 | 1 | Passed | flaky |
+| C2132847 | Products - Create and Delete Product | 3 | 2 | 1 | Passed | flaky |
+| C2132848 | Rules - Create and Delete Rule | 4 | 1 | 3 | Passed | flaky |
+| C2224348 | ROI Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224349 | ROI Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224351 | Staff Pass - Validate a Staff Pass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224358 | aLink - Validate a new aLink Smartcard | 1 | 0 | 1 | Failed | always-failing |
+| C2224360 | aLink - User presents an aLink Smartcard within the Passback Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224362 | Child Metro Travelcard - Validate a Child Metro Travelcard Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224364 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C2224365 | Child Metro Travelcard - Present a Child Metro Travelcard Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C2224366 | Child Metro Daylink - Present a Child Metro Daylink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C2224367 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C2224368 | Adult iLink Zone NW -  User presents an Adult iLink Zone NW Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C2224369 | Child iLink Zone NW -  User presents Child iLink Zone NW Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C2224370 | Adult iLink Zone NW -  Validate a new Adult iLink Zone NW Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2224371 | Adult iLink Zone NW -  Validate an Adult iLink Zone NW Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2224372 | Child iLink Zone NW - Validate a new Child iLink Zone NW Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2224373 | Child iLink Zone NW - Validate a Child iLink Zone NW  Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2224377 | Negative - Present a Non-Translink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C2224382 | War Pensioner SmartPass - Validate a SmartPass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224383 | War Pensioner SmartPass - User presents a SmartPass Smartcard within the Passback Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224385 | Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224386 | Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224388 | Blind SmartPass - Validate a SmartPass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224389 | Blind SmartPass - User presents a SmartPass Smartcard within the Passback Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224391 | Staff Partner Pass -  Validate a Staff Partner Pass Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224395 | Child Metro Daylink - Validate a Child Metro Daylink Smartcard that has been used previously on another day | 1 | 0 | 1 | Failed | always-failing |
+| C2224398 | Adult Ulsterbus Multi-Journey - Validate a new Adult Ulsterbus Multi-Journey Smartcard | 1 | 0 | 1 | Failed | always-failing |
+| C2224399 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 1 | 0 | 1 | Failed | always-failing |
+| C2224402 | Child Ulsterbus Multi-Journey - Validate a new Child Ulsterbus Multi-Journey Smartcard | 1 | 0 | 1 | Failed | always-failing |
+| C2224404 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard outside of the Transfer Period | 1 | 0 | 1 | Failed | always-failing |
+| C2224407 | Child iLink Zone 1 - Validate an Child iLink Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224410 | Adult Metro Travelcard - Validate an Adult Metro Travelcard Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224413 | Adult Metro Multi-Journey Extended Zone -  Validate an Adult Metro Multi-Journey  Smartcard within the Transfer Period on a Transfer Route. | 1 | 0 | 1 | Failed | always-failing |
+| C2224420 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 1 | 0 | 1 | Failed | always-failing |
+| C2224424 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route | 1 | 0 | 1 | Failed | always-failing |
+| C2224428 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 1 | 0 | 1 | Failed | always-failing |
+| C2224432 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 1 | 0 | 1 | Failed | always-failing |
+| C2224455 | Technician - Navigation - Technician Navigates menus | 1 | 0 | 1 | Failed | always-failing |
+| C2224458 | Smartcard Passback - Present a Smartcard within the Passback Period after other transactions have taken place | 0 | 0 | 0 | - | orphaned |
+| C2224459 | Smartcard Passback - Present a Smartcard multiple times that has been used within the Passback period | 0 | 0 | 0 | - | orphaned |
+| C2224460 | Smartcard Passback - Present a Smartcard within the Passback period after other transactions have taken place | 0 | 0 | 0 | - | orphaned |
+| C2224462 | Staff External Pass -  Validate an  External Staff Pass  Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224469 | Retired Staff Pass - Validate a Retired Staff Pass  Smartcard that has been used previously | 1 | 0 | 1 | Failed | always-failing |
+| C2224474 | Adult iLink Zone 1 - Validate an Adult iLink Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224483 | Child iLink Zone 2- Validate a Child iLink Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224492 | Child iLink Zone 3 - Validate a Child iLink Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224497 | Adult iLink Zone 4- Validate a new Adult iLink Smartcard | 1 | 0 | 1 | Failed | always-failing |
+| C2224498 | Adult iLink Zone 4- Validate an Adult iLink Smartcard that has been previously used | 1 | 0 | 1 | Failed | always-failing |
+| C2224516 | Operating Times - An Engineer reconfigures the Start Time | 0 | 0 | 0 | - | orphaned |
+| C2224517 | A user checks that all software versions are present on the Software Versions Screen | 1 | 0 | 1 | Failed | always-failing |
+| C2224518 | A user checks that all configuration versions are present on the Configuration Versions Screen | 1 | 0 | 1 | Failed | always-failing |
+| C2224519 | Daylight Saving - A PV set to GMT updates its time to BST when disconnected from the BOS | 0 | 0 | 0 | - | orphaned |
+| C2224520 | Daylight Saving - A PV set to BST updates its time to GMT when disconnected from the BOS | 0 | 0 | 0 | - | orphaned |
+| C2224521 | Expired Journeys Smartcard is topped up on a legacy device then validated on a Platform Validator | 0 | 0 | 0 | - | orphaned |
+| C2224522 | Expired Time Based Smartcard is topped up on a legacy device then validated on a Platform Validator | 0 | 0 | 0 | - | orphaned |
+| C2224523 | Smartcard on the last day of travel is topped up on a legacy device then validated on a PV - DUPLICATE | 0 | 0 | 0 | - | orphaned |
+| C2224524 | Smartcard with no days of travel remaining is topped up on a legacy device then validated on a Platform Validator | 0 | 0 | 0 | - | orphaned |
+| C2224529 | Layouts - Engineer amends background colour of the Main Screen | 0 | 0 | 0 | - | orphaned |
+| C2224530 | Backup - Engineer enables  Data Mirroring | 0 | 0 | 0 | - | orphaned |
+| C2623718 | Adult Metro Travelcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623719 | Child Metro Travelcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623720 | Adult iLink Zone 1 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623721 | Child iLink Zone 1 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623722 | Adult iLink Zone 2 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623723 | Child iLink Zone 2 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623724 | Adult iLink Zone 3 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623725 | Child iLink Zone 3 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623726 | Adult iLink Zone 4 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623727 | Child iLink Zone 4 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623731 | Adult iLink Zone NW Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2623732 | Child iLink Zone NW Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2633988 | Barcodes - Validate a Printed Barcode | 0 | 0 | 0 | - | orphaned |
+| C2644585 | Barcodes - Validate a Barcode from a Mobile Device Screen | 0 | 0 | 0 | - | orphaned |
+| C2645027 | DESFire - Validate a DESFire Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2645280 | Barcode Timings | 0 | 0 | 0 | - | orphaned |
+| C2649033 | Technician Menu Sign - On | 0 | 0 | 0 | - | orphaned |
+| C2667002 | Technician Navigates Menus | 0 | 0 | 0 | - | orphaned |
+| C2667020 | Technician - Navigation - Auto Sign-Off | 0 | 0 | 0 | - | orphaned |
+| C2667023 | Technician - Navigation - Page Timeouts | 0 | 0 | 0 | - | orphaned |
+| C2667025 | Technician sets Platform Validator's Location | 0 | 0 | 0 | - | orphaned |
+| C2667029 | Technician - Home Location | 0 | 0 | 0 | - | orphaned |
+| C2667030 | Download Configuration Files | 0 | 0 | 0 | - | orphaned |
+| C2667031 | Download Configuration Files - Future Activation Date | 0 | 0 | 0 | - | orphaned |
+| C2667032 | Downloading Corrupt Configuration Files | 0 | 0 | 0 | - | orphaned |
+| C2667033 | Platform Validator in Working State when BOS Connection is Lost - Send Data to the Back Office | 0 | 0 | 0 | - | orphaned |
+| C2667034 | Platform Validator in Working State when BOS connection is lost - Download data from the Back Office | 0 | 0 | 0 | - | orphaned |
+| C2667035 | Interrupted Communications | 0 | 0 | 0 | - | orphaned |
+| C2667036 | Scheduled Maintenance - Coming out of Suspended State | 0 | 0 | 0 | - | orphaned |
+| C2667037 | Scheduled Maintenance - Idle Mode | 0 | 0 | 0 | - | orphaned |
+| C2667038 | A User Checks that all Software Versions are Present on the Software Versions Screen | 0 | 0 | 0 | - | orphaned |
+| C2667047 | A User Checks that all Configuration Versions are Present on the Configuration Versions Screen | 0 | 0 | 0 | - | orphaned |
+| C2667048 | Technician Adjusts the Brightness Settings | 0 | 0 | 0 | - | orphaned |
+| C2667054 | Technician Adjusts the Back Light Brightness after the Maximum Configuration has been Altered | 0 | 0 | 0 | - | orphaned |
+| C2667060 | Technician Adjusts the Back Light Brightness after the Minimum Configuration has been Altered | 0 | 0 | 0 | - | orphaned |
+| C2667061 | Brightness - Engineer Configures Back Light Response to Ambient Light | 0 | 0 | 0 | - | orphaned |
+| C2667070 | Brightness - Engineer Attempts to Manually Amend the Screen Back Light while the Ambient Mode is on | 0 | 0 | 0 | - | orphaned |
+| C2667079 | Brightness - The Platform Validator Automatically Updates the Back Light Brightness Based on the Surrounding Light | 0 | 0 | 0 | - | orphaned |
+| C2667080 | The Platform Validator Updates the Brightness Slider Automatically  when the Back Light Brightness is Altered | 0 | 0 | 0 | - | orphaned |
+| C2667081 | Technician Adjusts the Audio Volume Settings | 0 | 0 | 0 | - | orphaned |
+| C2668194 | Technician Adjusts the Device Volume after the Maximum Configuration has been Altered | 0 | 0 | 0 | - | orphaned |
+| C2668196 | Technician Adjusts the Device Volume after the Minimum Configuration has been Altered | 0 | 0 | 0 | - | orphaned |
+| C2668200 | Technician - Force Communications | 0 | 0 | 0 | - | orphaned |
+| C2668202 | An Engineer Re-configures the Start Time | 0 | 0 | 0 | - | orphaned |
+| C2668205 | A Platform Validator set to GMT Updates its time to BST when Disconnected from the BOS | 0 | 0 | 0 | - | orphaned |
+| C2668235 | A Platform Validator set to BST Updates its time to GMT when Disconnected from the BOS | 0 | 0 | 0 | - | orphaned |
+| C2668256 | Engineer Amends Background Colour of the Main Screen | 0 | 0 | 0 | - | orphaned |
+| C2668492 | Back-Up - Engineer Enables Data Mirroring | 0 | 0 | 0 | - | orphaned |
+| C2677023 | Upload Data | 0 | 0 | 0 | - | orphaned |
+| C2677024 | Upload Audit Files | 0 | 0 | 0 | - | orphaned |
+| C2678918 | Smartcard - Validation Timings | 0 | 0 | 0 | - | orphaned |
+| C2678919 | Smartcard - Validation Timings | 0 | 0 | 0 | - | orphaned |
+| C2680915 | MIFARE Classic EV1 - Validation | 0 | 0 | 0 | - | orphaned |
+| C2680916 | MIFARE Classic EV1 - Validation | 0 | 0 | 0 | - | orphaned |
+| C2681536 | Visa Debit | 0 | 0 | 0 | - | orphaned |
+| C2681537 | Visa Credit | 0 | 0 | 0 | - | orphaned |
+| C2681548 | Mastercard Debit | 0 | 0 | 0 | - | orphaned |
+| C2681549 | Mastercard Credit | 0 | 0 | 0 | - | orphaned |
+| C2681550 | Maestro Debit | 0 | 0 | 0 | - | orphaned |
+| C2681551 | Offline Transaction | 0 | 0 | 0 | - | orphaned |
+| C2681553 | Deny List | 0 | 0 | 0 | - | orphaned |
+| C2681554 | Negative List | 0 | 0 | 0 | - | orphaned |
+| C2681555 | Expired | 0 | 0 | 0 | - | orphaned |
+| C2681556 | BIN List | 0 | 0 | 0 | - | orphaned |
+| C2697916 | Technician  - Invalid PIN Entry | 0 | 0 | 0 | - | orphaned |
+| C2697917 | Technician - Abandon Sign - On | 0 | 0 | 0 | - | orphaned |
+| C2700890 | Secondary Communication Failover Method | 0 | 0 | 0 | - | orphaned |
+| C2700897 | Adult iLink Zone 1 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700899 | Child iLink Zone 1 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700902 | Adult iLink Zone 2 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700905 | Child iLink Zone 2 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700913 | Adult iLink Zone 3 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700914 | Child iLink Zone 3 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700918 | Adult iLink Zone 4 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700920 | Child iLink Zone 4 Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700921 | Adult iLink Zone NW Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700922 | Child iLink Zone NW Smartcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700923 | Adult Metro Travelcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2700924 | Child Metro Travelcard - POS Top-Up to PV Validation | 0 | 0 | 0 | - | orphaned |
+| C2701304 | Smartcard Passback - Present a Smartcard Multiple Times that has been used within the  Passback Period | 0 | 0 | 0 | - | orphaned |
+| C2701307 | Negative - Present a Non-Translink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C2701318 | Adult Metro Daylink - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701319 | Child Metro Daylink - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701320 | Adult Metro Travelcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701321 | Child Metro Travelcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701322 | Adult Metro Multi-Journey Extended Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701323 | Child Metro Multi-Journey Extended Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701324 | Adult Metro Multi - Journey  Inner Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701325 | Child Metro Multi-Journey  Inner Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701326 | Adult Metro Multi-Journey  City Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701327 | Child Metro Multi-Journey City Zone - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701328 | Adult Ulsterbus Multi-Journey - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2701329 | Child Ulsterbus Multi-Journey - Invalid | 0 | 0 | 0 | - | orphaned |
+| C2703118 | No Communication with BOS | 0 | 0 | 0 | - | orphaned |
+| C3130755 | Power Loss - Idle Screen | 0 | 0 | 0 | - | orphaned |
+| C3207713 | Idle Screen - Default Screen | 0 | 0 | 0 | - | orphaned |
+| C3207724 | Idle Screen - Not In Service | 0 | 0 | 0 | - | orphaned |
+| C3207742 | Error Screen - Not Valid At The Current Time | 0 | 0 | 0 | - | orphaned |
+| C3207743 | Error Screen - Invalid Card | 0 | 0 | 0 | - | orphaned |
+| C3208979 | Error Screen - Error Reading Card | 0 | 0 | 0 | - | orphaned |
+| C3208986 | Error Screen - Product Expired | 0 | 0 | 0 | - | orphaned |
+| C3208994 | Error Screen - Not Valid At This Location | 0 | 0 | 0 | - | orphaned |
+| C3209241 | Error Screen - Invalid Time Of Day | 0 | 0 | 0 | - | orphaned |
+| C3210211 | Error Screen - Re-present Card | 0 | 0 | 0 | - | orphaned |
+| C3210220 | Error Screen - Not Valid On This Service | 0 | 0 | 0 | - | orphaned |
+| C3210238 | Error Screen - Not Accepted | 0 | 0 | 0 | - | orphaned |
+| C3210239 | Error Screen - Barcode Type Invalid | 0 | 0 | 0 | - | orphaned |
+| C3210240 | Passback Screen - Card Already Validated with Number of Days Left | 0 | 0 | 0 | - | orphaned |
+| C3210241 | Passback Screen - Card Already Validated with Expiry Date | 0 | 0 | 0 | - | orphaned |
+| C3210243 | Passback Screen - Card Already Validated with Number of Journeys Left | 0 | 0 | 0 | - | orphaned |
+| C3210246 | Success Screen - Successful with Expiry Date | 0 | 0 | 0 | - | orphaned |
+| C3210527 | Success Screen - Successful with Number of Journeys Left | 0 | 0 | 0 | - | orphaned |
+| C3210528 | Success Screen - Successful with Numbers of Days Left | 0 | 0 | 0 | - | orphaned |
+| C3210529 | Technician Menu - Sign on with valid Technician Card | 0 | 0 | 0 | - | orphaned |
+| C3210530 | Technician Menu - Sign off | 0 | 0 | 0 | - | orphaned |
+| C3210543 | Technician Menu - Location Settings | 0 | 0 | 0 | - | orphaned |
+| C3210702 | Technician Menu - Location Settings with No Comms | 0 | 0 | 0 | - | orphaned |
+| C3210743 | Technician Menu - Network Settings | 0 | 0 | 0 | - | orphaned |
+| C3232514 | Passback Screen - Card Already Validated | 0 | 0 | 0 | - | orphaned |
+| C3232541 | Technician Menu - Software Versions | 0 | 0 | 0 | - | orphaned |
+| C3232542 | Technician Menu - Configuration Versions | 0 | 0 | 0 | - | orphaned |
+| C3232543 | Technician Menu - Display Brightness | 0 | 0 | 0 | - | orphaned |
+| C3232544 | Technician Menu - Audio Volume | 0 | 0 | 0 | - | orphaned |
+| C3232545 | Technician Menu - Force Comms | 0 | 0 | 0 | - | orphaned |
+| C3275577 | Audible Feedback on Card Presentation | 0 | 0 | 0 | - | orphaned |
+| C3275578 | Senior SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275579 | Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275580 | Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275581 | Senior SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275582 | Senior SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275583 | Senior SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275584 | Senior SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275585 | ROI Senior SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275586 | ROI Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275587 | ROI Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275588 | ROI Senior SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275589 | ROI Senior SmartPass -  Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275590 | ROI Senior SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275591 | ROI Senior SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275592 | 60 Plus SmartPass -  Validate a new SmartPass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275593 | 60 Plus SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275594 | 60 Plus SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275595 | 60 Plus SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275596 | 60 Plus SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275597 | 60 Plus SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275598 | 60 Plus SmartPass - Present a SmartPass marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275599 | War Pensioner SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275600 | War Pensioner SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275601 | War Pensioner SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275602 | War Pensioner SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275603 | War Pensioner SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275604 | War Pensioner SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275605 | War Pensioner SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275606 | Blind SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275607 | Blind SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275608 | Blind SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275609 | Blind SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275610 | Blind SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275611 | Blind SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275612 | Blind SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275613 | DLA Half Fare - Validate a new DLA Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275614 | DLA Half Fare - Validate a DLA Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275615 | DLA Half Fare - User presents a DLA Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275616 | DLA Half Fare - Present a DLA Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275617 | DLA Half Fare - Present a DLA Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275618 | DLA Half Fare - Present a DLA Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275619 | DLA Half Fare - Tear a DLA Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275620 | No Driving License - Validate a new No Driving License Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275621 | No Driving License - Validate a No Driving License that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275622 | No Driving License - User presents a No Driving License within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275623 | No Driving License - Present a No Driving License Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275624 | No Driving License - Present a No Driving License that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275625 | No Driving License - Present a No Driving License Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275626 | No Driving License - Tear a No Driving License Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275627 | Partially Sighted - Validate a new Partially Sighted Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275628 | Partially Sighted - Validate a Partially Sighted Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275629 | Partially Sighted - User presents a Partially Sighted Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275630 | Partially Sighted - Present a Partially Sighted Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275631 | Partially Sighted - Present a Partially Sighted Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275632 | Partially Sighted - Present a Partially Sighted Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275633 | Partially Sighted - Tear a Partially Sighted Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275634 | PIPS Half Fare - Validate a New PIPS Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275635 | PIPS Half Fare - Validate a PIPS Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275636 | PIPS Half Fare - User presents a PIPS Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275637 | PIPS Half Fare - Present a PIPS Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275638 | PIPS Half Fare - Present a PIPS Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275639 | PIPS Half Fare - Present a PIPS Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275640 | PIPS Half Fare - Tear a PIPS Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275641 | Learning Disability - Validate a new Learning Disablity Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275642 | Learning Disability - Validate a Learning Disability Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275643 | Learning Disability - User presents a Learning Disability Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275644 | Learning Disability - Present a Learning Disability Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275645 | Learning Disability - Present a Learning Disability Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275646 | Learning Disability - Present a Learning Disability Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275647 | Learning Disability - Tear a Learning Disability Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275648 | Adult Metro Daylink - Validate a new Adult Metro Daylink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275649 | Adult Metro Daylink - Validate an Adult Metro Daylink Smartcard used previously the same day | 0 | 0 | 0 | - | orphaned |
+| C3275650 | Adult Metro Daylink - Validate an  Adult Metro Daylink Smartcard that has been used previously on another day | 0 | 0 | 0 | - | orphaned |
+| C3275651 | Adult Metro Daylink - User presents an Adult Metro Daylink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275652 | Adult Metro Daylink -  User presents an Adult Metro Daylink Smartcard with zero days left but used that day | 0 | 0 | 0 | - | orphaned |
+| C3275653 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275654 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard that has used all available days | 0 | 0 | 0 | - | orphaned |
+| C3275655 | Adult Metro Daylink - Tear an Adult Metro Daylink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275656 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275657 | Child Metro Daylink - Validate a new Child Metro Daylink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275658 | Child Metro Daylink - Validate a Child Metro Daylink Smartcard used previously the same day | 0 | 0 | 0 | - | orphaned |
+| C3275659 | Child Metro Daylink - Validate a Child Metro Daylink Smartcard that has been used previously on another day | 0 | 0 | 0 | - | orphaned |
+| C3275660 | Child Metro Daylink - User presents a Child Metro Daylink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275661 | Child Metro Daylink - User presents a Child Metro Daylink Smartcard with zero days left but used that day | 0 | 0 | 0 | - | orphaned |
+| C3275662 | Child Metro Daylink - Present a Child Metro Daylink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275663 | Child Metro Daylink - Present a Child Metro Daylink Smartcard that has used all available days | 0 | 0 | 0 | - | orphaned |
+| C3275664 | Chilld Metro Daylink - Tear a Child Metro Daylink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275665 | Child Metro Daylink - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275666 | Adult Metro Multi-Journey Extended Zone- Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275667 | Adult Metro Multi-Journey Extended Zone -  Validate an Adult Metro Multi-Journey  Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275668 | Adult Metro Multi-Journey Extended Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275669 | Adult Metro Multi-Journey Extended Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275670 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275671 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275672 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275673 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275674 | Adult Metro Multi-Journey Extended Zone - Tear an Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275675 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275676 | Child Metro Multi-Journey Extended Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275677 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275678 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275679 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275680 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275681 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275682 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275683 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275684 | Child Metro Multi-Journey Extended Zone - Tear a Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275685 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275686 | Adult Metro Multi-Journey Inner Zone - Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275687 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route | 0 | 0 | 0 | - | orphaned |
+| C3275688 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275689 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275690 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275691 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275692 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275693 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275694 | Adult Metro Multi-Journey Inner Zone - Tear an Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275695 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that is marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275696 | Child Metro Multi-Journey Inner Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275697 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275698 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275699 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275700 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275701 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275702 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275703 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275704 | Child Metro Multi-Journey Inner Zone - Tear a Child Metro Multi-Journey smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275705 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275706 | Adult Metro Multi-Journey City Zone - Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275707 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275708 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275709 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275710 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275711 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275712 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275713 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275714 | Adult Metro Multi-Journey City Zone - Tear an Adult Metro Multi-Journey smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275715 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275716 | Child Metro Multi-Journey City Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275717 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275718 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275719 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275720 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275721 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275722 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275723 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275724 | Child Metro Multi-Journey City Zone - Tear a Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275725 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275726 | Adult Ulsterbus Multi-Journey - Validate a new Adult Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275727 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275728 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275729 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275730 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275731 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275732 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275733 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275734 | Adult Ulsterbus Multi-Journey - Tear an Adult Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275735 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275736 | Child Ulsterbus Multi-Journey - Validate a new Child Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275737 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275738 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3275739 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | - | orphaned |
+| C3275740 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275741 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | - | orphaned |
+| C3275742 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275743 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275744 | Child Ulsterbus Multi-Journey - Tear a Child Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275745 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275746 | Dependants Pass - When presented during invalid time is redirected to TVM | 0 | 0 | 0 | - | orphaned |
+| C3275747 | Dependents Pass - Validate a Dependents Pass Smartcard that has been used previously **no longer valid for Glider services** | 0 | 0 | 0 | - | orphaned |
+| C3275748 | Staff Pass -  Validate a new Staff Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275749 | Staff Pass - Validate a Staff Pass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275750 | Staff Pass - User presents a Staff Pass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275751 | Staff Pass - Present a Staff Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275752 | Staff Pass - Present a Staff Pass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275753 | Staff Pass - Present a Staff Pass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275754 | Staff Pass - Tear a Staff Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275755 | Staff Partner Pass - Validate a new Staff Partner Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275756 | Staff Partner Pass -  Validate a Staff Partner Pass Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275757 | Staff Partner Pass - User presents a Staff Partner Pass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275758 | Staff Partner Pass - Present a Staff Partner Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275759 | Staff Partner Pass - Present a Staff Partner Pass Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275760 | Staff Partner Pass - Present a Staff Partner Pass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275761 | Staff Partner Pass - Tear a Staff Partner Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275762 | Staff External Pass - Validate a new External Staff Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275763 | Staff External Pass -  Validate an  External Staff Pass  Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275764 | Staff External Pass - User presents an External Staff Pass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275765 | Staff External Pass - Present an External Staff Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275766 | Staff External Pass - Tear an External Staff Pass  Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275767 | Staff External Pass - Present an External Staff Pass  Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275768 | Staff External Pass - Present an External Staff Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275769 | Retired Staff Pass - Validate a new Retired Staff Pass  Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275770 | Retired Staff Pass - Validate a Retired Staff Pass  Smartcard that has been used previously | 0 | 0 | 0 | - | orphaned |
+| C3275771 | Retired Staff Pass - User presents a Retired Staff Pass  Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275772 | Retired Staff Pass - Present a Retired Staff Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275773 | Retired Staff Pass - Present a Retired Staff Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275774 | Retired Staff Pass - Present a Retired Staff Pass  Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275775 | Retired Staff Pass - Tear a Retired Staff Pass  Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275776 | Adult Belfast Visitor Pass - Validate an Adult Belfast Visitor Pass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275777 | Adult Belfast Visitor Pass - Validate a Belfast Visitor Pass Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275778 | Adult Belfast Visitor Pass - Validate a new Belfast Visitor Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275779 | Adult Belfast Visitor Pass - Tear an Adult Belfast Visitor Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275780 | Adult Belfast Visitor Pass - Present a Adult Belfast Visitor Pass that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275781 | Adult Belfast Visitor Pass - Present an Adult Belfast Visitor Pass Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275782 | Adult Belfast Visitor Pass - Present an Adult Belfast Visitor Pass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275783 | Adult Belfast Visitor Pass -  Present a Adult Belfast Visitor Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275784 | Child Belfast Visitor Pass - Validate a Child Belfast Visitor Pass Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275785 | Child Belfast Visitor Pass - Validate a Belfast Visitor Pass Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275786 | Child Belfast Visitor Pass - Validate a new Belfast Visitor Pass Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275787 | Child Belfast Visitor Pass - Present a Child Belfast Visitor Pass Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275788 | Child Belfast Visitor Pass -  Present a Child Belfast Visitor Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275789 | Child Belfast Visitor Pass - Tear a Child Belfast Visitor Pass | 0 | 0 | 0 | - | orphaned |
+| C3275790 | Child Belfast Visitor Pass - Present a  Child Belfast Visitor Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275791 | Child Belfast Visitor Pass - Present a Child Belfast Visitor Pass Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275792 | Adult iLink Zone 1 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275793 | Adult iLink Zone 1 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275794 | Adult iLink Zone 1- Validate a new Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275795 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275796 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275797 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275798 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275799 | Adult iLink Zone 1 - Tear a Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275800 | Child iLink Zone 1 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275801 | Child iLink Zone 1 - Validate an Child iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275802 | Child iLink Zone 1- Validate a new Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275803 | Child iLink Zone 1 - Tear a Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275804 | Child iLink Zone 1 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275805 | Child iLink Zone 1 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275806 | Child iLink Zone 1 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275807 | Child iLink Zone 1 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275808 | Adult iLink Zone 2 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275809 | Adult iLink Zone 2 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275810 | Adult iLink Zone 2 - Validate a new Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275811 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275812 | Adult iLink Zone 2 - Tear an Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275813 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275814 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275815 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275816 | Child iLink Zone 2 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275817 | Child iLink Zone 2- Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275818 | Child iLink Zone 2 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275819 | Child iLink Zone 2 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275820 | Child iLink Zone 2 - Tear a Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275821 | Child iLink Zone 2 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275822 | Child iLink Zone 2 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275823 | Child iLink Zone 2 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275824 | Adult iLink Zone 3 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275825 | Adult iLink Zone 3 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275826 | Adult iLink Zone 3-  Validate a new Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275827 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275828 | Adult iLink Zone 3 - Tear an Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275829 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275830 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275831 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275832 | Child iLink Zone 3 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275833 | Child iLink Zone 3 - Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275834 | Child iLink Zone 3 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275835 | Child iLink Zone 3 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275836 | Child iLink Zone 3 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275837 | Child iLink Zone 3 - Tear a Child iLink Zone 3 Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275838 | Child iLink Zone 3 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275839 | Child iLink Zone 3 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275840 | Adult iLink Zone 4 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275841 | Adult iLink Zone 4- Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275842 | Adult iLink Zone 4- Validate a new Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275843 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275844 | Adult iLink Zone 4 - Tear an Adult iLink Zone 4 Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275845 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275846 | Adult iLink Zone 4- Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275847 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275848 | Child iLink Zone 4 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275849 | Child iLink Zone 4 - Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275850 | Child iLink Zone 4 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275851 | Child iLink Zone 4 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275852 | Child iLink Zone 4 - Tear a Child iLink Zone 4 Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275853 | Child iLink Zone 4- Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275854 | Child iLink Zone 4 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275855 | Child iLink Zone 4 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275856 | Adult iLink NW - Tear an Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275857 | Adult iLink NW - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275858 | Adult iLink NW - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275859 | Adult iLink NW - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275860 | Adult iLink NW - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275861 | Child iLink NW - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275862 | Child iLink NW - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275863 | Child iLink NW - Tear an Adult iLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275864 | Child iLink NW - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275865 | Child iLink NW - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275866 | aLink - User presents an aLink Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275867 | aLink - Validate an aLink Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275868 | aLink - Validate a new aLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275869 | aLink - Tear an aLink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275870 | aLink - Present an aLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275871 | aLink - Present an aLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275872 | aLink - Present an aLink Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275873 | aLink - Present an aLink Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275874 | Adult Metro Travelcard - Validate an Adult Metro Travelcard Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275875 | Adult Metro Travelcard - Validate an Adult Metro Travelcard Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275876 | Adult Metro Travelcard - Validate a new Adult Metro Travelcard Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275877 | Adult Metro Travelcard - Tear an Adult Metro Travelcard Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275878 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275879 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275880 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275881 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275882 | Child Metro Travelcard - Validate a Child Metro Travelcard Smartcard within the Passback Period | 0 | 0 | 0 | - | orphaned |
+| C3275883 | Child Metro Travelcard - Validate a Child Metro Travelcard Smartcard that has been previously used | 0 | 0 | 0 | - | orphaned |
+| C3275884 | Child Metro Travelcard - Validate a new Child Metro Travelcard Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275885 | Child Metro Travelcard - Present  a Child Metro Travelcard that is outside of the valid zone | 0 | 0 | 0 | - | orphaned |
+| C3275886 | Child Metro Travelcard - Tear a Child Metro Travelcard Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275887 | Child Metro Travelcard - Present a Child Metro Travelcard Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275888 | Child Metro Travelcard - Present a Child Metro Travelcard Smartcard that has expired | 0 | 0 | 0 | - | orphaned |
+| C3275889 | Child Metro Travelcard -  Present a Child Metro Travelcard Smartcard that has been hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275890 | Negative - Present a Non-Translink Smartcard | 0 | 0 | 0 | - | orphaned |
+| C3275891 | yLink - User presents a yLink smartcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C3275892 | 24+ - User presents a yLink smartcard - Invalid | 0 | 0 | 0 | - | orphaned |
+| C3275893 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard for Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C3275894 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard Before the Start Date | 0 | 0 | 0 | - | orphaned |
+| C3275895 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has Expired | 0 | 0 | 0 | - | orphaned |
+| C3275896 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275897 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has been Hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275898 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard  that is Outside the Valid Time (Mon-Fri) | 0 | 0 | 0 | - | orphaned |
+| C3275899 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard on a Weekend | 0 | 0 | 0 | - | orphaned |
+| C3275900 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard during a School Holiday | 0 | 0 | 0 | - | orphaned |
+| C3275901 | EA Pupil Smartpass - Tear an EA Pupil Smartpass | 0 | 0 | 0 | - | orphaned |
+| C3275902 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass for Validation and Passback | 0 | 0 | 0 | - | orphaned |
+| C3275903 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Before the Start Date | 0 | 0 | 0 | - | orphaned |
+| C3275904 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has Expired | 0 | 0 | 0 | - | orphaned |
+| C3275905 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has been marked for hotlist | 0 | 0 | 0 | - | orphaned |
+| C3275906 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has been Hotlisted | 0 | 0 | 0 | - | orphaned |
+| C3275907 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Smartcard that is Outside the Valid Time (Mon-Fri) | 0 | 0 | 0 | - | orphaned |
+| C3275908 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Smartcard on a Weekend | 0 | 0 | 0 | - | orphaned |
+| C3275909 | EA Bus Further Education - Present an EA Pupil Bus Futher Education Smartpass Smartcard during a School Holiday | 0 | 0 | 0 | - | orphaned |
+| C3275910 | EA Bus Further Education - Tear an EA Bus Further Education Smartpass | 0 | 0 | 0 | - | orphaned |
+| C3275912 | Technician - Technician Sign On | 0 | 0 | 0 | Untested | never-executed |
+| C3275913 | Technician - Invalid PIN Entry | 0 | 0 | 0 | Untested | never-executed |
+| C3275914 | Technician - Abandon Sign - On | 0 | 0 | 0 | Untested | never-executed |
+| C3275915 | Technician - Navigation - Technician Navigates menus | 0 | 0 | 0 | Untested | never-executed |
+| C3275916 | Technician - Navigation - Auto Sign-Off | 0 | 0 | 0 | Untested | never-executed |
+| C3275917 | Technician - Navigation - Page Timeouts | 0 | 0 | 0 | Untested | never-executed |
+| C3275918 | Technician - Technician sets Platform Validator's Location | 0 | 0 | 0 | Untested | never-executed |
+| C3275919 | Technician - Technician - Home Location | 0 | 0 | 0 | Untested | never-executed |
+| C3275920 | A user checks that all software versions are present on the Software Versions Screen | 0 | 0 | 0 | Untested | never-executed |
+| C3275921 | A user checks that all configuration versions are present on the Configuration Versions Screen | 0 | 0 | 0 | Untested | never-executed |
+| C3275922 | Technician -  Technician adjusts the brightness settings | 0 | 0 | 0 | Untested | never-executed |
+| C3275923 | Technician -  Technician adjusts the Back Light Brightness after the maximum configuration has been altered | 0 | 0 | 0 | Untested | never-executed |
+| C3275924 | Technician - Technician adjusts the Back Light Brightness after the minimum configuration has been altered | 0 | 0 | 0 | Untested | never-executed |
+| C3275925 | Brightness - Engineer configures backlight response to Ambient light | 0 | 0 | 0 | Untested | never-executed |
+| C3275926 | Brightness - Engineer attempts to manually amend the screen backlight while ambient mode is on | 0 | 0 | 0 | Untested | never-executed |
+| C3275927 | Brightness -The Platform Validator automatically updates the backlight brightness based on the surrounding light | 0 | 0 | 0 | Untested | never-executed |
+| C3275928 | Brightness - The Platform Validator updates the brightness slider automatically when the backlight brightness is altered | 0 | 0 | 0 | Untested | never-executed |
+| C3275929 | Technician - Technician adjusts the audio volume settings | 0 | 0 | 0 | Untested | never-executed |
+| C3275930 | Technician - Technician adjusts the device volume after the maximum configuration has been altered | 0 | 0 | 0 | Untested | never-executed |
+| C3275931 | Technician - Technician adjusts the device volume after the minimum configuration has been altered | 0 | 0 | 0 | Untested | never-executed |
+| C3275932 | Technician - Communications - Force Communications | 0 | 0 | 0 | Untested | never-executed |
+| C3275933 | Downloading Corrupt Configuration Files | 0 | 0 | 0 | Untested | never-executed |
+| C3275934 | Platform validator in working state when BOS Connection is Lost - Send Data to the Back Office | 0 | 0 | 0 | Untested | never-executed |
+| C3275935 | Platform Validator in Working State when BOS Connection Lost - Download Data from the Back Office | 0 | 0 | 0 | Untested | never-executed |
+| C3275936 | Interrupted Communications | 0 | 0 | 0 | Untested | never-executed |
+| C3275937 | Download Configuration Files - Future Activation Date | 0 | 0 | 0 | Untested | never-executed |
+| C3275938 | Download Configuration Files | 0 | 0 | 0 | Untested | never-executed |
+| C3275939 | Secondary Commnication Failover Method | 0 | 0 | 0 | Untested | never-executed |
+| C3275940 | No Communication with BOS | 0 | 0 | 0 | Untested | never-executed |
+| C3275941 | Upload Data | 0 | 0 | 0 | Untested | never-executed |
+| C3275942 | Upload Audit Data | 0 | 0 | 0 | Untested | never-executed |
+| C3275943 | Scheduled Maintenance - Coming out of Suspended State | 0 | 0 | 0 | Untested | never-executed |
+| C3275944 | Scheduled Maintenance - Idle Mode | 0 | 0 | 0 | Untested | never-executed |
+| C3275945 | Changing the FEC1 IP Address | 0 | 0 | 0 | Untested | never-executed |
+| C3275946 | Refreshing the Cellular Modem | 0 | 0 | 0 | Untested | never-executed |
+| C3275950 | Refreshing the Network Routing Table | 0 | 0 | 0 | Untested | never-executed |
+| C3275969 | Audible Feedback on Card Presentation | 0 | 0 | 0 | Untested | never-executed |
+| C3275970 | Senior SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275971 | Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3275972 | Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3275973 | Senior SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3275974 | Senior SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3275975 | Senior SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275976 | Senior SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3275977 | ROI Senior SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275978 | ROI Senior SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3275979 | ROI Senior SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3275980 | ROI Senior SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3275981 | ROI Senior SmartPass -  Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3275982 | ROI Senior SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275983 | ROI Senior SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3275984 | 60 Plus SmartPass -  Validate a new SmartPass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275985 | 60 Plus SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3275986 | 60 Plus SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3275987 | 60 Plus SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3275988 | 60 Plus SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3275989 | 60 Plus SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275990 | 60 Plus SmartPass - Present a SmartPass marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3275991 | War Pensioner SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275992 | War Pensioner SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3275993 | War Pensioner SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3275994 | War Pensioner SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3275995 | War Pensioner SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3275996 | War Pensioner SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275997 | War Pensioner SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3275998 | Blind SmartPass - Validate a new SmartPass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3275999 | Blind SmartPass - Validate a SmartPass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276000 | Blind SmartPass - User presents a SmartPass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276001 | Blind SmartPass - Present a SmartPass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276002 | Blind SmartPass - Present a SmartPass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276003 | Blind SmartPass - Tear a SmartPass smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276004 | Blind SmartPass - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276005 | DLA Half Fare - Validate a new DLA Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276006 | DLA Half Fare - Validate a DLA Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276007 | DLA Half Fare - User presents a DLA Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276008 | DLA Half Fare - Present a DLA Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276009 | DLA Half Fare - Present a DLA Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276010 | DLA Half Fare - Present a DLA Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276011 | DLA Half Fare - Tear a DLA Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276012 | No Driving License - Validate a new No Driving License Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276013 | No Driving License - Validate a No Driving License that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276014 | No Driving License - User presents a No Driving License within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276015 | No Driving License - Present a No Driving License Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276016 | No Driving License - Present a No Driving License that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276017 | No Driving License - Present a No Driving License Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276018 | No Driving License - Tear a No Driving License Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276019 | Partially Sighted - Validate a new Partially Sighted Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276020 | Partially Sighted - Validate a Partially Sighted Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276021 | Partially Sighted - User presents a Partially Sighted Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276022 | Partially Sighted - Present a Partially Sighted Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276023 | Partially Sighted - Present a Partially Sighted Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276024 | Partially Sighted - Present a Partially Sighted Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276025 | Partially Sighted - Tear a Partially Sighted Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276026 | PIPS Half Fare - Validate a New PIPS Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276027 | PIPS Half Fare - Validate a PIPS Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276028 | PIPS Half Fare - User presents a PIPS Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276029 | PIPS Half Fare - Present a PIPS Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276030 | PIPS Half Fare - Present a PIPS Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276031 | PIPS Half Fare - Present a PIPS Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276032 | PIPS Half Fare - Tear a PIPS Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276033 | Learning Disability - Validate a new Learning Disablity Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276034 | Learning Disability - Validate a Learning Disability Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276035 | Learning Disability - User presents a Learning Disability Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276036 | Learning Disability - Present a Learning Disability Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276037 | Learning Disability - Present a Learning Disability Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276038 | Learning Disability - Present a Learning Disability Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276039 | Learning Disability - Tear a Learning Disability Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276040 | Adult Metro Daylink - Validate a new Adult Metro Daylink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276041 | Adult Metro Daylink - Validate an Adult Metro Daylink Smartcard used previously the same day | 0 | 0 | 0 | Untested | never-executed |
+| C3276042 | Adult Metro Daylink - Validate an  Adult Metro Daylink Smartcard that has been used previously on another day | 0 | 0 | 0 | Untested | never-executed |
+| C3276043 | Adult Metro Daylink - User presents an Adult Metro Daylink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276044 | Adult Metro Daylink -  User presents an Adult Metro Daylink Smartcard with zero days left but used that day | 0 | 0 | 0 | Untested | never-executed |
+| C3276045 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276046 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard that has used all available days | 0 | 0 | 0 | Untested | never-executed |
+| C3276047 | Adult Metro Daylink - Tear an Adult Metro Daylink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276048 | Adult Metro Daylink - Present an Adult Metro Daylink Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276049 | Child Metro Daylink - Validate a new Child Metro Daylink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276050 | Child Metro Daylink - Validate a Child Metro Daylink Smartcard used previously the same day | 0 | 0 | 0 | Untested | never-executed |
+| C3276051 | Child Metro Daylink - Validate a Child Metro Daylink Smartcard that has been used previously on another day | 0 | 0 | 0 | Untested | never-executed |
+| C3276052 | Child Metro Daylink - User presents a Child Metro Daylink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276053 | Child Metro Daylink - User presents a Child Metro Daylink Smartcard with zero days left but used that day | 0 | 0 | 0 | Untested | never-executed |
+| C3276054 | Child Metro Daylink - Present a Child Metro Daylink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276055 | Child Metro Daylink - Present a Child Metro Daylink Smartcard that has used all available days | 0 | 0 | 0 | Untested | never-executed |
+| C3276056 | Chilld Metro Daylink - Tear a Child Metro Daylink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276057 | Child Metro Daylink - Present a SmartPass Smartcard marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276058 | Adult Metro Multi-Journey Extended Zone- Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276059 | Adult Metro Multi-Journey Extended Zone -  Validate an Adult Metro Multi-Journey  Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276060 | Adult Metro Multi-Journey Extended Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276061 | Adult Metro Multi-Journey Extended Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276062 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276063 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276064 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276065 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276066 | Adult Metro Multi-Journey Extended Zone - Tear an Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276067 | Adult Metro Multi-Journey Extended Zone - Present an Adult Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276068 | Child Metro Multi-Journey Extended Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276069 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276070 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276071 | Child Metro Multi-Journey Extended Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276072 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276073 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276074 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276075 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276076 | Child Metro Multi-Journey Extended Zone - Tear a Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276077 | Child Metro Multi-Journey Extended Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276078 | Adult Metro Multi-Journey Inner Zone - Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276079 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route | 0 | 0 | 0 | Untested | never-executed |
+| C3276080 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276081 | Adult Metro Multi-Journey Inner Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276082 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276083 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276084 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276085 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276086 | Adult Metro Multi-Journey Inner Zone - Tear an Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276087 | Adult Metro Multi-Journey Inner Zone - Present an Adult Metro Multi-Journey Smartcard that is marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276088 | Child Metro Multi-Journey Inner Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276089 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276090 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276091 | Child Metro Multi-Journey Inner Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276092 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276093 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276094 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276095 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276096 | Child Metro Multi-Journey Inner Zone - Tear a Child Metro Multi-Journey smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276097 | Child Metro Multi-Journey Inner Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276098 | Adult Metro Multi-Journey City Zone - Validate a new Adult Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276099 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276100 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276101 | Adult Metro Multi-Journey City Zone - Validate an Adult Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276102 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276103 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276104 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276105 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276106 | Adult Metro Multi-Journey City Zone - Tear an Adult Metro Multi-Journey smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276107 | Adult Metro Multi-Journey City Zone - Present an Adult Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276108 | Child Metro Multi-Journey City Zone - Validate a new Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276109 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276110 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276111 | Child Metro Multi-Journey City Zone - Validate a Child Metro Multi-Journey Smartcard within the Transfer Period but not on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276112 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276113 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276114 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276115 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276116 | Child Metro Multi-Journey City Zone - Tear a Child Metro Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276117 | Child Metro Multi-Journey City Zone - Present a Child Metro Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276118 | Adult Ulsterbus Multi-Journey - Validate a new Adult Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276119 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276120 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276121 | Adult Ulsterbus Multi-Journey - Validate an Adult Ulsterbus Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276122 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276123 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276124 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276125 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276126 | Adult Ulsterbus Multi-Journey - Tear an Adult Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276127 | Adult Ulsterbus Multi-Journey - Present an Adult Ulsterbus Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276128 | Child Ulsterbus Multi-Journey - Validate a new Child Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276129 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard within the Transfer Period on a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276130 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard outside of the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276131 | Child Ulsterbus Multi-Journey - Validate a Child Ulsterbus Multi-Journey Smartcard within the Transfer Period but not on  a Transfer Route. | 0 | 0 | 0 | Untested | never-executed |
+| C3276132 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276133 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has used all available Journeys | 0 | 0 | 0 | Untested | never-executed |
+| C3276134 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276135 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276136 | Child Ulsterbus Multi-Journey - Tear a Child Ulsterbus Multi-Journey Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276137 | Child Ulsterbus Multi-Journey - Present a Child Ulsterbus Multi-Journey Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276138 | Dependants Pass - When presented during invalid time is redirected to TVM | 0 | 0 | 0 | Untested | never-executed |
+| C3276139 | Dependents Pass - Validate a Dependents Pass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276140 | Staff Pass -  Validate a new Staff Pass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276141 | Staff Pass - Validate a Staff Pass Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276142 | Staff Pass - User presents a Staff Pass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276143 | Staff Pass - Present a Staff Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276144 | Staff Pass - Present a Staff Pass Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276145 | Staff Pass - Present a Staff Pass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276146 | Staff Pass - Tear a Staff Pass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276147 | Staff Pass (Partner) - Validate a new Staff Pass (Partner) Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276148 | Staff Pass (Partner) -  Validate a Staff Pass (Partner) Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276149 | Staff Pass (Partner) - User presents a Staff Pass (Partner) Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276150 | Staff Pass (Partner) - Present a Staff Pass (Partner) Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276151 | Staff Pass (Partner) - Present a Staff Pass (Partner) Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276152 | Staff Pass (Partner) - Present a Staff Pass (Partner) Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276153 | Staff Pass (Partner) - Tear a Staff Pass (Partner) Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276154 | Staff Pass (External)- Validate a new Staff Pass (External) Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276155 | Staff Pass (External) -  Validate an Staff Pass (External) Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276156 | Staff Pass (External) - User presents an Staff Pass (External) Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276157 | Staff Pass (External) - Present an Staff Pass (External) Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276158 | Staff Pass (External) - Tear an Staff Pass (External)  Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276159 | Staff Pass (External) - Present an Staff Pass (External)  Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276160 | Staff Pass (External) - Present an Staff Pass (External)  Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276161 | Staff Pass (Retired) - Validate a new Staff Pass (Retired) Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276162 | Staff Pass (Retired) - Validate a Staff Pass (Retired) Smartcard that has been used previously | 0 | 0 | 0 | Untested | never-executed |
+| C3276163 | Staff Pass (Retired) - User presents a Staff Pass (Retired)  Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276164 | Staff Pass (Retired)- Present a Staff Pass (Retired) Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276165 | Staff Pass (Retired) - Present a Staff Pass (Retired)  Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276166 | Staff Pass (Retired) - Present a Staff Pass (Retired)  Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276167 | Staff Pass (Retired) - Tear a Staff Pass (Retired)  Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276168 | Adult Belfast Visitor Pass - Validate an Adult Belfast Visitor Pass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276169 | Adult Belfast Visitor Pass - Validate a Belfast Visitor Pass Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276170 | Adult Belfast Visitor Pass - Validate a new Belfast Visitor Pass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276172 | Adult Belfast Visitor Pass - Tear an Adult Belfast Visitor Pass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276173 | Adult Belfast Visitor Pass - Present a Adult Belfast Visitor Pass that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276174 | Adult Belfast Visitor Pass - Present an Adult Belfast Visitor Pass Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276175 | Adult Belfast Visitor Pass - Present an Adult Belfast Visitor Pass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276176 | Adult Belfast Visitor Pass -  Present a Adult Belfast Visitor Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276177 | Child Belfast Visitor Pass - Validate a Child Belfast Visitor Pass Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276178 | Child Belfast Visitor Pass - Validate a Belfast Visitor Pass Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276179 | Child Belfast Visitor Pass - Validate a new Belfast Visitor Pass Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276180 | Child Belfast Visitor Pass - Present a Child Belfast Visitor Pass Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276181 | Child Belfast Visitor Pass -  Present a Child Belfast Visitor Pass  Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276182 | Child Belfast Visitor Pass - Tear a Child Belfast Visitor Pass | 0 | 0 | 0 | Untested | never-executed |
+| C3276183 | Child Belfast Visitor Pass - Present a  Child Belfast Visitor Pass Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276184 | Child Belfast Visitor Pass - Present a Child Belfast Visitor Pass Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276185 | Adult iLink Zone 1 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276186 | Adult iLink Zone 1 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276187 | Adult iLink Zone 1- Validate a new Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276188 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276189 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276190 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276191 | Adult iLink Zone 1 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276192 | Adult iLink Zone 1 - Tear a Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276193 | Child iLink Zone 1 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276194 | Child iLink Zone 1 - Validate an Child iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276195 | Child iLink Zone 1- Validate a new Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276196 | Child iLink Zone 1 - Tear a Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276197 | Child iLink Zone 1 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276198 | Child iLink Zone 1 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276199 | Child iLink Zone 1 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276200 | Child iLink Zone 1 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276201 | Adult iLink Zone 2 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276202 | Adult iLink Zone 2 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276203 | Adult iLink Zone 2 - Validate a new Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276204 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276205 | Adult iLink Zone 2 - Tear an Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276206 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276207 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276208 | Adult iLink Zone 2 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276209 | Child iLink Zone 2 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276210 | Child iLink Zone 2- Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276211 | Child iLink Zone 2 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276212 | Child iLink Zone 2 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276213 | Child iLink Zone 2 - Tear a Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276214 | Child iLink Zone 2 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276215 | Child iLink Zone 2 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276216 | Child iLink Zone 2 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276217 | Adult iLink Zone 3 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276218 | Adult iLink Zone 3 - Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276219 | Adult iLink Zone 3-  Validate a new Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276220 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276221 | Adult iLink Zone 3 - Tear an Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276222 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276223 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276224 | Adult iLink Zone 3 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276225 | Child iLink Zone 3 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276226 | Child iLink Zone 3 - Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276227 | Child iLink Zone 3 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276228 | Child iLink Zone 3 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276229 | Child iLink Zone 3 - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276230 | Child iLink Zone 3 - Tear a Child iLink Zone 3 Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276231 | Child iLink Zone 3 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276232 | Child iLink Zone 3 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276233 | Adult iLink Zone 4 - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276234 | Adult iLink Zone 4- Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276235 | Adult iLink Zone 4- Validate a new Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276236 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276237 | Adult iLink Zone 4 - Tear an Adult iLink Zone 4 Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276238 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276239 | Adult iLink Zone 4- Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276240 | Adult iLink Zone 4 - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276241 | Child iLink Zone 4 - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276242 | Child iLink Zone 4 - Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276243 | Child iLink Zone 4 - Validate a new Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276244 | Child iLink Zone 4 - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276245 | Child iLink Zone 4 - Tear a Child iLink Zone 4 Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276246 | Child iLink Zone 4- Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276247 | Child iLink Zone 4 - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276248 | Child iLink Zone 4 - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276249 | Adult iLink NW - Tear an Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276250 | Adult iLink NW - Present an Adult iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276251 | Adult iLink NW - Present an Adult iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276252 | Adult iLink NW - Present an Adult iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276253 | Adult iLink NW - Present an Adult iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276254 | Child iLink NW - Present a Child iLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276255 | Child iLink NW - Present a Child iLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276256 | Child iLink NW - Tear an Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276257 | Child iLink NW - Present a Child iLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276258 | Child iLink NW - Present a Child iLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276259 | aLink - User presents an aLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276260 | aLink - Validate an aLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276261 | aLink - Validate a new aLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276262 | aLink - Tear an aLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276263 | aLink - Present an aLink Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276264 | aLink - Present an aLink Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276265 | aLink - Present an aLink Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276266 | aLink - Present an aLink Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276267 | Adult Metro Travelcard - Validate an Adult Metro Travelcard Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276268 | Adult Metro Travelcard - Validate an Adult Metro Travelcard Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276269 | Adult Metro Travelcard - Validate a new Adult Metro Travelcard Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276270 | Adult Metro Travelcard - Tear an Adult Metro Travelcard Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276271 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276272 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276273 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276274 | Adult Metro Travelcard - Present an Adult Metro Travelcard Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276275 | Child Metro Travelcard - Validate a Child Metro Travelcard Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276276 | Child Metro Travelcard - Validate a Child Metro Travelcard Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276277 | Child Metro Travelcard - Validate a new Child Metro Travelcard Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276278 | Child Metro Travelcard - Present  a Child Metro Travelcard that is outside of the valid zone | 0 | 0 | 0 | Untested | never-executed |
+| C3276279 | Child Metro Travelcard - Tear a Child Metro Travelcard Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276280 | Child Metro Travelcard - Present a Child Metro Travelcard Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276281 | Child Metro Travelcard - Present a Child Metro Travelcard Smartcard that has expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276282 | Child Metro Travelcard -  Present a Child Metro Travelcard Smartcard that has been hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276283 | Negative - Present a Non-Translink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276284 | yLink - User presents a yLink smartcard - Invalid | 0 | 0 | 0 | Untested | never-executed |
+| C3276285 | 24+ - User presents a yLink smartcard - Invalid | 0 | 0 | 0 | Untested | never-executed |
+| C3276286 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard for Validation and Passback | 0 | 0 | 0 | Untested | never-executed |
+| C3276287 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard Before the Start Date | 0 | 0 | 0 | Untested | never-executed |
+| C3276288 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has Expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276289 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276290 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard that has been Hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276291 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard  that is Outside the Valid Time (Mon-Fri) | 0 | 0 | 0 | Untested | never-executed |
+| C3276292 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard on a Weekend | 0 | 0 | 0 | Untested | never-executed |
+| C3276293 | EA Pupil Smartpass - Present an EA Pupil Smartpass Smartcard during a School Holiday | 0 | 0 | 0 | Untested | never-executed |
+| C3276294 | EA Pupil Smartpass - Tear an EA Pupil Smartpass | 0 | 0 | 0 | Untested | never-executed |
+| C3276295 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass for Validation and Passback | 0 | 0 | 0 | Untested | never-executed |
+| C3276296 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Before the Start Date | 0 | 0 | 0 | Untested | never-executed |
+| C3276297 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has Expired | 0 | 0 | 0 | Untested | never-executed |
+| C3276298 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has been marked for hotlist | 0 | 0 | 0 | Untested | never-executed |
+| C3276299 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass that has been Hotlisted | 0 | 0 | 0 | Untested | never-executed |
+| C3276300 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Smartcard that is Outside the Valid Time (Mon-Fri) | 0 | 0 | 0 | Untested | never-executed |
+| C3276301 | EA Bus Further Education - Present an EA Pupil Bus Further Education Smartpass Smartcard on a Weekend | 0 | 0 | 0 | Untested | never-executed |
+| C3276302 | EA Bus Further Education - Present an EA Pupil Bus Futher Education Smartpass Smartcard during a School Holiday | 0 | 0 | 0 | Untested | never-executed |
+| C3276303 | EA Bus Further Education - Tear an EA Bus Further Education Smartpass | 0 | 0 | 0 | Untested | never-executed |
+| C3276304 | Adult ilink Zone 4 - User presents a Adult ilink Zone 4 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276305 | Staff Pass (Partner) - User presents a Staff Pass (Partner) Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276306 | Staff Pass (External)- User presents a Staff Pass (External) Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276307 | Staff Pass (Retired)- User presents a Staff Pass (Retired) Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276308 | Adult Belfast Visitor Pass - User presents an Adult Belfast Visitor Pass within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276309 | Child Belfast Visitor Pass - User presents a Child Belfast Visitor Pass Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276310 | Adult ilink Zone 1 - User presents a Adult ilink Zone 1 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276311 | Child ilink Zone 1 - User presents a Child ilink Zone 1 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276312 | Adult ilink Zone 2 - User presents a Adult ilink Zone 2 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276313 | Child ilink Zone 2 - User presents an Child ilink Zone 2 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276314 | Adult ilink Zone 3 - User presents a Adult ilink Zone 3 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276315 | Child ilink Zone 3 - User presents a Child ilink Zone 3 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276316 | EA Pupil Smartpass - User presents a EA Pupil Smartpass Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276317 | Child ilink Zone 4 - User presents a Child ilink Zone 4 Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276318 | Adult ilink Zone NW - User presents a Adult ilink Zone NW Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276321 | Adult iLink Zone NW- Validate a new Adult iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276322 | Adult iLink Zone NW- Validate an Adult iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276323 | Adult iLink Zone NW - User presents an Adult iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276329 | Child iLink Zone NW - Validate a new Child iLink Smartcard | 0 | 0 | 0 | Untested | never-executed |
+| C3276330 | Child iLink Zone NW - Validate a Child iLink Smartcard that has been previously used | 0 | 0 | 0 | Untested | never-executed |
+| C3276331 | Child iLink Zone NW - User presents a Child iLink Smartcard within the Passback Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276332 | Child ilink Zone NW - User presents a Child ilink Zone NW Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276333 | aLink - User presents a aLink Pass Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276334 | Staff Pass - User presents a Staff Pass Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3276335 | EA Bus Further Education - User presents a EA Bus Further Education Smartcard within the Transfer Period | 0 | 0 | 0 | Untested | never-executed |
+| C3432695 | Downloading Configuration Files | 0 | 0 | 0 | - | orphaned |
+| C3470773 | Adult iLink Zone 1 card | 0 | 0 | 0 | Untested | never-executed |
+| C3483380 | Adult iLink Zone 1 card | 0 | 0 | 0 | Untested | never-executed |
+| C3496679 | TIBU-13760 - TL PV Config update not being applied. CopyAndVerify: Exception during copy or verifying file | 0 | 0 | 0 | Untested | never-executed |
+| C3506138 | Smartcard Validation - Adult iLink Zone 1 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506139 | Smartcard Validation - Adult iLink Zone 1 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506140 | Smartcard Validation - Adult iLink Zone 2 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506141 | Smartcard Validation - Adult iLink Zone 2 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506142 | Smartcard Validation - Adult iLink Zone 3 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506143 | Smartcard Validation - Adult iLink Zone 3 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506144 | Smartcard Validation - Adult iLink Zone 4 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506145 | Smartcard Validation - Adult iLink Zone 4 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506146 | Smartcard Validation - Adult iLink Zone NW Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506147 | Smartcard Validation - Adult iLink Zone NW Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506148 | Smartcard Validation - Child iLink Zone 1 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506149 | Smartcard Validation - Child iLink Zone 1 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506150 | Smartcard Validation - Child iLink Zone 2 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506151 | Smartcard Validation - Child iLink Zone 2 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506152 | Smartcard Validation - Child iLink Zone 3 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506153 | Smartcard Validation - Child iLink Zone 3 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506154 | Smartcard Validation - Child iLink Zone 4 Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506155 | Smartcard Validation - Child iLink Zone 4 Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506156 | Smartcard Validation - Child iLink Zone NW Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506157 | Smartcard Validation - Child iLink Zone NW Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506158 | Smartcard Validation - Staff Pass Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506159 | Smartcard Validation - Staff Pass Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506160 | Smartcard Validation - Spouse Pass Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506161 | Smartcard Validation - Spouse Pass Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506162 | Smartcard Validation - Dependents Pass Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506163 | Smartcard Validation - Dependents Pass Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506164 | Smartcard Validation - Retired Pass Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506165 | Smartcard Validation - Retired Pass Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506166 | Smartcard Validation - Adult Belfast Visitor Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506167 | Smartcard Validation - Adult Belfast Visitor Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506168 | Smartcard Validation - Child Belfast Visitor Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506169 | Smartcard Validation - Child Belfast Visitor Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506170 | Smartcard Validation - Rail EA Pupil Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506171 | Smartcard Validation - Rail EA Pupil Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506172 | Smartcard Validation - Rail EA Further Education Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506173 | Smartcard Validator - Rail EA Further Education Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506174 | Smartcard Validation - aLink Smartcard is Validated Within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3506175 | Smartcard Validation - aLink Smartcard is Validated After Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C3533205 | Error Screen - Barcode Has Expired | 0 | 0 | 0 | - | orphaned |
+| C3558015 | TIBU-19395 - Change in adapter connectivity detection has caused issues with TL networks | 0 | 0 | 0 | - | orphaned |
+| C3558016 | TIBU-19103 - 3.0.7.23556 build script for STE10 contain incorrect endpoints | 0 | 0 | 0 | - | orphaned |
+| C4040353 | Validate Printed Adult Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040354 | Validate Printed Child Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040355 | Validate Printed 3 Day Select Ticket Barcodes from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040356 | Validate Printed 1/3 Off Day Return Ticket Barcodes from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040357 | Validate Printed 24+ Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040358 | Validate Printed Ylink Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040359 | Validate Printed Concession Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040360 | Validate Printed Half Fare Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040361 | Validate Printed Day Tracker Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040362 | User attempts to Validate a Barcode that has already been validated on GV for a Ticket that was printed on a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040363 | User attempts to Validate a Barcode that has Expired that was printed on a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040364 | Validate Printed Adult Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040365 | Validate Printed Child Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040366 | Validate Printed 3 Day Select Ticket Barcodes from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040367 | Validate Printed 1/3 Off Day Return Ticket Barcodes from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040368 | Validate Printed 24+ Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040369 | Validate Printed Ylink Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040370 | Validate Printed Concession Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040371 | Validate Printed Half Fare Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040372 | Validate Printed Day Tracker Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040373 | Validate Printed Unemployed Day Return Barcode Tickets from a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040374 | User attempts to Validate a Barcode that has already been validated on GV for a Ticket that was printed on a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040375 | User attempts to Validate a Barcode that has Expired that was printed on a HHD | 0 | 0 | 0 | - | orphaned |
+| C4040376 | Error Screen - Barcode Already Validated | 0 | 0 | 0 | - | orphaned |
+| C4040377 | Error Screen - Barcode Has Expired | 0 | 0 | 0 | - | orphaned |
+| C4040378 | Error Screen - Barcode not Valid At The Current Time | 0 | 0 | 0 | - | orphaned |
+| C4040379 | Error Screen - Barcode Not Valid at This Location | 0 | 0 | 0 | - | orphaned |
+| C4040380 | Error Screen - Barcode Not Valid On This Service | 0 | 0 | 0 | - | orphaned |
+| C4040381 | Error Screen - Barcode Type Invalid | 0 | 0 | 0 | - | orphaned |
+| C4040382 | Success Screen - Barcode Use | 0 | 0 | 0 | - | orphaned |
+| C4040383 | Barcodes - Validate a Printed Barcode | 0 | 0 | 0 | - | orphaned |
+| C4040384 | Barcodes - Validate a Barcode from a Mobile Device Screen | 0 | 0 | 0 | - | orphaned |
+| C4040411 | Barcodes - Throughput | 0 | 0 | 0 | - | orphaned |
+| C4040415 | User attempts to Validate a Barcode that has already been validated on HHD for a Ticket that was printed on a TVM | 0 | 0 | 0 | - | orphaned |
+| C4040418 | User attempts to Validate a Barcode that has already been validated on HHD for a Ticket that was printed on a HHD | 0 | 0 | 0 | - | orphaned |
+| C4048886 | Error Screen - Barcode Already Validated | 0 | 0 | 0 | - | orphaned |
+| C4048887 | Error Screen - Barcode Has Expired | 0 | 0 | 0 | - | orphaned |
+| C4048888 | Error Screen - Barcode not Valid At The Current Time | 0 | 0 | 0 | - | orphaned |
+| C4048889 | Error Screen - Barcode Not Valid at This Location | 0 | 0 | 0 | - | orphaned |
+| C4048890 | Error Screen - Barcode Not Valid On This Service | 0 | 0 | 0 | - | orphaned |
+| C4048891 | Error Screen - Barcode Type Invalid | 0 | 0 | 0 | - | orphaned |
+| C4048892 | Success Screen - Barcode Use | 0 | 0 | 0 | - | orphaned |
+| C4049008 | TIBU-142 Single Use Barcodes are not accepted on the PV | 0 | 0 | 0 | - | orphaned |
+| C4049009 | TIBU-20941 TL PV can hang indefinitely on please wait when trying to view network settings | 0 | 0 | 0 | - | orphaned |
+| C4049010 | TIBU-19602 PV - Not Valid At This Location screen is incorrect | 0 | 0 | 0 | - | orphaned |
+| C4049011 | Validate Printed Adult Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049012 | Validate Printed Child Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049013 | Validate Printed 3 Day Select Ticket Barcodes from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049014 | Validate Printed 1/3 Off Day Return Ticket Barcodes from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049015 | Validate Printed 24+ Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049016 | Validate Printed Ylink Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049017 | Validate Printed Concession Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049018 | Validate Printed Half Fare Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049019 | Validate Printed Day Tracker Barcode Tickets from a TVM | 0 | 0 | 0 | - | orphaned |
+| C4049020 | Idle Screen - Present Card or Barcode | 0 | 0 | 0 | - | orphaned |
+| C4049021 | Idle Screen - Present Card | 0 | 0 | 0 | - | orphaned |
+| C4049022 | Idle Screen - Present Barcode | 0 | 0 | 0 | - | orphaned |
+| C4049023 | Idle Screen - Not In Service | 0 | 0 | 0 | - | orphaned |
+| C4051157 | TIBU-22208 - After updating PV to v3.1.0 the device boots up in an Out of Service state and requires a reboot to bring device into service | 0 | 0 | 0 | - | orphaned |
+| C4051158 | TIBU-22248 - Device requires two deployments to enable barcode reading | 0 | 0 | 0 | - | orphaned |
+| C4051159 | TIBU-22258: Following nightly reboot device loses comms and smartcard reader becomes unresponsive | 0 | 0 | 0 | - | orphaned |
+| C4051160 | TIBU-22306: Barcode Readers on our test plinths are not working correctly when connected to a Validator | 0 | 0 | 0 | - | orphaned |
+| C4060881 | TIBU-22250: Barcodes/Smartcodes not accepted banner does not fully disappear when readers are available | 0 | 0 | 0 | - | orphaned |
+| C4060882 | TIBU-22484: PV - Two devices Out of Service following weekend soak testing | 0 | 0 | 0 | - | orphaned |
+| C4060883 | TIBU-22568: Barcodes failing to be decrypted | 0 | 0 | 0 | - | orphaned |
+| C4069404 | TIBU-22306: Barcode Readers on our test plinths are not working correctly when connected to a Validator | 0 | 0 | 0 | - | orphaned |
+| C4069405 | TIBU-24428: TL PV "PrimaryCommsChannelFailed" event spamming seen in CF on build 3.1.1 in TL Test Environment | 0 | 0 | 0 | - | orphaned |
+| C4073758 | PV checks for  Downloads and Applies Delta Deny List Updates Every 15 Minutes | 0 | 0 | 0 | - | orphaned |
+| C4073759 | Deploy only the Newest version of Transparent application to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073760 | Deploy only the Newest version of PCA application to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073761 | Deploy only the Newest version of FEIG OS to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073762 | PV checks for and Downloads and Applies Delta BIN List Updates Every 15 Minutes | 0 | 0 | 0 | - | orphaned |
+| C4073763 | PV Downloads and Applies Full Deny and BIN Lists at End of Day If No Delta Updates Are Available | 0 | 0 | 0 | - | orphaned |
+| C4073764 | PV checks for and downloads Delta Deny/BIN List updates after every device  boot-up | 0 | 0 | 0 | - | orphaned |
+| C4073765 | PV Retries Deny List  and BIN List Download and Application on Failure | 0 | 0 | 0 | - | orphaned |
+| C4073766 | cEMV capable PV Software Update via Cloudfare TMS | 0 | 0 | 0 | - | orphaned |
+| C4073767 | FEIG Update Fails if Device Group Lacks TID/TK, but PV App Software Still Updates | 0 | 0 | 0 | - | orphaned |
+| C4073768 | EIG Update Succeeds After Device Group Is Updated with TerminalId and TransactionKey | 0 | 0 | 0 | - | orphaned |
+| C4073769 | Enable cEMV taps for "Tap On Only (Flat Fare)" route type | 0 | 0 | 0 | - | orphaned |
+| C4073770 | Enable cEMV taps for "Tap On Tap Off" route type | 0 | 0 | 0 | - | orphaned |
+| C4073771 | Route attribute check determines whether cEMV taps are disabled | 0 | 0 | 0 | - | orphaned |
+| C4073772 | Route attribute check determines whether cEMV taps are disabled | 0 | 0 | 0 | - | orphaned |
+| C4073773 | Enable cEMV taps when boarding location is within configured zone | 0 | 0 | 0 | - | orphaned |
+| C4073774 | Disable cEMV taps when PV boarding location is outside the configured Metro Network Zone | 0 | 0 | 0 | - | orphaned |
+| C4073775 | Enable cEMV taps if a valid fare is found for ABT Product | 0 | 0 | 0 | - | orphaned |
+| C4073776 | Disable cEMV taps if no valid fare is found for ABT Product | 0 | 0 | 0 | - | orphaned |
+| C4073777 | Disable cEMV Taps in Technician Menu | 0 | 0 | 0 | - | orphaned |
+| C4073778 | Card is not read successfully | 0 | 0 | 0 | - | orphaned |
+| C4073779 | Card is from an invalid scheme | 0 | 0 | 0 | - | orphaned |
+| C4073780 | Card is expired | 0 | 0 | 0 | - | orphaned |
+| C4073781 | Card fails Offline Data Authentication (ODA) checks | 0 | 0 | 0 | - | orphaned |
+| C4073782 | Card BIN is on BIN list | 0 | 0 | 0 | - | orphaned |
+| C4073783 | Card BIN is on DENY list | 0 | 0 | 0 | - | orphaned |
+| C4073784 | Tap within ABT Passback time | 0 | 0 | 0 | - | orphaned |
+| C4073785 | Presenting Another cEMV Card, Smartcard, or Barcode on any one of the above Error Screens | 0 | 0 | 0 | - | orphaned |
+| C4073786 | Valid cEMV Card Tapped on Glider PV | 0 | 0 | 0 | - | orphaned |
+| C4073787 | Another Smartcard/Barcode/cEMV card is presented whilst Tap Successful screen is displayed | 0 | 0 | 0 | - | orphaned |
+| C4073788 | Audit Successful cEMV Tap transaction as "JourneyTap" in Cloudfare | 0 | 0 | 0 | - | orphaned |
+| C4073789 | AlightingStage is derived from Furthest Alighting Point file | 0 | 0 | 0 | - | orphaned |
+| C4073790 | FEIG Software Update via Cloudfare TMS | 0 | 0 | 0 | - | orphaned |
+| C4073856 | PV checks for  Downloads and Applies Delta Deny List Updates Every 15 Minutes | 0 | 0 | 0 | - | orphaned |
+| C4073857 | PV checks for and Downloads and Applies Delta BIN List Updates Every 15 Minutes | 0 | 0 | 0 | - | orphaned |
+| C4073858 | PV Downloads and Applies Full Deny and BIN Lists at End of Day If No Delta Updates Are Available | 0 | 0 | 0 | - | orphaned |
+| C4073859 | PV checks for and downloads Delta Deny/BIN List updates after every device  boot-up | 0 | 0 | 0 | - | orphaned |
+| C4073860 | PV Retries Deny List  and BIN List Download and Application on Failure | 0 | 0 | 0 | - | orphaned |
+| C4073861 | Enable cEMV taps for "Tap On Only (Flat Fare)" route type | 0 | 0 | 0 | - | orphaned |
+| C4073862 | Enable cEMV taps for "Tap On Tap Off" route type | 0 | 0 | 0 | - | orphaned |
+| C4073863 | Route attribute check determines whether cEMV taps are disabled | 0 | 0 | 0 | - | orphaned |
+| C4073864 | Route attribute check determines whether cEMV taps are disabled (Ulsterbus) | 0 | 0 | 0 | - | orphaned |
+| C4073865 | Disable cEMV Taps in Technician Menu | 0 | 0 | 0 | - | orphaned |
+| C4073866 | Card is not read successfully | 0 | 0 | 0 | - | orphaned |
+| C4073867 | Card is from an invalid scheme | 0 | 0 | 0 | - | orphaned |
+| C4073868 | Card is expired | 0 | 0 | 0 | - | orphaned |
+| C4073869 | Card fails Offline Data Authentication (ODA) checks | 0 | 0 | 0 | - | orphaned |
+| C4073870 | Card BIN is on BIN list | 0 | 0 | 0 | - | orphaned |
+| C4073871 | Card BIN is on DENY list | 0 | 0 | 0 | - | orphaned |
+| C4073872 | Tap within ABT Passback time | 0 | 0 | 0 | - | orphaned |
+| C4073873 | Presenting Another cEMV Card, Smartcard, or Barcode on any one of the above Error Screens | 0 | 0 | 0 | - | orphaned |
+| C4073874 | cEMV capable PV Software Update via Cloudfare TMS | 0 | 0 | 0 | - | orphaned |
+| C4073875 | FEIG Update Fails if Device Group Lacks TID/TK, but PV App Software Still Updates | 0 | 0 | 0 | - | orphaned |
+| C4073876 | EIG Update Succeeds After Device Group Is Updated with TerminalId and TransactionKey | 0 | 0 | 0 | - | orphaned |
+| C4073877 | Enable cEMV taps when boarding location is within configured zone | 0 | 0 | 0 | - | orphaned |
+| C4073878 | Disable cEMV taps when PV boarding location is outside the configured Metro Network Zone | 0 | 0 | 0 | - | orphaned |
+| C4073879 | Enable cEMV taps if a valid fare is found for ABT Product | 0 | 0 | 0 | - | orphaned |
+| C4073880 | Disable cEMV taps if no valid fare is found for ABT Product | 0 | 0 | 0 | - | orphaned |
+| C4073881 | Valid cEMV Card Tapped on Glider PV | 0 | 0 | 0 | - | orphaned |
+| C4073882 | Another Smartcard/Barcode/cEMV card is presented whilst Tap Successful screen is displayed | 0 | 0 | 0 | - | orphaned |
+| C4073883 | FEIG Software Update via Cloudfare TMS | 0 | 0 | 0 | - | orphaned |
+| C4073884 | Deploy only the Newest version of Transparent application to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073885 | Deploy only the Newest version of PCA application to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073886 | Deploy only the Newest version of FEIG OS to FEIG readers | 0 | 0 | 0 | - | orphaned |
+| C4073887 | Audit Successful cEMV Tap transaction as "JourneyTap" in Cloudfare | 0 | 0 | 0 | - | orphaned |
+| C4073888 | AlightingStage is derived from Furthest Alighting Point file | 0 | 0 | 0 | - | orphaned |
+| C4074780 | Glider TOO Daily Tap (Initial Tap) | 0 | 0 | 0 | - | orphaned |
+| C4075123 | Pilot Mode Enabled - Card Whitelisted | 0 | 0 | 0 | - | orphaned |
+| C4075124 | Pilot Mode Enabled - Card not Whitelisted | 0 | 0 | 0 | - | orphaned |
+| C4075125 | Pilot Mode Disabled - Any Card should work | 0 | 0 | 0 | - | orphaned |
+| C4075126 | Glider TOO Daily Tap (Second Tap) | 0 | 0 | 0 | - | orphaned |
+| C4075182 | Glider TOO Daily Tap (Third and Subsequent Taps) | 0 | 0 | 0 | - | orphaned |
+| C4075948 | PV: cEMV Card Transfer -Validation Same Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075949 | PV: cEMV Card Transfer -Validation Different Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075950 | PV: cEMV Card Transfer -Validation Same Direction outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075954 | PV: cEMV Card Transfer -Validation Same Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075955 | PV: cEMV Card Transfer -Validation Different Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075956 | PV: cEMV Card Transfer -Validation Same Direction outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075957 | PV: cEMV Card Transfer -Validation Same Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075958 | PV: cEMV Card Transfer -Validation Different Direction within Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075959 | PV: cEMV Card Transfer -Validation Same Direction outside Transfer Period | 0 | 0 | 0 | - | orphaned |
+| C4075960 | PV: cEMV Card Duplicate taps | 0 | 0 | 0 | - | orphaned |
+| C4091894 | TIBU-24428: TL PV "PrimaryCommsChannelFailed" event spamming seen in CF on build 3.1.1 in TL Test Environment | 0 | 0 | 0 | - | orphaned |
+| C4091895 | TIBU-24260 - Software version page doesn't display Application version | 0 | 0 | 0 | - | orphaned |
+| C4091896 | TIBU-25444 - TL PV : Issue with barcode expiry date shown on PV when validating barcode (NIR) | 0 | 0 | 0 | - | orphaned |
+| C4091897 | TIBU-25446 - TL PV - "spamming" of FEIG Manifest requests in the log file at least every second | 0 | 0 | 0 | - | orphaned |
+| C4091898 | TIBU-25548 - TL PV : SIM ID is not being sent to CF and so not visible in Asset Manager | 0 | 0 | 0 | - | orphaned |
+| C4091899 | TIBU-25700 - Incorrect screen shown for EMV Passback | 0 | 0 | 0 | - | orphaned |
+| C4091900 | TIBU-25702 - Smartcard taps not possible on EMV Success/Failure screens | 0 | 0 | 0 | - | orphaned |
+| C4091901 | TIBU-25704 - No transactions generated for failed EMV taps | 0 | 0 | 0 | - | orphaned |
+| C4091902 | TIBU-25705 - EMV Success and Error screens persist too long | 0 | 0 | 0 | - | orphaned |
+| C4091903 | TIBU-25745 - Device Failing to Download and Apply BIN list update | 0 | 0 | 0 | - | orphaned |
+| C4091904 | TIBU-25842 - Device frozen on White Flowbird Screen | 0 | 0 | 0 | - | orphaned |
+| C4091905 | TIBU-26048 - Device fails to perform Feig update via TMS | 0 | 0 | 0 | - | orphaned |
+| C4091906 | TIBU-26053 - Device does not display the version of PCA application that the device is running | 0 | 0 | 0 | - | orphaned |
+| C4091907 | TIBU-26054 - Feig Device ID isn't displayed on Asset Manager Associated Assets | 0 | 0 | 0 | - | orphaned |
+| C4091908 | TIBU-26303 - Missing Network Interface screen is displayed when trying to access Network Setting on Technician Menu | 0 | 0 | 0 | - | orphaned |
+| C4091909 | TIBU-26320 - Device failing to download and apply Deny List | 0 | 0 | 0 | - | orphaned |
+| C4091910 | TIBU-26522 - PV DEV BUILD Glider TOO - After performing Feig update the device fails to detect EMV cards | 0 | 0 | 0 | - | orphaned |
+| C4091911 | TIBU-27289 - No event for barcode reader dropouts | 0 | 0 | 0 | - | orphaned |
+| C4091912 | TIBU-27324 - Audible Beep functionality for MUB validation not performing as expected | 0 | 0 | 0 | - | orphaned |
+| C4091913 | TIBU-28139 - Remote logging isn't working for PV devices | 0 | 0 | 0 | - | orphaned |
+| C4091914 | TIBU-28240 - Device Frozen on black screen after reboot | 0 | 0 | 0 | - | orphaned |
+| C4099826 | Back Office  - Update Configuration | 0 | 0 | 0 | - | orphaned |
+| C4099827 | Back Office  - Update Topology | 0 | 0 | 0 | - | orphaned |
+| C4099828 | ABT- BIN List - Update | 0 | 0 | 0 | - | orphaned |
+| C4099829 | ABT - Card Presentation - Visa | 0 | 0 | 0 | - | orphaned |
+| C4099830 | ABT - Card Presentation - Mastercard | 0 | 0 | 0 | - | orphaned |
+| C4099831 | ABT - Card Presentation - Visa Credit | 0 | 0 | 0 | - | orphaned |
+| C4099832 | ABT - Card Presentation - Visa Debit | 0 | 0 | 0 | - | orphaned |
+| C4099833 | ABT - Card Presentation - Mastercard Credit | 0 | 0 | 0 | - | orphaned |
+| C4099834 | ABT - Card Presentation - Mastercard Debit | 0 | 0 | 0 | - | orphaned |
+| C4099835 | ABT - Card Presentation - Maestro | 0 | 0 | 0 | - | orphaned |
+| C4099836 | ABT - Card Presentation - Apple Pay | 0 | 0 | 0 | - | orphaned |
+| C4099837 | ABT - Card Presentation - Apple Pay Express | 0 | 0 | 0 | - | orphaned |
+| C4099838 | ABT - Card Presentation - Removed from Deny List | 0 | 0 | 0 | - | orphaned |
+| C4099839 | ABT - Card Presentation - Removed from BIN List | 0 | 0 | 0 | - | orphaned |
+| C4099840 | ABT - Card Presentation - Passback | 0 | 0 | 0 | - | orphaned |
+| C4099841 | ABT - Invalid Card - American Express | 0 | 0 | 0 | - | orphaned |
+| C4099842 | ABT - Invalid Card - Diners | 0 | 0 | 0 | - | orphaned |
+| C4099843 | ABT - Invalid Card - Non-EMV | 0 | 0 | 0 | - | orphaned |
+| C4099844 | ABT - Invalid Card - Expired EMV | 0 | 0 | 0 | - | orphaned |
+| C4099845 | ABT - Invalid Card - On Deny List | 0 | 0 | 0 | - | orphaned |
+| C4099846 | ABT - Invalid Card - On BIN List | 0 | 0 | 0 | - | orphaned |
+| C4099847 | ABT - Delta Deny List Update | 0 | 0 | 0 | - | orphaned |
+| C4099848 | ABT - Full Deny List Update | 0 | 0 | 0 | - | orphaned |
+| C4099849 | FEIG - Software Versions | 0 | 0 | 0 | - | orphaned |
+| C4099850 | FEIG - Software Deployment | 0 | 0 | 0 | - | orphaned |
+| C4099851 | FEIG - OTA Application Distribution | 0 | 0 | 0 | - | orphaned |
+| C4099852 | FEIG - ITSO Smartcard Tap | 0 | 0 | 0 | - | orphaned |
+| C4099853 | FEIG - Valid EMV Card Tap | 0 | 0 | 0 | - | orphaned |
+| C4099854 | FEIG - Invalid EMV Card Tap | 0 | 0 | 0 | - | orphaned |
+| C4099855 | ABT - End to End - Tap On Only | 0 | 0 | 0 | - | orphaned |
+| C4099856 | HMI - EMV - Success | 0 | 0 | 0 | - | orphaned |
+| C4099857 | HMI - EMV - Failure - Expired | 0 | 0 | 0 | - | orphaned |
+| C4099858 | HMI - EMV - Failure - Declined | 0 | 0 | 0 | - | orphaned |
+| C4099859 | HMI - EMV - Failure - Denylist | 0 | 0 | 0 | - | orphaned |
+| C4099860 | HMI - EMV - Failure - Passback | 0 | 0 | 0 | - | orphaned |
+| C4099861 | HMI - EMV - Failure - Cancelled | 0 | 0 | 0 | - | orphaned |
+| C4099862 | HMI - EMV - Failure - Unknown | 0 | 0 | 0 | - | orphaned |
+| C4099863 | HMI - EMV - Failure - Queue Full | 0 | 0 | 0 | - | orphaned |
+| C4099864 | HMI - EMV – Failure – Queue Full - Tap Error | 0 | 0 | 0 | - | orphaned |
+| C4099865 | HMI - ISAM – Failure – Queue Full | 0 | 0 | 0 | - | orphaned |
+| C4099866 | HMI - ISAM – Failure – Queue Full - Tap Error | 0 | 0 | 0 | - | orphaned |
+| C4099867 | Pilot List Functionality Configured from TMS | 0 | 0 | 0 | - | orphaned |
+| C4099868 | Pilot List Registration Mode Configured from TMS | 0 | 0 | 0 | - | orphaned |
+| C4099869 | Pilot List TMS Configuration | 0 | 0 | 0 | - | orphaned |
+| C4099870 | Pilot List Registration TMS Configuration | 0 | 0 | 0 | - | orphaned |
+| C4099871 | Registration Mode cEMV Taps added to Pilot List | 0 | 0 | 0 | - | orphaned |
+| C4099872 | CSV Download of Pilot List from Device Log Manager | 0 | 0 | 0 | - | orphaned |
+| C4099873 | Convert Pilot List from CSV to DAT | 0 | 0 | 0 | - | orphaned |
+| C4099874 | Successfully Apply pilotlist.zip to PV via TMS | 0 | 0 | 0 | - | orphaned |
+| C4099875 | Pilot List Enabled - Present EMV that is included on the Pilot List | 0 | 0 | 0 | - | orphaned |
+| C4099876 | Pilot List Enabled - Present EMV that is NOT included on the Pilot List | 0 | 0 | 0 | - | orphaned |
+| C4099877 | MERIT 24 Hour Heartbeat Transaction on PV | 0 | 0 | 0 | - | orphaned |
+| C4099878 | Technician - Heartbeat occurs after Sign Out | 0 | 0 | 0 | - | orphaned |
+| C4099881 | Allow Device to Reboot with Configured Time | 0 | 0 | 0 | - | orphaned |
+| C4099882 | Scheduled Reboot of Device | 0 | 0 | 0 | - | orphaned |

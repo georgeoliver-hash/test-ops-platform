@@ -1,0 +1,5450 @@
+{
+  "generated_utc": "2026-06-22T10:01:26+00:00",
+  "source": "system-test-ops",
+  "project": {
+    "id": 42,
+    "name": "TFTS - System Test"
+  },
+  "suite": {
+    "id": 30254,
+    "name": "**NEW** ETM-Acceptance Suite",
+    "device": "ETMS"
+  },
+  "contract": {
+    "traceability": "Reference `ref` (TestRail case id, e.g. C4099911) in each automated test so a result maps back to its case.",
+    "markers": "Mirror device + feature as pytest markers; add @pytest.mark.destructive where destructive is true (deselected by default).",
+    "cross_check": "cross_check lists the back-office systems the case asserts — the test must verify the event landed there (CloudFare / MERIT / SmartTrack).",
+    "note": "automatable/priority are system-test-ops judgements and a starting point; the automation engineer may override with rationale."
+  },
+  "counts": {
+    "total_cases": 441,
+    "automatable_full": 51,
+    "automatable_partial": 84,
+    "manual_only": 306,
+    "untagged": 0,
+    "destructive_in_backlog": 4
+  },
+  "cases": [
+    {
+      "ref": "C4100582",
+      "case_id": 4100582,
+      "title": "ABT — successful tap, passback and mobile wallet",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT taps are enabled and the ETM is at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a customer taps a valid contactless card or device",
+            "then": "**THEN** the tap is accepted for the journey\n**AND** a success tone is played\n**AND** the passenger display shows \"Success\""
+          },
+          {
+            "when": "**WHEN** the same card is tapped again",
+            "then": "**THEN** the ETM enters passback mode for the additional passenger"
+          },
+          {
+            "when": "**WHEN** the customer taps a mobile wallet",
+            "then": "**THEN** the wallet tap is accepted as for a contactless card"
+          }
+        ],
+        "expected": "A valid ABT tap is accepted (success tone, \"Success\"); a second tap enters passback; mobile wallets are accepted — Visa, Mastercard, Apple/Google/Samsung Pay, phone and watch."
+      }
+    },
+    {
+      "ref": "C4100583",
+      "case_id": 4100583,
+      "title": "ABT — declined, error and EMV validation failures",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT taps are enabled and the ETM is at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a customer taps a card that is declined, expired, deny/BIN-listed, or that mis-reads",
+            "then": "**THEN** the error tone is played\n**AND** a declined receipt is printed\n**AND** the passenger display shows \"See Driver\""
+          },
+          {
+            "when": "**WHEN** an EMV validation fails",
+            "then": "**THEN** the matching EMV validation-failure screen is shown for the reason"
+          }
+        ],
+        "expected": "Declined/errored taps give the error tone, declined receipt and \"See Driver\"; the correct EMV validation-failure screen shows for tap-error, expired, declined and already-validated."
+      }
+    },
+    {
+      "ref": "C4100585",
+      "case_id": 4100585,
+      "title": "ABT — tap availability rules",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT is configured as enabled",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM is at the FLU screen ready for taps",
+            "then": "**THEN** ABT taps are accepted"
+          },
+          {
+            "when": "**WHEN** the ETM is on a basket screen, in basket mode, Driver Break, a smartcard screen, the annul screen, the Start New Journey flow, or Travel Mode above 5kph",
+            "then": "**THEN** ABT taps are not enabled"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "ABT taps are accepted only at FLU-ready states and ignored on basket/break/smartcard/annul/start-new-journey/travel-mode-above-5kph."
+      }
+    },
+    {
+      "ref": "C4100586",
+      "case_id": 4100586,
+      "title": "ABT — Metro zone boarding and alighting",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT is enabled in a Metro ABT zone",
+        "steps": [
+          {
+            "when": "**WHEN** the customer taps for boarding only, alighting only, or both within the Metro ABT zone",
+            "then": "**THEN** the ABT journey is recorded for the corresponding boarding/alighting points"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Metro ABT zone records boarding-only, alighting-only and both. (Metro mode.)"
+      }
+    },
+    {
+      "ref": "C4100587",
+      "case_id": 4100587,
+      "title": "ABT — Ulsterbus zone boarding and alighting",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT is enabled in an Ulsterbus ABT zone",
+        "steps": [
+          {
+            "when": "**WHEN** the customer taps for boarding only, alighting only, or both within Ulsterbus ABT zones",
+            "then": "**THEN** the ABT journey is recorded for the corresponding boarding/alighting points"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Ulsterbus ABT zones record boarding-only, alighting-only and both. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4100588",
+      "case_id": 4100588,
+      "title": "ABT — reverts to standard fixed fare on rule change",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an ABT journey is in progress",
+        "steps": [
+          {
+            "when": "**WHEN** a different service, journey or fare rule is triggered",
+            "then": "**THEN** the ABT fare reverts to the standard fixed fare"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "ABT reverts to the standard fixed fare when a different service/journey/rule applies. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4100591",
+      "case_id": 4100591,
+      "title": "ABT — invalid taps recorded in back office",
+      "section_path": [
+        "Functional",
+        "ABT"
+      ],
+      "feature": "ABT",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an invalid ABT tap has occurred on the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the back-office ABT records are reviewed",
+            "then": "**THEN** the invalid tap is recorded under ABT with its reason"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Invalid ABT taps appear in the back office under ABT with the decline reason."
+      }
+    },
+    {
+      "ref": "C4100622",
+      "case_id": 4100622,
+      "title": "Barcode — online validation (pass and fail)",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and barcode scanning is available",
+        "steps": [
+          {
+            "when": "**WHEN** a valid barcode ticket is scanned and validated online",
+            "then": "**THEN** the ticket is accepted with the correct validity detail shown\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** a barcode fails online validation",
+            "then": "**THEN** the transaction is cancelled with the failure reason shown"
+          }
+        ],
+        "expected": "Valid barcodes validate online with the validity detail; failures cancel with the reason — decryption failed, not valid, already used, wrong date, expired, exceeds offline limit, invalid product, visual inspection not passed. Printed copy and mobile phone."
+      }
+    },
+    {
+      "ref": "C4100624",
+      "case_id": 4100624,
+      "title": "Barcode — offline validation",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is validating a barcode offline",
+        "steps": [
+          {
+            "when": "**WHEN** a valid barcode is scanned within the offline validation limit",
+            "then": "**THEN** the ticket is accepted offline\n**AND** the offline validation is recorded for upload to the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** the barcode is over the offline validation limit or invalid",
+            "then": "**THEN** the barcode is rejected with the reason shown"
+          }
+        ],
+        "expected": "Offline validation accepts within the limit and rejects when over the offline limit or invalid."
+      }
+    },
+    {
+      "ref": "C4100625",
+      "case_id": 4100625,
+      "title": "Barcode — multiple-use validation",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and barcode scanning is available",
+        "steps": [
+          {
+            "when": "**WHEN** a multiple-use barcode is scanned and multiple use is confirmed",
+            "then": "**THEN** the multiple-use ticket is validated\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** validation fails",
+            "then": "**THEN** the failure reason is shown (passback, incorrect zone, wrong start/end date, or wrong travel method)"
+          }
+        ],
+        "expected": "Multiple-use barcodes validate with confirmation; failures show passback / incorrect zone / wrong dates / wrong travel method. Covers printed copy and mobile phone."
+      }
+    },
+    {
+      "ref": "C4100626",
+      "case_id": 4100626,
+      "title": "Barcode — mLink scan validation",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and barcode scanning is available",
+        "steps": [
+          {
+            "when": "**WHEN** a valid mLink barcode is scanned",
+            "then": "**THEN** the mLink barcode is validated\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** an expired mLink barcode is scanned",
+            "then": "**THEN** the mLink barcode is rejected as expired"
+          }
+        ],
+        "expected": "mLink barcodes validate when valid and reject when expired."
+      }
+    },
+    {
+      "ref": "C4100627",
+      "case_id": 4100627,
+      "title": "Barcode — reference entry via Driver Menu",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened the barcode reference entry from the Driver Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver enters a valid single-use or multiple-use barcode reference",
+            "then": "**THEN** the reference is accepted and validated\n**AND** the validation is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** the Driver enters an invalid reference",
+            "then": "**THEN** the reference is rejected as invalid"
+          }
+        ],
+        "expected": "Manual barcode reference entry (single and multiple use) validates valid references and rejects invalid ones."
+      }
+    },
+    {
+      "ref": "C4100628",
+      "case_id": 4100628,
+      "title": "Barcode — printed tickets and print error",
+      "section_path": [
+        "Functional",
+        "Barcode Scanning"
+      ],
+      "feature": "Barcode Scanning",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver issues a ticket that carries a barcode",
+        "steps": [
+          {
+            "when": "**WHEN** the ticket is printed",
+            "then": "**THEN** the ticket prints with its barcode\n**AND** the ticket sale is recorded in the back office (CloudFare and MERIT)"
+          },
+          {
+            "when": "**WHEN** a print error occurs",
+            "then": "**THEN** the barcode-ticket print error is handled"
+          }
+        ],
+        "expected": "Tickets print with their barcode; a print error during a barcode ticket is handled. Legacy barcodes are also supported."
+      }
+    },
+    {
+      "ref": "C4100562",
+      "case_id": 4100562,
+      "title": "Basket Mode — build a multi-item basket and pay",
+      "section_path": [
+        "Functional",
+        "Basket Mode"
+      ],
+      "feature": "Basket Mode",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver presses R6 to enter basket mode with a product/alighting stage selected",
+            "then": "**THEN** the selected product is added to the basket and basket mode is active"
+          },
+          {
+            "when": "**WHEN** the Driver adds further items, confirms the basket and takes payment",
+            "then": "**THEN** all basket items are issued in one transaction\n**AND** the sale is recorded in the back office (CloudFare and MERIT)\n**AND** a receipt is printed automatically where mandatory"
+          }
+        ],
+        "expected": "Basket mode issues multiple items in one paid transaction; the selected product is auto-added on entry; a mandatory receipt prints automatically."
+      }
+    },
+    {
+      "ref": "C4100563",
+      "case_id": 4100563,
+      "title": "Basket Mode — limits and line-item quantity",
+      "section_path": [
+        "Functional",
+        "Basket Mode"
+      ],
+      "feature": "Basket Mode",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has nine items in the basket",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver attempts to add another from the FLU or basket screen",
+            "then": "**THEN** the Basket Full error is shown and no item is added"
+          },
+          {
+            "when": "**WHEN** the Driver removes an item",
+            "then": "**THEN** a new item can be added"
+          },
+          {
+            "when": "**WHEN** the Driver adjusts a line-item quantity with the '+' or '-' keys",
+            "then": "**THEN** the quantity changes, or a relevant error is shown for two seconds when it cannot"
+          }
+        ],
+        "expected": "The basket caps at nine with a Basket Full error; removing frees a slot; line-item quantity adjusts with +/- (2s error when it cannot change)."
+      }
+    },
+    {
+      "ref": "C4100565",
+      "case_id": 4100565,
+      "title": "Basket Mode — clear, add more and basket tracker",
+      "section_path": [
+        "Functional",
+        "Basket Mode"
+      ],
+      "feature": "Basket Mode",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has items in the basket",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Add More to Basket",
+            "then": "**THEN** the ETM returns to FLU with the basket retained"
+          },
+          {
+            "when": "**WHEN** the Driver navigates into a Promo Menu sub-menu",
+            "then": "**THEN** the basket tracker remains displayed and functional"
+          },
+          {
+            "when": "**WHEN** the Driver selects Clear Basket",
+            "then": "**THEN** the ETM returns to FLU\n**AND** the basket is emptied and the product reverts to default"
+          }
+        ],
+        "expected": "Add More keeps the basket; the basket tracker persists across screens incl. Promo sub-menus; Clear Basket empties it and reverts to default."
+      }
+    },
+    {
+      "ref": "C4100566",
+      "case_id": 4100566,
+      "title": "Basket Mode — annul a basketed transaction",
+      "section_path": [
+        "Functional",
+        "Basket Mode"
+      ],
+      "feature": "Basket Mode",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has issued a basket of tickets",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver annuls the basketed transaction",
+            "then": "**THEN** the transaction is annulled\n**AND** the annulment is recorded against the shift"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A basketed transaction can be annulled and recorded."
+      }
+    },
+    {
+      "ref": "C4100592",
+      "case_id": 4100592,
+      "title": "Capping — cap reached",
+      "section_path": [
+        "Functional",
+        "Capping"
+      ],
+      "feature": "Capping",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a customer is tapping journeys within a capping group",
+        "steps": [
+          {
+            "when": "**WHEN** the qualifying journeys for the cap are reached",
+            "then": "**THEN** the cap is applied and no further fare is charged for the capped period"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "The cap applies once reached. Run for same-day and weekly caps. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4100593",
+      "case_id": 4100593,
+      "title": "Capping — journeys without reaching the cap",
+      "section_path": [
+        "Functional",
+        "Capping"
+      ],
+      "feature": "Capping",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a customer is tapping journeys within a capping group",
+        "steps": [
+          {
+            "when": "**WHEN** the journeys taken are below the cap threshold",
+            "then": "**THEN** each journey is charged normally"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Journeys below the cap are charged normally. Run for same-day and weekly. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4100594",
+      "case_id": 4100594,
+      "title": "Capping — multiple services and modes",
+      "section_path": [
+        "Functional",
+        "Capping"
+      ],
+      "feature": "Capping",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a daily capping group spans multiple services and transport modes",
+        "steps": [
+          {
+            "when": "**WHEN** the customer taps journeys across those services and modes",
+            "then": "**THEN** the journeys aggregate toward the same cap"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Capping aggregates across multiple services and transport modes within a daily capping group. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4100596",
+      "case_id": 4100596,
+      "title": "Driver Break — enter, leave and override",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Driver Break to enter break mode",
+            "then": "**THEN** the ETM shows the On Break idle screen\n**AND** only the operator who started the break may sign back in"
+          },
+          {
+            "when": "**WHEN** the Driver leaves the break by manual sign-in or Staff card, or aborts the leave",
+            "then": "**THEN** the Driver resumes the shift, or the abort returns to the On Break screen"
+          },
+          {
+            "when": "**WHEN** a Supervisor signs in during the break",
+            "then": "**THEN** the Supervisor overrides the break"
+          },
+          {
+            "when": "**WHEN** the TMS-configured break time elapses",
+            "then": "**THEN** the Driver is signed out and others may sign in"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Driver Break locks sign-in to that operator; leave (manual/smartcard) or abort works; Supervisor can override; the break auto-ends after the configured time and signs the Driver out."
+      }
+    },
+    {
+      "ref": "C4100606",
+      "case_id": 4100606,
+      "title": "Driver Menu — change currency",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened the Driver Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver changes the currency to Euros",
+            "then": "**THEN** the sale currency is set to Euros"
+          },
+          {
+            "when": "**WHEN** the Driver changes the currency back to Pounds",
+            "then": "**THEN** the sale currency is set to Pounds"
+          }
+        ],
+        "expected": "The Driver can switch the sale currency between Pounds and Euros from the menu."
+      }
+    },
+    {
+      "ref": "C4100607",
+      "case_id": 4100607,
+      "title": "Inspector — report and smartcard check",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Inspector option is selected from the Driver Menu",
+        "steps": [
+          {
+            "when": "**WHEN** a smartcard is presented for inspection",
+            "then": "**THEN** the card's inspection detail is displayed"
+          },
+          {
+            "when": "**WHEN** an invalid smartcard is presented",
+            "then": "**THEN** the invalid-smartcard error is shown"
+          },
+          {
+            "when": "**WHEN** the Inspector requests a report",
+            "then": "**THEN** the Inspector report is produced"
+          }
+        ],
+        "expected": "The Inspector can check a presented smartcard (with invalid-card handling) and produce an Inspector report."
+      }
+    },
+    {
+      "ref": "C4102170",
+      "case_id": 4102170,
+      "title": "Driver options — ticket history and last ticket",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened Driver options",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views the ticket history",
+            "then": "**THEN** the issued tickets are listed and can be scrolled with the up/down arrows\n**AND** annulled transactions are marked with a cross"
+          },
+          {
+            "when": "**WHEN** the Driver selects the last ticket issued",
+            "then": "**THEN** the ticket detail is displayed"
+          }
+        ],
+        "expected": "Ticket history lists tickets (annulled marked); the last ticket issued can be viewed."
+      }
+    },
+    {
+      "ref": "C4100533",
+      "case_id": 4100533,
+      "title": "FLU — navigate and select products",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Navigation"
+      ],
+      "feature": "Navigation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU Home screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views a product group with more than one product",
+            "then": "**THEN** up to four toggle pips are shown for the first four products\n**AND** a '+' icon is shown when the group holds more than four, highlighted when an extended product is chosen"
+          },
+          {
+            "when": "**WHEN** the Driver selects a preset or menu-type product",
+            "then": "**THEN** the selected product is applied with the correct toggle-group indication"
+          },
+          {
+            "when": "**WHEN** the Driver toggles the journey type",
+            "then": "**THEN** the fare-based, favourite and transfer journeys can each be viewed"
+          },
+          {
+            "when": "**WHEN** an FLU selection is left idle for 60 seconds",
+            "then": "**THEN** the ETM clears the selection and returns to the default FLU page"
+          }
+        ],
+        "expected": "FLU product navigation works — toggle pips/'+', preset & menu-type selection, journey-type toggle (fare-based/favourite/transfer), and a 60s idle reset to default."
+      }
+    },
+    {
+      "ref": "C4100535",
+      "case_id": 4100535,
+      "title": "FLU — set boarding and alighting stages",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Navigation"
+      ],
+      "feature": "Navigation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen for a known route",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver changes the boarding stage while outside the GPS footprint and below 20kph",
+            "then": "**THEN** the boarding stage is updated"
+          },
+          {
+            "when": "**WHEN** the bus is inside the GPS footprint or above 20kph",
+            "then": "**THEN** manual boarding-stage change is unavailable"
+          },
+          {
+            "when": "**WHEN** the Driver views and pages the alighting stages",
+            "then": "**THEN** up to five are shown with the fifth always the route's last stage, paging with no timeout"
+          },
+          {
+            "when": "**WHEN** the Driver selects an alighting stage",
+            "then": "**THEN** the selected stage is applied to the sale"
+          }
+        ],
+        "expected": "Boarding stage changes only when outside GPS footprint and below 20kph (or by stage ID); alighting stages page five-at-a-time with the last stage always reachable."
+      }
+    },
+    {
+      "ref": "C4100539",
+      "case_id": 4100539,
+      "title": "FLU — numeric entry, change and last transaction",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver enters an amount tendered",
+            "then": "**THEN** the change due is calculated\n**AND** the change due is displayed"
+          },
+          {
+            "when": "**WHEN** the Driver enters a stage ID to set the boarding or alighting stage",
+            "then": "**THEN** the matching stage is set"
+          },
+          {
+            "when": "**WHEN** an entry cannot be completed",
+            "then": "**THEN** the relevant error-bar message is shown\n**AND** the input is cleared, and 'C' clears one character"
+          },
+          {
+            "when": "**WHEN** a sale completes",
+            "then": "**THEN** a success confirmation shows for three seconds with the last transaction in the bottom-right of FLU"
+          }
+        ],
+        "expected": "Numeric entry calculates change and sets stages by ID; invalid entries show the error-bar message and clear ('C' clears a char); completed sales show a 3s success plus the last transaction."
+      }
+    },
+    {
+      "ref": "C4100540",
+      "case_id": 4100540,
+      "title": "FLU — group ticket payment",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver builds a group ticket and takes payment",
+            "then": "**THEN** the group ticket is issued at the correct price\n**AND** a ticket is printed"
+          }
+        ],
+        "expected": "A group ticket is priced, paid and issued with a printed ticket."
+      }
+    },
+    {
+      "ref": "C4100541",
+      "case_id": 4100541,
+      "title": "FLU — ticket type selection, change and default reversion",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects a ticket type",
+            "then": "**THEN** the fare for that ticket type is displayed"
+          },
+          {
+            "when": "**WHEN** the Driver changes the ticket type",
+            "then": "**THEN** the fare display updates to the new ticket type"
+          },
+          {
+            "when": "**WHEN** a non-default ticket class is left idle for the configured timeout",
+            "then": "**THEN** the ticket class reverts to the default"
+          }
+        ],
+        "expected": "Selecting/changing the ticket type updates the fare; a non-default class reverts to default after the inactivity timeout."
+      }
+    },
+    {
+      "ref": "C4100545",
+      "case_id": 4100545,
+      "title": "FLU — currency switch to Euro and back",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on with an alighting stage selectable",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver presses the alighting-stage key a second time",
+            "then": "**THEN** the currency switches to Euro (€)"
+          },
+          {
+            "when": "**WHEN** the Driver presses the alighting-stage key a third time",
+            "then": "**THEN** the currency switches back to Pounds (£)"
+          }
+        ],
+        "expected": "The alighting-stage key toggles the sale currency £ → € → £."
+      }
+    },
+    {
+      "ref": "C4100547",
+      "case_id": 4100547,
+      "title": "FLU — passenger count",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver records a passenger count",
+            "then": "**THEN** the passenger count is captured against the journey"
+          }
+        ],
+        "expected": "A passenger count is captured against the journey."
+      }
+    },
+    {
+      "ref": "C4100548",
+      "case_id": 4100548,
+      "title": "FLU — favourite stages",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver opens the favourite stages",
+            "then": "**THEN** the configured favourite stages are listed"
+          },
+          {
+            "when": "**WHEN** the Driver selects a favourite stage",
+            "then": "**THEN** the selected stage is applied"
+          }
+        ],
+        "expected": "Favourite stages are listed and a selection is applied."
+      }
+    },
+    {
+      "ref": "C4100549",
+      "case_id": 4100549,
+      "title": "FLU — start a new journey mid-shift",
+      "section_path": [
+        "Functional",
+        "Fare Look-Up",
+        "Sales"
+      ],
+      "feature": "Sales",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and partway through a shift",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Start New Journey and confirms a new route and journey number",
+            "then": "**THEN** the ETM updates to the new route and journey\n**AND** the change is audited"
+          }
+        ],
+        "expected": "Start New Journey re-selects route/journey mid-shift and audits the change."
+      }
+    },
+    {
+      "ref": "C4100629",
+      "case_id": 4100629,
+      "title": "GPS — notifications and tracking",
+      "section_path": [
+        "Functional",
+        "Location"
+      ],
+      "feature": "Location",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on with GPS active on a route",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM acquires a GPS lock or detects a new location",
+            "then": "**THEN** the matching notification is shown"
+          },
+          {
+            "when": "**WHEN** the bus arrives at or departs a stop",
+            "then": "**THEN** the arrival and departure are detected"
+          },
+          {
+            "when": "**WHEN** the bus approaches the next stop",
+            "then": "**THEN** the ETM looks ahead and updates the current stage"
+          }
+        ],
+        "expected": "GPS lock/new-location notifications show; arrival and departure are detected; look-ahead updates the current stage."
+      }
+    },
+    {
+      "ref": "C4100633",
+      "case_id": 4100633,
+      "title": "Revenue Limit — approaching notification",
+      "section_path": [
+        "Functional",
+        "Revenue Limit"
+      ],
+      "feature": "Revenue Limit",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and taking cash fares",
+        "steps": [
+          {
+            "when": "**WHEN** the takings approach the pre-configured revenue limit",
+            "then": "**THEN** a revenue-limit-approaching notification appears in the header after the Transaction Complete banner\n**AND** the notification disappears after three seconds"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A revenue-limit-approaching header notification shows after the Transaction Complete banner and clears after 3 seconds."
+      }
+    },
+    {
+      "ref": "C4100634",
+      "case_id": 4100634,
+      "title": "Revenue Limit — reached locks the ETM",
+      "section_path": [
+        "Functional",
+        "Revenue Limit"
+      ],
+      "feature": "Revenue Limit",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and the takings reach the maximum revenue limit",
+        "steps": [
+          {
+            "when": "**WHEN** the revenue limit is reached",
+            "then": "**THEN** the Driver is automatically signed off\n**AND** a waybill is printed\n**AND** the ETM locks\n**AND** a Supervisor or Technician is required to resolve it\n**AND** the ETM retrieves its back-office connection in the background"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Reaching max revenue auto-signs-off the Driver, prints a waybill, locks the ETM (needs Supervisor/Technician) and re-establishes the back-office connection in the background."
+      }
+    },
+    {
+      "ref": "C4100510",
+      "case_id": 4100510,
+      "title": "Driver Sign On — Manual, first use",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "13m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen\n**AND** the ETM is communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** the Enter key is pressed and a valid Staff ID (4–6 digits) and PIN are entered, confirming each with Enter",
+            "then": "**THEN** the ETM authenticates the operator against the authorised user list\n**AND** each PIN digit is masked with a '*' on entry\n**AND** the First Use Safety Check screen is displayed"
+          },
+          {
+            "when": "**WHEN** the Driver confirms the bus has been safety checked and answers the Any Defects prompt",
+            "then": "**THEN** the Duty Number entry screen is displayed"
+          },
+          {
+            "when": "**WHEN** an invalid duty number is entered, then a valid duty number is entered and confirmed",
+            "then": "**THEN** the invalid duty is rejected before the valid one advances to route selection"
+          },
+          {
+            "when": "**WHEN** the Driver selects a route by letters or number, with inbound and outbound journeys filtered",
+            "then": "**THEN** the matching route is selected"
+          },
+          {
+            "when": "**WHEN** the Driver selects the journey, an invalid journey number is rejected, and the Route Summary is confirmed",
+            "then": "**THEN** the Message of the Day screen is presented, or its Unavailable fallback after the 5-second timeout"
+          },
+          {
+            "when": "**WHEN** the Driver confirms the Message of the Day",
+            "then": "**THEN** the Word and Colours of the Day screen is presented, or its Unavailable fallback after the 5-second timeout"
+          },
+          {
+            "when": "**WHEN** the Driver confirms the Word and Colours of the Day",
+            "then": "**THEN** the FLU screen is displayed\n**AND** the start of shift is audited\n**AND** the running total is recorded"
+          },
+          {
+            "when": "**WHEN** the shift is reviewed in CloudFare",
+            "then": "**THEN** the staff activity, shift details and defect record can be identified"
+          }
+        ],
+        "expected": "The Driver reaches the FLU screen signed on, and the start of shift (with defect record) is auditable in CloudFare."
+      }
+    },
+    {
+      "ref": "C4100511",
+      "case_id": 4100511,
+      "title": "Driver Sign On — Smartcard, first use",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen\n**AND** the ETM is communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver presents a Staff pass carrying a Staff ID",
+            "then": "**THEN** the operator sign-on screen is displayed with the Staff ID pre-populated\n**AND** the PIN field is highlighted for entry"
+          },
+          {
+            "when": "**WHEN** a valid PIN is entered and confirmed with Enter",
+            "then": "**THEN** the ETM authenticates the operator and displays the First Use Safety Check screen"
+          },
+          {
+            "when": "**WHEN** the Staff pass is removed",
+            "then": "**THEN** the ETM remains on the First Use Safety Check screen and sign-on continues as normal"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The Staff pass pre-populates the ID; after a valid PIN the Driver proceeds through the first-use flow."
+      }
+    },
+    {
+      "ref": "C4100512",
+      "case_id": 4100512,
+      "title": "Driver Sign On — first use with defects recorded",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver is at the Any Defects screen during first-use sign-on",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Yes to record that the bus has defects and enters the defect detail",
+            "then": "**THEN** the defect is recorded against the shift\n**AND** sign-on continues to the Duty Number entry screen"
+          },
+          {
+            "when": "**WHEN** the shift is reviewed in CloudFare",
+            "then": "**THEN** the defect record can be identified against the Driver and vehicle"
+          }
+        ],
+        "expected": "Recorded defects are captured against the shift and visible in CloudFare."
+      }
+    },
+    {
+      "ref": "C4100513",
+      "case_id": 4100513,
+      "title": "Driver Sign On — subsequent use",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen and a first-use safety check has already been performed for the vehicle today",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver signs on with a valid ID and PIN",
+            "then": "**THEN** the ETM authenticates the operator\n**AND** the First Use Safety Check is skipped when already satisfied on board, or presented/overridden per configuration"
+          },
+          {
+            "when": "**WHEN** the Driver completes duty, route and journey selection",
+            "then": "**THEN** the FLU screen is displayed\n**AND** the shift is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Subsequent-use sign-on honours the on-board safety-check state and reaches FLU."
+      }
+    },
+    {
+      "ref": "C4100514",
+      "case_id": 4100514,
+      "title": "Driver Sign On — incorrect PIN locks the device after the configured attempts",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is in idle mode prompting for sign-on\n**AND** a configurable failed-attempt threshold is set in the TMS",
+        "steps": [
+          {
+            "when": "**WHEN** an invalid PIN is entered for a valid Staff ID, by manual entry and by Staff pass",
+            "then": "**THEN** the Sign On Failed screen is displayed after each attempt"
+          },
+          {
+            "when": "**WHEN** the failed attempts reach the configured threshold",
+            "then": "**THEN** the device is locked against further sign-on\n**AND** the lock-out is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "After the configured number of failed PIN attempts the device locks and the event is audited."
+      }
+    },
+    {
+      "ref": "C4100515",
+      "case_id": 4100515,
+      "title": "Driver Sign On — communications locked / not communicating with CloudFare",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM has not communicated with CloudFare for the configured number of hours",
+        "steps": [
+          {
+            "when": "**WHEN** the idle screen is shown",
+            "then": "**THEN** a bad-comms indicator is displayed and communications are locked"
+          },
+          {
+            "when": "**WHEN** the Driver attempts to sign on",
+            "then": "**THEN** sign-on proceeds in the not-communicating state per design\n**AND** the not-communicating condition is made clear to the Driver"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A comms-locked ETM signals bad comms and handles sign-on per the not-communicating design."
+      }
+    },
+    {
+      "ref": "C4100521",
+      "case_id": 4100521,
+      "title": "Driver Sign On — abandon",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver is mid sign-on",
+        "steps": [
+          {
+            "when": "**WHEN** the 'P' key is pressed to reach the Sign Off prompt before route selection",
+            "then": "**THEN** sign-on is abandoned with no shift recorded"
+          },
+          {
+            "when": "**WHEN** sign-on is abandoned after Duty Number entry (Route Selection onwards)",
+            "then": "**THEN** an End-of-Shift record is recorded\n**AND** a Driver Waybill is printed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Abandon before route = no shift; abandon after duty = End-of-Shift recorded and Waybill printed."
+      }
+    },
+    {
+      "ref": "C4100522",
+      "case_id": 4100522,
+      "title": "Driver Sign On — idle timeout returns to idle",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver is mid sign-on",
+        "steps": [
+          {
+            "when": "**WHEN** no button is pressed for 30 seconds",
+            "then": "**THEN** the ETM returns to the Idle screen\n**AND** if the Driver was signed in they are signed out"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A 30-second inactivity timeout returns the ETM to idle and signs out any signed-in Driver."
+      }
+    },
+    {
+      "ref": "C4100523",
+      "case_id": 4100523,
+      "title": "Driver Sign On — correct topology and fares data presented for the route",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver signs on to a known route in Metro mode",
+        "steps": [
+          {
+            "when": "**WHEN** sign-on completes and the FLU screen is displayed",
+            "then": "**THEN** the topology and fares data presented match the configured data for that route and mode"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The FLU presents topology/fares matching the route's configured data. (Run against Metro and Ulsterbus configurations.)"
+      }
+    },
+    {
+      "ref": "C4100524",
+      "case_id": 4100524,
+      "title": "Driver Sign Off",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Driver"
+      ],
+      "feature": "Driver",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver is signed on with the FLU screen displayed",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver signs off",
+            "then": "**THEN** the ETM returns to the Idle screen\n**AND** the operator sign-off is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The Driver signs off, the ETM returns to idle, and the sign-off is audited."
+      }
+    },
+    {
+      "ref": "C4100525",
+      "case_id": 4100525,
+      "title": "Supervisor Sign On — Manual",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Supervisor"
+      ],
+      "feature": "Supervisor",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen",
+        "steps": [
+          {
+            "when": "**WHEN** a Supervisor signs on with a valid ID and PIN",
+            "then": "**THEN** the Supervisor menu is displayed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A valid Supervisor manual sign-on reaches the Supervisor menu."
+      }
+    },
+    {
+      "ref": "C4100526",
+      "case_id": 4100526,
+      "title": "Supervisor Sign On — Smartcard",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Supervisor"
+      ],
+      "feature": "Supervisor",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen",
+        "steps": [
+          {
+            "when": "**WHEN** a Supervisor presents a valid Staff card and enters a valid PIN",
+            "then": "**THEN** the Supervisor menu is displayed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A valid Supervisor smartcard sign-on reaches the Supervisor menu."
+      }
+    },
+    {
+      "ref": "C4100527",
+      "case_id": 4100527,
+      "title": "Supervisor Sign On — device locks after the configured attempts",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Supervisor"
+      ],
+      "feature": "Supervisor",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is prompting for sign-on with a configured failed-attempt threshold",
+        "steps": [
+          {
+            "when": "**WHEN** a Supervisor enters an invalid PIN up to the configured threshold",
+            "then": "**THEN** the device is locked against further sign-on\n**AND** the lock-out is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Supervisor sign-on locks after the configured failed-attempt threshold and is audited."
+      }
+    },
+    {
+      "ref": "C4100528",
+      "case_id": 4100528,
+      "title": "Supervisor — unlock a PIN-locked device",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Supervisor"
+      ],
+      "feature": "Supervisor",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an operator has PIN-locked the device",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor signs in with their Staff card",
+            "then": "**THEN** the Supervisor menu is displayed\n**AND** the device is no longer PIN-locked"
+          },
+          {
+            "when": "**WHEN** the Activity Log for the device is filtered in CloudFare Estate Management",
+            "then": "**THEN** an Unlocked entry for the device is shown for the time of the action"
+          }
+        ],
+        "expected": "A Supervisor Staff-card sign-in clears the PIN lock; the unlock is visible in the CloudFare Activity Log."
+      }
+    },
+    {
+      "ref": "C4100529",
+      "case_id": 4100529,
+      "title": "Supervisor Sign Off — manual and idle timeout",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Supervisor"
+      ],
+      "feature": "Supervisor",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the Supervisor menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor signs off manually",
+            "then": "**THEN** the ETM returns to idle\n**AND** the sign-off is audited"
+          },
+          {
+            "when": "**WHEN** no buttons are pressed for 60 seconds instead",
+            "then": "**THEN** the ETM returns to idle mode\n**AND** the operator sign-off is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Supervisor mode exits on manual sign-off or after a 60s idle timeout, auditing the sign-off."
+      }
+    },
+    {
+      "ref": "C4100530",
+      "case_id": 4100530,
+      "title": "Technician Sign On — Manual",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Technician"
+      ],
+      "feature": "Technician",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen",
+        "steps": [
+          {
+            "when": "**WHEN** a Technician signs on with a valid ID and PIN",
+            "then": "**THEN** the Technician menu is displayed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A valid Technician manual sign-on reaches the Technician menu."
+      }
+    },
+    {
+      "ref": "C4100531",
+      "case_id": 4100531,
+      "title": "Technician Sign On — Smartcard",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Technician"
+      ],
+      "feature": "Technician",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is displaying the idle screen",
+        "steps": [
+          {
+            "when": "**WHEN** a Technician presents a valid Staff card and enters a valid PIN",
+            "then": "**THEN** the Technician menu is displayed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A valid Technician smartcard sign-on reaches the Technician menu."
+      }
+    },
+    {
+      "ref": "C4100532",
+      "case_id": 4100532,
+      "title": "Technician Sign On — device locks after the configured attempts",
+      "section_path": [
+        "Functional",
+        "Sign On & Session",
+        "Technician"
+      ],
+      "feature": "Technician",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is prompting for sign-on with a configured failed-attempt threshold",
+        "steps": [
+          {
+            "when": "**WHEN** a Technician enters an invalid PIN up to the configured threshold",
+            "then": "**THEN** the device is locked against further sign-on\n**AND** the lock-out is audited"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Technician sign-on locks after the configured failed-attempt threshold and is audited."
+      }
+    },
+    {
+      "ref": "C4102551",
+      "case_id": 4102551,
+      "title": "DayLink — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid DayLink smartcard is presented within its valid day",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the DayLink is expired, has no days left, or is hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A DayLink validates within its valid day and rejects when expired / no days left / hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102552",
+      "case_id": 4102552,
+      "title": "Belfast Visitor Pass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Belfast Visitor Pass is presented within its zone and validity",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the pass is out of zone, expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Belfast Visitor Pass validates within zone/validity and rejects out-of-zone/expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack. Variation — 1, 2 and 3-day."
+      }
+    },
+    {
+      "ref": "C4102553",
+      "case_id": 4102553,
+      "title": "iLink — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid iLink smartcard is presented within its zone",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the iLink is presented out of zone, expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "An iLink validates within its zone and rejects out-of-zone/expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack. Variation — Zones 1-4 and NW."
+      }
+    },
+    {
+      "ref": "C4102554",
+      "case_id": 4102554,
+      "title": "aLink — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid aLink smartcard is presented",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the aLink is expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "An aLink validates when valid and rejects when expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102555",
+      "case_id": 4102555,
+      "title": "yLink — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid yLink smartcard is presented",
+            "then": "**THEN** the youth-discount journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the yLink is expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A yLink validates a youth-discount journey and rejects when expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102556",
+      "case_id": 4102556,
+      "title": "24+ smartcard — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Commercial"
+      ],
+      "feature": "Commercial",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid 24+ smartcard is presented",
+            "then": "**THEN** the discount journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the 24+ smartcard is expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A 24+ smartcard validates a discount journey and rejects when expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102537",
+      "case_id": 4102537,
+      "title": "60+ SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid 60+ SmartPass is presented",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted 60+ SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A 60+ SmartPass validates free travel when valid and rejects with a reason when invalid; the validation is recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102538",
+      "case_id": 4102538,
+      "title": "Senior SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Senior SmartPass is presented",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Senior SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Senior SmartPass validates free travel when valid and rejects with a reason when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102539",
+      "case_id": 4102539,
+      "title": "ROI Senior SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid ROI Senior SmartPass is presented on an eligible service",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the pass is presented on a non-eligible service, or is expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A ROI Senior SmartPass validates on eligible services and rejects otherwise; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102540",
+      "case_id": 4102540,
+      "title": "Blind Person's SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Blind Person's SmartPass is presented",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** a companion is permitted where the pass allows it"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Blind Person's SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Blind Person's SmartPass validates free travel (with companion where allowed) and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102541",
+      "case_id": 4102541,
+      "title": "War Pensioner SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid War Pensioner SmartPass is presented",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted War Pensioner SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A War Pensioner SmartPass validates free travel when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102542",
+      "case_id": 4102542,
+      "title": "Half-Fare SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Half-Fare SmartPass is presented",
+            "then": "**THEN** a half-fare journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Half-Fare SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Half-Fare SmartPass validates a half-fare journey and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack. Variation — DLA, Partially Sighted, Learning Disability, No Driving Licence, PIPS."
+      }
+    },
+    {
+      "ref": "C4102543",
+      "case_id": 4102543,
+      "title": "Free SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Concessionary"
+      ],
+      "feature": "Concessionary",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Free SmartPass is presented",
+            "then": "**THEN** the free-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Free SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Free SmartPass validates free travel when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102549",
+      "case_id": 4102549,
+      "title": "EA Bus SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Education"
+      ],
+      "feature": "Education",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid EA Bus SmartPass is presented within its valid time",
+            "then": "**THEN** the journey is validated with the success tone"
+          },
+          {
+            "when": "**WHEN** it is presented before the start date, after expiry, outside the valid time, at a weekend or during a school holiday",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "An EA Bus SmartPass validates within its valid times and rejects outside them; recorded in the CloudFare activity log, MERIT and SmartTrack. Variation — Pupil, Further Education."
+      }
+    },
+    {
+      "ref": "C4102550",
+      "case_id": 4102550,
+      "title": "EA Rail SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Education"
+      ],
+      "feature": "Education",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid EA Rail SmartPass is presented within its valid time",
+            "then": "**THEN** the journey is validated with the success tone"
+          },
+          {
+            "when": "**WHEN** it is presented before the start date, after expiry, outside the valid time, at a weekend or during a school holiday",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "An EA Rail SmartPass validates within its valid times and rejects outside them; recorded in the CloudFare activity log, MERIT and SmartTrack. Variation — Pupil, Further Education."
+      }
+    },
+    {
+      "ref": "C4102568",
+      "case_id": 4102568,
+      "title": "Faulty — Fare-Paying Smartcard",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Faulty"
+      ],
+      "feature": "Faulty",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "12m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a faulty fare-paying smartcard is presented on the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the card cannot be read correctly",
+            "then": "**THEN** the faulty-card options are offered (Charge Full Fare, Select Card Type, Issue Ticket)"
+          },
+          {
+            "when": "**WHEN** the Driver selects the appropriate option and completes",
+            "then": "**THEN** a faulty fare-paying smartcard receipt is produced"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** any fare charged appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the faulty fare-paying smartcard is recorded in SmartTrack"
+          }
+        ],
+        "expected": "A faulty fare-paying smartcard offers the faulty-card options and produces a faulty receipt; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102569",
+      "case_id": 4102569,
+      "title": "Faulty — Smartpass Receipt",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Faulty"
+      ],
+      "feature": "Faulty",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a faulty Smartpass (concessionary) is presented on the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver handles the faulty Smartpass and issues the receipt",
+            "then": "**THEN** a faulty Smartpass receipt is produced with the correct content"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the faulty Smartpass is recorded in SmartTrack"
+          }
+        ],
+        "expected": "A faulty Smartpass produces the correct faulty Smartpass receipt; recorded in the CloudFare activity log and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102570",
+      "case_id": 4102570,
+      "title": "Faulty — Dependants Pass Receipt",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Faulty"
+      ],
+      "feature": "Faulty",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a faulty Dependants Pass is presented on the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver handles the faulty Dependants Pass and issues the receipt",
+            "then": "**THEN** a faulty Dependants Pass receipt is produced with the correct content"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the faulty-card event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the faulty Dependants Pass is recorded in SmartTrack"
+          }
+        ],
+        "expected": "A faulty Dependants Pass produces the correct faulty Dependants Pass receipt; recorded in the CloudFare activity log and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4100581",
+      "case_id": 4100581,
+      "title": "Hotlisted smartcard — presented and marked",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Hotlist"
+      ],
+      "feature": "Hotlist",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** an already-hotlisted smartcard is presented",
+            "then": "**THEN** the card is rejected with a hotlisted error"
+          },
+          {
+            "when": "**WHEN** a smartcard marked for hotlist is presented",
+            "then": "**THEN** the card is handled per the hotlist rules"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Hotlisted cards are rejected; cards marked for hotlist are handled per the rules."
+      }
+    },
+    {
+      "ref": "C4100579",
+      "case_id": 4100579,
+      "title": "Metro Multi-Journey — zone validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Multi-Journey"
+      ],
+      "feature": "Multi-Journey",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Metro Multi-Journey smartcard for a given zone is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the card is validated within its zone",
+            "then": "**THEN** the journey is validated against the Multi-Journey balance"
+          },
+          {
+            "when": "**WHEN** the card is presented outside its zone",
+            "then": "**THEN** the card is rejected as wrong zone"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Metro MJ validates within zone and rejects wrong zone. Run City, Inner and Extended zones, Adult and Child. (Metro mode.)"
+      }
+    },
+    {
+      "ref": "C4100580",
+      "case_id": 4100580,
+      "title": "Ulsterbus Multi-Journey — boarding-stage validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Multi-Journey"
+      ],
+      "feature": "Multi-Journey",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** an Ulsterbus Multi-Journey smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the card is validated with a valid boarding stage",
+            "then": "**THEN** the journey is validated against the Multi-Journey balance"
+          },
+          {
+            "when": "**WHEN** the boarding stage is invalid",
+            "then": "**THEN** the card is rejected as an invalid boarding stage"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Ulsterbus MJ validates on a valid boarding stage and rejects an invalid one. Run Adult and Child. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4102557",
+      "case_id": 4102557,
+      "title": "Metro Travelcard — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Multi-Journey"
+      ],
+      "feature": "Multi-Journey",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service in Metro mode",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Metro Travelcard is presented within its period",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the Metro Travelcard is expired or hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Metro Travelcard validates within its period and rejects when expired/hotlisted; recorded in the CloudFare activity log, MERIT and SmartTrack. (Metro mode.)"
+      }
+    },
+    {
+      "ref": "C4102558",
+      "case_id": 4102558,
+      "title": "Town Service Travelcard — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Multi-Journey"
+      ],
+      "feature": "Multi-Journey",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service in Ulsterbus mode",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Town Service Travelcard is presented on its town service within its period",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** the Town Service Travelcard is presented off its town service, is expired or is hotlisted",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Town Service Travelcard validates on its town service within period and rejects otherwise; recorded in the CloudFare activity log, MERIT and SmartTrack. (Ulsterbus mode.)"
+      }
+    },
+    {
+      "ref": "C4102544",
+      "case_id": 4102544,
+      "title": "Staff SmartPass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Staff"
+      ],
+      "feature": "Staff",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Staff SmartPass is presented",
+            "then": "**THEN** the staff-travel journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Staff SmartPass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Staff SmartPass validates staff travel when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102545",
+      "case_id": 4102545,
+      "title": "Staff Spouse / Partner Pass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Staff"
+      ],
+      "feature": "Staff",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Staff Spouse / Partner Pass is presented",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Staff Spouse / Partner Pass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Staff Spouse / Partner Pass validates when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102546",
+      "case_id": 4102546,
+      "title": "Staff Dependants Pass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Staff"
+      ],
+      "feature": "Staff",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Staff Dependants Pass is presented",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Staff Dependants Pass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Staff Dependants Pass validates when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102547",
+      "case_id": 4102547,
+      "title": "Retired Staff Pass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Staff"
+      ],
+      "feature": "Staff",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid Retired Staff Pass is presented",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted Retired Staff Pass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A Retired Staff Pass validates when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4102548",
+      "case_id": 4102548,
+      "title": "External Staff Pass — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Staff"
+      ],
+      "feature": "Staff",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a valid External Staff Pass is presented",
+            "then": "**THEN** the journey is validated with the success tone\n**AND** passback is applied within the configured period"
+          },
+          {
+            "when": "**WHEN** an expired or hotlisted External Staff Pass is presented",
+            "then": "**THEN** the card is rejected with the specific reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the validation transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "An External Staff Pass validates when valid and rejects when invalid; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4100572",
+      "case_id": 4100572,
+      "title": "Smartcard top-up — successful, maximum and expired-journey rules",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a customer presents a topp-able smartcard and the Driver selects Top-Up",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver takes payment and confirms the top-up",
+            "then": "**THEN** the card is topped up\n**AND** a top-up receipt is printed\n**AND** the card is auto-validated for the current journey"
+          },
+          {
+            "when": "**WHEN** a Multi-Journey top-up would exceed 50 journeys",
+            "then": "**THEN** the top-up is capped at the 50-journey maximum"
+          },
+          {
+            "when": "**WHEN** the card has expired journeys at top-up",
+            "then": "**THEN** the expired journeys are removed with a removal receipt where applicable"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Top-up succeeds (receipt + auto-validate); MJ caps at 50 journeys; expired journeys are removed (incl. top-up on expiry). Variation by product — DayLink/iLink/Travelcard periods, MJ journeys."
+      }
+    },
+    {
+      "ref": "C4100573",
+      "case_id": 4100573,
+      "title": "Smartcard top-up — cancelled with Back",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the Driver is in the smartcard top-up flow",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Back or the card is removed before payment",
+            "then": "**THEN** the top-up is cancelled\n**AND** the ETM returns to the FLU Home screen"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Top-up cancels on Back or card removal and returns to FLU Home with no charge."
+      }
+    },
+    {
+      "ref": "C4100576",
+      "case_id": 4100576,
+      "title": "Smartcard top-up — annulment",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has just topped up a smartcard",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver annuls the top-up transaction",
+            "then": "**THEN** the top-up is annulled\n**AND** the annulment is recorded"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A smartcard top-up can be annulled and recorded. Representative — Belfast Visitor Pass, iLink zones."
+      }
+    },
+    {
+      "ref": "C4100577",
+      "case_id": 4100577,
+      "title": "Smartcard — mini-statement",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a customer presents a smartcard and the Driver opens the smartcard menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects Mini Statement",
+            "then": "**THEN** the card's mini-statement is displayed"
+          },
+          {
+            "when": "**WHEN** the card is removed",
+            "then": "**THEN** the ETM returns to the FLU Home screen"
+          }
+        ],
+        "expected": "The smartcard mini-statement is shown; removing the card returns to FLU Home."
+      }
+    },
+    {
+      "ref": "C4100578",
+      "case_id": 4100578,
+      "title": "Smartcard — inter-device top-up then validate on ETM",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a smartcard has been topped up on another device",
+        "steps": [
+          {
+            "when": "**WHEN** the card is presented to the ETM for validation",
+            "then": "**THEN** the ETM validates the card reflecting the top-up made elsewhere"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A card topped up elsewhere validates on the ETM. Variation by source device — POS (TGX150), POS (WAY6), HHD, PV, another ETM; products incl. Metro/Ulsterbus zones, Travelcards, iLink."
+      }
+    },
+    {
+      "ref": "C4102567",
+      "case_id": 4102567,
+      "title": "Fare-Paying Smartcard — top-up",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Top-Up"
+      ],
+      "feature": "Top-Up",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "11m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and a fare-paying smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver tops up the card with value and takes payment",
+            "then": "**THEN** the value is added to the card balance\n**AND** the new balance is recorded and a receipt is printed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the top-up event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the top-up transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard balance appears in SmartTrack"
+          }
+        ],
+        "expected": "A fare-paying smartcard top-up adds value with a receipt; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4100567",
+      "case_id": 4100567,
+      "title": "Smartcard — validation and passback rules",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a customer presents a valid smartcard",
+            "then": "**THEN** the card is validated for the journey with a success indication"
+          },
+          {
+            "when": "**WHEN** the same card is presented again in the same direction within the transfer period",
+            "then": "**THEN** passback applies and no second fare is taken"
+          },
+          {
+            "when": "**WHEN** the card is presented in a different direction within the transfer period",
+            "then": "**THEN** the validation is handled per the transfer rules"
+          },
+          {
+            "when": "**WHEN** the card is presented outside the transfer period",
+            "then": "**THEN** a new journey is validated and charged"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A valid card validates with passback within the transfer period; direction and outside-transfer rules apply. Run Adult/Child across products and Metro & Ulsterbus MJ."
+      }
+    },
+    {
+      "ref": "C4100569",
+      "case_id": 4100569,
+      "title": "Smartcard — invalid card presented",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** an invalid smartcard is presented",
+            "then": "**THEN** the card is rejected with the reason displayed"
+          }
+        ],
+        "expected": "Invalid cards are rejected with the reason — wrong zone (Metro), invalid boarding stage (Ulsterbus), outside time band, expired, or hotlisted."
+      }
+    },
+    {
+      "ref": "C4100570",
+      "case_id": 4100570,
+      "title": "Smartcard — concessionary pass validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a valid concessionary pass is presented",
+            "then": "**THEN** the matching concessionary entitlement is applied and validated"
+          },
+          {
+            "when": "**WHEN** the pass is invalid or presented outside its valid time",
+            "then": "**THEN** the pass is rejected with the reason shown"
+          },
+          {
+            "when": "**WHEN** a passback override is permitted and selected",
+            "then": "**THEN** a further validation is allowed"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "Concessionary passes validate/reject correctly with passback override where allowed. Representative — 60+, Senior, ROI Senior, Blind, War Pensioner, DLA / Partially Sighted / Learning Disability / No Driving Licence / PIPS Half-Fare, Free Smartpass, Staff / Spouse / Dependants / Retired / External Staff, EA Smartpass Bus & Rail Pupil + Further Education (incl. start/expiry/weekend/holiday/time-band rules)."
+      }
+    },
+    {
+      "ref": "C4100571",
+      "case_id": 4100571,
+      "title": "Smartcard — faulty card handling",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a faulty smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects the card type for the faulty card",
+            "then": "**THEN** the Driver is offered to charge full fare or issue a ticket"
+          },
+          {
+            "when": "**WHEN** the Driver issues a ticket or charges full fare",
+            "then": "**THEN** the transaction completes\n**AND** a faulty Smartpass receipt is produced where applicable"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A faulty card lets the Driver select card type and charge full fare or issue a ticket, producing a faulty Smartpass receipt where applicable."
+      }
+    },
+    {
+      "ref": "C4102566",
+      "case_id": 4102566,
+      "title": "Fare-Paying Smartcard — validation",
+      "section_path": [
+        "Functional",
+        "Smartcards",
+        "Validation"
+      ],
+      "feature": "Validation",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** a fare-paying smartcard with sufficient balance is presented",
+            "then": "**THEN** the fare is deducted from the card balance with the success tone\n**AND** the remaining balance is recorded"
+          },
+          {
+            "when": "**WHEN** a fare-paying smartcard with insufficient balance is presented",
+            "then": "**THEN** the shortfall is handled per the rules"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the validation event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the fare transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard balance appears in SmartTrack"
+          }
+        ],
+        "expected": "A fare-paying smartcard deducts the fare when in funds and handles insufficient balance otherwise; recorded in the CloudFare activity log, MERIT and SmartTrack."
+      }
+    },
+    {
+      "ref": "C4100611",
+      "case_id": 4100611,
+      "title": "Supervisor — force communications",
+      "section_path": [
+        "Functional",
+        "Supervisor Menu"
+      ],
+      "feature": "Supervisor Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Supervisor is at the Supervisor Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor presses Force Comms",
+            "then": "**THEN** the ETM communicates with the back office for downloads and uploads"
+          },
+          {
+            "when": "**WHEN** the Supervisor presses Refresh",
+            "then": "**THEN** the communication information is updated"
+          },
+          {
+            "when": "**WHEN** the Supervisor exits",
+            "then": "**THEN** the ETM returns to the Supervisor Menu"
+          }
+        ],
+        "expected": "A Supervisor can force comms (download/upload), refresh the comms info, and exit back to the menu."
+      }
+    },
+    {
+      "ref": "C4102177",
+      "case_id": 4102177,
+      "title": "Supervisor — view and print versions",
+      "section_path": [
+        "Functional",
+        "Supervisor Menu"
+      ],
+      "feature": "Supervisor Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Supervisor is at the Supervisor Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor opens Versions and views software versions, configuration data versions and serial numbers",
+            "then": "**THEN** the version and serial information is displayed and can be scrolled"
+          },
+          {
+            "when": "**WHEN** the Supervisor prints the information",
+            "then": "**THEN** the version and serial information is printed"
+          }
+        ],
+        "expected": "A Supervisor can view and print software versions, configuration versions and serial numbers."
+      }
+    },
+    {
+      "ref": "C4100614",
+      "case_id": 4100614,
+      "title": "Technician — device settings",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Technician is at the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician edits the home location, tray identifier or fleet identifier and presses Enter to confirm",
+            "then": "**THEN** the change is saved\n**AND** the Technician returns to the Technician Menu"
+          },
+          {
+            "when": "**WHEN** the home location is not available",
+            "then": "**THEN** the home-location-not-available state is shown"
+          },
+          {
+            "when": "**WHEN** the Technician cancels instead",
+            "then": "**THEN** the change is discarded"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A Technician can edit home location / tray / fleet identifiers (confirm saves, cancel discards); an unavailable home location is handled."
+      }
+    },
+    {
+      "ref": "C4100619",
+      "case_id": 4100619,
+      "title": "Technician — force communications",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Technician is at the Force Communications screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician forces communications",
+            "then": "**THEN** the ETM communicates with the back office while the status is identified"
+          },
+          {
+            "when": "**WHEN** the Technician refreshes",
+            "then": "**THEN** the communication information is updated"
+          }
+        ],
+        "expected": "A Technician can force comms and refresh the communication information."
+      }
+    },
+    {
+      "ref": "C4102180",
+      "case_id": 4102180,
+      "title": "Technician — view and print versions",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "5m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Technician is at the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician opens Versions and views software versions, configuration versions and serial numbers",
+            "then": "**THEN** the version and serial information is displayed"
+          },
+          {
+            "when": "**WHEN** the Technician prints the information",
+            "then": "**THEN** the version and serial information is printed"
+          }
+        ],
+        "expected": "A Technician can view and print software versions, configuration versions and serial numbers."
+      }
+    },
+    {
+      "ref": "C4100550",
+      "case_id": 4100550,
+      "title": "Ticket Issue — issue a single ticket",
+      "section_path": [
+        "Functional",
+        "Ticket Issue"
+      ],
+      "feature": "Ticket Issue",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "9m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects a product and alighting stage and takes payment",
+            "then": "**THEN** the ticket is issued at the correct fare\n**AND** a ticket is printed\n**AND** a success confirmation is shown and the last transaction is updated"
+          },
+          {
+            "when": "**WHEN** change is due on the sale",
+            "then": "**THEN** a change receipt is printed and can itself be annulled"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          },
+          {
+            "when": "**WHEN** the smartcard record is reviewed in SmartTrack",
+            "then": "**THEN** the updated smartcard record appears in SmartTrack"
+          }
+        ],
+        "expected": "A ticket builds, pays and issues with a printed ticket; when change is due a change receipt prints (and is annullable). Run Adult and Child; representative products — Metro Single, Day Return, Month Return, iLink Single, Gateway, Jobseeker, Warrant Return, ME Rugby Day."
+      }
+    },
+    {
+      "ref": "C4100551",
+      "case_id": 4100551,
+      "title": "Ticket Issue — annulment (last ticket, timeout and refusal)",
+      "section_path": [
+        "Functional",
+        "Ticket Issue"
+      ],
+      "feature": "Ticket Issue",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "10m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has just issued a ticket",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver annuls the last issued ticket",
+            "then": "**THEN** the transaction is annulled\n**AND** an annulment is recorded against the shift"
+          },
+          {
+            "when": "**WHEN** the annul prompt is left unconfirmed past its timeout",
+            "then": "**THEN** the annulment is abandoned\n**AND** the original ticket remains valid"
+          },
+          {
+            "when": "**WHEN** the Driver attempts to annul a non-annullable transaction",
+            "then": "**THEN** the annulment is refused with the reason shown"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The last ticket can be annulled (single or basket); an unconfirmed annul times out leaving the ticket valid; annulment is refused with a reason for boarding-stage-changed, MJ-validated, pass-validated and concession-pass cases. Run Adult and Child."
+      }
+    },
+    {
+      "ref": "C4100555",
+      "case_id": 4100555,
+      "title": "Ticket Issue — Easibus stage selection",
+      "section_path": [
+        "Functional",
+        "Ticket Issue"
+      ],
+      "feature": "Ticket Issue",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver selects an Easibus stage and issues the ticket",
+            "then": "**THEN** the ticket is issued for the selected Easibus stage"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A ticket issues against the chosen Easibus stage. Run across the Easibus options — Red, Orange, Yellow, Green, White, Buggy, Wheelchair, Other — including via the basket."
+      }
+    },
+    {
+      "ref": "C4100556",
+      "case_id": 4100556,
+      "title": "Ticket Issue — Open Tickets excess fare",
+      "section_path": [
+        "Functional",
+        "Ticket Issue"
+      ],
+      "feature": "Ticket Issue",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver issues an Open excess ticket for a valid amount",
+            "then": "**THEN** the excess ticket is issued at the entered amount"
+          },
+          {
+            "when": "**WHEN** the Driver enters an invalid amount",
+            "then": "**THEN** the amount is rejected"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "Open/excess tickets issue for a valid amount and reject invalid amounts. Run for Adult and Child."
+      }
+    },
+    {
+      "ref": "C4100558",
+      "case_id": 4100558,
+      "title": "Promo Menu — issue a promo product",
+      "section_path": [
+        "Functional",
+        "Ticket Issue",
+        "Promo Menu"
+      ],
+      "feature": "Promo Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "7m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver opens the Promo Menu, selects a product and takes payment",
+            "then": "**THEN** the promo product is issued at the correct fare\n**AND** a ticket is printed"
+          },
+          {
+            "when": "**WHEN** the product is a Family & Friends or Metro Family Day product and an additional child is added",
+            "then": "**THEN** the additional child is included at the correct fare"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          },
+          {
+            "when": "**WHEN** the data is reviewed in MERIT",
+            "then": "**THEN** the transaction appears in MERIT"
+          }
+        ],
+        "expected": "A Promo Menu product issues and prints; family products can add an additional child. Run Adult and Child; products — Bus Rambler, Metro Day/Evening/Family Day, Family & Friends Day, Park & Ride, ME Rugby Day."
+      }
+    },
+    {
+      "ref": "C4100560",
+      "case_id": 4100560,
+      "title": "Promo Menu — promo product not available",
+      "section_path": [
+        "Functional",
+        "Ticket Issue",
+        "Promo Menu"
+      ],
+      "feature": "Promo Menu",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a promo product is configured as not currently available",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver attempts to select it from the Promo Menu",
+            "then": "**THEN** the product is shown as not available and cannot be issued"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "An unavailable promo product (e.g. Bus Rambler out of season) is flagged not available and cannot be issued. Run for Adult and Child."
+      }
+    },
+    {
+      "ref": "C4100646",
+      "case_id": 4100646,
+      "title": "Force communications — CloudFare initiated",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is in service and communicating with the back office",
+        "steps": [
+          {
+            "when": "**WHEN** CloudFare initiates a forced communication",
+            "then": "**THEN** the ETM communicates with the back office for downloads and uploads"
+          }
+        ],
+        "expected": "A CloudFare-initiated forced comms triggers the ETM to exchange data with the back office."
+      }
+    },
+    {
+      "ref": "C4100647",
+      "case_id": 4100647,
+      "title": "Communications — comms lock, interruption and restore",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM has not communicated with the back office for the configured period",
+        "steps": [
+          {
+            "when": "**WHEN** the comms-lock threshold is reached",
+            "then": "**THEN** communications are locked and indicated to the Driver"
+          },
+          {
+            "when": "**WHEN** communications are interrupted mid-exchange",
+            "then": "**THEN** the interruption is handled without data loss"
+          },
+          {
+            "when": "**WHEN** communications are restored",
+            "then": "**THEN** the comms lock clears and pending data is exchanged"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Comms lock after the configured no-comms period; interruptions handled without data loss; the lock clears and data flows when comms restore."
+      }
+    },
+    {
+      "ref": "C4100648",
+      "case_id": 4100648,
+      "title": "ETM continues working when the BOS connection is lost",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and the ETM is working",
+        "steps": [
+          {
+            "when": "**WHEN** the back-office connection is lost",
+            "then": "**THEN** the ETM continues to operate and queues data to send to the back office\n**AND** data due to download from the back office is retrieved once the connection returns"
+          }
+        ],
+        "expected": "The ETM keeps working with the BOS connection lost, queuing uploads and catching up downloads when it returns."
+      }
+    },
+    {
+      "ref": "C4100649",
+      "case_id": 4100649,
+      "title": "Download configuration files from the back office",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the back office has configuration files for the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM downloads a configuration file for immediate activation",
+            "then": "**THEN** the configuration is applied"
+          },
+          {
+            "when": "**WHEN** the configuration has a future activation date",
+            "then": "**THEN** the configuration is stored and activated on the future date"
+          },
+          {
+            "when": "**WHEN** a corrupt configuration file is downloaded",
+            "then": "**THEN** the corrupt file is rejected\n**AND** the current configuration is retained"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Config downloads apply immediately or on a future activation date; corrupt files are rejected without disrupting the live config."
+      }
+    },
+    {
+      "ref": "C4100650",
+      "case_id": 4100650,
+      "title": "Software distribution and fare-mode transition",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the back office has distributed a future fare mode to the ETM",
+        "steps": [
+          {
+            "when": "**WHEN** the activation point is reached",
+            "then": "**THEN** the ETM transitions from the current fare mode to the future fare mode"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The ETM transitions current-to-future fare mode at the distributed activation point."
+      }
+    },
+    {
+      "ref": "C4100651",
+      "case_id": 4100651,
+      "title": "Upload audit files and data to the back office",
+      "section_path": [
+        "Non-Functional",
+        "Communications"
+      ],
+      "feature": "Communications",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM has audit files and data to send",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM communicates with the back office",
+            "then": "**THEN** the audit files are uploaded\n**AND** the operational data is uploaded"
+          }
+        ],
+        "expected": "The ETM uploads audit files and operational data to the back office."
+      }
+    },
+    {
+      "ref": "C4100636",
+      "case_id": 4100636,
+      "title": "Power loss recovery — within and outside the recovery period",
+      "section_path": [
+        "Non-Functional",
+        "Power"
+      ],
+      "feature": "Power",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and in service",
+        "steps": [
+          {
+            "when": "**WHEN** power is lost and restored within the recovery period",
+            "then": "**THEN** the ETM recovers to the signed-in state"
+          },
+          {
+            "when": "**WHEN** power is lost and restored outside the recovery period",
+            "then": "**THEN** the ETM does not recover the signed-in state and returns to idle"
+          },
+          {
+            "when": "**WHEN** the power loss occurs in break mode",
+            "then": "**THEN** the ETM recovers to the break state appropriately"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Recovery to the signed-in state happens within the recovery period only; outside it the ETM returns to idle; break mode recovers appropriately."
+      }
+    },
+    {
+      "ref": "C4100640",
+      "case_id": 4100640,
+      "title": "Paper management — low, jam, out and replacement",
+      "section_path": [
+        "Non-Functional",
+        "Printer and Paper"
+      ],
+      "feature": "Printer and Paper",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the paper falls below the low threshold after printing a ticket",
+            "then": "**THEN** the Paper Low warning is shown for five seconds and returns to FLU Home"
+          },
+          {
+            "when": "**WHEN** the paper jams",
+            "then": "**THEN** the jam is reported with a reverse-paper-feed option"
+          },
+          {
+            "when": "**WHEN** the paper runs out",
+            "then": "**THEN** the Paper Out condition is shown"
+          },
+          {
+            "when": "**WHEN** the paper roll is replaced",
+            "then": "**THEN** printing is restored"
+          }
+        ],
+        "expected": "Paper low warns (5s, after a print), jams offer reverse feed, paper-out is flagged, and replacing the roll restores printing."
+      }
+    },
+    {
+      "ref": "C4100944",
+      "case_id": 4100944,
+      "title": "Regression — sequence ID integrity across power loss",
+      "section_path": [
+        "Regression"
+      ],
+      "feature": "Regression",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "301074",
+      "gherkin": {
+        "given": "**Given** the ETM has processed transactions and holds the current sequence ID",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM loses power and restarts",
+            "then": "**THEN** the sequence ID resumes in sync with no gap or duplication"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "The sequence ID stays in sync across a power loss (no out-of-sync, gap or duplicate)."
+      }
+    },
+    {
+      "ref": "C4100946",
+      "case_id": 4100946,
+      "title": "Regression — passenger display GDPR compliance",
+      "section_path": [
+        "Regression"
+      ],
+      "feature": "Regression",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "300751",
+      "gherkin": {
+        "given": "**Given** a customer-facing passenger display is connected",
+        "steps": [
+          {
+            "when": "**WHEN** transactions and card interactions are shown on the passenger display",
+            "then": "**THEN** no personal or card data is displayed beyond what GDPR permits"
+          }
+        ],
+        "expected": "The passenger display shows only GDPR-permitted information, no personal/card data."
+      }
+    },
+    {
+      "ref": "C4100947",
+      "case_id": 4100947,
+      "title": "Regression — no freeze on quick card removal after top-up",
+      "section_path": [
+        "Regression"
+      ],
+      "feature": "Regression",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "301209",
+      "gherkin": {
+        "given": "**Given** a smartcard has just been topped up",
+        "steps": [
+          {
+            "when": "**WHEN** the customer removes the smartcard very quickly after the top-up completes",
+            "then": "**THEN** the ETM returns to the FLU screen without freezing"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Quick card removal immediately after a top-up does not freeze the ETM."
+      }
+    },
+    {
+      "ref": "C4100938",
+      "case_id": 4100938,
+      "title": "Smoke — sign on, issue a ticket and sign off",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is at the idle screen and communicating with CloudFare",
+        "steps": [
+          {
+            "when": "**WHEN** a Driver signs on and reaches the FLU screen",
+            "then": "**THEN** the Driver is signed on at FLU"
+          },
+          {
+            "when": "**WHEN** the Driver issues a single ticket and takes payment",
+            "then": "**THEN** the ticket is issued\n**AND** the ticket is printed"
+          },
+          {
+            "when": "**WHEN** the Driver signs off",
+            "then": "**THEN** the ETM returns to idle\n**AND** the sign-off is audited"
+          }
+        ],
+        "expected": "A Driver can sign on, issue and print a ticket, and sign off — the core daily path."
+      }
+    },
+    {
+      "ref": "C4100939",
+      "case_id": 4100939,
+      "title": "Smoke — smartcard validates on tap",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "6m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a customer presents a valid smartcard",
+            "then": "**THEN** the card is validated\n**AND** a success is indicated"
+          }
+        ],
+        "expected": "A valid smartcard validates with a success indication."
+      }
+    },
+    {
+      "ref": "C4100940",
+      "case_id": 4100940,
+      "title": "Smoke — ABT contactless tap succeeds",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** ABT taps are enabled and the ETM is at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** a customer taps a valid contactless card",
+            "then": "**THEN** the tap is accepted with the success tone"
+          }
+        ],
+        "expected": "A valid ABT tap is accepted with the success tone."
+      }
+    },
+    {
+      "ref": "C4100941",
+      "case_id": 4100941,
+      "title": "Smoke — smartcard top-up succeeds",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "8m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare",
+        "MERIT",
+        "SmartTrack"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on and a topp-able smartcard is presented",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver tops up the card and takes payment",
+            "then": "**THEN** the card is topped up\n**AND** a receipt is printed"
+          }
+        ],
+        "expected": "A smartcard top-up completes with a printed receipt."
+      }
+    },
+    {
+      "ref": "C4100942",
+      "case_id": 4100942,
+      "title": "Smoke — basket sale of multiple tickets",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "3m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver adds multiple tickets to the basket and takes a single payment",
+            "then": "**THEN** all basket items are issued in one transaction"
+          }
+        ],
+        "expected": "A basket of tickets is sold and issued in one payment."
+      }
+    },
+    {
+      "ref": "C4100943",
+      "case_id": 4100943,
+      "title": "Smoke — ETM communicates with the back office",
+      "section_path": [
+        "Smoke"
+      ],
+      "feature": "Smoke",
+      "device": "ETMS",
+      "priority": "High",
+      "priority_id": 1,
+      "estimate": "4m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [
+        "CloudFare"
+      ],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is in service",
+        "steps": [
+          {
+            "when": "**WHEN** communications with the back office are forced",
+            "then": "**THEN** the ETM exchanges data with the back office successfully"
+          }
+        ],
+        "expected": "The ETM successfully communicates with the back office on demand."
+      }
+    },
+    {
+      "ref": "C4100595",
+      "case_id": 4100595,
+      "title": "Driver Menu — access and navigation",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on at the FLU screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver opens the Driver Menu",
+            "then": "**THEN** the Driver Menu options are displayed"
+          },
+          {
+            "when": "**WHEN** the Driver presses 'C' or Go Back",
+            "then": "**THEN** the ETM returns to the previous screen"
+          }
+        ],
+        "expected": "A signed-on Driver can open and navigate the Driver Menu (incl. via Staff pass) and back out with 'C'/Go Back."
+      }
+    },
+    {
+      "ref": "C4102169",
+      "case_id": 4102169,
+      "title": "Driver options — duty and journey totals",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened Driver options",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views the totals",
+            "then": "**THEN** the duty totals and journey totals are displayed"
+          }
+        ],
+        "expected": "Duty and journey totals are displayed."
+      }
+    },
+    {
+      "ref": "C4102171",
+      "case_id": 4102171,
+      "title": "Driver options — messages",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened Driver options",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views Messages",
+            "then": "**THEN** the available messages are displayed"
+          },
+          {
+            "when": "**WHEN** messages cannot be retrieved",
+            "then": "**THEN** the Messages — Unavailable state is shown"
+          }
+        ],
+        "expected": "Messages are shown, or an Unavailable state when none can be retrieved."
+      }
+    },
+    {
+      "ref": "C4102172",
+      "case_id": 4102172,
+      "title": "Driver options — Word and Colour of the Day",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened Driver options",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views the Word and Colour of the Day",
+            "then": "**THEN** the configured word and colour are displayed"
+          },
+          {
+            "when": "**WHEN** the Word and Colour of the Day cannot be retrieved",
+            "then": "**THEN** the Unavailable state is shown"
+          }
+        ],
+        "expected": "The Word and Colour of the Day is shown, or an Unavailable state when it cannot be retrieved."
+      }
+    },
+    {
+      "ref": "C4102173",
+      "case_id": 4102173,
+      "title": "Driver options — paper status",
+      "section_path": [
+        "Functional",
+        "Driver Menu & Options"
+      ],
+      "feature": "Driver Menu & Options",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver has opened Driver options",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver views Paper Status",
+            "then": "**THEN** the current paper status is displayed"
+          }
+        ],
+        "expected": "The paper status is displayed to the Driver."
+      }
+    },
+    {
+      "ref": "C4100610",
+      "case_id": 4100610,
+      "title": "Supervisor — historic waybills",
+      "section_path": [
+        "Functional",
+        "Supervisor Menu"
+      ],
+      "feature": "Supervisor Menu",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Supervisor is at the Supervisor Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor opens Historic Waybills and selects one",
+            "then": "**THEN** the waybill detail is displayed\n**AND** the left/right arrows move between waybills"
+          }
+        ],
+        "expected": "A Supervisor can view historic waybills and page between them."
+      }
+    },
+    {
+      "ref": "C4102178",
+      "case_id": 4102178,
+      "title": "Supervisor — GPS information",
+      "section_path": [
+        "Functional",
+        "Supervisor Menu"
+      ],
+      "feature": "Supervisor Menu",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Supervisor is at the Supervisor Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Supervisor views GPS Information",
+            "then": "**THEN** the current GPS information is displayed"
+          },
+          {
+            "when": "**WHEN** GPS information cannot be obtained",
+            "then": "**THEN** the GPS information error state is shown"
+          }
+        ],
+        "expected": "A Supervisor can view GPS information, with an error state when it cannot be obtained."
+      }
+    },
+    {
+      "ref": "C4100616",
+      "case_id": 4100616,
+      "title": "Technician — network settings",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Technician is at the Network Settings screen",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician edits an IP address and confirms",
+            "then": "**THEN** the IP address is updated"
+          },
+          {
+            "when": "**WHEN** the Technician views the cellular modem and the network routing table",
+            "then": "**THEN** the cellular modem detail and routing table are displayed and can be refreshed"
+          }
+        ],
+        "expected": "A Technician can edit IP addresses and view cellular modem + network routing information (with refresh)."
+      }
+    },
+    {
+      "ref": "C4100621",
+      "case_id": 4100621,
+      "title": "Technician — decommissioning",
+      "section_path": [
+        "Functional",
+        "Technician Menu"
+      ],
+      "feature": "Technician Menu",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Technician is at the Technician Menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Technician selects Decommissioning",
+            "then": "**THEN** a decommissioning warning is shown before any action"
+          },
+          {
+            "when": "**WHEN** the Technician confirms the warning",
+            "then": "**THEN** the ETM is decommissioned"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "Decommissioning warns before proceeding and only decommissions on confirmation."
+      }
+    },
+    {
+      "ref": "C4100638",
+      "case_id": 4100638,
+      "title": "Power Saving Mode — entering and leaving",
+      "section_path": [
+        "Non-Functional",
+        "Power"
+      ],
+      "feature": "Power",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** the ETM is idle and configured for power saving",
+        "steps": [
+          {
+            "when": "**WHEN** the conditions to enter Power Saving Mode are met",
+            "then": "**THEN** the ETM enters Power Saving Mode"
+          },
+          {
+            "when": "**WHEN** the ETM is woken",
+            "then": "**THEN** the ETM leaves Power Saving Mode and returns to its prior state"
+          }
+        ],
+        "expected": "The ETM enters Power Saving Mode when idle and leaves it on wake."
+      }
+    },
+    {
+      "ref": "C4100639",
+      "case_id": 4100639,
+      "title": "Scheduled Maintenance — suspend and idle",
+      "section_path": [
+        "Non-Functional",
+        "Power"
+      ],
+      "feature": "Power",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "2m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a scheduled maintenance window applies",
+        "steps": [
+          {
+            "when": "**WHEN** the ETM is in idle mode during the window",
+            "then": "**THEN** the scheduled maintenance is performed"
+          },
+          {
+            "when": "**WHEN** the ETM comes out of suspend",
+            "then": "**THEN** the ETM resumes to idle ready for service"
+          }
+        ],
+        "expected": "Scheduled maintenance runs in idle mode and the ETM resumes cleanly when coming out of suspend."
+      }
+    },
+    {
+      "ref": "C4100641",
+      "case_id": 4100641,
+      "title": "Printer — out of service error",
+      "section_path": [
+        "Non-Functional",
+        "Printer and Paper"
+      ],
+      "feature": "Printer and Paper",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": true,
+      "refs": "",
+      "gherkin": {
+        "given": "**Given** a Driver is signed on",
+        "steps": [
+          {
+            "when": "**WHEN** the printer cannot complete a print and is out of service",
+            "then": "**THEN** the Out of Service error is displayed"
+          }
+        ],
+        "expected": "A printer that cannot print shows the Out of Service error."
+      }
+    },
+    {
+      "ref": "C4100948",
+      "case_id": 4100948,
+      "title": "Regression — no error navigating back from passenger-type menu",
+      "section_path": [
+        "Regression"
+      ],
+      "feature": "Regression",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "yes",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "301683",
+      "gherkin": {
+        "given": "**Given** the Driver is in the Adult/Child/Other passenger-type menu",
+        "steps": [
+          {
+            "when": "**WHEN** the Driver navigates back from the menu",
+            "then": "**THEN** the ETM returns to the previous screen without an internal error"
+          }
+        ],
+        "expected": "Navigating back from the passenger-type menu does not raise an internal error."
+      }
+    },
+    {
+      "ref": "C4100950",
+      "case_id": 4100950,
+      "title": "Regression — ticket print speed",
+      "section_path": [
+        "Regression"
+      ],
+      "feature": "Regression",
+      "device": "ETMS",
+      "priority": "Normal",
+      "priority_id": 3,
+      "estimate": "1m",
+      "automation": "partial",
+      "automatable": true,
+      "cross_check": [],
+      "destructive": false,
+      "refs": "301258",
+      "gherkin": {
+        "given": "**Given** the ETM printer is loaded and ready",
+        "steps": [
+          {
+            "when": "**WHEN** a 110mm ticket is printed",
+            "then": "**THEN** the ticket prints within the target print-speed time"
+          },
+          {
+            "when": "**WHEN** the CloudFare activity log is checked",
+            "then": "**THEN** the corresponding event is recorded in the Back Office System (CloudFare) activity log"
+          }
+        ],
+        "expected": "A 110mm ticket prints within the target print-speed time."
+      }
+    }
+  ]
+}
