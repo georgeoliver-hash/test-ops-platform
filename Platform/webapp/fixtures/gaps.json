@@ -5806,5 +5806,29 @@
     "line": 27,
     "kind": "GAP",
     "text": "`/`**UNCONFIRMED**` marker was added this pass; see the"
+  },
+  {
+    "file": "reports\\translink\\tvm\\2026-09-08\\case-drafts.md",
+    "line": 71,
+    "kind": "GAP",
+    "text": "TIBU-33326 was observed on the 5th reboot in a service day; exact reboot count"
+  },
+  {
+    "file": "reports\\translink\\tvm\\2026-09-08\\case-drafts.md",
+    "line": 81,
+    "kind": "GAP",
+    "text": "note rather than a separate Given precondition,"
+  },
+  {
+    "file": "reports\\translink\\tvm\\2026-09-08\\case-drafts.md",
+    "line": 206,
+    "kind": "GAP",
+    "text": "`/`**UNCONFIRMED**` marker"
+  },
+  {
+    "file": "reports\\translink\\tvm\\2026-09-08\\case-drafts.md",
+    "line": 223,
+    "kind": "GAP",
+    "text": "` marker (the vocabulary `gap-register`'s mechanical grep actually looks for)."
   }
 ]

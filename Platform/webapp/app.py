@@ -292,7 +292,8 @@ def get_run_health(limit: int = 15):
 @app.get("/api/gap-register")
 def get_gap_register(limit: int = 25):
     """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo
-    (2026-09-07). 968 found repo-wide — capped for display, count always shown uncapped."""
+    (re-run 2026-09-08, 972 found repo-wide) — capped for display, count always shown
+    uncapped."""
     path = FIXTURES / "gaps.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
