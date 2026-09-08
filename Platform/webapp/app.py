@@ -65,6 +65,7 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
 # this machine. Detection/import both happen server-side; the key itself is never sent to
 # the frontend at any point (see store.py's detect_/import_sibling_env_credentials).
 SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
+SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
 from model import devices, features, pipelines  # noqa: E402
 from Platform.webapp import runner, store  # noqa: E402
@@ -132,6 +133,27 @@ def get_credentials_status():
     """Never the API key itself — only whether one is configured, and for which TestRail
     URL/user. See store.py's module docstring for the encryption-at-rest design."""
     return store.get_credentials_status()
+
+
+@app.get("/api/setup-status")
+def get_setup_status(project: str, device: str):
+    """Real readiness signal for the sidebar's fade-until-set-up gate (George, 2026-09-08).
+    `docs_configured` deliberately checks TWO real things, not just console uploads: an
+    established project like Translink already has real knowledge/<project>/ content from
+    years of work that never went through this app's upload feature — gating on uploads
+    alone would wrongly show it as "not set up". A brand-new project with neither is
+    honestly not set up yet."""
+    creds = store.get_credentials_status()
+    suite_id = store.get_new_suite_id(project, device)
+    docs = store.list_docs(project, device)
+    knowledge_dir = SYSTEM_TEST_OPS_KNOWLEDGE / project.lower()
+    has_knowledge = knowledge_dir.is_dir() and any(knowledge_dir.rglob("*.md"))
+    return {
+        "credentials_configured": creds["configured"],
+        "suite_configured": suite_id is not None,
+        "docs_configured": bool(docs) or has_knowledge,
+        "ready": creds["configured"] and suite_id is not None and (bool(docs) or has_knowledge),
+    }
 
 
 @app.post("/api/credentials")

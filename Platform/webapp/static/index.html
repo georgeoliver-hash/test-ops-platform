@@ -163,6 +163,15 @@
   .variant-detail-body{padding:8px 2px 6px;}
   .variant-detail-body p{margin:0 0 8px;color:var(--ink-soft);}
   .variant-detail-body .step-detail-empty{color:var(--ink-soft);}
+
+  /* Collapsible sidebar groups (Start/Build/Audit/Maintain) — accordion, not a flat wall. */
+  .navgroup.collapsible .navgroup-header{display:flex;align-items:center;justify-content:space-between;padding:0 10px 6px;cursor:pointer;}
+  .navgroup.collapsible .navgroup-header:hover .label{color:var(--sidebar-ink);}
+  .navgroup.collapsible .navgroup-header .chevron{font-size:10px;transition:transform .15s;}
+  .navgroup.collapsible.open .navgroup-header .chevron{transform:rotate(90deg);}
+  .navgroup.collapsible .navgroup-items{display:none;}
+  .navgroup.collapsible.open .navgroup-items{display:block;}
+  .navitem.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
 </style>
 
 <div class="shell">
@@ -178,10 +187,13 @@
         <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
         <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
       </div>
-      <div class="navgroup" id="navStart"></div>
-      <div class="navgroup" id="navBuild"><div class="label">Build</div><span class="navitem skel">Loading…</span></div>
-      <div class="navgroup" id="navAudit"><div class="label">Audit</div></div>
-      <div class="navgroup" id="navMaintain"><div class="label">Maintain</div></div>
+      <div class="navgroup collapsible" id="navStart"></div>
+      <div class="navgroup collapsible" id="navBuild">
+        <div class="navgroup-header"><div class="label">Build</div><span class="chevron">▸</span></div>
+        <div class="navgroup-items"><span class="navitem skel">Loading…</span></div>
+      </div>
+      <div class="navgroup collapsible" id="navAudit"></div>
+      <div class="navgroup collapsible" id="navMaintain"></div>
       <div class="navgroup">
         <div class="label">Console</div>
         <button class="navitem" data-view="docs"><span class="dot"></span>Docs</button>
@@ -199,6 +211,13 @@
       <div class="target-chip" id="targetChip">Translink <span class="seg">/</span> POS <span class="seg">/</span> POS_Way6 <span class="seg">/</span> old: AA-POS Acceptance Test <span class="seg">/</span> new: GG - POS - Claude Suite</div>
       <div>
         <button class="btn" id="changeTargetBtn">Change target</button>
+      </div>
+    </div>
+    <div id="setupGateBanner" class="fixture-note" style="display:none;margin:14px 28px 0;background:var(--warn-bg);color:var(--warn);align-items:center;justify-content:space-between;gap:12px;">
+      <span></span>
+      <div style="display:flex;gap:6px;flex:none;">
+        <button class="btn" data-goto-view="settings" style="font-size:12px;padding:5px 10px;">Settings</button>
+        <button class="btn" data-goto-view="docs" style="font-size:12px;padding:5px 10px;">Docs</button>
       </div>
     </div>
     <div class="content" id="content"></div>
@@ -848,14 +867,19 @@ async function populateGroupedNav() {
     const byId = Object.fromEntries(list.map(p => [p.id, p]));
     for (const [groupName, ids] of Object.entries(GROUPS)) {
       const el = document.getElementById('nav' + groupName);
-      el.innerHTML = `<div class="label">${esc(groupName)}</div>` + ids.filter(id => byId[id]).map(id => {
+      const items = ids.filter(id => byId[id]).map(id => {
         const p = byId[id];
         return `<button class="navitem" data-pipeline="${esc(id)}"><span class="dot"></span>${esc(p.slash_command ? p.slash_command.replace('/', '').replace(/-/g,' ') : id)}</button>`;
       }).join('');
+      el.innerHTML = `<div class="navgroup-header"><div class="label">${esc(groupName)}</div><span class="chevron">▸</span></div><div class="navgroup-items">${items}</div>`;
     }
+    document.querySelectorAll('.navgroup.collapsible .navgroup-header').forEach(header => {
+      header.addEventListener('click', () => header.parentElement.classList.toggle('open'));
+    });
     document.querySelectorAll('.navitem[data-pipeline]').forEach(btn => {
       btn.addEventListener('click', () => { setActiveNav(btn); renderPipelineDetail(btn.dataset.pipeline); });
     });
+    refreshSetupGate(); // items exist now; apply gating (may run again once CURRENT_TARGET's own load path fires too)
   } catch (e) { /* leave groups empty if this fails; Overview/All-processes still work */ }
 }
 populateGroupedNav();
@@ -878,6 +902,36 @@ let SUITE_MAPPINGS = {};
 // a future pipeline run always lands against the project/device actually selected, not a
 // stale default.
 window.CURRENT_TARGET = {project: 'Translink', device: 'POS', model: 'POS_Way6'};
+
+/* ---------------- Setup-status gate: fade Start/Build/Audit/Maintain until this target is
+   actually ready (credentials + suite mapping + docs/knowledge). Docs/Settings stay live —
+   that's where setup happens. ---------------- */
+const GATED_GROUP_IDS = ['navStart', 'navBuild', 'navAudit', 'navMaintain'];
+async function refreshSetupGate() {
+  const {project, device} = window.CURRENT_TARGET || {};
+  if (!project || !device) return;
+  let status;
+  try {
+    status = await fetchJSON(`/api/setup-status?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`);
+  } catch (e) { return; } // leave whatever gating state we had rather than guess
+  GATED_GROUP_IDS.forEach(gid => {
+    const el = document.getElementById(gid);
+    if (!el) return;
+    el.classList.toggle('setup-gated', !status.ready);
+    el.querySelectorAll('.navitem[data-pipeline]').forEach(btn => btn.classList.toggle('disabled', !status.ready));
+  });
+  const banner = document.getElementById('setupGateBanner');
+  if (banner) {
+    banner.style.display = status.ready ? 'none' : 'flex';
+    if (!status.ready) {
+      const missing = [];
+      if (!status.credentials_configured) missing.push('TestRail credentials');
+      if (!status.suite_configured) missing.push('a suite target');
+      if (!status.docs_configured) missing.push('docs/knowledge');
+      banner.querySelector('span').textContent = `${project}/${device} isn't fully set up yet — missing: ${missing.join(', ')}. Build/Audit/Maintain are faded until this is complete.`;
+    }
+  }
+}
 
 async function loadSuiteMappings() {
   try {
@@ -976,5 +1030,15 @@ modalApply.addEventListener('click', () => {
     `<span class="seg">/</span> old: ${esc(pair.old)} <span class="seg">/</span> new: ${esc(pair.new)}`;
   targetModal.classList.remove('open');
   if (typeof ACTIVE_VIEW !== 'undefined' && VIEWS[ACTIVE_VIEW]) VIEWS[ACTIVE_VIEW]();
+  refreshSetupGate();
 });
+
+document.querySelectorAll('#setupGateBanner [data-goto-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const view = btn.dataset.gotoView;
+    const navBtn = document.querySelector(`.navitem[data-view="${view}"]`);
+    if (navBtn) { setActiveNav(navBtn); ACTIVE_VIEW = view; VIEWS[view](); }
+  });
+});
+refreshSetupGate();
 </script>

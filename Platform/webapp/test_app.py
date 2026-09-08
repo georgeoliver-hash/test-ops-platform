@@ -264,3 +264,24 @@ def test_run_rejects_a_target_with_no_suite_id_configured():
 def test_get_run_404_for_unknown_id():
     res = client.get("/api/pipelines/runs/does-not-exist")
     assert res.status_code == 404
+
+
+def test_setup_status_ready_for_a_real_configured_target():
+    client.post("/api/credentials", json={
+        "testrail_url": "https://example.testrail.io", "testrail_user": "x", "testrail_api_key": "y",
+    })
+    res = client.get("/api/setup-status", params={"project": "Translink", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["suite_configured"] is True
+    assert body["ready"] is True
+    client.delete("/api/credentials")
+
+
+def test_setup_status_not_ready_for_an_unconfigured_target():
+    res = client.get("/api/setup-status", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["suite_configured"] is False
+    assert body["docs_configured"] is False
+    assert body["ready"] is False
