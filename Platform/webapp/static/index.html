@@ -514,9 +514,40 @@ async function renderHealth() {
         ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
       </div>
       <div class="grid2">
-        <div>${runHealthTable}${deltaCard}<div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div></div>
+        <div>${runHealthTable}${deltaCard}<div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div>
+          <div class="card" id="runCommentsCard">
+            <h2>Run comments — reviewer notes
+              <select id="runCommentsWhich" style="font-size:12px;font-weight:400;margin-left:8px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+                <option value="new">New suite</option>
+                <option value="old">Old suite</option>
+              </select>
+            </h2>
+            <div id="runCommentsBody"><div class="loading">Pulling live comments from TestRail…</div></div>
+          </div>
+        </div>
         <div>${lastAuditCard}${gapsCard}${docsCard}${dataAsOf}</div>
       </div>`);
+
+    async function loadRunComments() {
+      const which = document.getElementById('runCommentsWhich').value;
+      const body = document.getElementById('runCommentsBody');
+      body.innerHTML = '<div class="loading">Pulling live comments from TestRail…</div>';
+      try {
+        const rc = await fetchJSON(`/api/run-comments?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}&which=${which}`);
+        if (!rc.available) { body.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">${esc(rc.reason)}</p>`; return; }
+        if (!rc.comments.length) { body.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">Checked ${rc.runs_checked} recent run(s) on suite C${rc.suite_id} — no comments found.</p>`; return; }
+        const statusPill = (id) => id === 1 ? 'ok' : id === 5 ? 'bad' : 'warn';
+        const statusLabel = (id) => ({1:'Passed',2:'Blocked',3:'Untested',4:'Retest',5:'Failed'}[id] || `Status ${id}`);
+        body.innerHTML = `<p style="color:var(--ink-soft);font-size:12px;margin:0 0 8px;">${rc.comments.length} comment(s) across ${rc.runs_checked} recent run(s) on suite C${rc.suite_id}.</p>
+          <ul class="activity">${rc.comments.slice(0,15).map(c => `
+            <li><span class="pill ${statusPill(c.status_id)}">${esc(statusLabel(c.status_id))}</span>&nbsp;
+              ${c.case_id ? `<b>C${c.case_id}</b> — ` : ''}${esc(c.comment.slice(0,140))}
+              <span style="color:var(--ink-soft);font-size:11px;display:block;">${c.created_on ? new Date(c.created_on*1000).toLocaleDateString() : ''} · ${esc(c.run_name)}</span>
+            </li>`).join('')}</ul>`;
+      } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    }
+    document.getElementById('runCommentsWhich').addEventListener('change', loadRunComments);
+    loadRunComments();
 
     fetchJSON(`/api/suite-comparison?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
       .then(cmp => {
@@ -705,13 +736,61 @@ async function renderRepoMap() {
 /* ---------------- Gap register ---------------- */
 async function renderGaps() {
   loading();
+  const target = window.CURRENT_TARGET || {};
   try {
-    const d = await fetchJSON('/api/gap-register');
+    const [d, answers] = await Promise.all([
+      fetchJSON('/api/gap-register'),
+      fetchJSON(`/api/gap-answers?project=${encodeURIComponent(target.project || '')}`).catch(() => []),
+    ]);
     const rows = d.shown.map(g => `<tr><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text)}</td></tr>`).join('');
+    const answerRows = answers.map(a => `
+      <li>
+        <b>${esc(a.gap_ref)}</b> — ${esc(a.answer)}
+        <button class="btn" data-del-answer="${a.id}" style="font-size:11px;padding:3px 8px;margin-left:6px;">Remove</button>
+        <span style="color:var(--ink-soft);font-size:11px;display:block;">Q: ${esc(a.question)} — answered by ${esc(a.answered_by)}, ${esc(new Date(a.created_at + 'Z').toLocaleString())}${a.device ? ` (${esc(a.device)})` : ''}</span>
+      </li>`).join('');
     setContent(`
       <div class="page-head"><h1>Gap register</h1><p>${d.total} real GAP/UNCONFIRMED marker(s) found repo-wide, showing first ${d.shown.length}.</p></div>
       ${d.is_fixture ? `<div class="fixture-note">⚠ Fixture data from a real gap-register run, 2026-09-07 — not live.</div>` : ''}
-      <div class="card"><table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table></div>`);
+      <div class="card"><table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table></div>
+      <div class="card">
+        <h2>Answer log — ${esc(target.project || 'no target')}</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record of gap questions and answers — plain storage, never AI-written. Does not edit the actual gap-register/knowledge files yet (that needs the same write-pipeline wiring everything else is waiting on) — this is the local decision trail in the meantime.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;margin-bottom:14px;">
+          <input id="gapRefInput" placeholder="Gap reference (e.g. file:line, or a case id like C4104592)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          <input id="gapQuestionInput" placeholder="Question" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          <input id="gapAnswerInput" placeholder="Answer" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          <div style="display:flex;gap:8px;">
+            <input id="gapDeviceInput" placeholder="Device (optional)" value="${esc(target.device || '')}" style="flex:1;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <button class="btn primary" id="gapAnswerSaveBtn">Log answer</button>
+          </div>
+          <div id="gapAnswerMsg" style="font-size:12.5px;"></div>
+        </div>
+        ${answerRows ? `<ul class="activity">${answerRows}</ul>` : '<p style="color:var(--ink-soft);font-size:13px;">No answers logged yet for this project.</p>'}
+      </div>`);
+
+    document.getElementById('gapAnswerSaveBtn').addEventListener('click', async () => {
+      const gap_ref = document.getElementById('gapRefInput').value.trim();
+      const question = document.getElementById('gapQuestionInput').value.trim();
+      const answer = document.getElementById('gapAnswerInput').value.trim();
+      const device = document.getElementById('gapDeviceInput').value.trim();
+      const msg = document.getElementById('gapAnswerMsg');
+      if (!gap_ref || !question || !answer) { msg.textContent = 'Gap reference, question, and answer are all required.'; return; }
+      try {
+        const res = await fetch('/api/gap-answers', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({project: target.project, device: device || null, gap_ref, question, answer}),
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        renderGaps();
+      } catch (e) { msg.textContent = 'Could not save: ' + e.message; }
+    });
+    content.querySelectorAll('[data-del-answer]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await fetch(`/api/gap-answers/${btn.dataset.delAnswer}`, {method: 'DELETE'});
+        renderGaps();
+      });
+    });
   } catch (e) { errbox('Could not load gap register: ' + e.message); }
 }
 

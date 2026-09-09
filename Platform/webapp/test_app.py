@@ -325,3 +325,38 @@ def test_suite_comparison_unavailable_for_unconfigured_target():
     res = client.get("/api/suite-comparison", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
     assert res.json()["available"] is False
+
+
+def test_gap_answer_add_list_and_delete_roundtrip():
+    res = client.post("/api/gap-answers", json={
+        "project": "TestProj", "device": "TVM", "gap_ref": "C123",
+        "question": "Is this stale?", "answer": "No, confirmed current.",
+    })
+    assert res.status_code == 200
+    answer_id = res.json()["id"]
+
+    res = client.get("/api/gap-answers", params={"project": "TestProj"})
+    assert res.status_code == 200
+    assert any(a["id"] == answer_id and a["gap_ref"] == "C123" for a in res.json())
+
+    res = client.delete(f"/api/gap-answers/{answer_id}")
+    assert res.status_code == 200
+    assert not any(a["id"] == answer_id for a in client.get("/api/gap-answers", params={"project": "TestProj"}).json())
+
+
+def test_gap_answer_rejects_blank_fields():
+    res = client.post("/api/gap-answers", json={
+        "project": "TestProj", "gap_ref": "", "question": "q", "answer": "a",
+    })
+    assert res.status_code == 400
+
+
+def test_run_comments_rejects_bad_which():
+    res = client.get("/api/run-comments", params={"project": "Translink", "device": "POS", "which": "sideways"})
+    assert res.status_code == 400
+
+
+def test_run_comments_unavailable_for_unconfigured_target():
+    res = client.get("/api/run-comments", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json()["available"] is False

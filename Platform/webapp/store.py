@@ -130,6 +130,19 @@ def init_db() -> None:
             )"""
         )
         conn.execute(
+            """CREATE TABLE IF NOT EXISTS gap_answers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                project TEXT NOT NULL,
+                device TEXT,
+                gap_ref TEXT NOT NULL,
+                question TEXT NOT NULL,
+                answer TEXT NOT NULL,
+                answered_by TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )"""
+        )
+        conn.execute(
             """CREATE TABLE IF NOT EXISTS pipeline_runs (
                 id TEXT PRIMARY KEY,
                 pipeline_id TEXT NOT NULL,
@@ -290,6 +303,46 @@ def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
             (pipeline_id, project, device),
         ).fetchone()
         return dict(row) if row else None
+
+
+def add_gap_answer(project: str, gap_ref: str, question: str, answer: str, answered_by: str, device: str | None = None, user_id: int = DEFAULT_USER_ID) -> int:
+    """A real, dated, code-only audit-trail entry for a gap-register question getting
+    answered -- George's explicit ask (2026-09-09): 'a log of confirm gap changes, answers,
+    dates times etc... if this could be code not AI that would be great.' No AI writes
+    this; it's a plain INSERT, timestamped by SQLite's own datetime('now').
+
+    Deliberately does NOT edit the actual knowledge/*.md or gap-register.md file the
+    gap_ref points at -- that's still the bigger, unbuilt, write-capable ingest pipeline.
+    This is the local record of the human decision, safe to build now."""
+    if not (project.strip() and gap_ref.strip() and question.strip() and answer.strip() and answered_by.strip()):
+        raise ValueError("project, gap_ref, question, answer, and answered_by are all required — no blanks.")
+    with _connect() as conn:
+        cur = conn.execute(
+            """INSERT INTO gap_answers (user_id, project, device, gap_ref, question, answer, answered_by, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
+            (user_id, project.strip(), (device or "").strip() or None, gap_ref.strip(), question.strip(), answer.strip(), answered_by.strip()),
+        )
+        return cur.lastrowid
+
+
+def list_gap_answers(project: str | None = None, user_id: int = DEFAULT_USER_ID) -> list[dict]:
+    with _connect() as conn:
+        if project:
+            rows = conn.execute(
+                "SELECT * FROM gap_answers WHERE user_id = ? AND project = ? ORDER BY created_at DESC",
+                (user_id, project),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM gap_answers WHERE user_id = ? ORDER BY created_at DESC", (user_id,),
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def delete_gap_answer(answer_id: int, user_id: int = DEFAULT_USER_ID) -> bool:
+    with _connect() as conn:
+        cur = conn.execute("DELETE FROM gap_answers WHERE id = ? AND user_id = ?", (answer_id, user_id))
+        return cur.rowcount > 0
 
 
 def get_credentials_status(user_id: int = DEFAULT_USER_ID) -> dict:

@@ -25,6 +25,7 @@ Runs go in a background thread (store.create_run/update_run track status) since 
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import threading
@@ -57,6 +58,66 @@ def _case_count(suite_id: int) -> int | None:
         return None
     match = re.search(r"Wrote (\d+) cases", result.stdout)
     return int(match.group(1)) if match else None
+
+
+def get_run_comments(project: str, device: str, which: str = "new", last_n: int = 5) -> dict:
+    """Real TestRail run comments (reviewer notes left when marking a result Passed/Failed/
+    Invalid/etc) -- read-only, direct TestRailClient import (no CLI subprocess needed since
+    this doesn't need to write any report file). Answers George's "is this a function
+    already???" (2026-09-09): no, nothing in this app surfaced result comments before this.
+
+    `which` picks old (read-only reference) or new (write target) suite -- useful either
+    way: a comment on the OLD suite's last real run is exactly the kind of evidence a
+    case-correctness question should cite; a comment on the NEW suite tracks review of
+    work actually done here.
+    """
+    ids = store.get_suite_ids(project, device)
+    if not ids or ids.get(f"{which}_suite_id") is None:
+        return {"available": False, "reason": f"No {which}_suite_id configured for this target."}
+    suite_id = ids[f"{which}_suite_id"]
+
+    # Shelled out to system-test-ops' own venv (has requests/dotenv; this app's venv
+    # doesn't) -- same execution boundary as the audit CLI step, just a read-only
+    # TestRailClient call with no CLI subcommand of its own yet, so a small inline script
+    # instead of a `python -m system_test_ops ...` invocation. Prints one JSON line.
+    script = (
+        "import json, os\n"
+        "from system_test_ops.testrail.client import TestRailClient\n"
+        "client = TestRailClient()\n"
+        "project_id = int(os.environ['TESTRAIL_PROJECT_ID'])\n"
+        f"suite_id = {suite_id}\n"
+        f"last_n = {last_n}\n"
+        "runs = [r for r in client.get_runs(project_id) if r.get('suite_id') == suite_id]\n"
+        "runs.sort(key=lambda r: r.get('created_on', 0), reverse=True)\n"
+        "runs = runs[:last_n]\n"
+        "comments = []\n"
+        "for run in runs:\n"
+        "    test_to_case = {t['id']: t.get('case_id') for t in client.get_tests(run['id'])}\n"
+        "    for result in client.get_results_for_run(run['id']):\n"
+        "        if result.get('comment'):\n"
+        "            comments.append({\n"
+        "                'run_id': run['id'], 'run_name': run.get('name', f\"Run {run['id']}\"),\n"
+        "                'case_id': test_to_case.get(result.get('test_id')), 'status_id': result.get('status_id'),\n"
+        "                'comment': result['comment'], 'created_by': result.get('created_by'),\n"
+        "                'created_on': result.get('created_on'),\n"
+        "            })\n"
+        "comments.sort(key=lambda c: c.get('created_on') or 0, reverse=True)\n"
+        "print(json.dumps({'runs_checked': len(runs), 'comments': comments}))\n"
+    )
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-c", script],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return {"available": False, "reason": f"Could not run TestRail query: {exc}"}
+    if result.returncode != 0:
+        return {"available": False, "reason": f"TestRail call failed: {result.stderr.strip()[-500:]}"}
+    try:
+        payload = json.loads(result.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        return {"available": False, "reason": "Could not parse TestRail response."}
+    return {"available": True, "suite_id": suite_id, **payload}
 
 
 def compare_suite_case_counts(project: str, device: str) -> dict:

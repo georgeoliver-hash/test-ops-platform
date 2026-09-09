@@ -92,6 +92,15 @@ class RunRequest(BaseModel):
     device: str
 
 
+class GapAnswerIn(BaseModel):
+    project: str
+    device: str | None = None
+    gap_ref: str
+    question: str
+    answer: str
+    answered_by: str = "George Oliver"
+
+
 class CredentialsIn(BaseModel):
     testrail_url: str
     testrail_user: str
@@ -322,6 +331,15 @@ def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
     return store.get_latest_run(pipeline_id, project, device) or {"status": None}
 
 
+@app.get("/api/run-comments")
+def get_run_comments(project: str, device: str, which: str = "new", last_n: int = 5):
+    """Real TestRail run-result comments (reviewer notes on Passed/Failed/Invalid/etc),
+    read-only. Answers George's 2026-09-08 question directly: not built before this."""
+    if which not in ("old", "new"):
+        raise HTTPException(status_code=400, detail="which must be 'old' or 'new'")
+    return runner.get_run_comments(project, device, which, last_n)
+
+
 @app.get("/api/suite-comparison")
 def get_suite_comparison(project: str, device: str):
     """Real, live old-vs-new case counts (two read-only TestRail pulls) -- one of the
@@ -377,6 +395,29 @@ def get_gap_register(limit: int = 25):
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
     markers = json.loads(path.read_text(encoding="utf-8"))
     return {"total": len(markers), "shown": markers[:limit], "is_fixture": True}
+
+
+@app.get("/api/gap-answers")
+def list_gap_answers(project: str | None = None):
+    """Local, code-only Q&A audit log — real timestamps, never AI-written. Does not edit
+    the actual gap-register/knowledge files; that's the separate, unbuilt ingest pipeline."""
+    return store.list_gap_answers(project)
+
+
+@app.post("/api/gap-answers")
+def add_gap_answer(body: GapAnswerIn):
+    try:
+        answer_id = store.add_gap_answer(body.project, body.gap_ref, body.question, body.answer, body.answered_by, body.device)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"ok": True, "id": answer_id}
+
+
+@app.delete("/api/gap-answers/{answer_id}")
+def remove_gap_answer(answer_id: int):
+    if not store.delete_gap_answer(answer_id):
+        raise HTTPException(status_code=404, detail="No such answer")
+    return {"ok": True}
 
 
 @app.get("/api/automation/keywords")
