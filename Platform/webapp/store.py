@@ -258,6 +258,19 @@ def get_run(run_id: str) -> dict | None:
         return dict(row) if row else None
 
 
+def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
+    """Most recent real run for this pipeline+target — a genuine 'last audited' timestamp,
+    not a guess, now that runs are actually tracked (see runner.py). Was flagged in
+    ISSUES.md as unbuildable ('no structured event source yet') until audit got wired."""
+    with _connect() as conn:
+        row = conn.execute(
+            """SELECT * FROM pipeline_runs WHERE pipeline_id = ? AND project = ? AND device = ?
+               ORDER BY created_at DESC LIMIT 1""",
+            (pipeline_id, project, device),
+        ).fetchone()
+        return dict(row) if row else None
+
+
 def get_credentials_status(user_id: int = DEFAULT_USER_ID) -> dict:
     """Never includes the API key itself — only whether one is configured, and for which
     TestRail URL/user, so the UI can show 'configured' without ever handling the secret."""

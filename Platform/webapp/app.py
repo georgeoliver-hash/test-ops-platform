@@ -314,6 +314,13 @@ def get_pipeline_run(run_id: str):
     return run
 
 
+@app.get("/api/pipelines/{pipeline_id}/last-run")
+def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
+    """A real 'last run' timestamp for this pipeline+target, or null if never run.
+    Only meaningful for pipelines that are actually runnable (today: audit)."""
+    return store.get_latest_run(pipeline_id, project, device) or {"status": None}
+
+
 @app.get("/api/build-stats")
 def get_build_stats():
     """Suite health — real numbers from an actual `build-stats` run against real POS report

@@ -394,6 +394,12 @@ content.addEventListener('click', (e) => {
     if (navBtn) { setActiveNav(navBtn); ACTIVE_VIEW = view; VIEWS[view](); }
     return;
   }
+  const gotoPipeline = e.target.closest('[data-goto-pipeline]');
+  if (gotoPipeline) {
+    e.preventDefault();
+    renderPipelineDetail(gotoPipeline.dataset.gotoPipeline);
+    return;
+  }
   const stepHead = e.target.closest('.flow-step.clickable');
   if (stepHead) { stepHead.parentElement.classList.toggle('step-open'); return; }
   const vRow = e.target.closest('.variant-row');
@@ -422,11 +428,12 @@ async function renderHealth() {
     return;
   }
   try {
-    const [bs, rh, gaps, docs] = await Promise.all([
+    const [bs, rh, gaps, docs, lastAudit] = await Promise.all([
       fetchJSON('/api/build-stats'),
       fetchJSON('/api/run-health').catch(() => null),
       fetchJSON('/api/gap-register?limit=5').catch(() => null),
       fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => []),
+      fetchJSON(`/api/pipelines/audit/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => ({status: null})),
     ]);
     const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
 
@@ -486,6 +493,15 @@ async function renderHealth() {
         </ul>
       </div>`;
 
+    const lastAuditCard = `
+      <div class="card">
+        <h2>Last audit run <a href="#" data-goto-pipeline="audit" style="font-size:11.5px;font-weight:400;">Run again →</a></h2>
+        ${lastAudit.status
+          ? `<p style="font-size:13.5px;margin:0;">${lastAudit.status === 'succeeded' ? '<span class="pill ok">Succeeded</span>' : lastAudit.status === 'running' ? '<span class="pill warn">Running</span>' : '<span class="pill bad">Failed</span>'} — ${esc(new Date(lastAudit.updated_at + 'Z').toLocaleString())}</p>
+             ${lastAudit.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(lastAudit.summary)}</p>` : ''}`
+          : `<p style="color:var(--ink-soft);font-size:13px;">Never run for ${esc(target.project)}/${esc(target.device)} yet — a real timestamp will show here once it is.</p>`}
+      </div>`;
+
     setContent(`
       <div class="page-head"><h1>Suite health — ${esc(bs.project)}</h1><p>${esc(bs.suite)} · generated ${esc(bs.generated_at)}</p></div>
       ${fixtureNote}
@@ -499,7 +515,7 @@ async function renderHealth() {
       </div>
       <div class="grid2">
         <div>${runHealthTable}${deltaCard}</div>
-        <div>${gapsCard}${docsCard}${dataAsOf}</div>
+        <div>${lastAuditCard}${gapsCard}${docsCard}${dataAsOf}</div>
       </div>`);
   } catch (e) { errbox('Could not load suite health: ' + e.message); }
 }

@@ -313,3 +313,9 @@ def test_refresh_check_detects_new_then_unchanged_then_modified(tmp_path, monkey
     res = client.post("/api/docs/testproj/refresh-check")
     body = res.json()
     assert body["changed"] == ["spec.txt"]
+
+
+def test_last_run_null_when_never_run():
+    res = client.get("/api/pipelines/audit/last-run", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json()["status"] is None
