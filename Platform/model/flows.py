@@ -46,12 +46,20 @@ def _default_screenflow_root() -> Path:
 
 SCREENFLOW_ROOT = _default_screenflow_root()
 
-_COMMENT_LINE = re.compile(r"^\s*//.*$", re.MULTILINE)
+_STRING_OR_COMMENT = re.compile(r'"(?:\\.|[^"\\])*"|(//.*)$', re.MULTILINE)
 
 
 def _strip_jsonc_comments(text: str) -> str:
-    """screenflow_map.jsonc allows // line comments — bare json.loads chokes on them."""
-    return _COMMENT_LINE.sub("", text)
+    """screenflow_map.jsonc allows // line comments — bare json.loads chokes on them.
+
+    Matches a full quoted string OR a trailing // comment at each position, alternation-
+    first — a `//` that's actually inside a string value never reaches the comment branch,
+    since the string alternative consumes it first. A prior version only matched comments
+    that start a line (`^\\s*//`), missing the equally real trailing-comment case (e.g.
+    `"StaffPin": "...",  // TODO`) — found via Translink/BV's screenflow_map.jsonc, which
+    that shape broke on (json.decoder.JSONDecodeError), 2026-09-09.
+    """
+    return _STRING_OR_COMMENT.sub(lambda m: "" if m.group(1) else m.group(0), text)
 
 
 class NavigationAction(BaseModel):

@@ -172,12 +172,21 @@
   .navgroup.collapsible .navgroup-items{display:none;}
   .navgroup.collapsible.open .navgroup-items{display:block;}
   .navitem.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+  .console-tabs{display:flex;gap:4px;padding:0 8px 16px;}
+  .console-tab{flex:1;font-family:inherit;font-size:12px;font-weight:600;padding:7px 0;border-radius:7px;border:none;background:none;color:var(--sidebar-ink-dim);cursor:pointer;}
+  .console-tab:hover{color:var(--sidebar-ink);}
+  .console-tab.active{background:rgba(255,255,255,.1);color:#fff;}
 </style>
 
 <div class="shell">
   <aside class="sidebar">
     <div class="logo-row"><img src="/assets/arrive-logo.png" alt="Arrive"></div>
     <div class="tool-name">Test-Ops Console</div>
+    <div class="console-tabs">
+      <button class="console-tab active" id="tabTestOps">Test-Ops</button>
+      <button class="console-tab" id="tabAutomation">Automation</button>
+    </div>
     <nav class="navgroups" id="navgroups">
       <div class="navgroup">
         <div class="label">Overview</div>
@@ -198,6 +207,13 @@
         <div class="label">Console</div>
         <button class="navitem" data-view="docs"><span class="dot"></span>Docs</button>
         <button class="navitem" data-view="settings"><span class="dot"></span>Settings</button>
+      </div>
+    </nav>
+    <nav class="navgroups" id="automationNavgroups" style="display:none;">
+      <div class="navgroup">
+        <div class="label">Test Automation (SIT — view only)</div>
+        <button class="navitem" data-aview="keywords"><span class="dot"></span>Keywords</button>
+        <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
       </div>
     </nav>
     <div class="sidebar-foot">
@@ -910,12 +926,113 @@ async function populateGroupedNav() {
 }
 populateGroupedNav();
 
+/* ---------------- Test Automation console (SIT keywords + screen flows — view only) ---------------- */
+async function renderKeywords() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/automation/keywords');
+    const rows = d.keywords.map(k => `<tr><td><span class="pill code">${esc(k.device_family)}</span></td><td>${esc(k.phrase)}</td><td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.source_file)}</code></td></tr>`).join('');
+    setContent(`
+      <div class="page-head"><h1>SIT function keywords</h1><p>${d.total} real Given/When/Then keywords, parsed live from SIT's Bindings/*.robot files — view only, nothing here is editable.</p></div>
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <select id="kwFamilyFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="">All families</option>
+            ${d.device_families.map(f => `<option value="${esc(f)}">${esc(f)}</option>`).join('')}
+          </select>
+          <input id="kwSearch" placeholder="Search phrase…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+        </div>
+        <table><tr><th>Family</th><th>Phrase</th><th>Source</th></tr><tbody id="kwRows">${rows}</tbody></table>
+      </div>`);
+
+    async function reload() {
+      const family = document.getElementById('kwFamilyFilter').value;
+      const q = document.getElementById('kwSearch').value;
+      const params = new URLSearchParams();
+      if (family) params.set('device_family', family);
+      if (q) params.set('q', q);
+      const res = await fetchJSON(`/api/automation/keywords?${params}`);
+      document.getElementById('kwRows').innerHTML = res.keywords.map(k => `<tr><td><span class="pill code">${esc(k.device_family)}</span></td><td>${esc(k.phrase)}</td><td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.source_file)}</code></td></tr>`).join('');
+    }
+    document.getElementById('kwFamilyFilter').addEventListener('change', reload);
+    let kwDebounce;
+    document.getElementById('kwSearch').addEventListener('input', () => { clearTimeout(kwDebounce); kwDebounce = setTimeout(reload, 200); });
+  } catch (e) { errbox('Could not load keywords: ' + e.message); }
+}
+
+async function renderFlows() {
+  loading();
+  try {
+    const taxonomy = TAXONOMY && Object.keys(TAXONOMY).length ? TAXONOMY : await fetchJSON('/api/taxonomy');
+    const projects = Object.keys(taxonomy);
+    const defaultProject = (window.CURRENT_TARGET && window.CURRENT_TARGET.project) || projects[0];
+    setContent(`
+      <div class="page-head"><h1>SIT screen flows</h1><p>Real screen-transition graphs, straight from SIT's own screenflow_map.jsonc discovery output — view only.</p></div>
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <select id="flowProject" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            ${projects.map(p => `<option value="${esc(p)}" ${p===defaultProject?'selected':''}>${esc(p)}</option>`).join('')}
+          </select>
+          <select id="flowDevice" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></select>
+        </div>
+        <div id="flowGraphArea"><div class="loading">Pick a project/device…</div></div>
+      </div>`);
+
+    async function loadDevices() {
+      const project = document.getElementById('flowProject').value;
+      const res = await fetchJSON(`/api/automation/flows?project=${encodeURIComponent(project)}`);
+      const sel = document.getElementById('flowDevice');
+      sel.innerHTML = res.device_types.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+      if (res.device_types.length) loadGraph();
+      else document.getElementById('flowGraphArea').innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">No screen-flow graph found for ${esc(project)}.</p>`;
+    }
+    async function loadGraph() {
+      const project = document.getElementById('flowProject').value;
+      const device = document.getElementById('flowDevice').value;
+      const area = document.getElementById('flowGraphArea');
+      area.innerHTML = '<div class="loading">Loading…</div>';
+      try {
+        const g = await fetchJSON(`/api/automation/flows/${encodeURIComponent(project)}/${encodeURIComponent(device)}`);
+        const rows = g.transitions.map(t => `<tr><td>${esc(t.from_screen)}</td><td>→</td><td>${esc(t.to_screen)}</td><td><span class="pill human">${esc(t.type)}</span></td><td>${esc(t.keys || '')}</td></tr>`).join('');
+        area.innerHTML = `
+          <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${g.screens.length} screens, ${g.transitions.length} transitions. Source: <code>${esc(g.source_path)}</code></p>
+          <table><tr><th>From</th><th></th><th>To</th><th>Trigger</th><th>Keys</th></tr>${rows}</table>`;
+      } catch (e) { area.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    }
+    document.getElementById('flowProject').addEventListener('change', loadDevices);
+    document.getElementById('flowDevice').addEventListener('change', loadGraph);
+    loadDevices();
+  } catch (e) { errbox('Could not load flows: ' + e.message); }
+}
+
 const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings};
+const AUTOMATION_VIEWS = {keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 document.querySelectorAll('.navitem[data-view]').forEach(btn => {
   btn.addEventListener('click', () => { setActiveNav(btn); ACTIVE_VIEW = btn.dataset.view; VIEWS[btn.dataset.view](); });
 });
+document.querySelectorAll('.navitem[data-aview]').forEach(btn => {
+  btn.addEventListener('click', () => { setActiveNav(btn); AUTOMATION_VIEWS[btn.dataset.aview](); });
+});
 renderHealth();
+
+/* ---------------- Console-mode tab switcher ---------------- */
+const tabTestOps = document.getElementById('tabTestOps');
+const tabAutomation = document.getElementById('tabAutomation');
+const testOpsNav = document.getElementById('navgroups');
+const automationNav = document.getElementById('automationNavgroups');
+tabTestOps.addEventListener('click', () => {
+  tabTestOps.classList.add('active'); tabAutomation.classList.remove('active');
+  testOpsNav.style.display = ''; automationNav.style.display = 'none';
+  const active = document.querySelector('#navgroups .navitem.active') || document.querySelector('#navgroups .navitem[data-view]');
+  if (active) { setActiveNav(active); (VIEWS[active.dataset.view] || renderHealth)(); } else { renderHealth(); }
+});
+tabAutomation.addEventListener('click', () => {
+  tabAutomation.classList.add('active'); tabTestOps.classList.remove('active');
+  testOpsNav.style.display = 'none'; automationNav.style.display = '';
+  const firstBtn = document.querySelector('#automationNavgroups .navitem[data-aview]');
+  if (firstBtn) { setActiveNav(firstBtn); AUTOMATION_VIEWS[firstBtn.dataset.aview](); }
+});
 
 /* ---------------- Target switcher — real taxonomy + real, API-backed suite mappings ---------------- */
 let TAXONOMY = {};

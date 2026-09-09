@@ -67,7 +67,7 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
 SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
-from model import devices, features, pipelines  # noqa: E402
+from model import devices, features, flows, functions, pipelines  # noqa: E402
 from Platform.webapp import runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
@@ -362,6 +362,37 @@ def get_gap_register(limit: int = 25):
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
     markers = json.loads(path.read_text(encoding="utf-8"))
     return {"total": len(markers), "shown": markers[:limit], "is_fixture": True}
+
+
+@app.get("/api/automation/keywords")
+def get_automation_keywords(device_family: str | None = None, q: str | None = None):
+    """Real SIT function keywords, parsed live from Bindings/*.robot files (model/functions.py)
+    -- view-only, per George 2026-09-08 ('just for viewing'). Same data test-automation-sit's
+    Given/When/Then steps already resolve against; nothing here writes anything."""
+    keywords = functions.load_all_keywords()
+    if device_family:
+        keywords = [k for k in keywords if k.device_family.lower() == device_family.lower()]
+    if q:
+        needle = q.lower()
+        keywords = [k for k in keywords if needle in k.phrase.lower()]
+    families = sorted({k.device_family for k in functions.load_all_keywords()})
+    return {"total": len(keywords), "device_families": families, "keywords": [k.model_dump() for k in keywords]}
+
+
+@app.get("/api/automation/flows")
+def get_automation_flow_devices(project: str):
+    """Device types with a real screenflow_map.jsonc for this project (model/flows.py)."""
+    return {"project": project, "device_types": flows.available_screen_graphs(project)}
+
+
+@app.get("/api/automation/flows/{project}/{device_type}")
+def get_automation_flow_graph(project: str, device_type: str):
+    """One device's real screen-transition graph, straight from SIT's discovery output."""
+    try:
+        graph = flows.load_screen_graph(project, device_type)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return graph.model_dump()
 
 
 @app.get("/api/repo-map")

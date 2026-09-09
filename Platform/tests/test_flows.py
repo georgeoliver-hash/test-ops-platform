@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from model.flows import available_screen_graphs, load_flow_map, load_screen_graph
+from model.flows import _strip_jsonc_comments, available_screen_graphs, load_flow_map, load_screen_graph
 
 TESTOPS_KNOWLEDGE_FLOWS = (
     Path(__file__).resolve().parent.parent / "testops" / "knowledge" / "flows"
@@ -81,3 +81,27 @@ def test_uncovered_paths_are_the_ones_with_no_case_ids(tmp_path):
     assert len(uncovered) == 1
     assert uncovered[0].path_id == 2
     assert uncovered[0].covered_by_raw == "?"
+
+
+def test_strip_jsonc_comments_handles_trailing_inline_comments():
+    # Real shape from Translink/BV's screenflow_map.jsonc, 2026-09-09: a prior version of
+    # this stripper only matched comments that START a line, missing this trailing case.
+    raw = '{\n  "StaffPin": "[StaffPin]1234",  // TODO\n  "Other": "value"\n}'
+    stripped = _strip_jsonc_comments(raw)
+    import json
+    parsed = json.loads(stripped)
+    assert parsed == {"StaffPin": "[StaffPin]1234", "Other": "value"}
+
+
+def test_strip_jsonc_comments_does_not_eat_slashes_inside_strings():
+    raw = '{\n  "Url": "http://example.com"  // a real comment\n}'
+    stripped = _strip_jsonc_comments(raw)
+    import json
+    parsed = json.loads(stripped)
+    assert parsed == {"Url": "http://example.com"}
+
+
+def test_translink_bv_screen_graph_parses():
+    graph = load_screen_graph("Translink", "BV")
+    assert len(graph.screens) > 0
+    assert len(graph.transitions) > 0
