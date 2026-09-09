@@ -514,9 +514,31 @@ async function renderHealth() {
         ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
       </div>
       <div class="grid2">
-        <div>${runHealthTable}${deltaCard}</div>
+        <div>${runHealthTable}${deltaCard}<div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div></div>
         <div>${lastAuditCard}${gapsCard}${docsCard}${dataAsOf}</div>
       </div>`);
+
+    fetchJSON(`/api/suite-comparison?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
+      .then(cmp => {
+        const el = document.getElementById('suiteComparisonCard');
+        if (!el) return;
+        if (!cmp.available) {
+          el.innerHTML = `<h2>Old vs. new suite — case counts</h2><p style="color:var(--ink-soft);font-size:13px;">${esc(cmp.reason)}</p>`;
+          return;
+        }
+        const diffCls = cmp.diff < 0 ? 'bad' : cmp.diff > 0 ? 'ok' : '';
+        el.innerHTML = `
+          <h2>Old vs. new suite — case counts <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">(live)</span></h2>
+          <div class="stat-row">
+            <div class="stat"><span class="n">${cmp.old_case_count}</span><span class="l">old suite (C${cmp.old_suite_id})</span></div>
+            <div class="stat"><span class="n">${cmp.new_case_count}</span><span class="l">new suite (C${cmp.new_suite_id})</span></div>
+            <div class="stat ${diffCls}"><span class="n">${cmp.diff > 0 ? '+' : ''}${cmp.diff}</span><span class="l">difference</span></div>
+          </div>`;
+      })
+      .catch(() => {
+        const el = document.getElementById('suiteComparisonCard');
+        if (el) el.innerHTML = `<h2>Old vs. new suite — case counts</h2><div class="errbox">Could not pull live counts.</div>`;
+      });
   } catch (e) { errbox('Could not load suite health: ' + e.message); }
 }
 

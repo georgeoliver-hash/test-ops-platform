@@ -44,6 +44,40 @@ def is_runnable(pipeline_id: str) -> bool:
     return pipeline_id in RUNNABLE_PIPELINES
 
 
+def _case_count(suite_id: int) -> int | None:
+    """Real, live case count for one suite via `system_test_ops cases` (read-only — that
+    command only ever reads TestRail and writes local report files). Parses the CLI's own
+    "Wrote N cases ->" line rather than re-implementing the TestRail call here."""
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-m", "system_test_ops", "cases", "--suite", str(suite_id)],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        return None
+    match = re.search(r"Wrote (\d+) cases", result.stdout)
+    return int(match.group(1)) if match else None
+
+
+def compare_suite_case_counts(project: str, device: str) -> dict:
+    """Real old-vs-new case counts for a target, live from TestRail (two read-only CLI
+    calls) -- suggested in ISSUES.md, buildable now that credentials + both suite ids
+    (old_suite_id added 2026-09-09) exist for the seeded Translink pairs."""
+    ids = store.get_suite_ids(project, device)
+    if not ids or ids["old_suite_id"] is None or ids["new_suite_id"] is None:
+        return {"available": False, "reason": "old_suite_id and/or new_suite_id not configured for this target."}
+    old_count = _case_count(ids["old_suite_id"])
+    new_count = _case_count(ids["new_suite_id"])
+    if old_count is None or new_count is None:
+        return {"available": False, "reason": "Could not pull live case counts (check TestRail credentials/connectivity)."}
+    return {
+        "available": True,
+        "old_suite_id": ids["old_suite_id"], "new_suite_id": ids["new_suite_id"],
+        "old_case_count": old_count, "new_case_count": new_count,
+        "diff": new_count - old_count,
+    }
+
+
 def start_audit_run(project: str, device: str) -> str:
     """Kicks off a real `audit` run in the background, returns a run id to poll."""
     suite_id = store.get_new_suite_id(project, device)

@@ -84,6 +84,7 @@ class SuiteMappingIn(BaseModel):
     old_suite: str
     new_suite: str
     new_suite_id: int | None = None
+    old_suite_id: int | None = None
 
 
 class RunRequest(BaseModel):
@@ -114,7 +115,7 @@ def get_suite_mappings():
 @app.post("/api/suite-mappings")
 def put_suite_mapping(body: SuiteMappingIn):
     try:
-        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id)
+        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True}
@@ -319,6 +320,13 @@ def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
     """A real 'last run' timestamp for this pipeline+target, or null if never run.
     Only meaningful for pipelines that are actually runnable (today: audit)."""
     return store.get_latest_run(pipeline_id, project, device) or {"status": None}
+
+
+@app.get("/api/suite-comparison")
+def get_suite_comparison(project: str, device: str):
+    """Real, live old-vs-new case counts (two read-only TestRail pulls) -- one of the
+    'suggestions' from ISSUES.md, now buildable with old_suite_id stored."""
+    return runner.compare_suite_case_counts(project, device)
 
 
 @app.get("/api/build-stats")

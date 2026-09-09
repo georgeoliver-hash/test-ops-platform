@@ -319,3 +319,9 @@ def test_last_run_null_when_never_run():
     res = client.get("/api/pipelines/audit/last-run", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
     assert res.json()["status"] is None
+
+
+def test_suite_comparison_unavailable_for_unconfigured_target():
+    res = client.get("/api/suite-comparison", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json()["available"] is False
