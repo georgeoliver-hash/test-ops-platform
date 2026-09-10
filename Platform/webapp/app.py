@@ -67,7 +67,7 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
 SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
-from model import devices, features, flows, functions, pipelines  # noqa: E402
+from model import automation_tests, devices, features, flows, functions, pipelines  # noqa: E402
 from Platform.webapp import runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
@@ -450,6 +450,29 @@ def get_automation_flow_graph(project: str, device_type: str):
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return graph.model_dump()
+
+
+@app.get("/api/automation/tests")
+def get_automation_tests(project: str | None = None, device_type: str | None = None, q: str | None = None):
+    """Real automation-test inventory, parsed live from test-automation-sit's own .robot
+    files -- how many tests exist, for what project/device/feature (George, 2026-09-10).
+    Not the same axis as SIT keywords -- this counts actual written tests."""
+    suites = automation_tests.load_all_suites()
+    summary = automation_tests.summarize(suites)
+    filtered = suites
+    if project:
+        filtered = [s for s in filtered if (s.project or "").lower() == project.lower()]
+    if device_type:
+        filtered = [s for s in filtered if any(d.lower() == device_type.lower() for d in s.device_types)]
+    if q:
+        needle = q.lower()
+        filtered = [s for s in filtered if any(needle in c.name.lower() for c in s.cases) or needle in (s.feature or "").lower()]
+    return {
+        "summary": summary,
+        "projects": sorted(summary["by_project"].keys()),
+        "device_types": sorted(summary["by_device_type"].keys()),
+        "suites": [s.model_dump() for s in filtered],
+    }
 
 
 @app.get("/api/repo-map")

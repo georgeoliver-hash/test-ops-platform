@@ -212,6 +212,8 @@
     <nav class="navgroups" id="automationNavgroups" style="display:none;">
       <div class="navgroup">
         <div class="label">Test Automation (SIT — view only)</div>
+        <button class="navitem" data-aview="dashboard"><span class="dot"></span>Dashboard</button>
+        <button class="navitem" data-aview="tests"><span class="dot"></span>Tests written</button>
         <button class="navitem" data-aview="keywords"><span class="dot"></span>Keywords</button>
         <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
       </div>
@@ -402,6 +404,14 @@ content.addEventListener('click', (e) => {
   if (gotoPipeline) {
     e.preventDefault();
     renderPipelineDetail(gotoPipeline.dataset.gotoPipeline);
+    return;
+  }
+  const gotoAview = e.target.closest('[data-goto-aview]');
+  if (gotoAview) {
+    e.preventDefault();
+    const view = gotoAview.dataset.gotoAview;
+    const navBtn = document.querySelector(`.navitem[data-aview="${view}"]`);
+    if (navBtn) { setActiveNav(navBtn); AUTOMATION_VIEWS[view](); }
     return;
   }
   const stepHead = e.target.closest('.flow-step.clickable');
@@ -1099,6 +1109,80 @@ async function populateGroupedNav() {
 populateGroupedNav();
 
 /* ---------------- Test Automation console (SIT keywords + screen flows — view only) ---------------- */
+/* ---------------- Automation dashboard: real test-count summary ---------------- */
+async function renderAutomationDashboard() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/automation/tests');
+    const s = d.summary;
+    const barRow = (label, obj, cls) => Object.entries(obj).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="width:100px;font-size:12.5px;flex:none;">${esc(k)}</span>
+        <div style="flex:1;background:var(--bg);border-radius:4px;height:8px;overflow:hidden;"><div style="height:100%;width:${Math.max(4, v/s.total_tests*100)}%;background:var(--${cls});"></div></div>
+        <span style="font-size:12px;color:var(--ink-soft);width:24px;text-align:right;">${v}</span>
+      </div>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Automation dashboard</h1><p>Real counts, parsed live from test-automation-sit's own .robot files — not SIT keywords, actual written tests.</p></div>
+      <div class="stat-row">
+        <div class="stat"><span class="n">${s.total_tests}</span><span class="l">tests written</span></div>
+        <div class="stat"><span class="n">${s.total_suites}</span><span class="l">suites</span></div>
+        <div class="stat"><span class="n">${Object.keys(s.by_project).length}</span><span class="l">projects</span></div>
+        <div class="stat"><span class="n">${Object.keys(s.by_feature).length}</span><span class="l">functions/features</span></div>
+      </div>
+      <div class="grid2">
+        <div class="card"><h2>By project</h2>${barRow('', s.by_project, 'ai')}</div>
+        <div class="card"><h2>By device type</h2>${barRow('', s.by_device_type, 'code')}</div>
+      </div>
+      <div class="card"><h2>By function/feature <a href="#" data-goto-aview="tests" style="font-size:11.5px;font-weight:400;">See all tests →</a></h2>${barRow('', s.by_feature, 'gate')}</div>`);
+  } catch (e) { errbox('Could not load automation dashboard: ' + e.message); }
+}
+
+/* ---------------- Automation tests written: searchable list ---------------- */
+async function renderAutomationTestsWritten() {
+  loading();
+  try {
+    const d = await fetchJSON('/api/automation/tests');
+    const renderSuites = (suites) => suites.map(s => `
+      <div class="card">
+        <h2 style="font-size:14px;">${esc(s.project || '?')} ${s.device_types.length ? '/ ' + s.device_types.map(esc).join(', ') : ''} <code style="font-size:11px;color:var(--ink-soft);">${esc(s.feature || '')}</code></h2>
+        <p style="color:var(--ink-soft);font-size:11px;margin:0 0 8px;">${esc(s.source_file)}</p>
+        <ul class="activity">${s.cases.map(c => `<li>${esc(c.name)} ${c.tags.length ? c.tags.map(t=>`<span class="pill warn" style="margin-left:4px;">${esc(t)}</span>`).join('') : ''}</li>`).join('')}</ul>
+      </div>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Automation tests written</h1><p>${d.summary.total_tests} real tests across ${d.summary.total_suites} suites.</p></div>
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:6px;">
+          <select id="atProjectFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="">All projects</option>
+            ${d.projects.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}
+          </select>
+          <select id="atDeviceFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="">All devices</option>
+            ${d.device_types.map(dv => `<option value="${esc(dv)}">${esc(dv)}</option>`).join('')}
+          </select>
+          <input id="atSearch" placeholder="Search test name or feature…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+        </div>
+      </div>
+      <div id="atResults">${renderSuites(d.suites)}</div>`);
+
+    async function reload() {
+      const project = document.getElementById('atProjectFilter').value;
+      const device_type = document.getElementById('atDeviceFilter').value;
+      const q = document.getElementById('atSearch').value;
+      const params = new URLSearchParams();
+      if (project) params.set('project', project);
+      if (device_type) params.set('device_type', device_type);
+      if (q) params.set('q', q);
+      const res = await fetchJSON(`/api/automation/tests?${params}`);
+      document.getElementById('atResults').innerHTML = renderSuites(res.suites) || '<div class="card"><p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p></div>';
+    }
+    document.getElementById('atProjectFilter').addEventListener('change', reload);
+    document.getElementById('atDeviceFilter').addEventListener('change', reload);
+    let atDebounce;
+    document.getElementById('atSearch').addEventListener('input', () => { clearTimeout(atDebounce); atDebounce = setTimeout(reload, 200); });
+  } catch (e) { errbox('Could not load automation tests: ' + e.message); }
+}
+
 async function renderKeywords() {
   loading();
   try {
@@ -1178,7 +1262,7 @@ async function renderFlows() {
 }
 
 const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings};
-const AUTOMATION_VIEWS = {keywords: renderKeywords, flows: renderFlows};
+const AUTOMATION_VIEWS = {dashboard: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 document.querySelectorAll('.navitem[data-view]').forEach(btn => {
   btn.addEventListener('click', () => { setActiveNav(btn); ACTIVE_VIEW = btn.dataset.view; VIEWS[btn.dataset.view](); });
