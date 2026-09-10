@@ -25,7 +25,7 @@ def test_default_user_seeded(store):
 
 def test_seed_mappings_are_the_real_documented_ones(store):
     mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
-    assert len(mappings) == 6
+    assert len(mappings) == 8
     assert mappings["Translink|POS"]["old_suite"] == "AA-POS Acceptance Test"
     assert mappings["Translink|POS"]["new_suite"] == "GG - POS - Claude Suite"
     assert mappings["Translink|TVM"]["old_suite"] == "AA-TVM-Acceptance Test-V03"
@@ -33,6 +33,10 @@ def test_seed_mappings_are_the_real_documented_ones(store):
     assert mappings["Translink|ETM"]["old_suite"] == "AA-ETM-Acceptance Test"
     assert mappings["Translink|ETM"]["new_suite"] == "NEW ETM-Acceptance Suite"
     assert mappings["Translink|GV"]["old_suite"] == "AA - Gate Validator - Acceptance Test"
+    assert mappings["Translink|BOS"]["old_suite"] == "2.1-Backoffice Systems - Acceptance Suite"
+    assert mappings["Translink|BOS"]["new_suite_id"] == 30279
+    assert mappings["NJT|ETM"]["old_suite"] == ""  # fresh build, no old suite by design
+    assert mappings["NJT|ETM"]["new_suite"] == "NJT - SystemTestOps"
     assert mappings["Translink|PV"]["old_suite"] == "AA-Platform Validator Acceptance Test"
 
 
@@ -106,3 +110,20 @@ def test_secret_key_file_created_and_reused(store):
     key_bytes_2 = store._key_path().read_bytes()
     assert key_bytes_1 == key_bytes_2  # same key reused, not regenerated per save
     assert store.decrypt_api_key() == "key-b"
+
+
+def test_fresh_build_requires_explicit_flag_not_just_blank_old_suite(store):
+    with pytest.raises(ValueError):
+        store.upsert_suite_mapping("PERTH", "POS", "", "New PERTH Suite")
+
+
+def test_fresh_build_with_explicit_flag_succeeds(store):
+    store.upsert_suite_mapping("PERTH", "POS", "", "New PERTH Suite", fresh_build=True)
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["PERTH|POS"]["old_suite"] == ""
+    assert mappings["PERTH|POS"]["new_suite"] == "New PERTH Suite"
+
+
+def test_get_suite_ids_for_bos(store):
+    ids = store.get_suite_ids("Translink", "BOS")
+    assert ids == {"old_suite_id": 14441, "new_suite_id": 30279}

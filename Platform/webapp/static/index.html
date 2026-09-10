@@ -255,7 +255,11 @@
           <button class="btn" id="suiteDeleteBtn" type="button" style="font-size:12px;padding:6px 10px;display:none;">Remove pair</button>
         </div>
         <div id="suiteEditForm" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);gap:8px;flex-direction:column;">
-          <div class="field" style="margin:0;"><label>Old suite (read-only source)</label><input type="text" id="editOldSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft);">
+            <input type="checkbox" id="editFreshBuild">
+            Fresh build — no old suite to reference (building purely from documentation)
+          </label>
+          <div class="field" style="margin:0;" id="editOldSuiteField"><label>Old suite (read-only source)</label><input type="text" id="editOldSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
           <div class="field" style="margin:0;"><label>New suite (write target)</label><input type="text" id="editNewSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;">
             <button class="btn" id="suiteEditCancel" type="button" style="font-size:12px;">Cancel</button>
@@ -919,7 +923,7 @@ async function renderSettings() {
     const mapRows = mappings.map(m => `
       <tr>
         <td>${esc(m.project)}</td><td>${esc(m.device)}</td>
-        <td>${esc(m.old_suite)}</td><td>${esc(m.new_suite)}</td>
+        <td>${m.old_suite ? esc(m.old_suite) : '<i style="color:var(--ink-soft);">fresh build</i>'}</td><td>${esc(m.new_suite)}</td>
         <td><button class="btn" data-del-map="${esc(m.project)}|${esc(m.device)}" style="font-size:12px;padding:5px 10px;">Remove</button></td>
       </tr>`).join('');
     const mapCard = `
@@ -1249,6 +1253,7 @@ async function loadSuiteMappings() {
     const rows = await fetchJSON('/api/suite-mappings');
     SUITE_MAPPINGS = {};
     rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite}; });
+    if (Object.keys(TAXONOMY).length && typeof refreshDevices === 'function') refreshDevices(); // pick up TestRail-only devices (e.g. BOS) that just loaded
   } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
 }
 
@@ -1268,8 +1273,21 @@ const editOldSuite = document.getElementById('editOldSuite');
 const editNewSuite = document.getElementById('editNewSuite');
 
 function fillSelect(sel, items) { sel.innerHTML = items.map(i => `<option value="${esc(i)}">${esc(i.replace(/_/g,' '))}</option>`).join(''); }
-function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); }
-function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || []); refreshSuiteReadout(); }
+// Devices come from real SIT taxonomy, UNIONED with any device that has a real suite
+// mapping but isn't a SIT device_type at all (e.g. BOS/ABT -- checked EquipmentTypes.json
+// directly: SIT only knows ETM/TVM/POS/BV/PV/GV/HHD/Sub-components/P+R for Translink, no
+// BOS. It's a real TestRail concept George wants modelled as a device-under-project
+// anyway, so it's surfaced here from the suite-mappings store, never invented into the
+// taxonomy endpoint itself which stays 100% SIT-derived).
+function devicesForProject(project) {
+  const fromTaxonomy = Object.keys(TAXONOMY[project] || {});
+  const fromMappings = Object.keys(SUITE_MAPPINGS)
+    .filter(k => k.startsWith(project + '|'))
+    .map(k => k.split('|')[1]);
+  return [...new Set([...fromTaxonomy, ...fromMappings])].sort();
+}
+function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, devicesForProject(selProject.value)); refreshModels(); }
+function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || ['(no SIT build info — TestRail-only device)']); refreshSuiteReadout(); }
 
 function currentPairKey() { return `${selProject.value}|${selDevice.value}`; }
 
@@ -1282,7 +1300,10 @@ function refreshSuiteReadout() {
   updateApplyEnabled();
   if (pair) {
     suiteReadout.className = 'suite-readout';
-    suiteReadout.innerHTML = `<span class="k">Old (read-only source)</span>${esc(pair.old)}<br><span class="k" style="margin-top:8px;display:block;">New (write target)</span>${esc(pair.new)}`;
+    const oldLine = pair.old
+      ? `<span class="k">Old (read-only source)</span>${esc(pair.old)}`
+      : `<span class="k">Old</span><span style="font-style:italic;">Fresh build — no old suite, built purely from documentation</span>`;
+    suiteReadout.innerHTML = `${oldLine}<br><span class="k" style="margin-top:8px;display:block;">New (write target)</span>${esc(pair.new)}`;
   } else {
     suiteReadout.className = 'suite-readout missing';
     suiteReadout.innerHTML = `<span class="k">Not configured</span>No documented old/new suite pair for ${esc(selProject.value)} / ${esc(selDevice.value)} yet — add it below before targeting this combination.`;
@@ -1293,25 +1314,35 @@ function updateApplyEnabled() {
   modalApply.disabled = !(SUITE_MAPPINGS[currentPairKey()] && approveCheck.checked);
 }
 
-selProject?.addEventListener('change', () => { fillSelect(selDevice, Object.keys(TAXONOMY[selProject.value] || {})); refreshModels(); });
+selProject?.addEventListener('change', () => { fillSelect(selDevice, devicesForProject(selProject.value)); refreshModels(); });
 selDevice?.addEventListener('change', refreshModels);
 selModel?.addEventListener('change', updateApplyEnabled);
 approveCheck.addEventListener('change', updateApplyEnabled);
 
+const editFreshBuild = document.getElementById('editFreshBuild');
+const editOldSuiteField = document.getElementById('editOldSuiteField');
+editFreshBuild.addEventListener('change', () => { editOldSuiteField.style.display = editFreshBuild.checked ? 'none' : ''; });
+
 suiteEditBtn.addEventListener('click', () => {
   const pair = SUITE_MAPPINGS[currentPairKey()];
+  const isFresh = !!pair && !pair.old;
+  editFreshBuild.checked = isFresh;
+  editOldSuiteField.style.display = isFresh ? 'none' : '';
   editOldSuite.value = pair ? pair.old : '';
   editNewSuite.value = pair ? pair.new : '';
   suiteEditForm.style.display = 'flex';
 });
 document.getElementById('suiteEditCancel').addEventListener('click', () => { suiteEditForm.style.display = 'none'; });
 document.getElementById('suiteEditSave').addEventListener('click', async () => {
-  const old_suite = editOldSuite.value.trim(), new_suite = editNewSuite.value.trim();
-  if (!old_suite || !new_suite) { alert('Both old and new suite names are required.'); return; }
+  const fresh_build = editFreshBuild.checked;
+  const old_suite = fresh_build ? '' : editOldSuite.value.trim();
+  const new_suite = editNewSuite.value.trim();
+  if (!fresh_build && !old_suite) { alert('Old suite is required, or tick "Fresh build" if there genuinely is no old suite.'); return; }
+  if (!new_suite) { alert('New suite is required.'); return; }
   try {
     const res = await fetch('/api/suite-mappings', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({project: selProject.value, device: selDevice.value, old_suite, new_suite}),
+      body: JSON.stringify({project: selProject.value, device: selDevice.value, old_suite, new_suite, fresh_build}),
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     await loadSuiteMappings();
@@ -1338,7 +1369,7 @@ modalApply.addEventListener('click', () => {
   window.CURRENT_TARGET = {project: selProject.value, device: selDevice.value, model: selModel.value};
   document.getElementById('targetChip').innerHTML =
     `${esc(selProject.value)} <span class="seg">/</span> ${esc(selDevice.value)} <span class="seg">/</span> ${esc(selModel.value)} ` +
-    `<span class="seg">/</span> old: ${esc(pair.old)} <span class="seg">/</span> new: ${esc(pair.new)}`;
+    `<span class="seg">/</span> ${pair.old ? `old: ${esc(pair.old)}` : `<i>fresh build</i>`} <span class="seg">/</span> new: ${esc(pair.new)}`;
   targetModal.classList.remove('open');
   if (typeof ACTIVE_VIEW !== 'undefined' && VIEWS[ACTIVE_VIEW]) VIEWS[ACTIVE_VIEW]();
   refreshSetupGate();

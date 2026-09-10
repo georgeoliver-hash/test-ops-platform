@@ -81,10 +81,11 @@ store.init_db()
 class SuiteMappingIn(BaseModel):
     project: str
     device: str
-    old_suite: str
+    old_suite: str = ""
     new_suite: str
     new_suite_id: int | None = None
     old_suite_id: int | None = None
+    fresh_build: bool = False
 
 
 class RunRequest(BaseModel):
@@ -124,7 +125,7 @@ def get_suite_mappings():
 @app.post("/api/suite-mappings")
 def put_suite_mapping(body: SuiteMappingIn):
     try:
-        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id)
+        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id, body.fresh_build)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True}

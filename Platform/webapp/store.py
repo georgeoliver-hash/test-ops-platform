@@ -164,9 +164,7 @@ def init_db() -> None:
         # Seed every real, documented old/new pair found in system-test-ops — never invent
         # others. TVM and HHD confirmed by George directly on 2026-09-08 (both had multiple
         # "old" suites feeding the new one; he named the one real Acceptance suite to treat
-        # as the reference for each). NJT FR: new suite 30295 is real and in heavy use
-        # (proposals/njt-fr-suite-restructure/*.cases.yaml), but George is getting the old
-        # suite from Gareth — deliberately left unseeded until confirmed, not guessed.
+        # as the reference for each).
         # INSERT OR IGNORE so re-running init_db doesn't clobber George's own edits.
         seed_pairs = [
             # (project, device, old_suite, new_suite, new_suite_id, old_suite_id)
@@ -182,6 +180,13 @@ def init_db() -> None:
             ("Translink", "HHD", "AA-HHD-Acceptance", "NEW HHD Test Suite", 30285, 5446),
             # cite: proposals/pv-suite-restructure/build-complete.md:3 (old id 10047), pv-mode-tagging.changelog.md:81
             ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite", 30255, 10047),
+            # BOS & ABT: not a real SIT device_type (checked EquipmentTypes.json directly,
+            # 2026-09-10 -- SIT only knows ETM/TVM/POS/BV/PV/GV/HHD/Sub-components/P+R), but a
+            # real TestRail concept per George's own call: "BOS and ABT... kinda go under a
+            # project, relate to all devices and have their own suite" -- so it's modelled as
+            # a device under the project here, sourced from real suite data, just not
+            # SIT-taxonomy-derived. cite: proposals/bos-abt-suite-restructure/old-suite-audit.md:10
+            ("Translink", "BOS", "2.1-Backoffice Systems - Acceptance Suite", "NEW BOS & ABT Suite", 30279, 14441),
         ]
         for project, device, old_suite, new_suite, new_suite_id, old_suite_id in seed_pairs:
             conn.execute(
@@ -201,6 +206,17 @@ def init_db() -> None:
                    WHERE user_id = ? AND project = ? AND device = ? AND old_suite_id IS NULL""",
                 (old_suite_id, DEFAULT_USER_ID, project, device),
             )
+        # NJT FR: George's explicit call (2026-09-10) — treat this as a genuine fresh build,
+        # not an old/new migration. The real test case for "can this tool build a suite
+        # purely from documentation" with no prior suite to reference. Real new suite (id
+        # 30295, name "NJT - SystemTestOps" — cite: proposals/njt-fr-suite-restructure/
+        # functional-states.cases.yaml:1-2), no old_suite at all.
+        conn.execute(
+            """INSERT OR IGNORE INTO suite_mappings
+               (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
+               VALUES (?, 'NJT', 'ETM', '', 'NJT - SystemTestOps', 30295, NULL, datetime('now'))""",
+            (DEFAULT_USER_ID,),
+        )
 
 
 def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
@@ -240,9 +256,19 @@ def get_suite_ids(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> 
         return dict(row) if row else None
 
 
-def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, new_suite_id: int | None = None, old_suite_id: int | None = None, user_id: int = DEFAULT_USER_ID) -> None:
-    if not (project.strip() and device.strip() and old_suite.strip() and new_suite.strip()):
-        raise ValueError("project, device, old_suite, and new_suite are all required — no blanks.")
+def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, new_suite_id: int | None = None, old_suite_id: int | None = None, fresh_build: bool = False, user_id: int = DEFAULT_USER_ID) -> None:
+    """`fresh_build=True` means this target genuinely has no old suite — the tool is
+    building a suite purely from documentation, not migrating an existing one (George,
+    2026-09-10: NJT is the real first case for this — 'the purpose here was to see if the
+    tool could create a suite based off purely documentation'). old_suite is then stored
+    as '' (empty string, not NULL — old_suite stays NOT NULL at the schema level so
+    existing rows/tooling that assume it's always a string don't need a migration); every
+    other caller still gets the normal old_suite-is-required validation."""
+    if not (project.strip() and device.strip() and new_suite.strip()):
+        raise ValueError("project, device, and new_suite are all required — no blanks.")
+    if not fresh_build and not old_suite.strip():
+        raise ValueError("old_suite is required unless this is an explicit fresh build (no prior suite to reference).")
+    old_suite = "" if fresh_build else old_suite.strip()
     with _connect() as conn:
         conn.execute(
             """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
