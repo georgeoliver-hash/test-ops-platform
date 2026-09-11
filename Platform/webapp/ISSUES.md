@@ -178,9 +178,13 @@ Features
 
 Repo map
 - Does the files need cleaning up? 
+  **Status:** not assessed — this is a judgement call about a sibling repo's file layout, not something I'll silently act on. Didn't find anything obviously dead while working through this page, but I wasn't looking for that specifically. Ask me to actually audit for unused/stale files if you want a real answer here.
 - make this accordions i think too
+  **Status:** fixed — same collapsible `.stage-group` pattern as Processes/Features, one accordion per section, first one open by default.
 - Add breif description to the main accordion too so like scripts -- blah blah what is it, what are these files - and how are they used
+  **Status:** fixed — added a one-line plain-English gloss under each of the 6 section headers (deterministic core, scripts, agents, commands, this console's model/, this console's own scripts) explaining what the files in that group are and how the pipelines use them.
 - Can we link files to the repo? and are they not now on the test platform repo? or is that just purely for this dashboard front end
+  **Status:** fixed + answered — every filename is now a real link to its actual GitHub source. Answering the actual question: no, it's not all one repo — the repo map spans two real separate repos (`system-test-ops` on its `main` branch, `test-ops-platform` on its `master` branch), which is exactly why the section titles are prefixed with the repo name. The dashboard's own `Platform/model|tools` files are in test-ops-platform; everything else (the actual CLI, TestRail client, Claude agents/commands the pipelines run) lives in system-test-ops, not in this dashboard's repo.
 
 Gap Register
 - This should only be questions for the specific project and device yes> not all gap questions

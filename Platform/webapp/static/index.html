@@ -901,18 +901,48 @@ async function renderFeatures() {
 }
 
 /* ---------------- Repo map ---------------- */
+// Plain-English gloss per section -- the API only has file-level purpose (docstring/
+// frontmatter), nothing section-level. George's ask (2026-09-11): "what is this, what
+// are these files, how are they used" at the section-header level.
+const REPO_MAP_SECTION_PLAIN = {
+  'system-test-ops — deterministic core (system_test_ops/)': 'The real installed Python package — TestRail client, CLI commands, case-writing logic. Every pipeline this console runs shells out to code in here.',
+  'system-test-ops — scripts (tools/)': 'Standalone one-off scripts (repo-map generation, mirrors, data sweeps) — not part of the installed package, run directly with `python tools/...`.',
+  'system-test-ops — agents (.claude/agents/)': 'Claude Code subagent definitions the pipelines delegate judgement-calls to (e.g. a coverage-analyst agent inside /audit-coverage).',
+  'system-test-ops — commands (.claude/commands/)': 'The real /slash-command definitions (e.g. /audit, /onboard-suite) — this console\'s Processes page mirrors these, it doesn\'t reimplement them.',
+  'test-ops-platform — model/ schema': 'This console\'s own data layer — devices, features, flows, pipelines, automation tests — everything the webapp reads from the real sibling repos.',
+  'test-ops-platform — scripts (tools/)': 'This console\'s own standalone scripts, including the repo-map generator that builds this very page\'s data.',
+};
+
+// Real GitHub links -- both sibling repos are real, checked-in remotes (georgeoliver-hash/
+// system-test-ops on `main`, georgeoliver-hash/test-ops-platform on `master`). Section title
+// prefix says which repo a file belongs to; strip the leading "<repo-name>\" path segment
+// build_sections() adds and turn backslashes into a real GitHub blob URL.
+function repoLinkFor(sectionTitle, filePath) {
+  const isSTO = sectionTitle.startsWith('system-test-ops');
+  const repo = isSTO ? 'system-test-ops' : 'test-ops-platform';
+  const branch = isSTO ? 'main' : 'master';
+  const rel = filePath.replace(/\\/g, '/').replace(/^[^/]+\//, '');
+  return `https://github.com/georgeoliver-hash/${repo}/blob/${branch}/${rel}`;
+}
+
 async function renderRepoMap() {
   loading();
   try {
     const sections = await fetchJSON('/api/repo-map');
-    const html = sections.map(s => `
-      <div class="card">
-        <h2>${esc(s.title)}</h2>
-        <table><tr><th>File</th><th>Purpose</th><th>Lines</th></tr>
-        ${s.files.map(f => `<tr><td><code style="font-size:12px">${esc(f.path)}</code></td><td>${esc(f.purpose)}</td><td>${f.lines}</td></tr>`).join('')}
-        </table>
+    const html = sections.map((s, i) => `
+      <div class="stage-group ${i === 0 ? 'open' : ''}">
+        <div class="stage-header"><span>${esc(s.title)}</span><span class="chevron">▸</span></div>
+        <div class="stage-body">
+          ${REPO_MAP_SECTION_PLAIN[s.title] ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${esc(REPO_MAP_SECTION_PLAIN[s.title])}</p>` : ''}
+          <table><tr><th>File</th><th>Purpose</th><th>Lines</th></tr>
+          ${s.files.map(f => `<tr><td><a href="${esc(repoLinkFor(s.title, f.path))}" target="_blank" rel="noopener" style="font-size:12px;font-family:monospace;">${esc(f.path)}</a></td><td>${esc(f.purpose)}</td><td>${f.lines}</td></tr>`).join('')}
+          </table>
+        </div>
       </div>`).join('');
-    setContent(`<div class="page-head"><h1>Repo map</h1><p>Generated live, right now, from real docstrings/frontmatter — not a cached snapshot.</p></div>${html}`);
+    setContent(`
+      <div class="page-head"><h1>Repo map</h1><p>Generated live, right now, from real docstrings/frontmatter — not a cached snapshot. File names link out to the real GitHub source (system-test-ops and test-ops-platform are two separate repos, not one).</p></div>
+      ${html}`);
+    wireStageAccordions(content);
   } catch (e) { errbox('Could not load repo map: ' + e.message); }
 }
 
