@@ -131,16 +131,27 @@ Suite Health
 - the real build stats run part, report data, is this gonna be showcasing the same way the last date, time a run was done or a audit, suite update or anything was done?
 - Would be cool to have there, blocks again that show the date, time of the last function that was done, so add feature, then another one, showcasing all of them? so someone knows the last date, time of a specific functin that was run?
 - cases total is good, added is good, edited is good, removed can delete this block i think, unchanged remove this block too, open gap qs is good to keep, can we add blocked for like new vs old, coverage percentage? manual coverage and automation coverage?
+  **Status:** fixed (partial) — "removed" and "unchanged" stat blocks removed from the top row. Coverage % (manual vs automation) NOT built: some `.robot` files do reference a TestRail case id in their `Documentation` field (e.g. `test_signon_idle_screen.robot`: "TestRail C4099912, suite 30253") but it's free text, not a structured tag, and it's not there consistently across suites — computing a real automated/total % needs that mapping parsed properly first, flagging as a genuine follow-up rather than a made-up number.
 - run health purpose? it should only ever be runs based off the new suite always, flaky dont get? no need for this, pass and fail are good to have, orphaned remove as dont understand. and the breif showcase of the ones visible should just be the failed test cases
+  **Status:** fixed — confirmed the run-health fixture already only covers the `**NEW** POS-Acceptance Suite`, never the old one. Removed the "flaky"/"orphaned" stat blocks, kept "runs considered"/"always failing", and the case table now only lists cases with at least one failure (falls back to "No failed cases" text when there are none).
 - to the right of run health have a comments bit, so pull in all comments of the recent run, mainly on the failed tickets, and then the actions taken against these.
+  **Status:** fixed — run comments now render in a card side-by-side with run health (2-col sub-grid) instead of stacked below it. Also added a real "actions taken" signal: TestRail's own `defects` field on a result (linked bug ids) now shows as a pill next to any comment that has one — pulled live, not invented.
 - last audit run is good to have
+  **Status:** no change needed.
 - open gap questions is good to have but annoyingly you can only show a few, are they the most recent questions? always have most recent first visible on dashboard.
+  **Status:** answered — honestly, no. The gap-register fixture (`gaps.json`, 972 markers) is a mechanical grep result: `{file, line, kind, text}`, no timestamp field at all, so there's nothing to sort "most recent" by yet — the order shown is just repo file order. Sorting by recency would need either a `created_at` written at grep time or git blame per line; didn't fabricate an ordering to look like it's sorted when it isn't.
 - make the manage, see all buttons on dashboards a 5px bordered shaped button on the top rght of each block bit. 
+  **Status:** fixed — added a `.corner-link` style (small bordered pill, absolutely positioned top-right of the card) and applied it to "See all →" (gap register), "Manage →" (docs), and "Run again →" (last audit run).
 - Case delta since snapshot, can we give a different name? maybe just observed changed since last audit or something? so this basically should only show, what cases might be deleted, moved, edited, added, MANUALLY - so anything you change doesnt effect this bit, only the manual edits by Users
+  **Status:** fixed (partial) — card renamed to "Observed changes since last audit". The MANUAL-only scoping is NOT built: build-stats' diff today just compares case ids between two snapshots, it has no idea whether a change came from a manual TestRail edit vs. a re-export/push from this tool — added an honest caveat line to the card instead of a false claim. Doing this properly needs either TestRail's `updated_by`/`updated_on` per case (only visible via `get_case`, not the bulk snapshot call currently used) or this tool tagging its own pushes so they can be excluded — real follow-up, not done yet.
 - maybe the above needs a way to review the manual edits and tick okay, thats fine type thing.
+  **Status:** not built — depends on the manual-vs-automated distinction above existing first; there's nothing yet to "tick okay" against.
 - Do we need a docs file for translink thought the point was to reduce the docs on the repo? we only ingest docs right then have stored reduced easier readable knowledge files, flows and features? maybe a short breif way of showing the doc name, and pass or fail for ingested properly, last date and time ingested.
+  **Status:** not yet answered — no ingest-docs pipeline exists yet (docs today are just uploaded/stored, not processed into knowledge files), so there's nothing real to report a pass/fail or ingested-date on. Will answer properly once that pipeline is built.
 - remove where this data comes from
+  **Status:** fixed — card removed.
 - move old vs new to the top as mentioned above. 
+  **Status:** fixed — "Old vs. new suite — case counts" card is now first in the left column, above run health.
 
 All processes
 - new-suite-from-dcos? any point in this? being here.. its just ingest-docs amd nboard suite?

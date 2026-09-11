@@ -70,8 +70,10 @@
   .stat .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
   .stat.ok .n{color:var(--ok);} .stat.warn .n{color:var(--warn);} .stat.bad .n{color:var(--bad);}
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;}
-  .card h2{font-size:15px;margin:0 0 12px;font-weight:600;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;position:relative;}
+  .card .corner-link{position:absolute;top:14px;right:16px;font-size:11px;font-weight:500;padding:3px 10px;border:1px solid var(--line);border-radius:5px;color:var(--ink);text-decoration:none;background:var(--bg);}
+  .card .corner-link:hover{border-color:var(--accent, var(--ink));}
+  .card h2{font-size:15px;margin:0 0 12px;font-weight:600;padding-right:70px;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
   th{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
@@ -452,29 +454,27 @@ async function renderHealth() {
     ]);
     const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
 
+    const rhFailedCases = rh ? rh.shown.filter(c => c.failed > 0) : [];
     const runHealthTable = rh ? `
       <div class="card">
         <h2>Run health — ${esc(rh.suite)}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs (people/automation executing the actual suite), not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs against the new suite (people/automation executing the actual suite), not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
         <div class="stat-row">
           <div class="stat"><span class="n">${rh.runs_considered}</span><span class="l">runs considered</span></div>
-          <div class="stat warn"><span class="n">${rh.counts.flaky}</span><span class="l">flaky</span></div>
           <div class="stat bad"><span class="n">${rh.counts.always_failing}</span><span class="l">always failing</span></div>
-          <div class="stat"><span class="n">${rh.counts.orphaned}</span><span class="l">orphaned</span></div>
         </div>
         <table>
-          <tr><th>Case</th><th>Title</th><th>Pass/Fail</th><th>Flags</th></tr>
-          ${rh.shown.slice(0,8).map(c => {
-            const flags = ['always_failing','never_executed','flaky','recently_regressed','orphaned'].filter(f=>c[f]);
-            return `<tr><td>C${c.case_id}</td><td>${esc((c.title||'').slice(0,42))}</td><td>${c.passed}/${c.failed}</td><td>${flags.map(f=>`<span class="pill ${f==='flaky'?'warn':'bad'}">${f.replace('_',' ')}</span>`).join(' ')}</td></tr>`;
-          }).join('')}
+          <tr><th>Case</th><th>Title</th><th>Pass/Fail</th></tr>
+          ${rhFailedCases.length ? rhFailedCases.slice(0,8).map(c =>
+            `<tr><td>C${c.case_id}</td><td>${esc((c.title||'').slice(0,42))}</td><td>${c.passed}/${c.failed}</td></tr>`
+          ).join('') : `<tr><td colspan="3" style="color:var(--ink-soft);">No failed cases in the last ${rh.runs_considered} run(s).</td></tr>`}
         </table>
       </div>` : `<div class="card"><h2>Run health</h2><p class="errbox">Not available</p></div>`;
 
     const deltaCard = `
       <div class="card">
-        <h2>Case delta since last snapshot</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Compares this suite's cases now vs. the last time build-stats ran. "Removed" means a case id that was in the last snapshot but isn't in the suite any more — TestRail's API here can't delete cases, so this only happens if someone removed it by hand in the TestRail UI, or it moved to a different suite.</p>
+        <h2>Observed changes since last audit</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Compares this suite's cases now vs. the last time build-stats ran. This is a raw diff — it doesn't yet know who made a change or whether it was a manual edit vs. a re-export, so treat it as "something moved" rather than "someone edited this by hand". "Removed" means a case id that was in the last snapshot but isn't in the suite any more — TestRail's API here can't delete cases, so this only happens if someone removed it by hand in the TestRail UI, or it moved to a different suite.</p>
         <table>
           <tr><th>Change</th><th>Case ids (first 10)</th></tr>
           <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
@@ -485,32 +485,22 @@ async function renderHealth() {
 
     const gapsCard = gaps ? `
       <div class="card">
-        <h2>Open gap-register questions <a href="#" data-goto-view="gaps" style="font-size:11.5px;font-weight:400;">See all →</a></h2>
+        <h2>Open gap-register questions <a href="#" data-goto-view="gaps" class="corner-link">See all →</a></h2>
         <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} found repo-wide, showing ${gaps.shown.length}</p>
         <ul class="activity">${gaps.shown.map(g => `<li><span class="pill ${g.kind==='GAP'?'bad':'warn'}">${esc(g.kind)}</span>&nbsp;${esc(g.text.slice(0,90))}</li>`).join('')}</ul>
       </div>` : '';
 
     const docsCard = `
       <div class="card">
-        <h2>Docs on file for ${esc(target.project)}/${esc(target.device)} <a href="#" data-goto-view="docs" style="font-size:11.5px;font-weight:400;">Manage →</a></h2>
+        <h2>Docs on file for ${esc(target.project)}/${esc(target.device)} <a href="#" data-goto-view="docs" class="corner-link">Manage →</a></h2>
         ${docs.length
           ? `<ul class="activity">${docs.slice(0,5).map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);font-size:11.5px;">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul>`
           : `<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this target yet.</p>`}
       </div>`;
 
-    const dataAsOf = `
-      <div class="card">
-        <h2>Where this data comes from</h2>
-        <ul class="activity">
-          <li>Case counts/delta: build-stats snapshot, generated ${esc(bs.generated_at)}</li>
-          ${rh ? `<li>Run health: ${esc(rh.fixture_note)}</li>` : ''}
-          ${gaps ? `<li>Gap register: ${gaps.total} GAP/UNCONFIRMED markers, mechanically grepped repo-wide</li>` : ''}
-        </ul>
-      </div>`;
-
     const lastAuditCard = `
       <div class="card">
-        <h2>Last audit run <a href="#" data-goto-pipeline="audit" style="font-size:11.5px;font-weight:400;">Run again →</a></h2>
+        <h2>Last audit run <a href="#" data-goto-pipeline="audit" class="corner-link">Run again →</a></h2>
         ${lastAudit.status
           ? `<p style="font-size:13.5px;margin:0;">${lastAudit.status === 'succeeded' ? '<span class="pill ok">Succeeded</span>' : lastAudit.status === 'running' ? '<span class="pill warn">Running</span>' : '<span class="pill bad">Failed</span>'} — ${esc(new Date(lastAudit.updated_at + 'Z').toLocaleString())}</p>
              ${lastAudit.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(lastAudit.summary)}</p>` : ''}`
@@ -524,23 +514,25 @@ async function renderHealth() {
         <div class="stat"><span class="n">${bs.cases_total}</span><span class="l">cases total</span></div>
         <div class="stat ok"><span class="n">${bs.delta.added.length}</span><span class="l">added</span></div>
         <div class="stat warn"><span class="n">${bs.delta.edited.length}</span><span class="l">edited</span></div>
-        <div class="stat ${bs.delta.removed.length ? 'bad' : ''}"><span class="n">${bs.delta.removed.length}</span><span class="l">removed since snapshot</span></div>
-        <div class="stat"><span class="n">${bs.delta.unchanged}</span><span class="l">unchanged</span></div>
         ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
       </div>
       <div class="grid2">
-        <div>${runHealthTable}${deltaCard}<div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div>
-          <div class="card" id="runCommentsCard">
-            <h2>Run comments — reviewer notes
-              <select id="runCommentsWhich" style="font-size:12px;font-weight:400;margin-left:8px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-                <option value="new">New suite</option>
-                <option value="old">Old suite</option>
-              </select>
-            </h2>
-            <div id="runCommentsBody"><div class="loading">Pulling live comments from TestRail…</div></div>
+        <div><div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+            ${runHealthTable}
+            <div class="card" id="runCommentsCard">
+              <h2>Run comments — reviewer notes
+                <select id="runCommentsWhich" style="font-size:12px;font-weight:400;margin-left:8px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+                  <option value="new">New suite</option>
+                  <option value="old">Old suite</option>
+                </select>
+              </h2>
+              <div id="runCommentsBody"><div class="loading">Pulling live comments from TestRail…</div></div>
+            </div>
           </div>
+          ${deltaCard}
         </div>
-        <div>${lastAuditCard}${gapsCard}${docsCard}${dataAsOf}</div>
+        <div>${lastAuditCard}${gapsCard}${docsCard}</div>
       </div>`);
 
     async function loadRunComments() {
@@ -557,6 +549,7 @@ async function renderHealth() {
           <ul class="activity">${rc.comments.slice(0,15).map(c => `
             <li><span class="pill ${statusPill(c.status_id)}">${esc(statusLabel(c.status_id))}</span>&nbsp;
               ${c.case_id ? `<b>C${c.case_id}</b> — ` : ''}${esc(c.comment.slice(0,140))}
+              ${c.defects ? `<span class="pill warn" style="margin-left:4px;">Defect ${esc(c.defects)}</span>` : ''}
               <span style="color:var(--ink-soft);font-size:11px;display:block;">${c.created_on ? new Date(c.created_on*1000).toLocaleDateString() : ''} · ${esc(c.run_name)}</span>
             </li>`).join('')}</ul>`;
       } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }

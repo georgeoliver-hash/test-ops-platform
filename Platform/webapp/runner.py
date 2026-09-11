@@ -99,7 +99,7 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
         "                'run_id': run['id'], 'run_name': run.get('name', f\"Run {run['id']}\"),\n"
         "                'case_id': test_to_case.get(result.get('test_id')), 'status_id': result.get('status_id'),\n"
         "                'comment': result['comment'], 'created_by': result.get('created_by'),\n"
-        "                'created_on': result.get('created_on'),\n"
+        "                'created_on': result.get('created_on'), 'defects': result.get('defects'),\n"
         "            })\n"
         "comments.sort(key=lambda c: c.get('created_on') or 0, reverse=True)\n"
         "print(json.dumps({'runs_checked': len(runs), 'comments': comments}))\n"
