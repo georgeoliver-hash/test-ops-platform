@@ -109,3 +109,109 @@ Template for a new entry:
 ## Target switcher (Change target modal)
 
 ## General UI/UX (layout, colours, responsiveness, anything cross-cutting)
+
+
+
+
+
+STARTING Fresh
+
+General
+- So when no credentials, no docs, nothing set up yet, we should make only overview items, and START the things not faded and clickable. (need a way to test this)
+- Auotmation can be visible though too
+
+Test Ops
+UI / UX
+- Arrive logo bigger again please top left
+- Overview, and start, and audit, (main side bar menu options) bolders, tiny bit bigger like 3px bigger than the accordion sub menu options, mayb make overview a accordion to with the suite health, processes, features, repo map, gap register underneth.
+- Seetings and docs can be lower down nearer to the george oliver user name. or to be honest can clicking the login username, open up a tab type menu with docs, settings as options.
+- Test-ops console title bit below arrive logo, to be in a similar writing or style as the arrive logo if possible? or just bolder, better, different font style to showcase the title of the CMS
+
+Suite Health
+- the real build stats run part, report data, is this gonna be showcasing the same way the last date, time a run was done or a audit, suite update or anything was done?
+- Would be cool to have there, blocks again that show the date, time of the last function that was done, so add feature, then another one, showcasing all of them? so someone knows the last date, time of a specific functin that was run?
+- cases total is good, added is good, edited is good, removed can delete this block i think, unchanged remove this block too, open gap qs is good to keep, can we add blocked for like new vs old, coverage percentage? manual coverage and automation coverage?
+- run health purpose? it should only ever be runs based off the new suite always, flaky dont get? no need for this, pass and fail are good to have, orphaned remove as dont understand. and the breif showcase of the ones visible should just be the failed test cases
+- to the right of run health have a comments bit, so pull in all comments of the recent run, mainly on the failed tickets, and then the actions taken against these.
+- last audit run is good to have
+- open gap questions is good to have but annoyingly you can only show a few, are they the most recent questions? always have most recent first visible on dashboard.
+- make the manage, see all buttons on dashboards a 5px bordered shaped button on the top rght of each block bit. 
+- Case delta since snapshot, can we give a different name? maybe just observed changed since last audit or something? so this basically should only show, what cases might be deleted, moved, edited, added, MANUALLY - so anything you change doesnt effect this bit, only the manual edits by Users
+- maybe the above needs a way to review the manual edits and tick okay, thats fine type thing.
+- Do we need a docs file for translink thought the point was to reduce the docs on the repo? we only ingest docs right then have stored reduced easier readable knowledge files, flows and features? maybe a short breif way of showing the doc name, and pass or fail for ingested properly, last date and time ingested.
+- remove where this data comes from
+- move old vs new to the top as mentioned above. 
+
+All processes
+- new-suite-from-dcos? any point in this? being here.. its just ingest-docs amd nboard suite?
+- I really like this page and hows its set up, can we have a two tab thing on this page though, processes (default page) then flows, and on flows what i want to have is more of a like, How to get started accordiong then this has in the tree, /Start ingest docs, set up credentials and connections etc - then like Once your set up accordiong with tree for like onboard suite, consolidate, add feature, fold defect, then like a maintenance accordion tree for audit functions and reviews, maintain, then a like Human led accordion tree, resolve gaps etc. 
+
+
+Features
+- Neaten this page up, so have gaps found as a tab on this page so you can easily see the gaps in features found but onyl for the project your targeting, and list it better.
+- Features is its own tab and default tab, like how this is done.
+- Cited source (repo) 
+- Is there any structure to the features, i fear this page will get soooo long with eventually every projects features, just trying to think of a better way to see the features files, knowledge files. 
+- Maybe only show the features as default for the targeted project, device? as filtered, but people can click and change this to view others.
+- How do we differentiate the common features vs bespoke? nothing on the features shows this, maybe the common should be common and include all devices its ocmmon for and variants etc, then bespoke is more of a project and device type view, maybe the colour of the cited source is slightly different for common than bespoke. 
+- Defo ways to improve this, to show common and bespoke features, feature files and cited source knowledge - way to stop it from being a massive long page, accordions, or blocks or info, dont know have a think.
+
+Repo map
+- Does the files need cleaning up? 
+- make this accordions i think too
+- Add breif description to the main accordion too so like scripts -- blah blah what is it, what are these files - and how are they used
+- Can we link files to the repo? and are they not now on the test platform repo? or is that just purely for this dashboard front end
+
+Gap Register
+- This should only be questions for the specific project and device yes> not all gap questions
+- so need a way to make sure were tagging the question with what device, suite, document, if it is common then great but bespoke questions just for specific target.
+- I would have prefered to select a gap question and then have a pop up with the form to reply, to answer it
+- Can we not have pagination to view all of the gap questions or is that too much?
+- What if we need to get you to clarify a little more on what your asking? maybe we need a way to reply and say can you give me more info on this gap question? what like area, what device, what functionality area or feature or any info on it more to help us answer would be great,
+- This should be logged as well somewhere so all questions and answers are there - just because its good for us to show project managers that documentation may have gaps compared to the device now, and functionality now.
+- You know like a tab on this page that shows like answers that conflict with specification and functionality or something, and like logs.
+
+start
+- When the user is all set up and has credentials, and set up everything - then can this just have a Tick byt the /start menu option, and a complete highlighted green on the page somewhere to suggest no need for this to be done by this user.
+
+Onboard suite
+- Is this function only mainly for like the very first time a suite has been made and needs building from scratch?
+- If the user has done this or a suite has been build, onboarded, and the documents have been used, cited knowledge features to build a new suite and its basically all done, then maybe this should have a complete highlight on it or something different like a highlighted bit that says - Already Done - with suite name or something?
+
+New-suite from docs
+- Is this not the same as onboard suite?
+- We probably should ingest docs, then onboard a new suite everything time first before allowing anything else, as we should have start, crednetials, languages and tools set up, then documents provided, ingested, then target old and new suite, then onboard suite, build new suite from all info. 
+- If user is targeting existing then the rebuild and onboard suite, and stuff probably isnt needed right? we should probably label places that arent needed with a warning like - your targeting a existing suite no need for this
+- existing suites probably only relly need add feature, consolidate, export automation (reminds me we probably need a way for existing suites to review cases for which is automatable, and give estimates to on existing suites
+
+ingest-docs
+- should this just be under a start accordion instead? something to be done for the project before anything else really so have stuff to write from etc
+
+export automation
+- this should export into the automation tab somewhere - so that it is visible to have a last date and time of the export so that on that side someone can run a write test automation from it basically. 
+
+
+Test automation
+- dashboard is cool - we need filter options though so you can put filters for project, device, or all 
+- do we need more info on the tests written, like what repo folder there in, what projects, written manually pulled from repo or ones written by claude sent to repo type thing
+
+Keyword
+- looks good, assume keywords then are device specific never project specific? good to keep this way if that is the case
+
+screen flows
+- is there more screens to the flows?
+- whats keys for?
+
+Automation
+- We need a way to run the exported cases and start writing them
+- Maybe a list of the cases exported and then you can choose which ones you want to be written up?
+
+
+
+
+
+
+STUFF TO do
+- We want to use the tool to get NJT suite fully covered, and automation tests written
+- Gareth will preferably need his own local or server hosted platform tool to do this on
+- How can we get set up for this? what is the things we need to fix, change do to make this possible for gareth to start running the flows, and adding docs, and building suites, and audits and everything.

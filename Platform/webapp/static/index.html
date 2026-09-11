@@ -37,11 +37,11 @@
 
   .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;}
   .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:4px 8px 24px;}
-  .sidebar .logo-row img{height:36px;width:auto;filter:brightness(0) invert(1);display:block;}
-  .sidebar .tool-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sidebar-ink-dim);padding:0 8px 16px;}
+  .sidebar .logo-row img{height:48px;width:auto;filter:brightness(0) invert(1);display:block;}
+  .sidebar .tool-name{font-family:"Poppins";font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--sidebar-ink);padding:0 8px 18px;}
   nav.navgroups{flex:1;overflow-y:auto;}
   .navgroup{margin-bottom:18px;}
-  .navgroup .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--sidebar-ink-dim);padding:0 10px 6px;}
+  .navgroup .label{font-size:16.5px;font-weight:600;color:var(--sidebar-ink);padding:0 10px 6px;}
   .navitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--sidebar-ink);text-decoration:none;cursor:pointer;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
   .navitem:hover{background:rgba(255,255,255,.06);}
   .navitem.active{background:var(--sidebar-active-bg);color:#fff;font-weight:600;}
@@ -188,13 +188,15 @@
       <button class="console-tab" id="tabAutomation">Automation</button>
     </div>
     <nav class="navgroups" id="navgroups">
-      <div class="navgroup">
-        <div class="label">Overview</div>
-        <button class="navitem active" data-view="health"><span class="dot"></span>Suite health</button>
-        <button class="navitem" data-view="pipelines"><span class="dot"></span>All processes</button>
-        <button class="navitem" data-view="features"><span class="dot"></span>Features</button>
-        <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
-        <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
+      <div class="navgroup collapsible open" id="navOverview">
+        <div class="navgroup-header"><div class="label">Overview</div><span class="chevron">▸</span></div>
+        <div class="navgroup-items">
+          <button class="navitem active" data-view="health"><span class="dot"></span>Suite health</button>
+          <button class="navitem" data-view="pipelines"><span class="dot"></span>All processes</button>
+          <button class="navitem" data-view="features"><span class="dot"></span>Features</button>
+          <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
+          <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
+        </div>
       </div>
       <div class="navgroup collapsible" id="navStart"></div>
       <div class="navgroup collapsible" id="navBuild">
@@ -203,11 +205,6 @@
       </div>
       <div class="navgroup collapsible" id="navAudit"></div>
       <div class="navgroup collapsible" id="navMaintain"></div>
-      <div class="navgroup">
-        <div class="label">Console</div>
-        <button class="navitem" data-view="docs"><span class="dot"></span>Docs</button>
-        <button class="navitem" data-view="settings"><span class="dot"></span>Settings</button>
-      </div>
     </nav>
     <nav class="navgroups" id="automationNavgroups" style="display:none;">
       <div class="navgroup">
@@ -218,9 +215,13 @@
         <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
       </div>
     </nav>
-    <div class="sidebar-foot">
+    <div class="sidebar-foot" id="userMenuBtn" style="cursor:pointer;position:relative;">
       <div class="avatar">GO</div>
       <div>George Oliver</div>
+      <div id="userMenuPopup" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;z-index:20;">
+        <button class="navitem" data-view="docs" style="color:var(--ink);width:100%;">Docs</button>
+        <button class="navitem" data-view="settings" style="color:var(--ink);width:100%;">Settings</button>
+      </div>
     </div>
   </aside>
 
@@ -1272,6 +1273,16 @@ document.querySelectorAll('.navitem[data-aview]').forEach(btn => {
 });
 renderHealth();
 
+/* ---------------- User menu popup (Docs/Settings, moved off the main nav list) ---------------- */
+const userMenuBtn = document.getElementById('userMenuBtn');
+const userMenuPopup = document.getElementById('userMenuPopup');
+userMenuBtn.addEventListener('click', (e) => {
+  userMenuPopup.style.display = userMenuPopup.style.display === 'none' ? 'block' : 'none';
+  e.stopPropagation();
+});
+userMenuPopup.addEventListener('click', (e) => { e.stopPropagation(); userMenuPopup.style.display = 'none'; });
+document.addEventListener('click', () => { userMenuPopup.style.display = 'none'; });
+
 /* ---------------- Console-mode tab switcher ---------------- */
 const tabTestOps = document.getElementById('tabTestOps');
 const tabAutomation = document.getElementById('tabAutomation');
@@ -1305,7 +1316,10 @@ window.CURRENT_TARGET = {project: 'Translink', device: 'POS', model: 'POS_Way6'}
 /* ---------------- Setup-status gate: fade Start/Build/Audit/Maintain until this target is
    actually ready (credentials + suite mapping + docs/knowledge). Docs/Settings stay live —
    that's where setup happens. ---------------- */
-const GATED_GROUP_IDS = ['navStart', 'navBuild', 'navAudit', 'navMaintain'];
+// Start deliberately excluded (George, 2026-09-11): it's the onboarding entry point
+// itself -- gating it behind "setup complete" would make it unreachable exactly when
+// it's needed most. Automation tab is a separate top-level tab entirely, never gated.
+const GATED_GROUP_IDS = ['navBuild', 'navAudit', 'navMaintain'];
 async function refreshSetupGate() {
   const {project, device} = window.CURRENT_TARGET || {};
   if (!project || !device) return;
