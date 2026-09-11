@@ -106,6 +106,18 @@
   .legend .chip{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink-soft);}
   .legend .chip .sw{width:9px;height:9px;border-radius:3px;flex:none;}
 
+  .tab-bar{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line);}
+  .tab-btn{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 4px;margin-right:18px;border:none;background:none;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--ink);border-bottom-color:var(--accent, var(--ink));}
+
+  .stage-group{margin-bottom:14px;}
+  .stage-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;}
+  .stage-header:hover{background:var(--bg);}
+  .stage-header .chevron{margin-left:8px;}
+  .stage-group.open .stage-header .chevron{transform:rotate(90deg);}
+  .stage-body{display:none;padding-top:10px;}
+  .stage-group.open .stage-body{display:block;}
+
   .activity{list-style:none;margin:0;padding:0;}
   .activity li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
   .activity li:last-child{border-bottom:none;}
@@ -582,51 +594,153 @@ async function renderHealth() {
 }
 
 /* ---------------- Processes & flows (simplified, replaces the dense FigJam board) ---------------- */
-async function renderPipelines() {
-  loading();
+// Lifecycle grouping for the Processes tab -- George's ask (2026-09-11): accordion
+// tree by "when do I use this", not a flat list. Every real pipeline id must appear
+// in exactly one group below; PIPELINE_STAGES's own ids are checked against the live
+// /api/pipelines list at render time so a newly added pipeline that isn't grouped yet
+// shows up in an "Ungrouped" bucket instead of silently vanishing.
+const PIPELINE_STAGES = [
+  {title: 'How to get started', ids: ['start', 'ingest-docs', 'new-suite-from-docs']},
+  {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation']},
+  {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'maintain']},
+  {title: 'Human led', ids: ['resolve-gaps']},
+];
+
+function pipelineRowHTML(p) {
+  return `
+    <div class="pipeline-row" data-id="${esc(p.id)}">
+      <div class="head">
+        <div class="name">${esc(p.id)} ${p.slash_command ? `<code>${esc(p.slash_command)}</code>` : ''}</div>
+        <div class="density">
+          ${p.density.agent ? `<span class="density-chip pill ai">${p.density.agent} AI</span>` : ''}
+          ${p.density.cli ? `<span class="density-chip pill code">${p.density.cli} code</span>` : ''}
+          ${p.density.gate ? `<span class="density-chip pill gate">${p.density.gate} gate</span>` : ''}
+          ${p.density.human ? `<span class="density-chip pill human">${p.density.human} human</span>` : ''}
+          <span class="chevron">▸</span>
+        </div>
+      </div>
+      ${PIPELINE_PLAIN[p.id] ? `<div style="padding:0 16px 10px;font-size:12.5px;color:var(--ink-soft);">${esc(PIPELINE_PLAIN[p.id])}</div>` : ''}
+      <div class="flow"><div class="loading">Click to load steps…</div></div>
+    </div>`;
+}
+
+function wirePipelineRows(root) {
+  root.querySelectorAll('.pipeline-row .head').forEach(head => {
+    head.addEventListener('click', async () => {
+      const row = head.parentElement;
+      const flowEl = row.querySelector('.flow');
+      const wasOpen = row.classList.contains('open');
+      row.classList.toggle('open');
+      if (!wasOpen && flowEl.dataset.loaded !== '1') {
+        try {
+          const detail = await fetchJSON(`/api/pipelines/${row.dataset.id}`);
+          flowEl.innerHTML = detail.steps.map(renderStep).join('');
+          flowEl.dataset.loaded = '1';
+        } catch (e) { flowEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+      }
+    });
+  });
+}
+
+function wireStageAccordions(root) {
+  root.querySelectorAll('.stage-header').forEach(header => {
+    header.addEventListener('click', () => header.parentElement.classList.toggle('open'));
+  });
+}
+
+async function renderProcessesTab(container) {
+  container.innerHTML = '<div class="loading">Loading…</div>';
   try {
     const list = await fetchJSON('/api/pipelines');
-    const rows = list.map(p => `
-      <div class="pipeline-row" data-id="${esc(p.id)}">
-        <div class="head">
-          <div class="name">${esc(p.id)} ${p.slash_command ? `<code>${esc(p.slash_command)}</code>` : ''}</div>
-          <div class="density">
-            ${p.density.agent ? `<span class="density-chip pill ai">${p.density.agent} AI</span>` : ''}
-            ${p.density.cli ? `<span class="density-chip pill code">${p.density.cli} code</span>` : ''}
-            ${p.density.gate ? `<span class="density-chip pill gate">${p.density.gate} gate</span>` : ''}
-            ${p.density.human ? `<span class="density-chip pill human">${p.density.human} human</span>` : ''}
-            <span class="chevron">▸</span>
-          </div>
-        </div>
-        ${PIPELINE_PLAIN[p.id] ? `<div style="padding:0 16px 10px;font-size:12.5px;color:var(--ink-soft);">${esc(PIPELINE_PLAIN[p.id])}</div>` : ''}
-        <div class="flow"><div class="loading">Click to load steps…</div></div>
-      </div>`).join('');
-    setContent(`
-      <div class="page-head"><h1>Processes &amp; flows</h1><p>Every pipeline, real step data — click a row to expand its flow underneath.</p></div>
+    const byId = Object.fromEntries(list.map(p => [p.id, p]));
+    const grouped = new Set(PIPELINE_STAGES.flatMap(s => s.ids));
+    const ungrouped = list.filter(p => !grouped.has(p.id));
+    const stages = [...PIPELINE_STAGES, ...(ungrouped.length ? [{title: 'Ungrouped', ids: ungrouped.map(p => p.id)}] : [])];
+    const stageHTML = stages.map((stage, i) => {
+      const rows = stage.ids.filter(id => byId[id]).map(id => pipelineRowHTML(byId[id])).join('');
+      if (!rows) return '';
+      return `
+        <div class="stage-group ${i === 0 ? 'open' : ''}">
+          <div class="stage-header"><span>${esc(stage.title)}</span><span class="chevron">▸</span></div>
+          <div class="stage-body">${rows}</div>
+        </div>`;
+    }).join('');
+    container.innerHTML = `
       <div class="legend">
         <span class="chip"><span class="sw" style="background:var(--ai)"></span>AI / judgement</span>
         <span class="chip"><span class="sw" style="background:var(--code)"></span>Deterministic code</span>
         <span class="chip"><span class="sw" style="background:var(--gate)"></span>Gate / decision</span>
         <span class="chip"><span class="sw" style="background:var(--human)"></span>Human only</span>
       </div>
-      ${rows}`);
+      ${stageHTML}`;
+    wireStageAccordions(container);
+    wirePipelineRows(container);
+  } catch (e) { container.innerHTML = `<div class="errbox">Could not load pipelines: ${esc(e.message)}</div>`; }
+}
 
-    content.querySelectorAll('.pipeline-row .head').forEach(head => {
-      head.addEventListener('click', async () => {
-        const row = head.parentElement;
-        const flowEl = row.querySelector('.flow');
-        const wasOpen = row.classList.contains('open');
-        row.classList.toggle('open');
-        if (!wasOpen && flowEl.dataset.loaded !== '1') {
-          try {
-            const detail = await fetchJSON(`/api/pipelines/${row.dataset.id}`);
-            flowEl.innerHTML = detail.steps.map(renderStep).join('');
-            flowEl.dataset.loaded = '1';
-          } catch (e) { flowEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
-        }
-      });
+async function renderFlowsBody(container) {
+  container.innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    const taxonomy = TAXONOMY && Object.keys(TAXONOMY).length ? TAXONOMY : await fetchJSON('/api/taxonomy');
+    const projects = Object.keys(taxonomy);
+    const defaultProject = (window.CURRENT_TARGET && window.CURRENT_TARGET.project) || projects[0];
+    container.innerHTML = `
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <select id="flowProject" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            ${projects.map(p => `<option value="${esc(p)}" ${p===defaultProject?'selected':''}>${esc(p)}</option>`).join('')}
+          </select>
+          <select id="flowDevice" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></select>
+        </div>
+        <div id="flowGraphArea"><div class="loading">Pick a project/device…</div></div>
+      </div>`;
+
+    async function loadDevices() {
+      const project = document.getElementById('flowProject').value;
+      const res = await fetchJSON(`/api/automation/flows?project=${encodeURIComponent(project)}`);
+      const sel = document.getElementById('flowDevice');
+      sel.innerHTML = res.device_types.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+      if (res.device_types.length) loadGraph();
+      else document.getElementById('flowGraphArea').innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">No screen-flow graph found for ${esc(project)}.</p>`;
+    }
+    async function loadGraph() {
+      const project = document.getElementById('flowProject').value;
+      const device = document.getElementById('flowDevice').value;
+      const area = document.getElementById('flowGraphArea');
+      area.innerHTML = '<div class="loading">Loading…</div>';
+      try {
+        const g = await fetchJSON(`/api/automation/flows/${encodeURIComponent(project)}/${encodeURIComponent(device)}`);
+        const rows = g.transitions.map(t => `<tr><td>${esc(t.from_screen)}</td><td>→</td><td>${esc(t.to_screen)}</td><td><span class="pill human">${esc(t.type)}</span></td><td>${esc(t.keys || '')}</td></tr>`).join('');
+        area.innerHTML = `
+          <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${g.screens.length} screens, ${g.transitions.length} transitions. Source: <code>${esc(g.source_path)}</code></p>
+          <table><tr><th>From</th><th></th><th>To</th><th>Trigger</th><th>Keys</th></tr>${rows}</table>`;
+      } catch (e) { area.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    }
+    document.getElementById('flowProject').addEventListener('change', loadDevices);
+    document.getElementById('flowDevice').addEventListener('change', loadGraph);
+    loadDevices();
+  } catch (e) { container.innerHTML = `<div class="errbox">Could not load flows: ${esc(e.message)}</div>`; }
+}
+
+async function renderPipelines() {
+  loading();
+  setContent(`
+    <div class="page-head"><h1>Processes &amp; flows</h1><p>Every pipeline, real step data — grouped by when you'd use it, or switch to Flows for the real screen-transition graphs.</p></div>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-ptab="processes">Processes</button>
+      <button class="tab-btn" data-ptab="flows">Flows</button>
+    </div>
+    <div id="pTabBody"></div>`);
+  const body = document.getElementById('pTabBody');
+  await renderProcessesTab(body);
+  content.querySelectorAll('.tab-btn[data-ptab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      content.querySelectorAll('.tab-btn[data-ptab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (btn.dataset.ptab === 'processes') renderProcessesTab(body);
+      else renderFlowsBody(body);
     });
-  } catch (e) { errbox('Could not load pipelines: ' + e.message); }
+  });
 }
 
 /* ---------------- Features (common vs bespoke) ---------------- */
@@ -1212,47 +1326,10 @@ async function renderKeywords() {
 
 async function renderFlows() {
   loading();
-  try {
-    const taxonomy = TAXONOMY && Object.keys(TAXONOMY).length ? TAXONOMY : await fetchJSON('/api/taxonomy');
-    const projects = Object.keys(taxonomy);
-    const defaultProject = (window.CURRENT_TARGET && window.CURRENT_TARGET.project) || projects[0];
-    setContent(`
-      <div class="page-head"><h1>SIT screen flows</h1><p>Real screen-transition graphs, straight from SIT's own screenflow_map.jsonc discovery output — view only.</p></div>
-      <div class="card">
-        <div style="display:flex;gap:10px;margin-bottom:12px;">
-          <select id="flowProject" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            ${projects.map(p => `<option value="${esc(p)}" ${p===defaultProject?'selected':''}>${esc(p)}</option>`).join('')}
-          </select>
-          <select id="flowDevice" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"></select>
-        </div>
-        <div id="flowGraphArea"><div class="loading">Pick a project/device…</div></div>
-      </div>`);
-
-    async function loadDevices() {
-      const project = document.getElementById('flowProject').value;
-      const res = await fetchJSON(`/api/automation/flows?project=${encodeURIComponent(project)}`);
-      const sel = document.getElementById('flowDevice');
-      sel.innerHTML = res.device_types.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
-      if (res.device_types.length) loadGraph();
-      else document.getElementById('flowGraphArea').innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">No screen-flow graph found for ${esc(project)}.</p>`;
-    }
-    async function loadGraph() {
-      const project = document.getElementById('flowProject').value;
-      const device = document.getElementById('flowDevice').value;
-      const area = document.getElementById('flowGraphArea');
-      area.innerHTML = '<div class="loading">Loading…</div>';
-      try {
-        const g = await fetchJSON(`/api/automation/flows/${encodeURIComponent(project)}/${encodeURIComponent(device)}`);
-        const rows = g.transitions.map(t => `<tr><td>${esc(t.from_screen)}</td><td>→</td><td>${esc(t.to_screen)}</td><td><span class="pill human">${esc(t.type)}</span></td><td>${esc(t.keys || '')}</td></tr>`).join('');
-        area.innerHTML = `
-          <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${g.screens.length} screens, ${g.transitions.length} transitions. Source: <code>${esc(g.source_path)}</code></p>
-          <table><tr><th>From</th><th></th><th>To</th><th>Trigger</th><th>Keys</th></tr>${rows}</table>`;
-      } catch (e) { area.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
-    }
-    document.getElementById('flowProject').addEventListener('change', loadDevices);
-    document.getElementById('flowDevice').addEventListener('change', loadGraph);
-    loadDevices();
-  } catch (e) { errbox('Could not load flows: ' + e.message); }
+  setContent(`
+    <div class="page-head"><h1>SIT screen flows</h1><p>Real screen-transition graphs, straight from SIT's own screenflow_map.jsonc discovery output — view only.</p></div>
+    <div id="flowsBodyStandalone"></div>`);
+  await renderFlowsBody(document.getElementById('flowsBodyStandalone'));
 }
 
 const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings};

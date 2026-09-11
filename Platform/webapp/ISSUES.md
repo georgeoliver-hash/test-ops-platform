@@ -155,7 +155,9 @@ Suite Health
 
 All processes
 - new-suite-from-dcos? any point in this? being here.. its just ingest-docs amd nboard suite?
+  **Status:** answered (repeat of the earlier answer) — yes, it's the doc-driven combo of ingest-docs -> onboard-suite chained together for a from-scratch build. Kept as its own pipeline entry, grouped under "How to get started" below since it's an onboarding path, not a duplicate.
 - I really like this page and hows its set up, can we have a two tab thing on this page though, processes (default page) then flows, and on flows what i want to have is more of a like, How to get started accordiong then this has in the tree, /Start ingest docs, set up credentials and connections etc - then like Once your set up accordiong with tree for like onboard suite, consolidate, add feature, fold defect, then like a maintenance accordion tree for audit functions and reviews, maintain, then a like Human led accordion tree, resolve gaps etc. 
+  **Status:** fixed — page now has "Processes" (default) / "Flows" tabs. Processes is grouped into 4 accordions covering all 14 real pipelines: "How to get started" (start, ingest-docs, new-suite-from-docs), "Once set up" (onboard-suite, consolidate, add-feature, fold-defect, export-automation), "Maintenance" (audit, audit-coverage, audit-flows, review-runs, maintain), "Human led" (resolve-gaps). export-automation's placement under "Once set up" (not Maintenance/Human led) was a judgement call — flag if you'd rather it sit elsewhere. Flows tab reuses the real SIT screen-flow viewer (same one under Automation) rather than duplicating it.
 
 
 Features
