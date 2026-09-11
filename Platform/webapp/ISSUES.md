@@ -162,12 +162,19 @@ All processes
 
 Features
 - Neaten this page up, so have gaps found as a tab on this page so you can easily see the gaps in features found but onyl for the project your targeting, and list it better.
+  **Status:** fixed — page now has "Features" (default) / "Gaps found" tabs. Gaps found is scoped to the current target's project (via `window.CURRENT_TARGET`, case-insensitive match against the real `d.gaps` keys — found and fixed a real casing bug here: the API returns lowercase project keys like `translink` but the target object uses `Translink`, so the first version silently showed "no gaps" when there really were 8). Falls back to showing every project's gaps if no target is set, and now shows feature names instead of bare keys.
 - Features is its own tab and default tab, like how this is done.
+  **Status:** interpreted as "within the Features page, Features itself should be the default tab" (done — it's the first/active tab, Gaps found is the second). If you actually meant "make Features the whole app's default landing page instead of Suite Health," flag it — that's a bigger, different change and I didn't want to guess and silently switch everyone's home page.
 - Cited source (repo) 
+  **Status:** still genuinely unclear what's being asked — a Citation's `source_ref` is sometimes a real repo file path (e.g. `knowledge/flows/...` in system-test-ops), sometimes a TestRail case id (`C4099911`, no repo), sometimes a spec paragraph (`FBD-100167 para 12`, a document, not a repo file). There's no single "which repo" answer that applies to all three kinds without fabricating one for the ones that aren't files. Please clarify what you want shown here and I'll build it for real.
 - Is there any structure to the features, i fear this page will get soooo long with eventually every projects features, just trying to think of a better way to see the features files, knowledge files. 
+  **Status:** fixed — each feature is now a collapsed accordion (reusing the same `.stage-group` pattern as Processes), so the page shows N feature headers, not N full tables, until you click one open. Auto-opens matching features when a filter/search is active.
 - Maybe only show the features as default for the targeted project, device? as filtered, but people can click and change this to view others.
+  **Status:** fixed — project/device dropdowns now default-select the current target (Translink/POS etc.) instead of "All", still fully changeable.
 - How do we differentiate the common features vs bespoke? nothing on the features shows this, maybe the common should be common and include all devices its ocmmon for and variants etc, then bespoke is more of a project and device type view, maybe the colour of the cited source is slightly different for common than bespoke. 
+  **Status:** fixed (partial) — added a real "Scope" column and recoloured the cited-source pill: a variant_name counts as Common if 2+ different real projects share that exact name for the same feature, otherwise Bespoke. Honest finding: on the current real seed data, this comes back 0 Common / 15 Bespoke — every project currently names its variant differently even for conceptually shared behaviour, so nothing is flagged common yet. That's a real fact about the data, not a bug — if you want cross-project reuse to actually register as "common," the seed data itself needs matching variant_name values across projects.
 - Defo ways to improve this, to show common and bespoke features, feature files and cited source knowledge - way to stop it from being a massive long page, accordions, or blocks or info, dont know have a think.
+  **Status:** fixed — see the accordion + Scope-column answers above; combined they're the page-length + common/bespoke fix in one.
 
 Repo map
 - Does the files need cleaning up? 

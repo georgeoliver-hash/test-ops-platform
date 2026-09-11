@@ -745,11 +745,25 @@ async function renderPipelines() {
 
 /* ---------------- Features (common vs bespoke) ---------------- */
 let FEATURES_DATA = null;
+
+// A variant_name is "common" for a feature if 2+ different projects share that exact
+// name for it (real cross-project reuse, not a guess) -- otherwise it's bespoke to the
+// one project that has it. George's ask (2026-09-11): differentiate common vs bespoke
+// visually on the cited-source pill.
+function commonVariantNames(d, featureKey) {
+  const byName = {};
+  d.variants.filter(v => v.feature_key === featureKey).forEach(v => {
+    (byName[v.variant_name] ||= new Set()).add(v.project);
+  });
+  return new Set(Object.entries(byName).filter(([, projects]) => projects.size > 1).map(([name]) => name));
+}
+
 function renderFeatureCards() {
   const d = FEATURES_DATA;
   const project = document.getElementById('featProjectFilter')?.value || '';
   const device = document.getElementById('featDeviceFilter')?.value || '';
   const q = (document.getElementById('featSearch')?.value || '').toLowerCase().trim();
+  const filtering = !!(project || device || q);
 
   const byFeature = {};
   d.features.forEach(f => byFeature[f.key] = {feature: f, variants: []});
@@ -766,41 +780,67 @@ function renderFeatureCards() {
     );
     if (!filtered.length) return '';
     shownFeatures++; shownVariants += filtered.length;
+    const common = commonVariantNames(d, feature.key);
     return `
-      <div class="card">
-        <h2>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft)">${esc(feature.key)}</code></h2>
-        <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
-        <table>
-          <tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Cited source</th></tr>
-          ${filtered.map(v => {
-            const confPill = v.citation.confidence === 'confirmed' ? 'ok' : v.citation.confidence === 'gap' ? 'bad' : 'warn';
-            return `<tr class="variant-row">
-              <td class="chevron-cell"><span class="chevron">▸</span></td>
-              <td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td>
-              <td><span class="pill code">${esc(v.citation.source_ref)}</span></td>
-            </tr>
-            <tr class="variant-detail" style="display:none">
-              <td></td>
-              <td colspan="4">
-                <div class="variant-detail-body">
-                  <p>${v.note ? esc(v.note) : '<span class="step-detail-empty">No description recorded for this variant yet.</span>'}</p>
-                  <div class="legend" style="margin:0;">
-                    <span class="chip"><span class="sw" style="background:var(--code)"></span>${esc(v.citation.source_kind)}</span>
-                    <span class="pill ${confPill}">${esc(v.citation.confidence)}</span>
+      <div class="stage-group ${filtering ? 'open' : ''}">
+        <div class="stage-header">
+          <span>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft);font-weight:400;">${esc(feature.key)}</code></span>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="stage-body">
+          <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
+          <table>
+            <tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Scope</th><th>Cited source</th></tr>
+            ${filtered.map(v => {
+              const confPill = v.citation.confidence === 'confirmed' ? 'ok' : v.citation.confidence === 'gap' ? 'bad' : 'warn';
+              const isCommon = common.has(v.variant_name);
+              return `<tr class="variant-row">
+                <td class="chevron-cell"><span class="chevron">▸</span></td>
+                <td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td>
+                <td><span class="pill ${isCommon ? 'gate' : 'human'}">${isCommon ? 'Common' : 'Bespoke'}</span></td>
+                <td><span class="pill ${isCommon ? 'gate' : 'code'}">${esc(v.citation.source_ref)}</span></td>
+              </tr>
+              <tr class="variant-detail" style="display:none">
+                <td></td>
+                <td colspan="5">
+                  <div class="variant-detail-body">
+                    <p>${v.note ? esc(v.note) : '<span class="step-detail-empty">No description recorded for this variant yet.</span>'}</p>
+                    <div class="legend" style="margin:0;">
+                      <span class="chip"><span class="sw" style="background:var(--code)"></span>${esc(v.citation.source_kind)}</span>
+                      <span class="pill ${confPill}">${esc(v.citation.confidence)}</span>
+                    </div>
                   </div>
-                </div>
-              </td>
-            </tr>`;
-          }).join('')}
-        </table>
+                </td>
+              </tr>`;
+            }).join('')}
+          </table>
+        </div>
       </div>`;
   }).join('');
 
-  document.getElementById('featureCards').innerHTML = cards ||
+  const cardsEl = document.getElementById('featureCards');
+  cardsEl.innerHTML = cards ||
     '<div class="card"><p style="color:var(--ink-soft);font-size:13px;">No features/variants match this filter.</p></div>';
+  wireStageAccordions(cardsEl);
   const countEl = document.getElementById('featureFilterCount');
-  if (countEl) countEl.textContent = (project || device || q)
-    ? `Showing ${shownFeatures} feature(s), ${shownVariants} variant(s) matching this filter.` : '';
+  if (countEl) countEl.textContent = filtering
+    ? `Showing ${shownFeatures} feature(s), ${shownVariants} variant(s) matching this filter.` : `${shownFeatures} feature(s) total — click a feature to expand its variants.`;
+}
+
+function renderGapsFoundTab(container, d, target) {
+  const project = target.project || '';
+  const realKey = project ? Object.keys(d.gaps).find(k => k.toLowerCase() === project.toLowerCase()) : null;
+  const entries = project
+    ? [[project, (realKey ? d.gaps[realKey] : []) || []]]
+    : Object.entries(d.gaps);
+  const rows = entries.map(([proj, keys]) => keys.length
+    ? `<li><b>${esc(proj)}</b> — no cited variant yet for: ${keys.map(k => esc(d.features.find(f=>f.key===k)?.name || k)).join(', ')}</li>` : '').join('');
+  container.innerHTML = `
+    <div class="card">
+      <h2>Gaps found${project ? ` — ${esc(project)}` : ''}</h2>
+      <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Features with zero cited variant for this project — a real coverage gap, not a guess. ${project ? '' : 'No current target set, showing every project.'}</p>
+      ${rows ? `<ul class="activity">${rows}</ul>` : '<p style="color:var(--ink-soft);font-size:13px;">No gaps found for this project.</p>'}
+    </div>`;
 }
 
 async function renderFeatures() {
@@ -808,34 +848,55 @@ async function renderFeatures() {
   try {
     FEATURES_DATA = await fetchJSON('/api/features');
     const d = FEATURES_DATA;
+    const target = window.CURRENT_TARGET || {};
     const projects = [...new Set(d.variants.map(v => v.project))].sort();
     const devices = [...new Set(d.variants.map(v => v.device_type).filter(Boolean))].sort();
-    const gapRows = Object.entries(d.gaps).map(([proj, keys]) => keys.length
-      ? `<li><b>${esc(proj)}</b> — no cited variant yet for: ${keys.map(esc).join(', ')}</li>` : '').join('');
+    const defaultProject = projects.find(p => p.toLowerCase() === (target.project || '').toLowerCase()) || '';
+    const defaultDevice = devices.find(dv => dv.toLowerCase() === (target.device || '').toLowerCase()) || '';
+
     setContent(`
       <div class="page-head"><h1>Features — common vs. bespoke</h1><p>The functionality axis: same behaviour, cited per-project embodiment.</p></div>
-      ${gapRows ? `<div class="card"><h2>Real gaps found</h2><ul class="activity">${gapRows}</ul></div>` : ''}
-      <div class="card">
-        <div style="display:flex;gap:10px;margin-bottom:6px;">
-          <select id="featProjectFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <option value="">All projects</option>
-            ${projects.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}
-          </select>
-          <select id="featDeviceFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <option value="">All devices</option>
-            ${devices.map(dv => `<option value="${esc(dv)}">${esc(dv)}</option>`).join('')}
-          </select>
-          <input id="featSearch" placeholder="Search phrase, note, or citation…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-        </div>
-        <div id="featureFilterCount" style="font-size:12px;color:var(--ink-soft);"></div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-ftab="features">Features</button>
+        <button class="tab-btn" data-ftab="gaps">Gaps found</button>
       </div>
-      <div id="featureCards"></div>`);
+      <div id="fTabBody"></div>`);
 
-    renderFeatureCards();
-    document.getElementById('featProjectFilter').addEventListener('change', renderFeatureCards);
-    document.getElementById('featDeviceFilter').addEventListener('change', renderFeatureCards);
-    let featDebounce;
-    document.getElementById('featSearch').addEventListener('input', () => { clearTimeout(featDebounce); featDebounce = setTimeout(renderFeatureCards, 150); });
+    const body = document.getElementById('fTabBody');
+
+    function showFeaturesTab() {
+      body.innerHTML = `
+        <div class="card">
+          <div style="display:flex;gap:10px;margin-bottom:6px;">
+            <select id="featProjectFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+              <option value="">All projects</option>
+              ${projects.map(p => `<option value="${esc(p)}" ${p===defaultProject?'selected':''}>${esc(p)}</option>`).join('')}
+            </select>
+            <select id="featDeviceFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+              <option value="">All devices</option>
+              ${devices.map(dv => `<option value="${esc(dv)}" ${dv===defaultDevice?'selected':''}>${esc(dv)}</option>`).join('')}
+            </select>
+            <input id="featSearch" placeholder="Search phrase, note, or citation…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          </div>
+          <div id="featureFilterCount" style="font-size:12px;color:var(--ink-soft);"></div>
+        </div>
+        <div id="featureCards"></div>`;
+      renderFeatureCards();
+      document.getElementById('featProjectFilter').addEventListener('change', renderFeatureCards);
+      document.getElementById('featDeviceFilter').addEventListener('change', renderFeatureCards);
+      let featDebounce;
+      document.getElementById('featSearch').addEventListener('input', () => { clearTimeout(featDebounce); featDebounce = setTimeout(renderFeatureCards, 150); });
+    }
+
+    showFeaturesTab();
+    content.querySelectorAll('.tab-btn[data-ftab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        content.querySelectorAll('.tab-btn[data-ftab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.dataset.ftab === 'features') showFeaturesTab();
+        else renderGapsFoundTab(body, d, target);
+      });
+    });
   } catch (e) { errbox('Could not load features: ' + e.message); }
 }
 
