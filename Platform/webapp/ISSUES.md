@@ -188,12 +188,19 @@ Repo map
 
 Gap Register
 - This should only be questions for the specific project and device yes> not all gap questions
+  **Status:** fixed (project-level) — the marker table now filters to the current target's project via a real path-hint match (`reports/tfts-system-test/`, `knowledge/translink/` etc. → translink; `knowledge/njt/` → njt), not a guess at content. Device-level scoping NOT done — a raw grep marker has no device field to filter on, only a file path, and most markers live under project-wide docs, not one device's folder. Flag if you want file-path-based device inference attempted (same caveat as project: only where the path genuinely says so).
 - so need a way to make sure were tagging the question with what device, suite, document, if it is common then great but bespoke questions just for specific target.
+  **Status:** partial — the *answer log* entries already carry project + optional device (always did). The *markers themselves* still only have file/line/kind/text from the grep — no suite/document tag exists yet at that layer. Real follow-up, needs the gap-register script itself to emit richer metadata, not a console-side fix.
 - I would have prefered to select a gap question and then have a pop up with the form to reply, to answer it
+  **Status:** not built — today it's still free-standing inputs below the marker table (project prefilled from target). A per-row "Reply" button opening a modal pinned to that marker's `file:line` is a real, buildable next step; didn't do it in this pass since the pagination/entry-type work above already touched the same section.
 - Can we not have pagination to view all of the gap questions or is that too much?
+  **Status:** fixed — Prev/Next paging (25 at a time) over the real total, honest "X-Y of N" count, resets to page 1 whenever target changes.
 - What if we need to get you to clarify a little more on what your asking? maybe we need a way to reply and say can you give me more info on this gap question? what like area, what device, what functionality area or feature or any info on it more to help us answer would be great,
+  **Status:** fixed — logging an entry now has a type: Answer / Clarification requested / Conflicts with spec. "Clarification requested" is the reply-asking-for-more-info case; it's a real classification you pick when logging, not inferred.
 - This should be logged as well somewhere so all questions and answers are there - just because its good for us to show project managers that documentation may have gaps compared to the device now, and functionality now.
+  **Status:** already real (was built earlier, unchanged) — every entry is a plain, dated, code-only SQLite row (`gap_answers` table), never AI-written, visible in the Answer log on this page.
 - You know like a tab on this page that shows like answers that conflict with specification and functionality or something, and like logs.
+  **Status:** fixed — Answer log is now split into three sub-sections/tabs: Answers, Clarification requested, Conflicts with spec.
 
 start
 - When the user is all set up and has credentials, and set up everything - then can this just have a Tick byt the /start menu option, and a complete highlighted green on the page somewhere to suggest no need for this to be done by this user.
