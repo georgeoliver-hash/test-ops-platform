@@ -29,13 +29,14 @@ def pipelines(monkeypatch):
     yield mod
 
 
-def test_index_lists_all_fourteen_pipelines(pipelines):
+def test_index_lists_all_fifteen_pipelines(pipelines):
     index = pipelines.load_pipeline_index()
     ids = {e.id for e in index}
     assert "onboard-suite" in ids
     assert "audit-flows" in ids
     assert "resolve-gaps" in ids
-    assert len(ids) == 14
+    assert "write-automation" in ids  # 2026-09-14: new NJT automation-authoring pipeline
+    assert len(ids) == 15
 
 
 def test_route_by_ui_action_matches_slash_command(pipelines):

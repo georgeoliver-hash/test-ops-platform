@@ -650,6 +650,135 @@ def test_fanned_out_push_steps_each_require_own_resolve_and_shared_target_approv
     assert store.get_run(run_id)["status"] == "succeeded"
 
 
+def test_export_automation_runs_end_to_end_with_optional_flag(monkeypatch):
+    """export-automation's `export` step's `[--include-manual]` is documentation shorthand
+    -- resolved to a real --include-manual flag only when that declared input is truthy,
+    stripped entirely otherwise. report_counts (an unnamed agent step) runs the same
+    default-Read-tools path audit.yaml's summarise step already uses."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    seen_cmds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        seen_cmds.append(cmd)
+        if cmd[0] == "claude":
+            return 0, "12 of 40 cases automatable, 2 destructive, 5 manual-only.", ""
+        return 0, "Wrote automation-backlog.json/.md", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run(
+        "export-automation", "Translink", "TVM", extra_inputs={"include_manual": "true"},
+    )
+    run = store.get_run(run_id)
+    assert run["status"] == "succeeded"
+    assert run["summary"] == "12 of 40 cases automatable, 2 destructive, 5 manual-only."
+
+    export_cmd = seen_cmds[0]
+    assert "--include-manual" in export_cmd
+    assert not any("[" in part for part in export_cmd)  # bracket shorthand never reaches argv
+
+
+def test_export_automation_strips_optional_flag_when_not_requested(monkeypatch):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    seen_cmds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        seen_cmds.append(cmd)
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    runner_module.start_run("export-automation", "Translink", "TVM")
+    assert "--include-manual" not in seen_cmds[0]
+
+
+def test_write_automation_loads_and_pauses_at_confirm_devices(monkeypatch):
+    """write-automation's real, unresolved gap (device.yaml facts nobody has provided) is
+    its FIRST step, a plain human confirmation — the run must pause there immediately,
+    before any agent step runs, and never touch git."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    run_id = runner_module.start_run("write-automation", "Translink", "TVM")
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"
+    step = store.get_step(run_id, "confirm_devices")
+    assert step["status"] == "waiting_human"
+    assert "devices.yaml" in step["output"]
+
+
+def test_write_automation_agent_step_runs_in_test_automation_sit_cwd(monkeypatch):
+    """write_tests declares repo: test-automation-sit — the agent subprocess must run
+    with that repo as cwd, not system-test-ops (this is a SEPARATE checkout/remote)."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    seen_cwds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        seen_cwds.append(cwd)
+        return 0, "wrote 3 .robot files", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("write-automation", "Translink", "TVM")
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
+    assert res.status_code == 200
+
+    # write_tests ran (succeeded) and the run advanced to commit_push, which pauses next
+    assert store.get_step(run_id, "write_tests")["status"] == "succeeded"
+    assert store.get_step(run_id, "commit_push")["status"] == "waiting_human"
+    assert str(runner_module.TEST_AUTOMATION_SIT_ROOT) in seen_cwds
+
+
+def test_write_automation_never_auto_pushes(monkeypatch):
+    """commit_push is a human step describing `git commit && git push` — confirm nothing
+    in this run ever actually invokes git, and the step pauses rather than executing."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_git(cmd, cwd, timeout, run_id=None):
+        cmd_str = " ".join(cmd) if isinstance(cmd, list) else str(cmd)
+        assert "git" not in cmd_str, "write-automation must never auto-run git"
+        return 0, "wrote 3 .robot files", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_git)
+
+    run_id = runner_module.start_run("write-automation", "Translink", "TVM")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
+    step = store.get_step(run_id, "commit_push")
+    assert step["status"] == "waiting_human"
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"
+
+
+def test_git_push_command_is_always_forced_human_regardless_of_declared_kind(monkeypatch):
+    """The same hardcoded safety override as TestRail's push+--commit, generalized: any
+    rendered command containing "git push" is always a human gate."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-git-push", trigger=Trigger(ui_action="fake_git_push"), description="test pipeline",
+        steps=[Step(id="push_it", kind=StepKind.cli, command="git push origin main")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_called(*a, **kw):
+        raise AssertionError("git push must never be auto-executed")
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_called)
+
+    run_id = runner_module.start_run("fake-git-push", "Translink", "POS")
+    step = store.get_step(run_id, "push_it")
+    assert step["status"] == "waiting_human"
+
+
 def test_get_run_404_for_unknown_id():
     res = client.get("/api/pipelines/runs/does-not-exist")
     assert res.status_code == 404

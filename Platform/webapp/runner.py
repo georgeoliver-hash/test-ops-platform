@@ -44,6 +44,21 @@ from Platform.webapp import store
 
 _PLATFORM_ROOT = Path(__file__).resolve().parent.parent
 SYSTEM_TEST_OPS_ROOT = _PLATFORM_ROOT.parent.parent / "system-test-ops"
+# write-automation's write_tests step runs against this SEPARATE sibling repo/remote
+# (its own git history, its own origin/main) -- never system-test-ops'.
+TEST_AUTOMATION_SIT_ROOT = _PLATFORM_ROOT.parent.parent / "test-automation-sit"
+
+# A step's `repo:` field (e.g. write-automation.yaml's write_tests: repo: test-automation-sit)
+# picks which sibling checkout a cli/agent step actually runs in. Absent -> system-test-ops,
+# the default every other pipeline already assumes.
+_REPO_ROOTS = {
+    "system-test-ops": SYSTEM_TEST_OPS_ROOT,
+    "test-automation-sit": TEST_AUTOMATION_SIT_ROOT,
+}
+
+
+def _step_cwd(step: Step) -> Path:
+    return _REPO_ROOTS.get(getattr(step, "repo", None), SYSTEM_TEST_OPS_ROOT)
 _VENV_PYTHON = SYSTEM_TEST_OPS_ROOT / ".venv" / "Scripts" / "python.exe"
 
 if str(_PLATFORM_ROOT) not in sys.path:
@@ -59,6 +74,10 @@ AGENT_TOOL_GRANTS = {
     "standards-keeper": "Read",
     "coverage-analyst": "Read",
     "run-historian": "Read",
+    # test-automation-sit's own agent (frontmatter: Read, Edit, Write, Glob, Grep) — no
+    # Bash, so it can't itself run `git commit`/`git push`; that stays a separate human
+    # step (write-automation.yaml's commit_push) this engine never auto-executes.
+    "test-author": "Read,Write,Edit,Glob,Grep",
 }
 _DEFAULT_AGENT_TOOLS = "Read"
 
@@ -99,6 +118,26 @@ def _render(template: str, params: dict) -> str:
     yet still gets a step row and a (harmlessly unrunnable) rendered command, rather than
     crashing the whole run before it can even show the step list."""
     return template.format_map(_SafeFormatDict(params))
+
+
+_OPTIONAL_FLAG_RE = re.compile(r"\[(--[\w-]+)\]")
+
+
+def _resolve_optional_flags(command: str, params: dict) -> str:
+    """A YAML command like `export-automation --suite {suite_id} [--include-manual]` uses
+    `[--flag]` as documentation shorthand for "pass this only if the matching run input is
+    truthy" — not something a real subprocess argv should ever see literally. Resolves
+    `[--include-manual]` -> `--include-manual` if params['include_manual'] is truthy
+    (from a declared pipeline input, e.g. export-automation.yaml's), else strips it
+    entirely, generically for any `[--flag-name]` token."""
+    def repl(match: re.Match) -> str:
+        flag = match.group(1)
+        key = flag.lstrip("-").replace("-", "_")
+        value = params.get(key)
+        truthy = value is not None and str(value).strip().lower() in ("1", "true", "yes")
+        return flag if truthy else ""
+    resolved = _OPTIONAL_FLAG_RE.sub(repl, command)
+    return re.sub(r"\s{2,}", " ", resolved).strip()
 
 
 _AREA_PREFIX_RE = re.compile(r"^(fs\d+|hmi\d+|is\d+|ss\d+)-", re.IGNORECASE)
@@ -228,7 +267,7 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
     if parts and parts[0] == "python":
         parts[0] = str(_VENV_PYTHON)
     try:
-        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_CLI_TIMEOUT, run_id=run_id)
+        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(_step_cwd(step)), timeout=_CLI_TIMEOUT, run_id=run_id)
     except subprocess.TimeoutExpired:
         store.update_step(run_id, step.id, status="failed", output=f"Timed out after {_CLI_TIMEOUT}s.", finished_at=_now())
         return "failed"
@@ -259,7 +298,7 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     if parts and parts[0] == "python":
         parts[0] = str(_VENV_PYTHON)
     try:
-        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_CLI_TIMEOUT, run_id=run_id)
+        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(_step_cwd(step)), timeout=_CLI_TIMEOUT, run_id=run_id)
     except (subprocess.TimeoutExpired, OSError) as exc:
         store.update_step(run_id, step.id, status="failed", output=str(exc), finished_at=_now())
         return "failed"
@@ -303,7 +342,7 @@ def _run_agent_step(run_id: str, step: Step, area: str | None = None) -> str:
                 "--permission-prompts", "none",
                 "--output-format", "text",
             ],
-            cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_AGENT_TIMEOUT, run_id=run_id,
+            cwd=str(_step_cwd(step)), timeout=_AGENT_TIMEOUT, run_id=run_id,
         )
     except subprocess.TimeoutExpired:
         note = f"(agent timed out after {_AGENT_TIMEOUT}s — see raw step output instead)"
@@ -345,7 +384,12 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
     command = _render(step.command, params) if step.command else None
     if command and area:
         command = command.replace("<area>", area)  # e.g. push --file <area>.cases.yaml --commit
-    forced_human = bool(command) and "push" in command and "--commit" in command
+    if command:
+        command = _resolve_optional_flags(command, params)  # e.g. [--include-manual]
+    forced_human = bool(command) and (
+        ("push" in command and "--commit" in command)  # a real TestRail push --commit
+        or "git push" in command  # a real push to a repo remote (e.g. test-automation-sit)
+    )
 
     if forced_human or step.kind is StepKind.human:
         actions = getattr(step, "actions", None)
@@ -448,7 +492,7 @@ def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
         return None
     extra_inputs = _run_extra_inputs.get(run_id, {})
     params = _build_params(run["project"], run["device"], steps, extra_inputs)
-    return _render(step.command, params)
+    return _resolve_optional_flags(_render(step.command, params), params)
 
 
 def resolve_step(run_id: str, step_id: str) -> None:
