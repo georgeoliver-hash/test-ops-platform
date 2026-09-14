@@ -400,6 +400,15 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
         store.update_step(run_id, step.id, status="waiting_human", output=output)
         return "waiting_human"
 
+    # A cli/gate step with no real `command:` in its YAML (e.g. start.yaml's `route`, which
+    # is a note describing manual orchestration logic, not a literal shell command) has
+    # nothing to execute. Dispatching it as a subprocess call would crash the background
+    # thread on shlex.split(None) and leave the step stuck at "running" forever — treat it
+    # as informational instead, same as a step with no kind/ref at all.
+    if step.kind in (StepKind.cli, StepKind.gate) and not command:
+        store.update_step(run_id, step.id, status="succeeded", output=step.note or "(no command declared for this step — nothing to run)", finished_at=_now())
+        return "succeeded"
+
     if step.kind is StepKind.cli:
         return _run_cli_step(run_id, step, command)
     if step.kind is StepKind.gate:
