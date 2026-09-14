@@ -1,157 +1,223 @@
-# Test-Ops Console — step-by-step guide for a new user (Gareth)
+# Test-Ops Console — complete setup + first run guide (for Gareth)
 
-This walks through onboarding a brand-new suite end to end, using the Test-Ops Console
-web UI — the same flow George dry-ran on NJT. Follow it in order; don't skip steps even
-if a button looks clickable out of sequence.
-
-**Before you start:** George needs to add one row for your project/device to the console's
-database (there's no self-serve "add a new target" button yet) — confirm with him that this
-is done before step 3.
+Follow every step in order. Don't skip ahead even if something looks clickable early —
+later steps depend on earlier ones actually being done.
 
 ---
 
-## Part 1 — One-time machine setup
+## Part 0 — Before you start
 
-This is per-machine, one-off. Skip anything you've already done.
-
-1. **Install Claude Code** and log in (`claude` on the command line should work and be
-   authenticated). Several steps in this tool run Claude Code under the hood — without it,
-   those steps fail.
-2. **Clone all three repos as siblings** — same parent folder, not nested inside each other:
-   ```
-   SomeFolder/
-     test-ops-platform/
-     system-test-ops/
-     test-automation-sit/
-   ```
-   This exact layout matters — the console looks for the other two repos as siblings of
-   itself on disk.
-3. **Set up each repo's Python environment** (in `system-test-ops` and `test-ops-platform`):
-   ```
-   cd system-test-ops
-   python -m venv .venv
-   .venv\Scripts\python.exe -m pip install -e ".[dev]"
-   ```
-   Repeat for `test-ops-platform`. (`test-automation-sit` only matters once you reach Part 5.)
-4. **Your own TestRail credentials.** In `system-test-ops/.env` (copy `.env.example` if it's
-   not there yet), set:
-   ```
-   TESTRAIL_URL=...
-   TESTRAIL_USER=...
-   TESTRAIL_API_KEY=...
-   ```
-   Use **your own** TestRail account/API key, not George's — pushes get attributed to
-   whoever's key is configured, so this is how the audit trail says "Gareth" and not "George."
-   Ask George or IT if you don't have a TestRail API key yet.
-5. Leave `TESTRAIL_WRITE_SUITE_ID` unset for now — a later step sets it once the target
-   suite exists.
+Ask George for:
+- **GitHub access** to these three repos (they're private, under his personal GitHub
+  account — you can't clone them without being added as a collaborator first):
+  - `https://github.com/georgeoliver-hash/test-ops-platform`
+  - `https://github.com/georgeoliver-hash/system-test-ops`
+  - `https://github.com/georgeoliver-hash/test-automation-sit`
+- **Your own TestRail account** with an API key (not George's — see Part 4).
+- Confirmation of which project/device target you'll actually be onboarding (so you know
+  what to type in Part 6).
 
 ---
 
-## Part 2 — Start the console
+## Part 1 — Install Git and Claude Code
 
-From `test-ops-platform`:
+1. If you don't already have Git installed, install it (search "Git for Windows" if unsure).
+2. Install **Claude Code** and log in — several steps in this tool run Claude Code behind
+   the scenes, so it needs to be installed and signed in on your machine before anything else
+   will work. Run `claude` in a terminal to confirm it opens/works.
+3. Install **Python 3.11+** if you don't have it.
+
+---
+
+## Part 2 — Clone the three repos, in the right place
+
+This exact folder layout matters — the tool looks for the other two repos as siblings
+(next to each other, same parent folder) on disk.
+
+1. Open a terminal (PowerShell or Git Bash) and pick or create a folder to work in, e.g.:
+   ```
+   cd C:\Users\<you>\Documents\GitHub
+   ```
+   (Create the `GitHub` folder first if it doesn't exist: `mkdir GitHub` then `cd GitHub`.)
+2. Clone all three repos into that same folder, one after another:
+   ```
+   git clone https://github.com/georgeoliver-hash/test-ops-platform.git
+   git clone https://github.com/georgeoliver-hash/system-test-ops.git
+   git clone https://github.com/georgeoliver-hash/test-automation-sit.git
+   ```
+3. Check it looks like this when you're done (`dir` or `ls`):
+   ```
+   Documents\GitHub\
+     test-ops-platform\
+     system-test-ops\
+     test-automation-sit\
+   ```
+   All three folders side by side, not nested inside one another. If GitHub asks you to log
+   in during the clone, use your own GitHub account (the one George added as a collaborator).
+
+---
+
+## Part 3 — Set up each repo's Python environment
+
+Do this for **both** `system-test-ops` and `test-ops-platform` (not `test-automation-sit` yet
+— you only need that one later, in Part 8).
+
+For `system-test-ops`:
 ```
-cd test-ops-platform
-.venv\Scripts\python.exe -m uvicorn Platform.webapp.app:app --host 127.0.0.1 --port 8791
+cd C:\Users\<you>\Documents\GitHub\system-test-ops
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
-Leave that window open — it's the server. Open **http://127.0.0.1:8791** in your browser.
 
-You'll see "George Oliver" at the bottom of the page — that's a known cosmetic issue, not a
-bug on your end. It doesn't affect your data; everything you do is stored locally on your own
-machine, separate from George's.
+Then the same thing for `test-ops-platform`:
+```
+cd C:\Users\<you>\Documents\GitHub\test-ops-platform
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -e ".[dev]"
+```
 
----
-
-## Part 3 — Readiness check
-
-1. Click **Start**. This runs a readiness check (`doctor`) against your setup.
-2. If anything shows as **NEEDS_YOU**, it'll tell you exactly what's missing (usually a
-   credential or an unset env var) — fix it and re-run Start before continuing.
-3. Don't proceed past this until Start comes back clean.
+Each of these can take a minute or two — that's normal.
 
 ---
 
-## Part 4 — Target your suite
+## Part 4 — Your TestRail credentials
 
-1. Find your project/device in the target switcher (this is the row George pre-added for
-   you).
-2. If it shows an **"Approve this target"** action, click it and confirm — this is a real
-   sign-off, not cosmetic. Nothing that writes to TestRail is allowed to run until the
-   target is approved.
-3. Note whether it's marked a **fresh build** (no old suite — you're building purely from
-   documents, like NJT) or has an **old suite** listed (you're rebuilding/migrating an
-   existing one). This changes which steps later pipelines skip.
-
----
-
-## Part 5 — Ingest the docs
-
-1. Upload your project's requirement/design documents via the docs upload area.
-2. Open the **ingest-docs** pipeline and check the `docs_path` field is pointing at where
-   you just uploaded to (it should default correctly).
-3. Click **Run**. Watch the step list:
-   - `sync_check` (human) — confirms the docs are in place; click **Continue**.
-   - `convert` (cli) — converts raw docs to text.
-   - `distil` (agent) — writes grounded, cited notes to `knowledge/<project>/specs/*.md`.
-     This can take a while — it's reading full documents.
-   - `cross_examine` (agent) — flags gaps between the docs and what's testable.
-   - `commit_pr` (human) — **stop and actually read the diff** it's proposing to commit
-     before clicking Continue. This step does a real `git commit` in `system-test-ops`.
-4. If `cross_examine` surfaces gaps (marked `**GAP**`/`**UNCONFIRMED**`), those need answers
-   before the suite you build next will be fully grounded — don't skip past them silently.
+1. In `system-test-ops`, find the file `.env.example` and make a copy of it in the same
+   folder named exactly `.env`.
+2. Open `.env` in a text editor and fill in:
+   ```
+   TESTRAIL_URL=<the real TestRail URL — ask George if you don't have it>
+   TESTRAIL_USER=<your own TestRail login email>
+   TESTRAIL_API_KEY=<your own TestRail API key>
+   ```
+   Use **your own** account, not George's — this is what makes any suite push show up as
+   done by you, not him. If you don't have a TestRail API key yet, generate one from your
+   TestRail account settings, or ask George/IT.
+3. Leave `TESTRAIL_WRITE_SUITE_ID` blank/unset for now — you'll set that later, and only if
+   this specific pipeline step asks you to.
+4. Save the file.
 
 ---
 
-## Part 6 — Build the suite (onboard-suite)
+## Part 5 — Start the console and open it in your browser
 
-1. Open **onboard-suite**, confirm project/device, click **Run**.
-2. Read the **preconditions prompt carefully** before confirming — it's asking you to
-   confirm you actually have what's needed (docs, UX flows, defect history). If you're
-   missing something, say so rather than guessing.
-3. If your target is a **fresh build**, you'll notice `discover_fields`, `audit_old_suite`,
-   and `audit_run_history` are skipped automatically (there's no old suite to sample from) —
-   that's expected, not a failure.
-4. `cross_tab` / `confirm_scope` / `write_structure` — these are agent + human steps proving
-   out the suite's shape before any case gets written. Read what's proposed; this is your
-   chance to correct scope before authoring starts.
-5. `author_area` — runs once per functional area found in the ingested specs, drafting
-   `.cases.yaml` for each. You'll see one step per area in the list.
-6. `push_area` — **this is a real TestRail write.** Each area gets its own
-   **"Approve & Push"** button. It will refuse to proceed if:
-   - your target isn't approved (go back to Part 4), or
-   - the same area's cases aren't clean per the conformance audit.
-   Review the drafted cases before clicking Approve & Push — this is not reversible in the
-   same casual way a draft is.
-7. `definition_of_done` — re-runs the audit against the new suite; must come back clean.
-8. `human_cleanup` — manual TestRail UI tidy-up (bin any `ZZ_DELETE_*` placeholder sections,
-   set up Run Configurations). This step just tells you what to go do in TestRail directly.
+1. Open a terminal in `test-ops-platform`:
+   ```
+   cd C:\Users\<you>\Documents\GitHub\test-ops-platform
+   .venv\Scripts\python.exe -m uvicorn Platform.webapp.app:app --host 127.0.0.1 --port 8791
+   ```
+2. Leave that terminal window open — closing it stops the server. You should see lines
+   ending in `Application startup complete.`
+3. Open your web browser and go to: **http://127.0.0.1:8791**
+4. You should see the console's home page. (You'll see "George Oliver" written at the
+   bottom of the page — that's a known display quirk, not a bug. All your own data is stored
+   separately on your machine regardless of what name is shown there.)
+
+If the terminal prints an error about the port already being in use, something is already
+running on it — close that other window/process first, then try again.
 
 ---
 
-## Part 7 — Hand off to automation (export + write-automation)
+## Part 6 — Add your target (project + device + suite)
 
-1. Run **export-automation** — produces a backlog of which pushed cases are flagged
-   automatable.
-2. Run **write-automation**. The first step is a **human** step asking you to confirm real
-   device facts (transport, IP/serial, connection details for whatever rig will actually run
-   these tests) — **do not let anyone invent these**; if you don't know them yet, that's the
-   point of the step, answer honestly rather than guessing.
-3. It then writes `.robot` test files into `test-automation-sit/projects/<project>/`.
-4. The final step is a **human** gate before `git commit && git push` to that repo's remote —
-   review the actual files before approving. Nothing pushes to that repo without you
-   explicitly confirming.
+Skip this whole part if George tells you your target already shows up in the console for
+you — check first by clicking the current target name at the top of the page.
+
+1. Click the target name shown near the top of the page (it opens a "Change target" popup).
+2. Pick your **Project** and **Device** from the dropdowns if they're already listed. If your
+   project isn't listed yet, use the two text boxes below labelled "New project / device name"
+   to type it in instead — leave the dropdowns alone in that case.
+3. Click the button **"Add / edit this pair"**.
+4. Fill in:
+   - If this is a genuinely new suite with nothing built yet, tick **"Fresh build"**.
+   - If it's not a fresh build, fill in the **old suite** name and its **numeric TestRail
+     suite id** (the number in the suite's TestRail URL).
+   - Always fill in the **new suite** name and its **numeric TestRail suite id** — this is
+     the suite you'll actually be writing to. If you don't have this suite created in
+     TestRail yet, go create an empty one there first and come back with its number.
+5. Click **"Save pair"**.
+6. Back in the main popup, tick **"I approve pointing this console at the suites shown
+   above"**, then click **"Approve & apply target"**. (This is a real, meaningful
+   confirmation — nothing that writes to TestRail is allowed to run until you've done this.)
+
+---
+
+## Part 7 — Run "Start" (readiness check)
+
+1. Find and click **Start** in the console's navigation.
+2. Click **Run**.
+3. Watch what comes back. If anything is listed as needing your attention (missing
+   credentials, an unset setting), it will say exactly what and where to fix it. Fix it, then
+   run Start again.
+4. Don't move on until this comes back clean.
+
+---
+
+## Part 8 — Ingest your project's documents
+
+1. Upload your project's requirement/design documents wherever the console's docs upload
+   area is (look for "Docs" or "Upload" in the navigation).
+2. Find and open the **ingest-docs** pipeline.
+3. Check the `docs_path` field shown is pointing at where you just uploaded (it should fill
+   in automatically). If it's empty or looks wrong, ask George before continuing.
+4. Click **Run**. You'll see a list of steps appear, each with its own status:
+   - **sync_check** — a pause asking you to confirm the docs are in place. Read it, then
+     click **Continue**.
+   - **convert** — runs automatically, converts your raw docs to text.
+   - **distil** — runs automatically (this is Claude reading your documents and writing
+     grounded notes) — can take a few minutes, that's normal.
+   - **cross_examine** — runs automatically, flags anything unclear or missing from the docs.
+   - **commit_pr** — another pause. **Actually read what it's proposing to commit before
+     clicking Continue** — this step does a real save into the `system-test-ops` repo.
+5. If gaps get flagged (anything marked `**GAP**` or `**UNCONFIRMED**`), don't ignore them —
+   flag them to George or whoever owns the source documents before moving to Part 9.
+
+---
+
+## Part 9 — Build the suite
+
+1. Find and open the **onboard-suite** pipeline.
+2. Confirm your project/device are correct, then click **Run**.
+3. It will ask you to confirm some things before starting (do you actually have the docs,
+   flows, defect history it needs). Answer honestly — if you're missing something, say so.
+4. Watch the step list. Some steps run and finish on their own. Some are pauses that need
+   you to click **Continue** after reading what they say. If your target is a fresh build,
+   you'll notice a few steps get skipped automatically — that's expected, not an error.
+5. You'll reach steps that draft test cases (one per topic/area found in your docs) — read
+   what's drafted.
+6. Then you'll reach **push** steps — these are the ones that actually write into TestRail.
+   Each one shows an **"Approve & Push"** button instead of a plain Continue button. This
+   is a deliberate, serious confirmation point:
+   - It will refuse to let you push if your target isn't approved (go back to Part 6, step 6).
+   - Actually read the drafted cases before clicking Approve & Push.
+7. At the end there's a manual tidy-up step in TestRail itself (it will tell you exactly
+   what to go do there).
+
+---
+
+## Part 10 — Hand off to automation
+
+1. Open and run **export-automation** — this produces a list of which pushed cases are
+   flagged as automatable.
+2. Open and run **write-automation**.
+   - The first step will ask you to confirm real facts about your test device (how to
+     connect to it, its address, etc.). **Do not guess or make these up** — if you don't
+     know them, say so; someone who does needs to confirm them.
+   - It then writes automated test files into the `test-automation-sit` repo.
+   - The very last step is another pause before anything is actually saved/shared to that
+     repo — read the files it created before approving.
 
 ---
 
 ## If something goes wrong
 
-- Server won't start / port already in use: someone else (or a previous run of yours) still
-  has it open — close that window/process first.
-- A step fails with a subprocess error: check the raw output shown for that step first —
-  usually a missing credential or an unset `.env` value.
-- Anything that looks like it's asking you to invent a fact you don't actually know (a device
-  IP, a screen behaviour not in the docs) — stop and ask, don't guess. That's a deliberate gap
-  the tool is surfacing, not something it expects you to fill in confidently.
-- Stuck: message George with the pipeline name, the step id it stopped on, and whatever
-  error text is shown.
+- **Server won't start / "port already in use"**: something is already using that port —
+  close it first, or ask whoever set your machine up.
+- **A step fails and shows an error**: read the error text shown for that step — it's
+  usually a missing credential or a setting that needs fixing in `.env`.
+- **Anything is asking you to guess or invent a fact you genuinely don't know** (a device
+  address, a screen behaviour that isn't in the docs): stop, don't guess, and ask. That's the
+  tool correctly surfacing something nobody's confirmed yet — not something you're expected
+  to fill in confidently.
+- **Still stuck**: message George with the pipeline name, the exact step it stopped on, and
+  whatever error text is shown on screen.
