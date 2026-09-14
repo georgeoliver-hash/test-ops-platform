@@ -272,12 +272,27 @@
           <button class="btn" id="suiteDeleteBtn" type="button" style="font-size:12px;padding:6px 10px;display:none;">Remove pair</button>
         </div>
         <div id="suiteEditForm" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);gap:8px;flex-direction:column;">
+          <div class="field" style="margin:0;">
+            <label>New project / device name (not yet in the taxonomy above — e.g. a fresh pilot)</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="editNewProject" placeholder="Leave blank to use the Project selected above" style="flex:1;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+              <input type="text" id="editNewDevice" placeholder="Leave blank to use the Device selected above" style="flex:1;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+            </div>
+          </div>
           <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft);">
             <input type="checkbox" id="editFreshBuild">
             Fresh build — no old suite to reference (building purely from documentation)
           </label>
-          <div class="field" style="margin:0;" id="editOldSuiteField"><label>Old suite (read-only source)</label><input type="text" id="editOldSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
-          <div class="field" style="margin:0;"><label>New suite (write target)</label><input type="text" id="editNewSuite" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"></div>
+          <div class="field" style="margin:0;" id="editOldSuiteField">
+            <label>Old suite (read-only source)</label>
+            <input type="text" id="editOldSuite" placeholder="Suite name" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+            <input type="number" id="editOldSuiteId" placeholder="Numeric TestRail suite id (e.g. 14441)" style="width:100%;margin-top:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+          </div>
+          <div class="field" style="margin:0;">
+            <label>New suite (write target)</label>
+            <input type="text" id="editNewSuite" placeholder="Suite name" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+            <input type="number" id="editNewSuiteId" placeholder="Numeric TestRail suite id (e.g. 30295) — required to actually run pipelines" style="width:100%;margin-top:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
+          </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;">
             <button class="btn" id="suiteEditCancel" type="button" style="font-size:12px;">Cancel</button>
             <button class="btn primary" id="suiteEditSave" type="button" style="font-size:12px;">Save pair</button>
@@ -1625,7 +1640,7 @@ async function loadSuiteMappings() {
   try {
     const rows = await fetchJSON('/api/suite-mappings');
     SUITE_MAPPINGS = {};
-    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, approved_by: r.approved_by, approved_at: r.approved_at}; });
+    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, old_suite_id: r.old_suite_id, new_suite_id: r.new_suite_id, approved_by: r.approved_by, approved_at: r.approved_at}; });
     if (Object.keys(TAXONOMY).length && typeof refreshDevices === 'function') refreshDevices(); // pick up TestRail-only devices (e.g. BOS) that just loaded
   } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
   refreshTargetsGitStatus();
@@ -1679,7 +1694,11 @@ function devicesForProject(project) {
     .map(k => k.split('|')[1]);
   return [...new Set([...fromTaxonomy, ...fromMappings])].sort();
 }
-function refreshDevices() { fillSelect(selProject, Object.keys(TAXONOMY)); fillSelect(selDevice, devicesForProject(selProject.value)); refreshModels(); }
+function projectsWithMappings() {
+  const fromMappings = Object.keys(SUITE_MAPPINGS).map(k => k.split('|')[0]);
+  return [...new Set([...Object.keys(TAXONOMY), ...fromMappings])].sort();
+}
+function refreshDevices() { fillSelect(selProject, projectsWithMappings()); fillSelect(selDevice, devicesForProject(selProject.value)); refreshModels(); }
 function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {})[selDevice.value] || ['(no SIT build info — TestRail-only device)']); refreshSuiteReadout(); }
 
 function currentPairKey() { return `${selProject.value}|${selDevice.value}`; }
@@ -1745,13 +1764,21 @@ const editFreshBuild = document.getElementById('editFreshBuild');
 const editOldSuiteField = document.getElementById('editOldSuiteField');
 editFreshBuild.addEventListener('change', () => { editOldSuiteField.style.display = editFreshBuild.checked ? 'none' : ''; });
 
+const editOldSuiteId = document.getElementById('editOldSuiteId');
+const editNewSuiteId = document.getElementById('editNewSuiteId');
+const editNewProject = document.getElementById('editNewProject');
+const editNewDevice = document.getElementById('editNewDevice');
 suiteEditBtn.addEventListener('click', () => {
   const pair = SUITE_MAPPINGS[currentPairKey()];
   const isFresh = !!pair && !pair.old;
   editFreshBuild.checked = isFresh;
   editOldSuiteField.style.display = isFresh ? 'none' : '';
   editOldSuite.value = pair ? pair.old : '';
+  editOldSuiteId.value = pair && pair.old_suite_id != null ? pair.old_suite_id : '';
   editNewSuite.value = pair ? pair.new : '';
+  editNewSuiteId.value = pair && pair.new_suite_id != null ? pair.new_suite_id : '';
+  editNewProject.value = '';
+  editNewDevice.value = '';
   suiteEditForm.style.display = 'flex';
 });
 document.getElementById('suiteEditCancel').addEventListener('click', () => { suiteEditForm.style.display = 'none'; });
@@ -1759,12 +1786,18 @@ document.getElementById('suiteEditSave').addEventListener('click', async () => {
   const fresh_build = editFreshBuild.checked;
   const old_suite = fresh_build ? '' : editOldSuite.value.trim();
   const new_suite = editNewSuite.value.trim();
+  const new_suite_id = editNewSuiteId.value.trim() ? parseInt(editNewSuiteId.value.trim(), 10) : null;
+  const old_suite_id = (!fresh_build && editOldSuiteId.value.trim()) ? parseInt(editOldSuiteId.value.trim(), 10) : null;
+  const project = editNewProject.value.trim() || selProject.value;
+  const device = editNewDevice.value.trim() || selDevice.value;
+  if (!project || !device) { alert('Project and device are both required — pick from the dropdowns above or type new ones.'); return; }
   if (!fresh_build && !old_suite) { alert('Old suite is required, or tick "Fresh build" if there genuinely is no old suite.'); return; }
   if (!new_suite) { alert('New suite is required.'); return; }
+  if (!new_suite_id) { alert('New suite ID (the numeric TestRail suite id) is required — without it, pipelines have no --suite value to run against.'); return; }
   try {
     const res = await fetch('/api/suite-mappings', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({project: selProject.value, device: selDevice.value, old_suite, new_suite, fresh_build}),
+      body: JSON.stringify({project, device, old_suite, new_suite, new_suite_id, old_suite_id, fresh_build}),
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     await loadSuiteMappings();
