@@ -251,7 +251,13 @@ def _is_fresh_build(project: str, device: str) -> bool:
 def _build_params(project: str, device: str, steps: list[Step], extra_inputs: dict[str, str] | None = None) -> dict:
     # extra_inputs first, so a pipeline's own declared inputs (e.g. ingest-docs' docs_path)
     # can never clobber the system-derived project/device/suite id params assigned below.
-    params: dict = dict(extra_inputs or {})
+    # An empty string (e.g. an optional input's text box left blank, like onboard-suite's
+    # flow_data_path) is treated the same as "not supplied" -- included as-is, `_render`
+    # would substitute a blank rather than leaving `{flow_data_path}` unresolved, so the
+    # "skip a step with a missing input" check never triggers and the command runs with a
+    # blank argument instead (found live: mine_flows ran with an empty first argument and
+    # printed its own usage/help text as a confusing "failure").
+    params: dict = {k: v for k, v in (extra_inputs or {}).items() if v not in (None, "")}
     params["project"] = project
     params["device"] = device
     all_commands = " ".join(s.command or "" for s in steps)
