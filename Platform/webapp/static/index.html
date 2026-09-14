@@ -1304,7 +1304,7 @@ async function renderPipelineDetail(id) {
     if (target.project && target.device) {
       try {
         const last = await fetchJSON(`/api/pipelines/${id}/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
-        if (last && last.id && (last.status === 'running' || last.status === 'waiting_human')) {
+        if (last && last.id && (last.status === 'running' || last.status === 'waiting_human' || last.status === 'failed')) {
           const resultEl = document.getElementById('pipelineRunResult');
           const stepListEl = document.getElementById('pipelineStepList');
           const btn = document.getElementById('pipelineRunBtn');
@@ -1349,6 +1349,8 @@ function renderRunStep(runId, step) {
   const isPushGate = step.status === 'waiting_human' && /push/.test(step.output || '') && /--commit/.test(step.output || '');
   const actionBtn = step.status === 'waiting_human'
     ? `<button class="btn ${isPushGate ? 'danger' : 'primary'} step-resolve-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}">${isPushGate ? 'Approve & Push' : 'Continue'}</button>`
+    : step.status === 'failed'
+    ? `<button class="btn step-retry-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}" title="Re-run from this step, not the whole pipeline">Retry from here</button>`
     : '';
   return `
     <div class="run-step-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
@@ -1361,22 +1363,24 @@ function renderRunStep(runId, step) {
 }
 
 async function onStepActionClick(e) {
-  const btn = e.target.closest('.step-resolve-btn');
+  const resolveBtn = e.target.closest('.step-resolve-btn');
+  const retryBtn = e.target.closest('.step-retry-btn');
+  const btn = resolveBtn || retryBtn;
   if (!btn) return;
   const runId = btn.dataset.run;
   const stepId = btn.dataset.step;
-  const isApprovePush = btn.textContent.includes('Approve');
-  if (isApprovePush && !confirm(`This will actually push --commit to TestRail. Approve "${stepId}"?`)) return;
+  const endpoint = retryBtn ? 'retry' : 'resolve';
+  if (resolveBtn && btn.textContent.includes('Approve') && !confirm(`This will actually push --commit to TestRail. Approve "${stepId}"?`)) return;
   btn.disabled = true;
   try {
-    const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/resolve`, {method: 'POST'});
+    const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/${endpoint}`, {method: 'POST'});
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     const resultEl = document.getElementById('pipelineRunResult');
     const stepListEl = document.getElementById('pipelineStepList');
     const runBtn = document.getElementById('pipelineRunBtn');
     pollPipelineRun(runId, resultEl, runBtn, stepListEl);
   } catch (err) {
-    alert('Could not resolve step: ' + err.message);
+    alert(`Could not ${endpoint} step: ` + err.message);
     btn.disabled = false;
   }
 }

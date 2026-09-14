@@ -510,6 +510,93 @@ def test_human_step_pauses_run_until_resolved(monkeypatch):
     assert by_id["step_two"]["status"] == "succeeded"
 
 
+def test_retry_resumes_from_the_failed_step_not_step_one(monkeypatch):
+    """Found live: George's onboard-suite failed on a late step after over an hour of real
+    agent work on earlier steps -- retrying must not throw all of that away and start over
+    from step 1."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-retry", trigger=Trigger(ui_action="fake_retry"), description="test pipeline",
+        steps=[
+            Step(id="slow_step_one", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+            Step(id="flaky_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 2"),
+            Step(id="step_three", kind=StepKind.cli, command="python -m system_test_ops audit --suite 3"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    calls = []
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        calls.append(cmd)
+        if "2" in cmd:  # flaky_step fails the first time
+            return 1, "", "boom"
+        return 0, "ok\n", ""
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-retry", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    by_id = {s["step_id"]: s for s in store.get_steps(run_id)}
+    assert by_id["slow_step_one"]["status"] == "succeeded"
+    assert by_id["flaky_step"]["status"] == "failed"
+    assert by_id["step_three"]["status"] == "pending"
+    assert len(calls) == 2  # slow_step_one + flaky_step -- step_three never ran
+
+    def fake_run_subprocess_fixed(cmd, cwd, timeout, run_id=None):
+        calls.append(cmd)
+        return 0, "ok\n", ""
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess_fixed)
+
+    retry_res = client.post(f"/api/pipelines/runs/{run_id}/steps/flaky_step/retry")
+    assert retry_res.status_code == 200
+    run = store.get_run(run_id)
+    assert run["status"] == "succeeded"
+    by_id = {s["step_id"]: s for s in store.get_steps(run_id)}
+    assert by_id["slow_step_one"]["status"] == "succeeded"
+    assert by_id["flaky_step"]["status"] == "succeeded"
+    assert by_id["step_three"]["status"] == "succeeded"
+    # Only flaky_step and step_three re-ran -- slow_step_one was NOT re-executed a second time.
+    assert len(calls) == 4
+
+
+def test_retry_404s_for_unknown_step(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-retry-404", trigger=Trigger(ui_action="fake_retry_404"), description="test pipeline",
+        steps=[Step(id="only_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (1, "", "boom"))
+
+    run_id = runner_module.start_run("fake-retry-404", "Translink", "POS")
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/no_such_step/retry")
+    assert res.status_code == 404
+
+
+def test_retry_409s_when_run_is_not_failed(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-retry-409", trigger=Trigger(ui_action="fake_retry_409"), description="test pipeline",
+        steps=[Step(id="only_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok\n", ""))
+
+    run_id = runner_module.start_run("fake-retry-409", "Translink", "POS")
+    assert store.get_run(run_id)["status"] == "succeeded"
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/only_step/retry")
+    assert res.status_code == 409
+
+
 def test_resolve_409s_when_step_not_waiting(monkeypatch):
     from model.pipelines import Pipeline, Step, StepKind, Trigger
     from Platform.webapp import runner as runner_module

@@ -463,6 +463,20 @@ def resolve_pipeline_run_step(run_id: str, step_id: str):
     return {"ok": True}
 
 
+@app.post("/api/pipelines/runs/{run_id}/steps/{step_id}/retry")
+def retry_pipeline_run_step(run_id: str, step_id: str):
+    """Resumes a failed run from the step that actually failed, not from step 1 -- some
+    steps (author_area's per-area agent calls) take several minutes each, so a late
+    failure in a long onboard-suite run shouldn't throw away everything before it."""
+    try:
+        runner.retry_failed_step(run_id, step_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"ok": True}
+
+
 @app.post("/api/pipelines/runs/{run_id}/cancel")
 def cancel_pipeline_run(run_id: str):
     run = store.get_run(run_id)

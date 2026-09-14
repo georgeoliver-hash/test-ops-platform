@@ -673,6 +673,40 @@ def resolve_step(run_id: str, step_id: str) -> None:
     thread.start()
 
 
+def retry_failed_step(run_id: str, step_id: str) -> None:
+    """Resumes a failed run from the step that actually failed, instead of the whole
+    pipeline having to start over from step 1 -- some steps (author_area's per-area agent
+    calls) genuinely take several minutes each, so a failure late in a long onboard-suite
+    run shouldn't throw away everything before it. Raises KeyError if the run/step doesn't
+    exist, ValueError if the run isn't actually failed or this isn't the step that failed
+    (retry the real failure point, not an arbitrary earlier step) -- callers should map
+    both to a 4xx, not silently retry the wrong thing."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise KeyError(f"No such run '{run_id}'")
+    if run["status"] != "failed":
+        raise ValueError(f"Run '{run_id}' isn't in a failed state (status: {run['status']}).")
+    steps_meta = store.get_steps(run_id)
+    ids_in_order = [s["step_id"] for s in steps_meta]
+    if step_id not in ids_in_order:
+        raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
+    failed_status = next((s["status"] for s in steps_meta if s["step_id"] == step_id), None)
+    if failed_status != "failed":
+        raise ValueError(f"Step '{step_id}' isn't the one that failed (status: {failed_status}).")
+
+    store.update_step(run_id, step_id, status="pending", output=None, started_at=None, finished_at=None)
+    store.update_run(run_id, status="running", error=None)
+    _cancel_events[run_id] = threading.Event()
+
+    idx = ids_in_order.index(step_id)
+    thread = threading.Thread(
+        target=_run_pipeline_job,
+        args=(run_id, run["pipeline_id"], run["project"], run["device"], idx),
+        daemon=True,
+    )
+    thread.start()
+
+
 def cancel_run(run_id: str) -> None:
     """Best-effort: sets a flag the run loop checks between steps, and terminates an
     in-flight subprocess if one is running right now. In-memory only (`_cancel_events`/
