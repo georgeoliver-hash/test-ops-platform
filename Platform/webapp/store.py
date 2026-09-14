@@ -142,6 +142,12 @@ def init_db() -> None:
                 created_at TEXT NOT NULL
             )"""
         )
+        # entry_type distinguishes a real answer from a "please clarify" reply or a
+        # "this conflicts with the spec" flag -- George's ask (2026-09-11): a way to ask
+        # for more info, and a tab for answers that actually conflict with spec/functionality.
+        gap_cols = {r["name"] for r in conn.execute("PRAGMA table_info(gap_answers)").fetchall()}
+        if "entry_type" not in gap_cols:
+            conn.execute("ALTER TABLE gap_answers ADD COLUMN entry_type TEXT NOT NULL DEFAULT 'answer'")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS pipeline_runs (
                 id TEXT PRIMARY KEY,
@@ -331,22 +337,33 @@ def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
         return dict(row) if row else None
 
 
-def add_gap_answer(project: str, gap_ref: str, question: str, answer: str, answered_by: str, device: str | None = None, user_id: int = DEFAULT_USER_ID) -> int:
+def add_gap_answer(
+    project: str, gap_ref: str, question: str, answer: str, answered_by: str,
+    device: str | None = None, entry_type: str = "answer", user_id: int = DEFAULT_USER_ID,
+) -> int:
     """A real, dated, code-only audit-trail entry for a gap-register question getting
     answered -- George's explicit ask (2026-09-09): 'a log of confirm gap changes, answers,
     dates times etc... if this could be code not AI that would be great.' No AI writes
     this; it's a plain INSERT, timestamped by SQLite's own datetime('now').
+
+    entry_type is 'answer' (default), 'clarification_request' (asking the doc/case owner
+    for more info before an answer can be given), or 'conflict' (the answer contradicts
+    spec/functionality as it stands today) -- George's ask (2026-09-11) for a reply flow
+    and a conflicts tab. This is a real classification the person logging the entry picks,
+    not something inferred.
 
     Deliberately does NOT edit the actual knowledge/*.md or gap-register.md file the
     gap_ref points at -- that's still the bigger, unbuilt, write-capable ingest pipeline.
     This is the local record of the human decision, safe to build now."""
     if not (project.strip() and gap_ref.strip() and question.strip() and answer.strip() and answered_by.strip()):
         raise ValueError("project, gap_ref, question, answer, and answered_by are all required — no blanks.")
+    if entry_type not in ("answer", "clarification_request", "conflict"):
+        raise ValueError("entry_type must be 'answer', 'clarification_request', or 'conflict'.")
     with _connect() as conn:
         cur = conn.execute(
-            """INSERT INTO gap_answers (user_id, project, device, gap_ref, question, answer, answered_by, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
-            (user_id, project.strip(), (device or "").strip() or None, gap_ref.strip(), question.strip(), answer.strip(), answered_by.strip()),
+            """INSERT INTO gap_answers (user_id, project, device, gap_ref, question, answer, answered_by, entry_type, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
+            (user_id, project.strip(), (device or "").strip() or None, gap_ref.strip(), question.strip(), answer.strip(), answered_by.strip(), entry_type),
         )
         return cur.lastrowid
 

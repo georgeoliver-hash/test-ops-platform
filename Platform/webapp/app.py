@@ -100,6 +100,7 @@ class GapAnswerIn(BaseModel):
     question: str
     answer: str
     answered_by: str = "George Oliver"
+    entry_type: str = "answer"  # "answer" | "clarification_request" | "conflict"
 
 
 class CredentialsIn(BaseModel):
@@ -386,16 +387,47 @@ def get_run_health(limit: int = 15):
     }
 
 
+_GAP_PROJECT_PATH_HINTS = {
+    "translink": ("tfts-system-test", "reports\\translink", "reports/translink",
+                  "etm-suite-restructure", "gv-suite-restructure", "hhd-suite-restructure",
+                  "pv-suite-restructure", "tvm-suite-restructure", "knowledge\\translink", "knowledge/translink"),
+    "njt": ("knowledge\\njt", "knowledge/njt", "njt-fr-suite-restructure"),
+}
+
+
+def _infer_gap_project(file_path: str) -> str | None:
+    """Best-effort project tag from a marker's file path -- a real, checked mapping (not
+    a guess at content) built from the actual real directory layout under system-test-ops
+    (`reports/tfts-system-test/` = Translink's real TestRail project name, `knowledge/njt/`
+    = NJT, etc). Returns None (not a project) for markers under shared/common paths like
+    proposals/coherence-audit -- those aren't any one project's, so scoping them to one
+    would be a fabrication, not a fact."""
+    lowered = file_path.lower()
+    for project, hints in _GAP_PROJECT_PATH_HINTS.items():
+        if any(h in lowered for h in hints):
+            return project
+    return None
+
+
 @app.get("/api/gap-register")
-def get_gap_register(limit: int = 25):
+def get_gap_register(limit: int = 25, offset: int = 0, project: str | None = None):
     """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo
-    (re-run 2026-09-08, 972 found repo-wide) — capped for display, count always shown
-    uncapped."""
+    (re-run 2026-09-08, 972 found repo-wide). Supports real offset/limit pagination and an
+    optional best-effort project filter (see _infer_gap_project) -- George's ask
+    (2026-09-11): scope this to the current target, and let people page through all of it
+    rather than only ever seeing the first N."""
     path = FIXTURES / "gaps.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
     markers = json.loads(path.read_text(encoding="utf-8"))
-    return {"total": len(markers), "shown": markers[:limit], "is_fixture": True}
+    for m in markers:
+        m["project"] = _infer_gap_project(m["file"])
+    if project:
+        markers = [m for m in markers if m["project"] == project.lower()]
+    return {
+        "total": len(markers), "shown": markers[offset:offset + limit],
+        "offset": offset, "limit": limit, "is_fixture": True,
+    }
 
 
 @app.get("/api/gap-answers")
@@ -408,7 +440,10 @@ def list_gap_answers(project: str | None = None):
 @app.post("/api/gap-answers")
 def add_gap_answer(body: GapAnswerIn):
     try:
-        answer_id = store.add_gap_answer(body.project, body.gap_ref, body.question, body.answer, body.answered_by, body.device)
+        answer_id = store.add_gap_answer(
+            body.project, body.gap_ref, body.question, body.answer, body.answered_by,
+            body.device, body.entry_type,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True, "id": answer_id}

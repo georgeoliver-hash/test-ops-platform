@@ -947,25 +947,43 @@ async function renderRepoMap() {
 }
 
 /* ---------------- Gap register ---------------- */
+const GAP_PAGE_SIZE = 25;
+let gapOffset = 0;
+const ENTRY_TYPE_LABEL = {answer: 'Answer', clarification_request: 'Clarification requested', conflict: 'Conflicts with spec'};
+
 async function renderGaps() {
   loading();
   const target = window.CURRENT_TARGET || {};
+  const projectFilter = (target.project || '').toLowerCase();
   try {
     const [d, answers] = await Promise.all([
-      fetchJSON('/api/gap-register'),
+      fetchJSON(`/api/gap-register?limit=${GAP_PAGE_SIZE}&offset=${gapOffset}${projectFilter ? `&project=${encodeURIComponent(projectFilter)}` : ''}`),
       fetchJSON(`/api/gap-answers?project=${encodeURIComponent(target.project || '')}`).catch(() => []),
     ]);
     const rows = d.shown.map(g => `<tr><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text)}</td></tr>`).join('');
-    const answerRows = answers.map(a => `
+    const pageStart = d.total ? d.offset + 1 : 0;
+    const pageEnd = Math.min(d.offset + d.shown.length, d.total);
+    const answerList = (type) => answers.filter(a => (a.entry_type || 'answer') === type).map(a => `
       <li>
         <b>${esc(a.gap_ref)}</b> — ${esc(a.answer)}
         <button class="btn" data-del-answer="${a.id}" style="font-size:11px;padding:3px 8px;margin-left:6px;">Remove</button>
         <span style="color:var(--ink-soft);font-size:11px;display:block;">Q: ${esc(a.question)} — answered by ${esc(a.answered_by)}, ${esc(new Date(a.created_at + 'Z').toLocaleString())}${a.device ? ` (${esc(a.device)})` : ''}</span>
       </li>`).join('');
+    const answerTab = (type, label) => {
+      const items = answerList(type);
+      return `<div><h3 style="font-size:13px;margin:10px 0 6px;">${esc(label)}</h3>${items ? `<ul class="activity">${items}</ul>` : `<p style="color:var(--ink-soft);font-size:13px;">None logged yet.</p>`}</div>`;
+    };
     setContent(`
-      <div class="page-head"><h1>Gap register</h1><p>${d.total} real GAP/UNCONFIRMED marker(s) found repo-wide, showing first ${d.shown.length}.</p></div>
+      <div class="page-head"><h1>Gap register</h1><p>${d.total} real GAP/UNCONFIRMED marker(s) found${projectFilter ? ` for ${esc(target.project)}` : ' repo-wide'}, showing ${pageStart}-${pageEnd}.</p></div>
       ${d.is_fixture ? `<div class="fixture-note">⚠ Fixture data from a real gap-register run, 2026-09-07 — not live.</div>` : ''}
-      <div class="card"><table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table></div>
+      <div class="card">
+        <table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+          <button class="btn" id="gapPrevBtn" ${gapOffset === 0 ? 'disabled' : ''}>← Prev</button>
+          <button class="btn" id="gapNextBtn" ${pageEnd >= d.total ? 'disabled' : ''}>Next →</button>
+          <span style="color:var(--ink-soft);font-size:12px;">${pageStart}-${pageEnd} of ${d.total}</span>
+        </div>
+      </div>
       <div class="card">
         <h2>Answer log — ${esc(target.project || 'no target')}</h2>
         <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record of gap questions and answers — plain storage, never AI-written. Does not edit the actual gap-register/knowledge files yet (that needs the same write-pipeline wiring everything else is waiting on) — this is the local decision trail in the meantime.</p>
@@ -974,25 +992,35 @@ async function renderGaps() {
           <input id="gapQuestionInput" placeholder="Question" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
           <input id="gapAnswerInput" placeholder="Answer" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
           <div style="display:flex;gap:8px;">
+            <select id="gapEntryTypeInput" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+              <option value="answer">Answer</option>
+              <option value="clarification_request">Clarification requested</option>
+              <option value="conflict">Conflicts with spec</option>
+            </select>
             <input id="gapDeviceInput" placeholder="Device (optional)" value="${esc(target.device || '')}" style="flex:1;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <button class="btn primary" id="gapAnswerSaveBtn">Log answer</button>
+            <button class="btn primary" id="gapAnswerSaveBtn">Log entry</button>
           </div>
           <div id="gapAnswerMsg" style="font-size:12.5px;"></div>
         </div>
-        ${answerRows ? `<ul class="activity">${answerRows}</ul>` : '<p style="color:var(--ink-soft);font-size:13px;">No answers logged yet for this project.</p>'}
+        ${answerTab('answer', 'Answers')}
+        ${answerTab('clarification_request', 'Clarification requested')}
+        ${answerTab('conflict', 'Conflicts with spec')}
       </div>`);
 
+    document.getElementById('gapPrevBtn').addEventListener('click', () => { gapOffset = Math.max(0, gapOffset - GAP_PAGE_SIZE); renderGaps(); });
+    document.getElementById('gapNextBtn').addEventListener('click', () => { gapOffset += GAP_PAGE_SIZE; renderGaps(); });
     document.getElementById('gapAnswerSaveBtn').addEventListener('click', async () => {
       const gap_ref = document.getElementById('gapRefInput').value.trim();
       const question = document.getElementById('gapQuestionInput').value.trim();
       const answer = document.getElementById('gapAnswerInput').value.trim();
       const device = document.getElementById('gapDeviceInput').value.trim();
+      const entry_type = document.getElementById('gapEntryTypeInput').value;
       const msg = document.getElementById('gapAnswerMsg');
       if (!gap_ref || !question || !answer) { msg.textContent = 'Gap reference, question, and answer are all required.'; return; }
       try {
         const res = await fetch('/api/gap-answers', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({project: target.project, device: device || null, gap_ref, question, answer}),
+          body: JSON.stringify({project: target.project, device: device || null, gap_ref, question, answer, entry_type}),
         });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
         renderGaps();
