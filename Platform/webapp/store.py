@@ -110,6 +110,14 @@ def init_db() -> None:
             conn.execute("ALTER TABLE suite_mappings ADD COLUMN new_suite_id INTEGER")
         if "old_suite_id" not in cols:
             conn.execute("ALTER TABLE suite_mappings ADD COLUMN old_suite_id INTEGER")
+        # Real, persisted target sign-off (2026-09-14) -- replaces the client-side-only
+        # #approveCheck cosmetic checkbox. NULL/NULL means never approved; the runner treats
+        # that as a hard block on any push+--commit step regardless of the per-step human
+        # gate Phase 1 already added -- both must be true, not either/or.
+        if "approved_by" not in cols:
+            conn.execute("ALTER TABLE suite_mappings ADD COLUMN approved_by TEXT")
+        if "approved_at" not in cols:
+            conn.execute("ALTER TABLE suite_mappings ADD COLUMN approved_at TEXT")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS credentials (
                 user_id INTEGER PRIMARY KEY,
@@ -250,11 +258,44 @@ def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
 def list_suite_mappings(user_id: int = DEFAULT_USER_ID) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
-            "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at "
+            "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, "
+            "approved_by, approved_at, updated_at "
             "FROM suite_mappings WHERE user_id = ? ORDER BY project, device",
             (user_id,),
         ).fetchall()
         return [dict(r) for r in rows]
+
+
+def approve_suite_mapping(project: str, device: str, approved_by: str, user_id: int = DEFAULT_USER_ID) -> dict | None:
+    """Real sign-off on a target -- a precondition the runner checks before letting any
+    push+--commit step actually execute, independent of that step's own per-run human
+    gate. Returns the updated row, or None if no mapping exists for this project/device."""
+    if not approved_by.strip():
+        raise ValueError("approved_by is required — no anonymous approvals.")
+    with _connect() as conn:
+        cur = conn.execute(
+            """UPDATE suite_mappings SET approved_by = ?, approved_at = datetime('now')
+               WHERE user_id = ? AND project = ? AND device = ?""",
+            (approved_by.strip(), user_id, project, device),
+        )
+        if cur.rowcount == 0:
+            return None
+        row = conn.execute(
+            "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, "
+            "approved_by, approved_at, updated_at FROM suite_mappings "
+            "WHERE user_id = ? AND project = ? AND device = ?",
+            (user_id, project, device),
+        ).fetchone()
+        return dict(row) if row else None
+
+
+def is_target_approved(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> bool:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT approved_by FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
+            (user_id, project, device),
+        ).fetchone()
+        return bool(row and row["approved_by"])
 
 
 def get_new_suite_id(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> int | None:

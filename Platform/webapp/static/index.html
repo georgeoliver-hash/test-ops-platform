@@ -286,8 +286,9 @@
       </div>
       <label id="approveRow" style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);">
         <input type="checkbox" id="approveCheck" style="margin-top:2px;">
-        <span>I approve pointing this console at the suites shown above. (Today: you are the sole approver — this checkbox is the whole gate. Once writes are wired in, this becomes a real sign-off before anything can be pushed.)</span>
+        <span id="approveCheckLabel">I approve pointing this console at the suites shown above.</span>
       </label>
+      <div id="approveStatus" style="font-size:12px;color:var(--ink-soft);margin-top:4px;"></div>
     </div>
     <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply" disabled>Approve &amp; apply target</button></div>
   </div>
@@ -1623,7 +1624,7 @@ async function loadSuiteMappings() {
   try {
     const rows = await fetchJSON('/api/suite-mappings');
     SUITE_MAPPINGS = {};
-    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite}; });
+    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, approved_by: r.approved_by, approved_at: r.approved_at}; });
     if (Object.keys(TAXONOMY).length && typeof refreshDevices === 'function') refreshDevices(); // pick up TestRail-only devices (e.g. BOS) that just loaded
   } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
 }
@@ -1662,9 +1663,20 @@ function refreshModels() { fillSelect(selModel, (TAXONOMY[selProject.value] || {
 
 function currentPairKey() { return `${selProject.value}|${selDevice.value}`; }
 
+const approveStatus = document.getElementById('approveStatus');
+const approveCheckLabel = document.getElementById('approveCheckLabel');
+
 function refreshSuiteReadout() {
   const pair = SUITE_MAPPINGS[currentPairKey()];
-  approveCheck.checked = false;
+  const approved = !!(pair && pair.approved_by);
+  approveCheck.checked = approved;
+  approveCheck.disabled = !pair;
+  approveCheckLabel.textContent = approved
+    ? 'Approved — target sign-off is persisted (uncheck to revoke locally; re-check to re-approve).'
+    : 'I approve pointing this console at the suites shown above — this is a real, persisted sign-off. Any push --commit step also refuses to run until this is set, independent of that step\'s own confirmation.';
+  approveStatus.textContent = approved
+    ? `Approved by ${pair.approved_by} on ${new Date(pair.approved_at).toLocaleString()}.`
+    : '';
   suiteEditForm.style.display = 'none';
   suiteDeleteBtn.style.display = pair ? '' : 'none';
   suiteEditBtn.textContent = pair ? 'Edit this pair' : 'Add this pair';
@@ -1688,7 +1700,25 @@ function updateApplyEnabled() {
 selProject?.addEventListener('change', () => { fillSelect(selDevice, devicesForProject(selProject.value)); refreshModels(); });
 selDevice?.addEventListener('change', refreshModels);
 selModel?.addEventListener('change', updateApplyEnabled);
-approveCheck.addEventListener('change', updateApplyEnabled);
+approveCheck.addEventListener('change', async () => {
+  const pair = SUITE_MAPPINGS[currentPairKey()];
+  if (!pair) { updateApplyEnabled(); return; }
+  if (!approveCheck.checked) { updateApplyEnabled(); return; } // unchecking is local-only; no "un-approve" endpoint
+  const [project, device] = currentPairKey().split('|');
+  try {
+    const res = await fetch(`/api/suite-mappings/${encodeURIComponent(project)}/${encodeURIComponent(device)}/approve`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({}),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    const updated = await res.json();
+    pair.approved_by = updated.approved_by;
+    pair.approved_at = updated.approved_at;
+  } catch (e) {
+    approveCheck.checked = false;
+    approveStatus.textContent = 'Could not save approval — try again.';
+  }
+  refreshSuiteReadout();
+});
 
 const editFreshBuild = document.getElementById('editFreshBuild');
 const editOldSuiteField = document.getElementById('editOldSuiteField');

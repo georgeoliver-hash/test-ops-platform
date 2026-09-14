@@ -157,3 +157,55 @@ def test_get_step_none_for_unknown_step(store):
     store.create_run("run-2", "audit", "Translink", "POS")
     store.create_step_rows("run-2", [("only_step", "human")])
     assert store.get_step("run-2", "does-not-exist") is None
+
+
+def test_seed_mappings_start_unapproved(store):
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["Translink|POS"]["approved_by"] is None
+    assert mappings["Translink|POS"]["approved_at"] is None
+    assert mappings["NJT|ETM"]["approved_by"] is None
+    assert store.is_target_approved("Translink", "POS") is False
+    assert store.is_target_approved("NJT", "ETM") is False
+
+
+def test_approve_suite_mapping_roundtrip(store):
+    updated = store.approve_suite_mapping("NJT", "ETM", "George Oliver")
+    assert updated["approved_by"] == "George Oliver"
+    assert updated["approved_at"] is not None
+    assert store.is_target_approved("NJT", "ETM") is True
+
+    # a previously seeded, real row (with a real old_suite) is untouched by the migration
+    # and unaffected by approving a DIFFERENT target
+    assert store.is_target_approved("Translink", "POS") is False
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["Translink|POS"]["old_suite"] == "AA-POS Acceptance Test"
+    assert mappings["Translink|POS"]["approved_by"] is None
+
+
+def test_approve_suite_mapping_unknown_target_returns_none(store):
+    assert store.approve_suite_mapping("NoSuchProject", "NoSuchDevice", "George Oliver") is None
+
+
+def test_approve_suite_mapping_rejects_blank_approver(store):
+    with pytest.raises(ValueError):
+        store.approve_suite_mapping("NJT", "ETM", "   ")
+
+
+def test_is_target_approved_false_for_unknown_target(store):
+    assert store.is_target_approved("NoSuchProject", "NoSuchDevice") is False
+
+
+def test_migration_backfills_approval_columns_without_clobbering_rows(tmp_path, monkeypatch):
+    """Simulates a DB created before approved_by/approved_at existed -- init_db's ALTER
+    TABLE migration must add the columns without touching any existing row's data."""
+    monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
+    from Platform.webapp import store as mod
+
+    mod.init_db()
+    mod.approve_suite_mapping("NJT", "ETM", "George Oliver")
+
+    # re-running init_db (as app.py does on every startup) must be a no-op for existing data
+    mod.init_db()
+    mappings = {m["project"] + "|" + m["device"]: m for m in mod.list_suite_mappings()}
+    assert mappings["NJT|ETM"]["approved_by"] == "George Oliver"
+    assert mappings["Translink|POS"]["approved_by"] is None

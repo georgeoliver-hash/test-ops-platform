@@ -144,6 +144,24 @@ def remove_suite_mapping(project: str, device: str):
     return {"ok": True}
 
 
+class ApproveTargetIn(BaseModel):
+    approved_by: str = "George Oliver"
+
+
+@app.post("/api/suite-mappings/{project}/{device}/approve")
+def approve_suite_mapping(project: str, device: str, body: ApproveTargetIn):
+    """Real, persisted sign-off on a target — replaces the old cosmetic #approveCheck
+    checkbox. This is a precondition the runner checks independently of any single run's
+    own per-step human gate before letting a push+--commit step execute."""
+    try:
+        updated = store.approve_suite_mapping(project, device, body.approved_by)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="No such mapping — add it first.")
+    return updated
+
+
 @app.get("/api/credentials/status")
 def get_credentials_status():
     """Never the API key itself — only whether one is configured, and for which TestRail
@@ -383,6 +401,8 @@ def resolve_pipeline_run_step(run_id: str, step_id: str):
         runner.resolve_step(run_id, step_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except runner.TargetNotApprovedError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     return {"ok": True}
 
 

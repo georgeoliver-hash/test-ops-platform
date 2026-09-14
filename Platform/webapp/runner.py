@@ -359,11 +359,34 @@ def start_audit_run(project: str, device: str) -> str:
     return start_run("audit", project, device)
 
 
+class TargetNotApprovedError(RuntimeError):
+    """Raised by resolve_step when a push+--commit gate is resolved for a target that has
+    no persisted sign-off (store.is_target_approved) — independent of, and in addition to,
+    the per-run human gate every push step already goes through. app.py maps this to 403."""
+
+
+def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
+    """Re-derives a flattened step's rendered command, the same way _dispatch_step would
+    have — needed here because pipeline_run_steps only stores the step's *output* summary,
+    not its original templated command."""
+    pipeline = load_pipeline(run["pipeline_id"])
+    steps = _flatten_steps(pipeline)
+    step = next((s for s in steps if s.id == step_id), None)
+    if step is None or not step.command:
+        return None
+    extra_inputs = _run_extra_inputs.get(run_id, {})
+    params = _build_params(run["project"], run["device"], steps, extra_inputs)
+    return _render(step.command, params)
+
+
 def resolve_step(run_id: str, step_id: str) -> None:
     """Advances a `waiting_human` step to `succeeded` and resumes the run from the next
     step — this is what the UI's "Approve & Push" / "Continue" button calls. Raises
     KeyError if the run or step doesn't exist; callers should check status themselves
-    first (app.py returns 409 for a step that isn't actually waiting)."""
+    first (app.py returns 409 for a step that isn't actually waiting). Raises
+    TargetNotApprovedError if this step is a push+--commit gate and the target
+    (project/device) has no persisted approval yet (store.is_target_approved) — a second,
+    independent precondition on top of this per-step human gate, not a substitute for it."""
     run = store.get_run(run_id)
     if run is None:
         raise KeyError(f"No such run '{run_id}'")
@@ -371,6 +394,17 @@ def resolve_step(run_id: str, step_id: str) -> None:
     ids_in_order = [s["step_id"] for s in steps_meta]
     if step_id not in ids_in_order:
         raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
+
+    command = _step_command(run_id, run, step_id)
+    is_push_gate = bool(command) and "push" in command and "--commit" in command
+    if is_push_gate and not store.is_target_approved(run["project"], run["device"]):
+        store.update_step(
+            run_id, step_id, status="failed", finished_at=_now(),
+            output=f"Refused: {run['project']}/{run['device']} has no persisted approval "
+                   "(Approve this target first, then retry Approve & Push).",
+        )
+        store.update_run(run_id, status="failed", error="Target not approved for a push+--commit step.")
+        raise TargetNotApprovedError(f"{run['project']}/{run['device']} is not approved.")
 
     store.update_step(run_id, step_id, status="succeeded", finished_at=_now())
     store.update_run(run_id, status="running")

@@ -476,6 +476,74 @@ def test_push_commit_step_is_always_forced_human_regardless_of_declared_kind(mon
     assert step["status"] == "waiting_human"
 
 
+def test_approve_target_endpoint_roundtrip():
+    # Translink/PV, not touched by any earlier test that deletes/mutates suite mappings.
+    res = client.post("/api/suite-mappings/Translink/PV/approve", json={"approved_by": "George Oliver"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["approved_by"] == "George Oliver"
+    assert body["approved_at"] is not None
+
+    mappings = {m["project"] + "|" + m["device"]: m for m in client.get("/api/suite-mappings").json()}
+    assert mappings["Translink|PV"]["approved_by"] == "George Oliver"
+
+
+def test_approve_target_404s_for_unknown_target():
+    res = client.post("/api/suite-mappings/NoSuchProject/NoSuchDevice/approve", json={"approved_by": "George Oliver"})
+    assert res.status_code == 404
+
+
+def test_resolve_push_commit_step_refused_when_target_not_approved(monkeypatch):
+    """The Phase 4 precondition: even after a per-run human confirmation, resolving a
+    push+--commit gate is refused (403) if the target itself has no persisted approval —
+    a second, independent gate on top of the per-step one Phase 1 already built."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-push-unapproved", trigger=Trigger(ui_action="fake_push_unapproved"), description="test pipeline",
+        steps=[Step(id="push_area", kind=StepKind.cli, command="python -m system_test_ops push --file area.cases.yaml --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_called(*a, **kw):
+        raise AssertionError("push --commit must never execute when the target isn't approved")
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_called)
+
+    run_id = runner_module.start_run("fake-push-unapproved", "Translink", "GV")  # unapproved target, distinct from other tests
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area/resolve")
+    assert res.status_code == 403
+
+    step = store.get_step(run_id, "push_area")
+    assert step["status"] == "failed"
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+
+
+def test_resolve_push_commit_step_succeeds_once_target_approved(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-push-approved", trigger=Trigger(ui_action="fake_push_approved"), description="test pipeline",
+        steps=[Step(id="push_area", kind=StepKind.cli, command="python -m system_test_ops push --file area.cases.yaml --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "Wrote 3 cases -> out.md", ""))
+
+    approve_res = client.post("/api/suite-mappings/Translink/HHD/approve", json={"approved_by": "George Oliver"})
+    assert approve_res.status_code == 200
+
+    run_id = runner_module.start_run("fake-push-approved", "Translink", "HHD")
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area/resolve")
+    assert res.status_code == 200
+    run = store.get_run(run_id)
+    assert run["status"] == "succeeded"
+
+
 def test_get_run_404_for_unknown_id():
     res = client.get("/api/pipelines/runs/does-not-exist")
     assert res.status_code == 404
