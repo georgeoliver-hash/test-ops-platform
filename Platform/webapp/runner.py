@@ -582,10 +582,11 @@ class TargetNotApprovedError(RuntimeError):
     the per-run human gate every push step already goes through. app.py maps this to 403."""
 
 
-def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
-    """Re-derives a flattened step's rendered command, the same way _dispatch_step would
-    have — needed here because pipeline_run_steps only stores the step's *output* summary,
-    not its original templated command."""
+def _resolved_step(run_id: str, run: dict, step_id: str) -> tuple[Step | None, str | None]:
+    """Re-derives a flattened step (with its <area> substituted, if fanned-out) and its
+    fully rendered command, the same way _dispatch_step would have — needed here because
+    pipeline_run_steps only stores the step's *output* summary, not its original templated
+    command or Step object."""
     pipeline = load_pipeline(run["pipeline_id"])
     steps = _flatten_steps(pipeline, run["project"])
     step = next((s for s in steps if s.id == step_id), None)
@@ -594,10 +595,14 @@ def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
         if area and step.command:
             step = step.model_copy(update={"command": step.command.replace("<area>", area)})
     if step is None or not step.command:
-        return None
+        return step, None
     extra_inputs = _run_extra_inputs.get(run_id, {})
     params = _build_params(run["project"], run["device"], steps, extra_inputs)
-    return _resolve_optional_flags(_render(step.command, params), params)
+    return step, _resolve_optional_flags(_render(step.command, params), params)
+
+
+def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
+    return _resolved_step(run_id, run, step_id)[1]
 
 
 def resolve_step(run_id: str, step_id: str) -> None:
@@ -616,7 +621,7 @@ def resolve_step(run_id: str, step_id: str) -> None:
     if step_id not in ids_in_order:
         raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
 
-    command = _step_command(run_id, run, step_id)
+    step, command = _resolved_step(run_id, run, step_id)
     is_push_gate = bool(command) and "push" in command and "--commit" in command
     if is_push_gate and not store.is_target_approved(run["project"], run["device"]):
         # Refused, but retryable: leave the step at waiting_human (not failed) so approving
@@ -629,7 +634,21 @@ def resolve_step(run_id: str, step_id: str) -> None:
         )
         raise TargetNotApprovedError(f"{run['project']}/{run['device']} is not approved.")
 
-    store.update_step(run_id, step_id, status="succeeded", finished_at=_now())
+    forced_human = bool(command) and (is_push_gate or "git push" in command)
+    if forced_human and step is not None:
+        # This step was forced into waiting_human specifically so a human could approve the
+        # real command before it runs -- approving must actually RUN it now, not just mark
+        # it succeeded and move on. Found live: George's onboard-suite push_area was
+        # approved, advanced to "succeeded", and the run continued all the way through
+        # definition_of_done -- but the real `push --commit` was never executed, so nothing
+        # ever reached TestRail despite every downstream step looking like it had worked.
+        outcome = _run_cli_step(run_id, step, command)
+        if outcome != "succeeded":
+            store.update_run(run_id, status="failed", error=f"Step '{step_id}' failed.")
+            return
+    else:
+        store.update_step(run_id, step_id, status="succeeded", finished_at=_now())
+
     store.update_run(run_id, status="running")
     _cancel_events[run_id] = threading.Event()
 

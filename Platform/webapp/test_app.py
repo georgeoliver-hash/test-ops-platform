@@ -610,16 +610,28 @@ def test_resolve_push_commit_step_succeeds_once_target_approved(monkeypatch):
     )
     monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
     monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
-    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "Wrote 3 cases -> out.md", ""))
+    calls = []
+    def _fake_run_subprocess(*a, **kw):
+        calls.append(a[0] if a else kw.get("cmd"))
+        return (0, "Wrote 3 cases -> out.md", "")
+    monkeypatch.setattr(runner_module, "_run_subprocess", _fake_run_subprocess)
 
     approve_res = client.post("/api/suite-mappings/Translink/HHD/approve", json={"approved_by": "George Oliver"})
     assert approve_res.status_code == 200
 
     run_id = runner_module.start_run("fake-push-approved", "Translink", "HHD")
+    # Regression guard: a real push step being approved MUST actually run the command, not
+    # just mark itself succeeded and move on -- found live: George's onboard-suite push_area
+    # was approved, the whole run then "succeeded" all the way through, but `push --commit`
+    # was never actually executed and nothing ever reached TestRail. This assertion is the
+    # one this test was missing before that bug shipped.
+    assert calls == [], "the push command must not run before it's approved"
     res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area/resolve")
     assert res.status_code == 200
     run = store.get_run(run_id)
     assert run["status"] == "succeeded"
+    assert len(calls) == 1, "approving the push gate must actually execute the real command exactly once"
+    assert "push" in calls[0] and "--commit" in calls[0]
 
 
 def test_loop_step_fans_out_one_per_ingested_spec(tmp_path, monkeypatch):
