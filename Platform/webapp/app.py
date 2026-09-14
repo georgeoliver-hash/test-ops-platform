@@ -92,6 +92,11 @@ class SuiteMappingIn(BaseModel):
     # project 27 ("UK Bus Projects"), not the .env default (42, where Translink's suites live)
     # -- a single global default can't serve every target correctly.
     testrail_project_id: int | None = None
+    # The real TestRail project the NEW suite lives under -- kept separate from
+    # testrail_project_id (the OLD suite's project) because they can genuinely differ
+    # (found live: a dry-run target's old suite sat under project 27, its new suite
+    # under project 12).
+    new_testrail_project_id: int | None = None
 
 
 class RunRequest(BaseModel):
@@ -138,7 +143,7 @@ def put_suite_mapping(body: SuiteMappingIn):
     try:
         store.upsert_suite_mapping(
             body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id,
-            body.fresh_build, body.testrail_project_id,
+            body.fresh_build, body.testrail_project_id, body.new_testrail_project_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -255,6 +255,21 @@ def test_upsert_persists_testrail_project_id(store):
     assert entries[("Perth", "POS")]["testrail_project_id"] == 13
 
 
+def test_old_and_new_suite_can_live_under_different_testrail_projects(store):
+    """Found live, 2026-09-14: a dry-run target's old suite sat under TestRail project 27
+    while its new suite sat under project 12 -- one field can't serve both, since
+    old-suite-related commands (audit_old_suite/audit_run_history) and new-suite-related
+    ones (push_area/definition_of_done) need different real project ids."""
+    store.upsert_suite_mapping("Wealden", "ETM", "Old Wealden Suite", "New Wealden Suite",
+                                new_suite_id=50002, old_suite_id=15201,
+                                testrail_project_id=27, new_testrail_project_id=12)
+    assert store.get_testrail_project_id("Wealden", "ETM") == 27
+    assert store.get_new_testrail_project_id("Wealden", "ETM") == 12
+    entries = {(t["project"], t["device"]): t for t in store._load_suite_targets()}
+    assert entries[("Wealden", "ETM")]["testrail_project_id"] == 27
+    assert entries[("Wealden", "ETM")]["new_testrail_project_id"] == 12
+
+
 def test_upsert_does_not_clobber_testrail_project_id_when_omitted(store):
     """A later edit that doesn't mention testrail_project_id (e.g. the existing "Add/edit
     this pair" flow before the real dropdown fetches a project) must not silently wipe out

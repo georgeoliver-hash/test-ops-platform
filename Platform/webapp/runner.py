@@ -272,6 +272,12 @@ def _build_params(project: str, device: str, steps: list[Step], extra_inputs: di
     testrail_project_id = store.get_testrail_project_id(project, device)
     if testrail_project_id is not None:
         params["testrail_project_id"] = testrail_project_id
+    # The NEW suite's project can genuinely differ from the OLD suite's (found live: a
+    # dry-run target's old suite sat under project 27, its new suite under project 12) --
+    # kept as a separate param so push_area/definition_of_done use the right one.
+    new_testrail_project_id = store.get_new_testrail_project_id(project, device)
+    if new_testrail_project_id is not None:
+        params["new_testrail_project_id"] = new_testrail_project_id
     return params
 
 
