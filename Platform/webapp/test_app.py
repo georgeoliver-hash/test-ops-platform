@@ -164,6 +164,36 @@ def test_delete_unknown_mapping_is_404():
     assert res.status_code == 404
 
 
+def test_suite_mapping_upsert_writes_through_to_shared_yaml():
+    """Adding/editing a target via the existing "Add/edit this pair" endpoint must land in
+    the git-trackable Platform/config/suite_targets.yaml (isolated to a temp path for tests
+    -- see TESTOPS_SUITE_TARGETS_PATH at module load above), not just the local db, so a
+    colleague who commits+pushes that file shares the new target."""
+    res = client.post("/api/suite-mappings", json={
+        "project": "Perth", "device": "POS", "old_suite": "Old Perth", "new_suite": "New Perth",
+        "new_suite_id": 41000, "old_suite_id": 6000,
+    })
+    assert res.status_code == 200
+    entries = store._load_suite_targets()
+    match = [e for e in entries if e["project"] == "Perth" and e["device"] == "POS"]
+    assert len(match) == 1
+    assert match[0]["new_suite_id"] == 41000
+    client.delete("/api/suite-mappings/Perth/POS")  # tidy up (yaml entry deliberately stays -- delete only removes the local db row, matching upsert_suite_mapping's own scope)
+
+
+def test_git_status_endpoint_returns_a_known_status_value():
+    res = client.get("/api/suite-mappings/git-status")
+    assert res.status_code == 200
+    assert res.json()["status"] in ("clean", "uncommitted", "unpushed", "unknown")
+
+
+def test_git_status_endpoint_reports_unknown_outside_a_git_repo(monkeypatch, tmp_path):
+    monkeypatch.setattr(store, "_repo_root", lambda: tmp_path)
+    res = client.get("/api/suite-mappings/git-status")
+    assert res.status_code == 200
+    assert res.json()["status"] == "unknown"
+
+
 def test_credentials_status_and_save_never_leaks_key():
     res = client.get("/api/credentials/status")
     assert res.json()["configured"] is False
