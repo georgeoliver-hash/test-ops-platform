@@ -1,35 +1,43 @@
-"""Real pipeline execution — the first proof case for the disabled "Run" buttons.
+"""Real pipeline execution — a generic step-executor for every pipeline in
+.claude/pipelines/*.yaml, not just `audit`.
 
-Deliberately scoped to ONE pipeline today: `audit` (read-only Gherkin-standard lint). Per
-George's explicit choice (2026-09-08): read-only pipelines get wired up and proven safe
-first; write-capable pipelines (onboard-suite, push, add-feature) stay disabled in the UI
-until that's shown to work reliably. Nothing here can write to TestRail — system-test-ops'
-own TestRailClient has no write endpoints at all (see that repo's CLAUDE.md).
+Until 2026-09-14 this module only knew how to run one hardcoded pipeline (`audit`, two
+fixed subprocess.run calls). That doesn't fit anything write-capable — onboard-suite,
+ingest-docs, export-automation all have loops, gates, human checkpoints, and (for
+onboard-suite/new-suite-from-docs) a real TestRail push. This rewrite walks any
+pipeline's real `steps[]` (Platform/model/pipelines.py's typed view of the YAML) and
+dispatches by `kind`, instead of hand-rolling one pipeline's shape.
 
-How a run actually happens, matching `audit.yaml`'s two real steps:
-  1. `run_audit` (cli, deterministic): shell out to system-test-ops' own venv running
-     `python -m system_test_ops audit --suite <id> --no-gate`, with cwd set to the
-     system-test-ops repo root. That CLI's own `testrail/client.py` calls `load_dotenv()`
-     at import time, so it picks up system-test-ops/.env's real TestRail credentials
-     itself — nothing from this app's credential store needs passing through for this
-     pipeline. The CLI prints "Report -> <path>" on success; we parse that line rather
-     than guessing the date-stamped output path ourselves.
-  2. `summarise` (agent): shell out to a real headless Claude Code session
-     (`claude -p ... --allowedTools Read --permission-prompts none`) to read that report
-     and write a plain-language summary. `--permission-prompts none` means anything that
-     would need a prompt is auto-denied rather than hanging; `--allowedTools Read` means
-     it structurally cannot do anything but read the one file, whatever the prompt says.
+Safety rules that hold regardless of what a pipeline YAML declares:
+  - A step whose rendered command contains both "push" and "--commit" is ALWAYS treated
+    as a human approval gate, never auto-run — this is the one thing this module refuses
+    to let a YAML edit override. That's the runner-level backstop behind the UI's
+    "Approve & Push" button; the button can only ever *resolve* a paused step, never skip
+    this check on the way in.
+  - `human` steps stop the run (status becomes `waiting_human`) until something calls
+    `resolve_step` — no auto-advance.
+  - A composite pipeline's `{id, ref: <other-pipeline-id>}` steps are inlined (that other
+    pipeline's own steps run in place, ids qualified as `<step_id>.<nested_id>`) rather
+    than treated as an opaque black box, so the UI's step list shows real granular
+    progress through e.g. new-suite-from-docs' full ingest-docs + onboard-suite chain.
+  - A step's `when:` field (e.g. onboard-suite's fresh-build skip, added separately in
+    that repo) is evaluated against a small run context (currently just `fresh_build`,
+    derived from suite_mappings' old_suite_id being NULL) — a falsy `when` marks the step
+    `skipped`, not run.
 
-Runs go in a background thread (store.create_run/update_run track status) since a `claude
--p` call can take well over the timeout of a single HTTP request.
+Runs (and resumptions past a human/gate step) go in a background thread; store.py tracks
+both the overall run (`pipeline_runs`) and each step's own status (`pipeline_run_steps`).
 """
 from __future__ import annotations
 
 import json
 import re
+import shlex
 import subprocess
+import sys
 import threading
 import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 from Platform.webapp import store
@@ -38,11 +46,360 @@ _PLATFORM_ROOT = Path(__file__).resolve().parent.parent
 SYSTEM_TEST_OPS_ROOT = _PLATFORM_ROOT.parent.parent / "system-test-ops"
 _VENV_PYTHON = SYSTEM_TEST_OPS_ROOT / ".venv" / "Scripts" / "python.exe"
 
-RUNNABLE_PIPELINES = {"audit"}  # the only pipeline actually wired to execute, on purpose
+if str(_PLATFORM_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PLATFORM_ROOT))
+from model.pipelines import Pipeline, Step, StepKind, load_pipeline  # noqa: E402
+
+# Minimal, least-privilege --allowedTools grant per named agent (see
+# system-test-ops/.claude/agents/*.md frontmatter). Anything not listed here — including
+# the unnamed "summarise" step audit.yaml uses — gets Read only.
+AGENT_TOOL_GRANTS = {
+    "gherkin-author": "Read,Write,Edit",
+    "test-lead": "Read,Write",
+    "standards-keeper": "Read",
+    "coverage-analyst": "Read",
+    "run-historian": "Read",
+}
+_DEFAULT_AGENT_TOOLS = "Read"
+
+_CLI_TIMEOUT = 180
+_AGENT_TIMEOUT = 180
+
+_cancel_events: dict[str, threading.Event] = {}
+_run_procs: dict[str, subprocess.Popen] = {}
+_procs_lock = threading.Lock()
+
+# Extra, pipeline-declared run inputs beyond project/device/suite ids (e.g. ingest-docs'
+# {docs_path}) -- keyed by run_id so a resumed (post-human-step) continuation can still see
+# them. In-memory only, same non-survives-a-restart tradeoff as _cancel_events/_run_procs.
+_run_extra_inputs: dict[str, dict[str, str]] = {}
 
 
 def is_runnable(pipeline_id: str) -> bool:
-    return pipeline_id in RUNNABLE_PIPELINES
+    """Every pipeline is runnable now (2026-09-14) — the old RUNNABLE_PIPELINES allowlist
+    is gone. What used to gate execution at the pipeline level now gates at the STEP
+    level instead: any step that would push --commit is always a human-approval gate
+    (see module docstring), so a write-capable pipeline can run but can't silently write
+    without a person clicking "Approve & Push" first."""
+    return True
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+class _SafeFormatDict(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
+def _render(template: str, params: dict) -> str:
+    """`str.format_map` that leaves an unresolved `{placeholder}` alone instead of raising
+    — a pipeline whose extra inputs (e.g. ingest-docs' {docs_path}) haven't been supplied
+    yet still gets a step row and a (harmlessly unrunnable) rendered command, rather than
+    crashing the whole run before it can even show the step list."""
+    return template.format_map(_SafeFormatDict(params))
+
+
+def _flatten_steps(pipeline: Pipeline, _seen: frozenset[str] = frozenset()) -> list[Step]:
+    """Real, ordered step list with composite `{id, ref: <pipeline-id>}` steps inlined —
+    so e.g. new-suite-from-docs shows ingest-docs' and onboard-suite's real steps, not two
+    opaque "run this whole other pipeline" boxes. Nested step ids are qualified
+    `<ref-step-id>.<nested-step-id>` to stay unique."""
+    if pipeline.id in _seen:
+        raise RuntimeError(f"Circular composite pipeline reference at '{pipeline.id}'")
+    seen = _seen | {pipeline.id}
+    out: list[Step] = []
+    for step in pipeline.steps:
+        if step.is_composite_ref:
+            nested_pipeline = load_pipeline(step.ref)
+            for nested in _flatten_steps(nested_pipeline, seen):
+                out.append(nested.model_copy(update={"id": f"{step.id}.{nested.id}"}))
+        else:
+            out.append(step)
+    return out
+
+
+def _eval_when(expr: str, context: dict) -> bool:
+    """Tiny, whitelisted evaluator for a step's `when:` — no `eval()`. Supports a bare
+    context variable, optionally negated ("fresh_build" / "not fresh_build"). Unknown
+    variables default to falsy rather than raising, so a `when:` referencing a context key
+    this engine doesn't populate yet just skips the step rather than crashing the run."""
+    expr = expr.strip()
+    negate = expr.lower().startswith("not ")
+    var = expr[4:].strip() if negate else expr
+    value = bool(context.get(var, False))
+    return (not value) if negate else value
+
+
+def _is_fresh_build(project: str, device: str) -> bool:
+    ids = store.get_suite_ids(project, device)
+    return bool(ids) and ids.get("old_suite_id") is None
+
+
+def _build_params(project: str, device: str, steps: list[Step], extra_inputs: dict[str, str] | None = None) -> dict:
+    # extra_inputs first, so a pipeline's own declared inputs (e.g. ingest-docs' docs_path)
+    # can never clobber the system-derived project/device/suite id params assigned below.
+    params: dict = dict(extra_inputs or {})
+    params["project"] = project
+    params["device"] = device
+    all_commands = " ".join(s.command or "" for s in steps)
+    ids = store.get_suite_ids(project, device) or {}
+    if ids.get("old_suite_id") is not None:
+        params["old_suite_id"] = ids["old_suite_id"]
+    if ids.get("new_suite_id") is not None:
+        params["new_suite_id"] = ids["new_suite_id"]
+    if "{suite_id}" in all_commands:
+        suite_id = store.get_new_suite_id(project, device)
+        if suite_id is None:
+            raise ValueError(f"No new_suite_id configured for {project}/{device} — add one in Settings first.")
+        params["suite_id"] = suite_id
+    return params
+
+
+def _run_subprocess(cmd: list[str], cwd: str, timeout: int, run_id: str | None = None):
+    """The one place an actual subprocess gets spawned — using Popen (not subprocess.run)
+    so an in-flight process is reachable by `cancel_run` via `_run_procs`. Returns
+    (returncode, stdout, stderr); raises TimeoutExpired/OSError like subprocess.run would."""
+    proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if run_id:
+        with _procs_lock:
+            _run_procs[run_id] = proc
+    try:
+        stdout, stderr = proc.communicate(timeout=timeout)
+        return proc.returncode, stdout, stderr
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.communicate()
+        raise
+    finally:
+        if run_id:
+            with _procs_lock:
+                _run_procs.pop(run_id, None)
+
+
+def _run_cli_step(run_id: str, step: Step, command: str) -> str:
+    parts = shlex.split(command)
+    if parts and parts[0] == "python":
+        parts[0] = str(_VENV_PYTHON)
+    try:
+        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_CLI_TIMEOUT, run_id=run_id)
+    except subprocess.TimeoutExpired:
+        store.update_step(run_id, step.id, status="failed", output=f"Timed out after {_CLI_TIMEOUT}s.", finished_at=_now())
+        return "failed"
+    except OSError as exc:
+        store.update_step(run_id, step.id, status="failed", output=f"Could not start: {exc}", finished_at=_now())
+        return "failed"
+
+    output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
+    ok = returncode in (0, 1)  # 1 == "ran, found blocking findings" for audit-style CLIs — still a completed run
+    store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    if not ok:
+        return "failed"
+
+    match = re.search(r"-> (\S.*)$", stdout or "", re.MULTILINE)
+    if match:
+        store.update_run(run_id, report_path=match.group(1).strip(), cli_output=output)
+    else:
+        store.update_run(run_id, cli_output=output)
+    return "succeeded"
+
+
+def _run_gate_step(run_id: str, step: Step, command: str) -> str:
+    """A gate re-runs a check command and must be a clean pass (returncode 0) — no
+    "1 = blocking findings, still fine" leniency like a plain cli step gets, since a gate
+    (e.g. onboard-suite's definition_of_done, must_be: clean_of_blocking) exists
+    specifically to fail loudly when the suite isn't clean."""
+    parts = shlex.split(command)
+    if parts and parts[0] == "python":
+        parts[0] = str(_VENV_PYTHON)
+    try:
+        returncode, stdout, stderr = _run_subprocess(parts, cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_CLI_TIMEOUT, run_id=run_id)
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        store.update_step(run_id, step.id, status="failed", output=str(exc), finished_at=_now())
+        return "failed"
+    output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
+    ok = returncode == 0
+    store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    return "succeeded" if ok else "failed"
+
+
+def _run_agent_step(run_id: str, step: Step) -> str:
+    allowed_tools = AGENT_TOOL_GRANTS.get(step.agent or "", _DEFAULT_AGENT_TOOLS)
+    prior_run = store.get_run(run_id) or {}
+    report_path = prior_run.get("report_path")
+    if report_path and not (SYSTEM_TEST_OPS_ROOT / report_path).is_file():
+        note = f"A prior step reported {report_path}, but that file wasn't found to read — nothing to summarise."
+        store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
+        store.update_run(run_id, summary=note)
+        return "succeeded"
+    if report_path:
+        prompt = (
+            f"Read the file at {report_path} and {step.note or 'summarise it in plain language'}. "
+            f"No preamble, no markdown headers, 3-6 sentences."
+        )
+    else:
+        prompt = step.note or f"Carry out the '{step.id}' step of this pipeline."
+
+    try:
+        returncode, stdout, stderr = _run_subprocess(
+            [
+                "claude", "-p", prompt,
+                "--allowedTools", allowed_tools,
+                "--permission-prompts", "none",
+                "--output-format", "text",
+            ],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_AGENT_TIMEOUT, run_id=run_id,
+        )
+    except subprocess.TimeoutExpired:
+        note = f"(agent timed out after {_AGENT_TIMEOUT}s — see raw step output instead)"
+        store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
+        store.update_run(run_id, summary=note)
+        return "succeeded"
+    except OSError as exc:
+        store.update_step(run_id, step.id, status="failed", output=f"Could not run agent: {exc}", finished_at=_now())
+        return "failed"
+
+    output = (stdout or "").strip() or "(the agent returned no output)"
+    ok = returncode == 0
+    store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    if ok:
+        store.update_run(run_id, summary=output)
+        return "succeeded"
+    return "failed"
+
+
+def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
+    """Returns one of: skipped | waiting_human | succeeded | failed."""
+    when = getattr(step, "when", None)
+    if when and not _eval_when(when, context):
+        store.update_step(run_id, step.id, status="skipped", finished_at=_now())
+        return "skipped"
+
+    command = _render(step.command, params) if step.command else None
+    forced_human = bool(command) and "push" in command and "--commit" in command
+
+    store.update_step(run_id, step.id, status="running", started_at=_now())
+
+    if forced_human or step.kind is StepKind.human:
+        output = f"[requires approval before this runs] {command}" if forced_human else (
+            step.note or getattr(step, "action", None) or "Human step — awaiting confirmation."
+        )
+        store.update_step(run_id, step.id, status="waiting_human", output=output)
+        return "waiting_human"
+
+    if step.kind is StepKind.cli:
+        return _run_cli_step(run_id, step, command)
+    if step.kind is StepKind.gate:
+        return _run_gate_step(run_id, step, command)
+    if step.kind is StepKind.agent:
+        return _run_agent_step(run_id, step)
+
+    # No kind and no ref (a pure note/informational step) — nothing to execute.
+    store.update_step(run_id, step.id, status="succeeded", output=step.note or "(informational step, nothing to run)", finished_at=_now())
+    return "succeeded"
+
+
+def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, start_index: int) -> None:
+    pipeline = load_pipeline(pipeline_id)
+    steps = _flatten_steps(pipeline)
+    extra_inputs = _run_extra_inputs.get(run_id, {})
+    try:
+        params = _build_params(project, device, steps, extra_inputs)
+    except ValueError as exc:
+        store.update_run(run_id, status="failed", error=str(exc))
+        return
+
+    context = {"fresh_build": _is_fresh_build(project, device)}
+    cancel_event = _cancel_events.setdefault(run_id, threading.Event())
+
+    for idx in range(start_index, len(steps)):
+        if cancel_event.is_set():
+            store.update_run(run_id, status="failed", error="Run cancelled.")
+            return
+        step = steps[idx]
+        outcome = _dispatch_step(run_id, step, params, context)
+        if outcome == "waiting_human":
+            store.update_run(run_id, status="waiting_human")
+            return
+        if outcome == "failed":
+            store.update_run(run_id, status="failed", error=f"Step '{step.id}' failed.")
+            return
+        # succeeded / skipped -> keep going
+
+    store.update_run(run_id, status="succeeded")
+
+
+def start_run(pipeline_id: str, project: str, device: str, extra_inputs: dict[str, str] | None = None) -> str:
+    """Kicks off a real run of ANY pipeline in the background, returns a run id to poll.
+    `extra_inputs` covers whatever a pipeline declares beyond project/device/suite ids
+    (e.g. ingest-docs' docs_path) — app.py validates required ones are present before
+    calling this, using the pipeline's own `inputs:` list as the source of truth.
+    Raises KeyError for an unknown pipeline id, ValueError if a required suite id isn't
+    configured for this target — both map to HTTP 404/400 in app.py."""
+    pipeline = load_pipeline(pipeline_id)
+    steps = _flatten_steps(pipeline)
+    extra_inputs = extra_inputs or {}
+    _build_params(project, device, steps, extra_inputs)  # validate up front — don't create a run row if this will fail immediately
+
+    run_id = str(uuid.uuid4())
+    _run_extra_inputs[run_id] = extra_inputs
+    store.create_run(run_id, pipeline_id, project, device)
+    store.create_step_rows(run_id, [(s.id, s.kind.value if s.kind else None) for s in steps])
+    _cancel_events[run_id] = threading.Event()
+
+    thread = threading.Thread(target=_run_pipeline_job, args=(run_id, pipeline_id, project, device, 0), daemon=True)
+    thread.start()
+    return run_id
+
+
+def start_audit_run(project: str, device: str) -> str:
+    """Kept for existing callers — audit is now just start_run("audit", ...) going through
+    the same generic engine as everything else (the explicit regression-check case)."""
+    return start_run("audit", project, device)
+
+
+def resolve_step(run_id: str, step_id: str) -> None:
+    """Advances a `waiting_human` step to `succeeded` and resumes the run from the next
+    step — this is what the UI's "Approve & Push" / "Continue" button calls. Raises
+    KeyError if the run or step doesn't exist; callers should check status themselves
+    first (app.py returns 409 for a step that isn't actually waiting)."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise KeyError(f"No such run '{run_id}'")
+    steps_meta = store.get_steps(run_id)
+    ids_in_order = [s["step_id"] for s in steps_meta]
+    if step_id not in ids_in_order:
+        raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
+
+    store.update_step(run_id, step_id, status="succeeded", finished_at=_now())
+    store.update_run(run_id, status="running")
+    _cancel_events[run_id] = threading.Event()
+
+    idx = ids_in_order.index(step_id)
+    thread = threading.Thread(
+        target=_run_pipeline_job,
+        args=(run_id, run["pipeline_id"], run["project"], run["device"], idx + 1),
+        daemon=True,
+    )
+    thread.start()
+
+
+def cancel_run(run_id: str) -> None:
+    """Best-effort: sets a flag the run loop checks between steps, and terminates an
+    in-flight subprocess if one is running right now. In-memory only (`_cancel_events`/
+    `_run_procs`) — doesn't survive a process restart, which is fine for a single-user
+    local app; a run left `running` across a restart just won't ever cancel cleanly, it'll
+    sit there until manually marked failed (a real gap, acceptable for now)."""
+    event = _cancel_events.setdefault(run_id, threading.Event())
+    event.set()
+    with _procs_lock:
+        proc = _run_procs.get(run_id)
+    if proc is not None and proc.poll() is None:
+        try:
+            proc.terminate()
+        except OSError:
+            pass
 
 
 def _case_count(suite_id: int) -> int | None:
@@ -137,75 +494,3 @@ def compare_suite_case_counts(project: str, device: str) -> dict:
         "old_case_count": old_count, "new_case_count": new_count,
         "diff": new_count - old_count,
     }
-
-
-def start_audit_run(project: str, device: str) -> str:
-    """Kicks off a real `audit` run in the background, returns a run id to poll."""
-    suite_id = store.get_new_suite_id(project, device)
-    if suite_id is None:
-        raise ValueError(f"No new_suite_id configured for {project}/{device} — add one in Settings first.")
-    run_id = str(uuid.uuid4())
-    store.create_run(run_id, "audit", project, device)
-    thread = threading.Thread(target=_run_audit_job, args=(run_id, project, suite_id), daemon=True)
-    thread.start()
-    return run_id
-
-
-def _run_audit_job(run_id: str, project: str, suite_id: int) -> None:
-    try:
-        cli_result = subprocess.run(
-            [str(_VENV_PYTHON), "-m", "system_test_ops", "audit", "--suite", str(suite_id), "--no-gate"],
-            cwd=str(SYSTEM_TEST_OPS_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=180,
-        )
-    except subprocess.TimeoutExpired:
-        store.update_run(run_id, status="failed", error="audit CLI step timed out after 180s")
-        return
-    except OSError as exc:
-        store.update_run(run_id, status="failed", error=f"could not start audit CLI: {exc}")
-        return
-
-    cli_output = (cli_result.stdout or "") + (("\n--- stderr ---\n" + cli_result.stderr) if cli_result.stderr else "")
-    if cli_result.returncode not in (0, 1):  # 1 = blocking findings found, still a valid completed run
-        store.update_run(run_id, status="failed", cli_output=cli_output, error=f"audit CLI exited {cli_result.returncode}")
-        return
-
-    match = re.search(r"Report -> (.+)$", cli_result.stdout, re.MULTILINE)
-    report_path = match.group(1).strip() if match else None
-    store.update_run(run_id, cli_output=cli_output, report_path=report_path)
-
-    if not report_path:
-        store.update_run(run_id, status="succeeded", summary="Audit ran, but no report path was found in its output to summarise.")
-        return
-
-    full_report_path = SYSTEM_TEST_OPS_ROOT / report_path
-    if not full_report_path.is_file():
-        store.update_run(run_id, status="succeeded", summary=f"Audit ran and reported {report_path}, but that file wasn't found to summarise.")
-        return
-
-    try:
-        summarise_result = subprocess.run(
-            [
-                "claude", "-p",
-                f"Read the audit report at {report_path} and write a short, plain-language "
-                f"summary: how many cases were audited, how many blocking findings there are "
-                f"(if any, name them briefly), and whether this suite is clean to work in. "
-                f"No preamble, no markdown headers, 3-6 sentences.",
-                "--allowedTools", "Read",
-                "--permission-prompts", "none",
-                "--output-format", "text",
-            ],
-            cwd=str(SYSTEM_TEST_OPS_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
-        summary = summarise_result.stdout.strip() or "(the summarising agent returned no output)"
-    except subprocess.TimeoutExpired:
-        summary = "(summarising agent timed out after 120s — see the raw report instead)"
-    except OSError as exc:
-        summary = f"(could not run the summarising agent: {exc})"
-
-    store.update_run(run_id, status="succeeded", summary=summary)

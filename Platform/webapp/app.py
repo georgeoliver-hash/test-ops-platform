@@ -91,6 +91,10 @@ class SuiteMappingIn(BaseModel):
 class RunRequest(BaseModel):
     project: str
     device: str
+    # Whatever a pipeline's own `inputs:` list declares beyond project/device (e.g.
+    # ingest-docs' docs_path) — validated as required/missing against that list below,
+    # not a hardcoded field per pipeline.
+    extra_inputs: dict[str, str] = {}
 
 
 class GapAnswerIn(BaseModel):
@@ -206,6 +210,14 @@ def list_docs(project: str, device: str):
     return store.list_docs(project, device)
 
 
+@app.get("/api/docs/folder")
+def get_docs_folder(project: str, device: str):
+    """Absolute path of this target's upload folder — lets the ingest-docs run form default
+    its required `docs_path` input to where docs were actually dropped, instead of George
+    hand-typing a path."""
+    return {"path": store.uploads_dir_path(project, device)}
+
+
 @app.post("/api/docs")
 async def upload_doc(project: str, device: str, file: UploadFile = File(...)):
     if not file.filename:
@@ -300,19 +312,41 @@ def get_pipeline_detail(pipeline_id: str):
         "trigger": p.trigger.model_dump(),
         "guardrails": p.guardrails,
         "steps": [s.model_dump() for s in p.steps],
+        "inputs": [i.model_dump() for i in p.inputs],
         "runnable": runner.is_runnable(p.id),
     }
 
 
 @app.post("/api/pipelines/{pipeline_id}/run")
 def run_pipeline(pipeline_id: str, body: RunRequest):
-    """Kicks off a REAL run — today, only `audit` (read-only) is wired. Every other pipeline
-    stays disabled in the UI on purpose (George's call, 2026-09-08: read-only pipelines get
-    proven safe before any write-capable one gets wired up)."""
-    if not runner.is_runnable(pipeline_id):
-        raise HTTPException(status_code=400, detail=f"'{pipeline_id}' isn't wired to run yet — only {sorted(runner.RUNNABLE_PIPELINES)} are.")
+    """Kicks off a REAL run of any pipeline (2026-09-14: the RUNNABLE_PIPELINES allowlist
+    is gone — every pipeline runs through the generic step-executor in runner.py). Safety
+    now lives at the step level: any step that would `push --commit` is always forced into
+    a human-approval gate there, never here.
+
+    A pipeline's own `inputs:` list (e.g. ingest-docs' required `docs_path`) is the source
+    of truth for what else a run needs beyond project/device — checked here so a missing
+    one 400s with a clear message instead of the run silently starting with an unresolved
+    `{placeholder}` in a step command."""
     try:
-        run_id = runner.start_audit_run(body.project, body.device)
+        pipeline = pipelines.load_pipeline(pipeline_id)
+    except (KeyError, FileNotFoundError) as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    # project/device are top-level RunRequest fields; old_suite_id/new_suite_id/suite_id are
+    # derived automatically from suite_mappings by runner._build_params — only inputs
+    # outside that system-derived set (e.g. ingest-docs' docs_path) need a real value here.
+    _SYSTEM_DERIVED_INPUTS = {"project", "device", "old_suite_id", "new_suite_id", "suite_id"}
+    for inp in pipeline.inputs:
+        if inp.name in _SYSTEM_DERIVED_INPUTS:
+            continue
+        if inp.required and not body.extra_inputs.get(inp.name):
+            raise HTTPException(status_code=400, detail=f"Missing required input '{inp.name}' for pipeline '{pipeline_id}'.")
+
+    try:
+        run_id = runner.start_run(pipeline_id, body.project, body.device, body.extra_inputs)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"run_id": run_id}
@@ -324,6 +358,41 @@ def get_pipeline_run(run_id: str):
     if run is None:
         raise HTTPException(status_code=404, detail="No such run")
     return run
+
+
+@app.get("/api/pipelines/runs/{run_id}/steps")
+def get_pipeline_run_steps(run_id: str):
+    """Granular per-step progress for one run — the poll target for the step list UI."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    return store.get_steps(run_id)
+
+
+@app.post("/api/pipelines/runs/{run_id}/steps/{step_id}/resolve")
+def resolve_pipeline_run_step(run_id: str, step_id: str):
+    """Advances a step that's currently `waiting_human` (a plain confirmation, or a real
+    `push --commit` approval gate) and resumes the run. This is the real "Approve & Push"
+    action — there is no other path in this app that lets a run past that gate."""
+    step = store.get_step(run_id, step_id)
+    if step is None:
+        raise HTTPException(status_code=404, detail="No such step")
+    if step["status"] != "waiting_human":
+        raise HTTPException(status_code=409, detail=f"Step '{step_id}' is not waiting for approval (status={step['status']}).")
+    try:
+        runner.resolve_step(run_id, step_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return {"ok": True}
+
+
+@app.post("/api/pipelines/runs/{run_id}/cancel")
+def cancel_pipeline_run(run_id: str):
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    runner.cancel_run(run_id)
+    return {"ok": True}
 
 
 @app.get("/api/pipelines/{pipeline_id}/last-run")

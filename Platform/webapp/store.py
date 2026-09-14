@@ -163,6 +163,22 @@ def init_db() -> None:
                 updated_at TEXT NOT NULL
             )"""
         )
+        # Granular per-step tracking alongside pipeline_runs (added for the generic
+        # step-executor, 2026-09-14) -- pipeline_runs stays the overall run's status/
+        # summary; this table is what a "waiting_human" gate, a per-step output tail, and
+        # a resume-from-step-N continuation all key off.
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS pipeline_run_steps (
+                run_id TEXT NOT NULL,
+                step_id TEXT NOT NULL,
+                kind TEXT,
+                status TEXT NOT NULL,
+                output TEXT,
+                started_at TEXT,
+                finished_at TEXT,
+                PRIMARY KEY (run_id, step_id)
+            )"""
+        )
         conn.execute(
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
@@ -324,6 +340,49 @@ def get_run(run_id: str) -> dict | None:
         return dict(row) if row else None
 
 
+def create_step_rows(run_id: str, steps: list[tuple[str, str | None]]) -> None:
+    """`steps`: ordered (step_id, kind) pairs for this run's flattened step list, inserted
+    as status='pending'. `kind` is a free string (cli/agent/human/gate/None) — no CHECK
+    constraint, matching pipeline_runs' own free-text status column."""
+    if not steps:
+        return
+    with _connect() as conn:
+        conn.executemany(
+            "INSERT INTO pipeline_run_steps (run_id, step_id, kind, status) VALUES (?, ?, ?, 'pending')",
+            [(run_id, step_id, kind) for step_id, kind in steps],
+        )
+
+
+def update_step(run_id: str, step_id: str, **fields) -> None:
+    """fields: any of status, output, started_at, finished_at."""
+    if not fields:
+        return
+    set_clause = ", ".join(f"{k} = ?" for k in fields)
+    with _connect() as conn:
+        conn.execute(
+            f"UPDATE pipeline_run_steps SET {set_clause} WHERE run_id = ? AND step_id = ?",
+            (*fields.values(), run_id, step_id),
+        )
+
+
+def get_steps(run_id: str) -> list[dict]:
+    """Ordered by rowid (insertion order == pipeline step order) — the poll target for a
+    run's live step-by-step progress."""
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM pipeline_run_steps WHERE run_id = ? ORDER BY rowid", (run_id,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_step(run_id: str, step_id: str) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM pipeline_run_steps WHERE run_id = ? AND step_id = ?", (run_id, step_id),
+        ).fetchone()
+        return dict(row) if row else None
+
+
 def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
     """Most recent real run for this pipeline+target — a genuine 'last audited' timestamp,
     not a guess, now that runs are actually tracked (see runner.py). Was flagged in
@@ -431,6 +490,14 @@ def _uploads_dir(project: str, device: str) -> Path:
     """One folder per project/device pair — mirrors suite_mappings' keying, so a doc dropped
     here has an unambiguous target when a future ingest-docs run picks it up."""
     return _uploads_root() / project / device
+
+
+def uploads_dir_path(project: str, device: str) -> str:
+    """Absolute path to this target's upload folder — used to default ingest-docs' required
+    `docs_path` run input to wherever docs were actually dropped via the UI, rather than
+    making George hand-type a path. Returned even if the folder doesn't exist yet/is empty
+    (str, not Path, since it crosses the API as plain JSON)."""
+    return str(_uploads_dir(project, device))
 
 
 def list_docs(project: str, device: str) -> list[dict]:

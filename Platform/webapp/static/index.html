@@ -1225,6 +1225,28 @@ async function renderPipelineDetail(id) {
     const meta = list.find(p => p.id === id) || {};
     const steps = detail.steps.map(renderStep).join('');
     const target = window.CURRENT_TARGET || {};
+    // Any input the pipeline itself declares beyond project/device (e.g. ingest-docs'
+    // required docs_path) needs a real value before Run is meaningful — render one text
+    // field per such input, pre-filled with a sensible default where we have one.
+    // project/device/old_suite_id/new_suite_id/suite_id are all resolved automatically
+    // (top-level target fields, or derived from the suite mapping) — only inputs outside
+    // that system-derived set (e.g. ingest-docs' docs_path) need a real text field here.
+    const SYSTEM_DERIVED_INPUTS = ['project', 'device', 'old_suite_id', 'new_suite_id', 'suite_id'];
+    const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name));
+    let docsFolder = null;
+    if (extraInputs.some(i => i.name === 'docs_path') && target.project && target.device) {
+      try { docsFolder = (await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)).path; }
+      catch (e) { /* best-effort default only */ }
+    }
+    const extraInputsHtml = extraInputs.length ? `
+      <div class="card" id="pipelineExtraInputs" style="margin-top:10px;">
+        ${extraInputs.map(i => `
+          <label style="display:block;font-size:13px;margin-bottom:6px;">
+            ${esc(i.name)}${i.required ? ' *' : ''}${i.note ? ` <span style="color:var(--ink-soft);">— ${esc(i.note)}</span>` : ''}
+            <input type="text" class="input" data-extra-input="${esc(i.name)}" style="display:block;width:100%;margin-top:2px;"
+              value="${esc(i.name === 'docs_path' && docsFolder ? docsFolder : (i.default || ''))}" />
+          </label>`).join('')}
+      </div>` : '';
     const runButton = detail.runnable
       ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
       : `<div class="tooltip-wrap"><button class="btn primary" disabled>Run</button><span class="tip">Not wired yet — only read-only pipelines are, so far</span></div>`;
@@ -1240,39 +1262,101 @@ async function renderPipelineDetail(id) {
       <div class="legend">
         ${detail.guardrails.map(g => `<span class="chip"><span class="sw" style="background:var(--gate)"></span>${esc(g)}</span>`).join('')}
       </div>
+      ${extraInputsHtml}
       <div class="card"><div class="flow" style="display:block;">${steps}</div></div>
+      <div id="pipelineStepList" class="card" style="margin-top:10px;display:none;"></div>
       <div id="pipelineRunResult"></div>`);
 
     document.getElementById('pipelineRunBtn')?.addEventListener('click', () => runPipeline(id, target));
+    // Delegated listener, attached once — the step list's innerHTML gets replaced on every
+    // poll tick, so a per-row addEventListener would just be discarded each time.
+    document.getElementById('pipelineStepList')?.addEventListener('click', onStepActionClick);
   } catch (e) { errbox('Could not load this pipeline: ' + e.message); }
 }
 
-/* ---------------- Real pipeline execution (today: only `audit` is wired) ---------------- */
+/* ---------------- Real pipeline execution (2026-09-14: every pipeline runs through the
+   generic step-executor; a step that would push --commit always pauses as a human
+   approval gate first — see runner.py) ---------------- */
 async function runPipeline(id, target) {
   const resultEl = document.getElementById('pipelineRunResult');
+  const stepListEl = document.getElementById('pipelineStepList');
   const btn = document.getElementById('pipelineRunBtn');
+  const extra_inputs = {};
+  for (const el of document.querySelectorAll('[data-extra-input]')) {
+    extra_inputs[el.dataset.extraInput] = el.value.trim();
+  }
   if (btn) btn.disabled = true;
+  if (stepListEl) stepListEl.style.display = 'none';
   resultEl.innerHTML = `<div class="card"><div class="loading">Starting ${esc(id)} against ${esc(target.project)}/${esc(target.device)}…</div></div>`;
   try {
     const res = await fetch(`/api/pipelines/${id}/run`, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({project: target.project, device: target.device}),
+      body: JSON.stringify({project: target.project, device: target.device, extra_inputs}),
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     const {run_id} = await res.json();
-    pollPipelineRun(run_id, resultEl, btn);
+    pollPipelineRun(run_id, resultEl, btn, stepListEl);
   } catch (e) {
     resultEl.innerHTML = `<div class="errbox">Could not start run: ${esc(e.message)}</div>`;
     if (btn) btn.disabled = false;
   }
 }
 
-async function pollPipelineRun(runId, resultEl, btn) {
+function renderRunStep(runId, step) {
+  const pillClass = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'}[step.status] || 'muted';
+  const isPushGate = step.status === 'waiting_human' && /push/.test(step.output || '') && /--commit/.test(step.output || '');
+  const actionBtn = step.status === 'waiting_human'
+    ? `<button class="btn ${isPushGate ? 'danger' : 'primary'} step-resolve-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}">${isPushGate ? 'Approve & Push' : 'Continue'}</button>`
+    : '';
+  return `
+    <div class="run-step-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <strong style="font-size:13px;">${esc(step.step_id)}</strong>
+        <span class="chip" style="margin-left:8px;">${esc(step.status)}</span>
+      </div>
+      ${actionBtn}
+    </div>`;
+}
+
+async function onStepActionClick(e) {
+  const btn = e.target.closest('.step-resolve-btn');
+  if (!btn) return;
+  const runId = btn.dataset.run;
+  const stepId = btn.dataset.step;
+  const isApprovePush = btn.textContent.includes('Approve');
+  if (isApprovePush && !confirm(`This will actually push --commit to TestRail. Approve "${stepId}"?`)) return;
+  btn.disabled = true;
   try {
-    const run = await fetchJSON(`/api/pipelines/runs/${runId}`);
+    const res = await fetch(`/api/pipelines/runs/${runId}/steps/${stepId}/resolve`, {method: 'POST'});
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    const resultEl = document.getElementById('pipelineRunResult');
+    const stepListEl = document.getElementById('pipelineStepList');
+    const runBtn = document.getElementById('pipelineRunBtn');
+    pollPipelineRun(runId, resultEl, runBtn, stepListEl);
+  } catch (err) {
+    alert('Could not resolve step: ' + err.message);
+    btn.disabled = false;
+  }
+}
+
+async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
+  try {
+    const [run, steps] = await Promise.all([
+      fetchJSON(`/api/pipelines/runs/${runId}`),
+      fetchJSON(`/api/pipelines/runs/${runId}/steps`),
+    ]);
+    if (stepListEl && steps.length) {
+      stepListEl.style.display = 'block';
+      stepListEl.innerHTML = `<h2 style="margin-top:0;">Steps</h2>` + steps.map(s => renderRunStep(runId, s)).join('');
+    }
     if (run.status === 'running') {
       resultEl.innerHTML = `<div class="card"><div class="loading">Running… (${esc(run.pipeline_id)} against ${esc(run.project)}/${esc(run.device)})</div></div>`;
-      setTimeout(() => pollPipelineRun(runId, resultEl, btn), 2000);
+      setTimeout(() => pollPipelineRun(runId, resultEl, btn, stepListEl), 2000);
+      return;
+    }
+    if (run.status === 'waiting_human') {
+      resultEl.innerHTML = `<div class="card"><h2>Waiting for you</h2><p style="font-size:14px;">This run is paused at a step that needs your confirmation — see the step list above.</p></div>`;
+      if (btn) btn.disabled = false;
       return;
     }
     if (btn) btn.disabled = false;

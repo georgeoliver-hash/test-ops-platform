@@ -127,3 +127,33 @@ def test_fresh_build_with_explicit_flag_succeeds(store):
 def test_get_suite_ids_for_bos(store):
     ids = store.get_suite_ids("Translink", "BOS")
     assert ids == {"old_suite_id": 14441, "new_suite_id": 30279}
+
+
+def test_pipeline_run_steps_roundtrip(store):
+    store.create_run("run-1", "audit", "Translink", "POS")
+    store.create_step_rows("run-1", [("run_audit", "cli"), ("summarise", "agent")])
+
+    steps = store.get_steps("run-1")
+    assert [s["step_id"] for s in steps] == ["run_audit", "summarise"]
+    assert all(s["status"] == "pending" for s in steps)
+    assert steps[0]["kind"] == "cli"
+
+    store.update_step("run-1", "run_audit", status="succeeded", output="ok", finished_at="2026-09-14T00:00:00")
+    step = store.get_step("run-1", "run_audit")
+    assert step["status"] == "succeeded"
+    assert step["output"] == "ok"
+    assert step["finished_at"] == "2026-09-14T00:00:00"
+
+    # the other step is untouched
+    other = store.get_step("run-1", "summarise")
+    assert other["status"] == "pending"
+
+
+def test_get_steps_empty_for_unknown_run(store):
+    assert store.get_steps("no-such-run") == []
+
+
+def test_get_step_none_for_unknown_step(store):
+    store.create_run("run-2", "audit", "Translink", "POS")
+    store.create_step_rows("run-2", [("only_step", "human")])
+    assert store.get_step("run-2", "does-not-exist") is None

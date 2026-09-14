@@ -20,9 +20,24 @@ os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-
 from fastapi.testclient import TestClient  # noqa: E402
 
 from Platform.webapp import app as app_module  # noqa: E402
+from Platform.webapp import store  # noqa: E402
 from Platform.webapp.app import app  # noqa: E402
 
 client = TestClient(app)
+
+
+class _SyncThread:
+    """Drop-in for threading.Thread that runs its target synchronously on .start() —
+    lets a test drive runner.py's background job deterministically without real
+    subprocess/CLI/claude availability, and without a sleep-and-hope race."""
+
+    def __init__(self, target=None, args=(), kwargs=None, daemon=None):
+        self._target = target
+        self._args = args
+        self._kwargs = kwargs or {}
+
+    def start(self):
+        self._target(*self._args, **self._kwargs)
 
 
 def test_taxonomy_returns_real_projects():
@@ -243,22 +258,222 @@ def test_import_env_404_when_nothing_to_import(tmp_path, monkeypatch):
 
 
 def test_pipelines_list_flags_which_are_runnable():
+    """2026-09-14: the RUNNABLE_PIPELINES allowlist is gone — every pipeline runs through
+    the generic step-executor now. Safety moved to the step level (a push --commit step
+    always pauses for human approval), not the pipeline level."""
     res = client.get("/api/pipelines")
     assert res.status_code == 200
     by_id = {p["id"]: p for p in res.json()}
     assert by_id["audit"]["runnable"] is True
-    assert by_id["onboard-suite"]["runnable"] is False
+    assert by_id["onboard-suite"]["runnable"] is True
 
 
-def test_run_rejects_a_non_runnable_pipeline():
+def test_run_route_now_works_for_previously_blocked_pipelines(monkeypatch):
+    """onboard-suite and ingest-docs used to 400 outright (RUNNABLE_PIPELINES). Now the
+    route starts a real run — mock the background execution itself so this stays a route-
+    level test, not a real subprocess/CLI integration test."""
+    monkeypatch.setattr(app_module.runner, "_run_pipeline_job", lambda *a, **kw: None)
+    monkeypatch.setattr(app_module.runner.threading, "Thread", _SyncThread)
+
     res = client.post("/api/pipelines/onboard-suite/run", json={"project": "Translink", "device": "POS"})
-    assert res.status_code == 400
+    assert res.status_code == 200
+    assert "run_id" in res.json()
+
+    res2 = client.post(
+        "/api/pipelines/ingest-docs/run",
+        json={"project": "Translink", "device": "POS", "extra_inputs": {"docs_path": "C:/docs/translink"}},
+    )
+    assert res2.status_code == 200
+    assert "run_id" in res2.json()
 
 
 def test_run_rejects_a_target_with_no_suite_id_configured():
     res = client.post("/api/pipelines/audit/run", json={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 400
     assert "new_suite_id" in res.json()["detail"] or "No new_suite_id" in res.json()["detail"]
+
+
+def test_ingest_docs_run_rejects_missing_required_docs_path():
+    """docs_path is a required input declared on ingest-docs.yaml itself — the route reads
+    that inputs list as the source of truth, not a hardcoded per-pipeline field."""
+    res = client.post("/api/pipelines/ingest-docs/run", json={"project": "NJT", "device": "ETM"})
+    assert res.status_code == 400
+    assert "docs_path" in res.json()["detail"]
+
+
+def test_ingest_docs_run_accepts_docs_path_and_templates_it_into_the_convert_step(monkeypatch):
+    from Platform.webapp import runner as runner_module
+
+    captured_cmds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        captured_cmds.append(cmd)
+        return 0, "ok\n", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    res = client.post(
+        "/api/pipelines/ingest-docs/run",
+        json={"project": "NJT", "device": "ETM", "extra_inputs": {"docs_path": "C:/docs/njt"}},
+    )
+    assert res.status_code == 200
+    run_id = res.json()["run_id"]
+
+    # sync_check (human, no command) resolves first; convert is the first real cli step.
+    steps = client.get(f"/api/pipelines/runs/{run_id}/steps").json()
+    by_id = {s["step_id"]: s for s in steps}
+    assert by_id["sync_check"]["status"] == "waiting_human"
+    resolve_res = client.post(f"/api/pipelines/runs/{run_id}/steps/sync_check/resolve")
+    assert resolve_res.status_code == 200
+
+    convert_cmd = next(cmd for cmd in captured_cmds if "ingest_docs.py" in " ".join(cmd))
+    assert "C:/docs/njt" in convert_cmd
+    assert "--project" in convert_cmd and "NJT" in convert_cmd
+
+
+def test_ingest_docs_commit_pr_is_a_plain_human_step_not_a_push_gate(monkeypatch):
+    """commit_pr is `kind: human` with no push --commit anywhere in it — it must render as
+    a plain 'Continue'-style human step, never mistaken for a TestRail push approval gate."""
+    from Platform.webapp import runner as runner_module
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        return 0, "ok\n", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    res = client.post(
+        "/api/pipelines/ingest-docs/run",
+        json={"project": "NJT", "device": "ETM", "extra_inputs": {"docs_path": "C:/docs/njt"}},
+    )
+    run_id = res.json()["run_id"]
+    # sync_check (human) is the only pause before convert/distil/cross_examine (cli/agent —
+    # both mocked to succeed) run straight through to the next human step, commit_pr.
+    steps = client.get(f"/api/pipelines/runs/{run_id}/steps").json()
+    assert next(s for s in steps if s["status"] == "waiting_human")["step_id"] == "sync_check"
+    resolve_res = client.post(f"/api/pipelines/runs/{run_id}/steps/sync_check/resolve")
+    assert resolve_res.status_code == 200
+
+    steps = client.get(f"/api/pipelines/runs/{run_id}/steps").json()
+    commit_pr = next(s for s in steps if s["step_id"] == "commit_pr")
+    assert commit_pr["status"] == "waiting_human"
+    output = commit_pr["output"] or ""
+    assert not ("push" in output and "--commit" in output)
+    assert "Commit" in output or "commit" in output
+
+
+def test_audit_runs_through_generic_engine_same_externally_observable_behavior(monkeypatch, tmp_path):
+    """The explicit regression gate: audit must behave identically now that it runs
+    through the generic step-executor as it did with the old hardcoded runner — same
+    status transitions, report_path/summary population."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    report_rel = "reports/Translink/30253/2026-09-14/alignment-audit.md"
+    report_full = tmp_path / report_rel
+    report_full.parent.mkdir(parents=True, exist_ok=True)
+    report_full.write_text("fake report", encoding="utf-8")
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if "claude" in cmd:
+            return 0, "Audit ran cleanly on 42 cases, 0 blocking findings.", ""
+        return 0, f"Report -> {report_rel}\n", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    res = client.post("/api/pipelines/audit/run", json={"project": "Translink", "device": "POS"})
+    assert res.status_code == 200
+    run_id = res.json()["run_id"]
+
+    run = client.get(f"/api/pipelines/runs/{run_id}").json()
+    assert run["status"] == "succeeded"
+    assert run["report_path"] == report_rel
+    assert "42 cases" in run["summary"]
+
+    steps = client.get(f"/api/pipelines/runs/{run_id}/steps").json()
+    step_ids = {s["step_id"] for s in steps}
+    assert {"run_audit", "summarise"} <= step_ids
+    assert all(s["status"] == "succeeded" for s in steps)
+
+
+def test_human_step_pauses_run_until_resolved(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-human", trigger=Trigger(ui_action="fake_human"), description="test pipeline",
+        steps=[
+            Step(id="step_one", kind=StepKind.human, note="approve me"),
+            Step(id="step_two", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    run_id = runner_module.start_run("fake-human", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"
+    by_id = {s["step_id"]: s for s in store.get_steps(run_id)}
+    assert by_id["step_one"]["status"] == "waiting_human"
+    assert by_id["step_two"]["status"] == "pending"  # never dispatched — no auto-advance
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        return 0, "ok\n", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    resolve_res = client.post(f"/api/pipelines/runs/{run_id}/steps/step_one/resolve")
+    assert resolve_res.status_code == 200
+
+    run = store.get_run(run_id)
+    assert run["status"] == "succeeded"
+    by_id = {s["step_id"]: s for s in store.get_steps(run_id)}
+    assert by_id["step_one"]["status"] == "succeeded"
+    assert by_id["step_two"]["status"] == "succeeded"
+
+
+def test_resolve_409s_when_step_not_waiting(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-human-2", trigger=Trigger(ui_action="fake_human_2"), description="test pipeline",
+        steps=[Step(id="only_step", kind=StepKind.human, note="approve me")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    run_id = runner_module.start_run("fake-human-2", "Translink", "POS")
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/only_step/resolve")
+    assert res.status_code == 200
+    res2 = client.post(f"/api/pipelines/runs/{run_id}/steps/only_step/resolve")
+    assert res2.status_code == 409
+
+
+def test_push_commit_step_is_always_forced_human_regardless_of_declared_kind(monkeypatch):
+    """The hardcoded safety override: a step whose command contains push + --commit is
+    always treated as a human gate, even if the YAML marks it `kind: cli` (or `gate`)."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-push", trigger=Trigger(ui_action="fake_push"), description="test pipeline",
+        steps=[Step(id="push_area", kind=StepKind.cli, command="python -m system_test_ops push --file area.cases.yaml --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_called(*a, **kw):
+        raise AssertionError("push --commit must never be auto-executed")
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_called)
+
+    run_id = runner_module.start_run("fake-push", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"
+    step = store.get_step(run_id, "push_area")
+    assert step["status"] == "waiting_human"
 
 
 def test_get_run_404_for_unknown_id():
