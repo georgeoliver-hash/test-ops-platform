@@ -82,7 +82,11 @@ AGENT_TOOL_GRANTS = {
 _DEFAULT_AGENT_TOOLS = "Read"
 
 _CLI_TIMEOUT = 180
-_AGENT_TIMEOUT = 180
+# 180s was fine for a one-file summarise (audit.yaml's "summarise" step) but nowhere near
+# enough for a step that reads and carefully cites multiple real source documents (found
+# live: ingest-docs' distil timed out reading 10 real PDFs). Generous ceiling for real work;
+# a genuinely hung agent still gets caught, just later.
+_AGENT_TIMEOUT = 900
 
 _cancel_events: dict[str, threading.Event] = {}
 _run_procs: dict[str, subprocess.Popen] = {}
@@ -387,10 +391,13 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
             cwd=str(_step_cwd(step)), timeout=_AGENT_TIMEOUT, run_id=run_id,
         )
     except subprocess.TimeoutExpired:
-        note = f"(agent timed out after {_AGENT_TIMEOUT}s — see raw step output instead)"
-        store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
-        store.update_run(run_id, summary=note)
-        return "succeeded"
+        # Was marked "succeeded" -- a timeout means the agent did NOT finish its work (found
+        # live: distil timed out reading 10 real documents, got marked succeeded, and the
+        # next step then correctly reported no specs existed since none had actually been
+        # written -- a timeout must never look like a completed step).
+        note = f"Timed out after {_AGENT_TIMEOUT}s before finishing — no output to trust. Re-run this step (consider fewer/smaller source files if this recurs)."
+        store.update_step(run_id, step.id, status="failed", output=note, finished_at=_now())
+        return "failed"
     except OSError as exc:
         store.update_step(run_id, step.id, status="failed", output=f"Could not run agent: {exc}", finished_at=_now())
         return "failed"
