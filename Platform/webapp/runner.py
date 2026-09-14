@@ -329,31 +329,52 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     return "succeeded" if ok else "failed"
 
 
-def _run_agent_step(run_id: str, step: Step, area: str | None = None) -> str:
+def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = None) -> str:
     allowed_tools = AGENT_TOOL_GRANTS.get(step.agent or "", _DEFAULT_AGENT_TOOLS)
-    prior_run = store.get_run(run_id) or {}
-    report_path = prior_run.get("report_path")
+    reads = getattr(step, "reads", None)
+    produces = getattr(step, "produces", None)
     if area:
         # A fanned-out per-area step (e.g. author_area[fare-structure]) — one real, scoped
         # instruction per area, never "do all areas" or a copy of an old draft.
-        produces = step.produces.replace("<area>", area) if isinstance(step.produces, str) else f"{area}.cases.yaml"
+        produces_area = step.produces.replace("<area>", area) if isinstance(step.produces, str) else f"{area}.cases.yaml"
         prompt = (
             f"For the '{area}' functional area only, carry out the '{step.id.split('[')[0]}' step "
             f"of this pipeline ({step.note or 'see pipeline definition'}). Ground everything in "
-            f"knowledge/{{project}}/specs/ for this area — never invent case content. Produce: {produces}."
+            f"knowledge/{{project}}/specs/ for this area — never invent case content. Produce: {produces_area}."
         )
-    elif report_path and not (SYSTEM_TEST_OPS_ROOT / report_path).is_file():
-        note = f"A prior step reported {report_path}, but that file wasn't found to read — nothing to summarise."
-        store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
-        store.update_run(run_id, summary=note)
-        return "succeeded"
-    elif report_path:
+    elif reads:
+        # A step with its own real reads/produces (e.g. ingest-docs' distil/cross_examine)
+        # describes an actual multi-file job -- "read these sources, write this output" --
+        # not "summarise the one report file a prior cli step just wrote". Build the prompt
+        # from the step's own declared fields instead of guessing at report_path, which is
+        # the wrong shape here and previously left distil doing nothing real (found live,
+        # 2026-09-14: it reported "file wasn't found to read" against a bogus report_path
+        # while the actual converted text sat untouched in dev/{project}-requirements/_text/).
+        reads_list = reads if isinstance(reads, list) else [reads]
+        reads_rendered = ", ".join(_render(str(r), params) for r in reads_list)
+        produces_rendered = _render(str(produces), params) if produces else "the output this step describes"
+        rule = getattr(step, "rule", None)
+        guardrail = f" Guardrail: {rule}." if rule else ""
         prompt = (
-            f"Read the file at {report_path} and {step.note or 'summarise it in plain language'}. "
-            f"No preamble, no markdown headers, 3-6 sentences."
+            f"Read {reads_rendered} (paths are relative to this repo root; project={params.get('project', '')}). "
+            f"{step.note or ''} Produce: {produces_rendered}.{guardrail} "
+            f"Never invent facts not present in the source material — mark anything unclear GAP/UNCONFIRMED instead of guessing."
         )
     else:
-        prompt = step.note or f"Carry out the '{step.id}' step of this pipeline."
+        prior_run = store.get_run(run_id) or {}
+        report_path = prior_run.get("report_path")
+        if report_path and not (SYSTEM_TEST_OPS_ROOT / report_path).is_file():
+            note = f"A prior step reported {report_path}, but that file wasn't found to read — nothing to summarise."
+            store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
+            store.update_run(run_id, summary=note)
+            return "succeeded"
+        elif report_path:
+            prompt = (
+                f"Read the file at {report_path} and {step.note or 'summarise it in plain language'}. "
+                f"No preamble, no markdown headers, 3-6 sentences."
+            )
+        else:
+            prompt = step.note or f"Carry out the '{step.id}' step of this pipeline."
 
     try:
         returncode, stdout, stderr = _run_subprocess(
@@ -435,7 +456,7 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
     if step.kind is StepKind.gate:
         return _run_gate_step(run_id, step, command)
     if step.kind is StepKind.agent:
-        return _run_agent_step(run_id, step, area=area)
+        return _run_agent_step(run_id, step, params, area=area)
 
     # No kind and no ref (a pure note/informational step) — nothing to execute.
     store.update_step(run_id, step.id, status="succeeded", output=step.note or "(informational step, nothing to run)", finished_at=_now())
