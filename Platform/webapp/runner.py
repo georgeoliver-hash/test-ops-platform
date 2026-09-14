@@ -112,6 +112,18 @@ class _SafeFormatDict(dict):
         return "{" + key + "}"
 
 
+def _split_command(command: str) -> list[str]:
+    """shlex.split(command) alone mangles Windows paths -- its default POSIX mode treats
+    backslash as an escape character, so `C:\\Users\\...` comes out as `C:UsersDocuments...`
+    with every backslash silently eaten (found live: ingest-docs' --src {docs_path} arrived
+    at the CLI as a garbled, nonexistent path, so it silently converted 0 files while still
+    reporting "succeeded"). posix=False stops that, but then leaves surrounding quote marks
+    on a quoted token (e.g. a path containing spaces) instead of stripping them -- so strip
+    those manually here rather than trusting either mode alone."""
+    tokens = shlex.split(command, posix=False)
+    return [t[1:-1] if len(t) >= 2 and t[0] == t[-1] and t[0] in ("\"", "'") else t for t in tokens]
+
+
 def _render(template: str, params: dict) -> str:
     """`str.format_map` that leaves an unresolved `{placeholder}` alone instead of raising
     — a pipeline whose extra inputs (e.g. ingest-docs' {docs_path}) haven't been supplied
@@ -263,7 +275,7 @@ def _run_subprocess(cmd: list[str], cwd: str, timeout: int, run_id: str | None =
 
 
 def _run_cli_step(run_id: str, step: Step, command: str) -> str:
-    parts = shlex.split(command)
+    parts = _split_command(command)
     if parts and parts[0] == "python":
         parts[0] = str(_VENV_PYTHON)
     try:
@@ -294,7 +306,7 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     "1 = blocking findings, still fine" leniency like a plain cli step gets, since a gate
     (e.g. onboard-suite's definition_of_done, must_be: clean_of_blocking) exists
     specifically to fail loudly when the suite isn't clean."""
-    parts = shlex.split(command)
+    parts = _split_command(command)
     if parts and parts[0] == "python":
         parts[0] = str(_VENV_PYTHON)
     try:
