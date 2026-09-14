@@ -333,10 +333,28 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     return "succeeded" if ok else "failed"
 
 
+_FILE_PRODUCES_RE = re.compile(r"\.\w{1,5}$")
+
+
+def _produces_a_file(produces) -> bool:
+    """True if a step's `produces:` field looks like a real file path/glob to write (e.g.
+    ingest-docs' distil: "knowledge/{project}/specs/*.md"), not just a description of an
+    output's shape (e.g. cross_examine's "gap list (covered/missing/stale/wrong, cited)").
+    Used to grant Write for specifically the steps that need to save a real file, without
+    broadening every agent step that merely declares a produces: field -- most named
+    agents' baseline grants are intentionally Read-only (e.g. standards-keeper is a
+    reviewer elsewhere), but a step whose whole job is writing a real file needs it
+    regardless of that baseline (found live: distil did real work reading 10 documents,
+    then hit "the Write tool is denied for this entire session" with no way to save it)."""
+    return isinstance(produces, str) and "/" in produces and bool(_FILE_PRODUCES_RE.search(produces))
+
+
 def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = None) -> str:
     allowed_tools = AGENT_TOOL_GRANTS.get(step.agent or "", _DEFAULT_AGENT_TOOLS)
     reads = getattr(step, "reads", None)
     produces = getattr(step, "produces", None)
+    if _produces_a_file(produces) and "Write" not in allowed_tools:
+        allowed_tools = allowed_tools + ",Write,Edit"
     if area:
         # A fanned-out per-area step (e.g. author_area[fare-structure]) — one real, scoped
         # instruction per area, never "do all areas" or a copy of an old draft.
