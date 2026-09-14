@@ -1295,6 +1295,24 @@ async function renderPipelineDetail(id) {
     // Delegated listener, attached once — the step list's innerHTML gets replaced on every
     // poll tick, so a per-row addEventListener would just be discarded each time.
     document.getElementById('pipelineStepList')?.addEventListener('click', onStepActionClick);
+
+    // Resume an in-progress run after a page reload/navigation-away-and-back -- the run
+    // itself lives entirely server-side (pipeline_runs/pipeline_run_steps), only the
+    // browser's in-memory run_id was ever lost on refresh (found live: George's onboard-
+    // suite run was still sitting at waiting_human on the server the whole time, but the
+    // page just showed a fresh "Run" button with no way back to it).
+    if (target.project && target.device) {
+      try {
+        const last = await fetchJSON(`/api/pipelines/${id}/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
+        if (last && last.id && (last.status === 'running' || last.status === 'waiting_human')) {
+          const resultEl = document.getElementById('pipelineRunResult');
+          const stepListEl = document.getElementById('pipelineStepList');
+          const btn = document.getElementById('pipelineRunBtn');
+          if (btn) btn.disabled = true;
+          pollPipelineRun(last.id, resultEl, btn, stepListEl);
+        }
+      } catch (e) { /* best-effort resume only -- a fresh Run click still works either way */ }
+    }
   } catch (e) { errbox('Could not load this pipeline: ' + e.message); }
 }
 
