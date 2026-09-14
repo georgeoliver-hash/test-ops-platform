@@ -16,6 +16,11 @@ import os
 import tempfile
 
 os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-test-")
+# Isolated from the real, committed Platform/config/suite_targets.yaml -- without this, any
+# test that upserts a suite mapping would write through to the actual repo file on disk.
+os.environ["TESTOPS_SUITE_TARGETS_PATH"] = os.path.join(
+    tempfile.mkdtemp(prefix="testops-webapp-test-targets-"), "suite_targets.yaml"
+)
 
 from fastapi.testclient import TestClient  # noqa: E402
 

@@ -12,6 +12,9 @@ import pytest
 @pytest.fixture()
 def store(tmp_path, monkeypatch):
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
+    # Isolated from the real, committed Platform/config/suite_targets.yaml -- without this,
+    # any test that upserts a mapping would write through to the actual repo file on disk.
+    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(tmp_path / "suite_targets.yaml"))
     from Platform.webapp import store as mod
 
     mod.init_db()
@@ -195,10 +198,65 @@ def test_is_target_approved_false_for_unknown_target(store):
     assert store.is_target_approved("NoSuchProject", "NoSuchDevice") is False
 
 
+def test_upsert_writes_through_to_shared_yaml_file(store, tmp_path):
+    """A target added/edited via upsert_suite_mapping (the existing "Add/edit this pair" UI)
+    must land in the git-trackable suite_targets.yaml, not just the local db -- that's the
+    whole point of it being shared via git instead of per-machine SQLite."""
+    store.upsert_suite_mapping("Perth", "POS", "Old Perth Suite", "New Perth Suite", new_suite_id=40001, old_suite_id=5001)
+    targets_path = tmp_path / "suite_targets.yaml"
+    assert targets_path.is_file()
+    entries = {(t["project"], t["device"]): t for t in store._load_suite_targets()}
+    assert ("Perth", "POS") in entries
+    assert entries[("Perth", "POS")]["new_suite_id"] == 40001
+    assert entries[("Perth", "POS")]["old_suite"] == "Old Perth Suite"
+
+
+def test_upsert_updates_existing_yaml_entry_in_place_not_duplicated(store):
+    store.upsert_suite_mapping("Translink", "POS", "Changed Old", "Changed New", new_suite_id=99999)
+    entries = store._load_suite_targets()
+    pos_entries = [t for t in entries if t["project"] == "Translink" and t["device"] == "POS"]
+    assert len(pos_entries) == 1
+    assert pos_entries[0]["old_suite"] == "Changed Old"
+
+
+def test_yaml_source_reproduces_the_same_eight_seeded_targets(store):
+    """A fresh clone with no local db yet must see identical targets to today's hardcoded
+    list -- this is the regression check for moving seeding out of Python into the YAML."""
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert len(mappings) == 8
+    assert mappings["Translink|TVM"]["new_suite_id"] == 30284
+    assert mappings["NJT|ETM"]["old_suite"] == ""
+    assert mappings["NJT|ETM"]["old_suite_id"] is None
+
+
+def test_load_suite_targets_bootstraps_missing_file_with_defaults(tmp_path, monkeypatch):
+    monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path / "data"))
+    targets_path = tmp_path / "does-not-exist-yet" / "suite_targets.yaml"
+    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(targets_path))
+    from Platform.webapp import store as mod
+
+    assert not targets_path.is_file()
+    entries = mod._load_suite_targets()
+    assert len(entries) == 8
+    assert targets_path.is_file()  # bootstrapped onto disk, not just returned in-memory
+
+
+def test_suite_targets_git_status_reports_unknown_outside_a_git_repo(tmp_path, monkeypatch):
+    """No git repo at the resolved root -> the read-only status check degrades to "unknown"
+    rather than raising -- this must never break loading the target list itself."""
+    monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
+    from Platform.webapp import store as mod
+
+    monkeypatch.setattr(mod, "_repo_root", lambda: tmp_path)
+    status = mod.suite_targets_git_status()
+    assert status["status"] == "unknown"
+
+
 def test_migration_backfills_approval_columns_without_clobbering_rows(tmp_path, monkeypatch):
     """Simulates a DB created before approved_by/approved_at existed -- init_db's ALTER
     TABLE migration must add the columns without touching any existing row's data."""
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(tmp_path / "suite_targets.yaml"))
     from Platform.webapp import store as mod
 
     mod.init_db()

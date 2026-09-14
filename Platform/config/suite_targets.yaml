@@ -1,0 +1,91 @@
+# Shared, git-tracked source of truth for which project/device targets this console knows
+# about — replaces the old hardcoded Python literal list in store.py's init_db(). Anyone who
+# adds a target through the console UI gets it appended here; commit + push this file so a
+# colleague's own local console picks it up on their next `git pull` (their local SQLite
+# db is still per-machine and never shared — only this list of *which targets exist* is).
+#
+# fresh_build: true means there's no old suite to reference (the suite is being built purely
+# from ingested documentation) -- old_suite/old_suite_id are "" / null in that case, not
+# omitted, to match how the app already stores that case in its own database.
+version: 1
+targets:
+  # cite: system-test-ops CLAUDE.md + knowledge/projects/translink.md:14 (old id 9317)
+  - project: Translink
+    device: POS
+    old_suite: "AA-POS Acceptance Test"
+    old_suite_id: 9317
+    new_suite: "GG - POS - Claude Suite"
+    new_suite_id: 30253
+    fresh_build: false
+
+  # cite: knowledge/devices/etm.md:89 (old id 4943) + proposals/etm-suite-restructure/*
+  - project: Translink
+    device: ETM
+    old_suite: "AA-ETM-Acceptance Test"
+    old_suite_id: 4943
+    new_suite: "NEW ETM-Acceptance Suite"
+    new_suite_id: 30254
+    fresh_build: false
+
+  # cite: proposals/gv-suite-restructure/old-suite-audit.md:7 (old id 14973)
+  - project: Translink
+    device: GV
+    old_suite: "AA - Gate Validator - Acceptance Test"
+    old_suite_id: 14973
+    new_suite: "NEW GV Test Suite"
+    new_suite_id: 30286
+    fresh_build: false
+
+  # cite: proposals/tvm-suite-restructure/old-suite-audit.md:14 (old id 5602, richest source) + George, 2026-09-08
+  - project: Translink
+    device: TVM
+    old_suite: "AA-TVM-Acceptance Test-V03"
+    old_suite_id: 5602
+    new_suite: "NEW TVM Test Suite"
+    new_suite_id: 30284
+    fresh_build: false
+
+  # cite: proposals/hhd-suite-restructure/old-suite-audit.md:19 (old id 5446, primary) + George, 2026-09-08
+  - project: Translink
+    device: HHD
+    old_suite: "AA-HHD-Acceptance"
+    old_suite_id: 5446
+    new_suite: "NEW HHD Test Suite"
+    new_suite_id: 30285
+    fresh_build: false
+
+  # cite: proposals/pv-suite-restructure/build-complete.md:3 (old id 10047), pv-mode-tagging.changelog.md:81
+  - project: Translink
+    device: PV
+    old_suite: "AA-Platform Validator Acceptance Test"
+    old_suite_id: 10047
+    new_suite: "NEW PV-Acceptance Test Suite"
+    new_suite_id: 30255
+    fresh_build: false
+
+  # BOS & ABT: not a real SIT device_type (checked EquipmentTypes.json directly, 2026-09-10 --
+  # SIT only knows ETM/TVM/POS/BV/PV/GV/HHD/Sub-components/P+R), but a real TestRail concept
+  # per George's own call: "BOS and ABT... kinda go under a project, relate to all devices and
+  # have their own suite" -- modelled as a device under the project here, sourced from real
+  # suite data, just not SIT-taxonomy-derived.
+  # cite: proposals/bos-abt-suite-restructure/old-suite-audit.md:10
+  - project: Translink
+    device: BOS
+    old_suite: "2.1-Backoffice Systems - Acceptance Suite"
+    old_suite_id: 14441
+    new_suite: "NEW BOS & ABT Suite"
+    new_suite_id: 30279
+    fresh_build: false
+
+  # NJT FR: George's explicit call (2026-09-10) -- treat this as a genuine fresh build, not
+  # an old/new migration. The real test case for "can this tool build a suite purely from
+  # documentation" with no prior suite to reference.
+  # cite: proposals/njt-fr-suite-restructure/functional-states.cases.yaml:1-2 (archived
+  # 2026-09-14, see archive/njt-fr-first-pass-2026-09/ in system-test-ops)
+  - project: NJT
+    device: ETM
+    old_suite: ""
+    old_suite_id: null
+    new_suite: "NJT - SystemTestOps"
+    new_suite_id: 30295
+    fresh_build: true

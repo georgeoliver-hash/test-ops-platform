@@ -21,9 +21,11 @@ from __future__ import annotations
 
 import os
 import sqlite3
+import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 
+import yaml
 from cryptography.fernet import Fernet, InvalidToken
 
 DEFAULT_USER_ID = 1  # single-user today; a real multi-user model is future work, not this one.
@@ -51,6 +53,115 @@ def _key_path() -> Path:
 
 def _ensure_data_dir() -> None:
     _data_dir().mkdir(parents=True, exist_ok=True)
+
+
+def _repo_root() -> Path:
+    """test-ops-platform's own repo root (Platform/webapp/store.py -> Platform -> repo root)
+    -- where `Platform/config/suite_targets.yaml` lives and where its git status is checked."""
+    return Path(__file__).resolve().parent.parent.parent
+
+
+def _suite_targets_path() -> Path:
+    """Overridable for tests (TESTOPS_SUITE_TARGETS_PATH), same convention as
+    TESTOPS_WEBAPP_DATA_DIR -- so tests never read/write the real, git-tracked repo file."""
+    override = os.environ.get("TESTOPS_SUITE_TARGETS_PATH")
+    return Path(override) if override else _repo_root() / "Platform" / "config" / "suite_targets.yaml"
+
+
+def _default_seed_targets() -> list[dict]:
+    """Bootstraps `suite_targets.yaml` the first time it's missing (e.g. a fresh test temp
+    dir). The real, committed copy at Platform/config/suite_targets.yaml carries the same
+    content plus source citations -- this is just enough to keep tests self-contained."""
+    return [
+        {"project": "Translink", "device": "POS", "old_suite": "AA-POS Acceptance Test", "old_suite_id": 9317,
+         "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False},
+        {"project": "Translink", "device": "ETM", "old_suite": "AA-ETM-Acceptance Test", "old_suite_id": 4943,
+         "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False},
+        {"project": "Translink", "device": "GV", "old_suite": "AA - Gate Validator - Acceptance Test", "old_suite_id": 14973,
+         "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False},
+        {"project": "Translink", "device": "TVM", "old_suite": "AA-TVM-Acceptance Test-V03", "old_suite_id": 5602,
+         "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False},
+        {"project": "Translink", "device": "HHD", "old_suite": "AA-HHD-Acceptance", "old_suite_id": 5446,
+         "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False},
+        {"project": "Translink", "device": "PV", "old_suite": "AA-Platform Validator Acceptance Test", "old_suite_id": 10047,
+         "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False},
+        {"project": "Translink", "device": "BOS", "old_suite": "2.1-Backoffice Systems - Acceptance Suite", "old_suite_id": 14441,
+         "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False},
+        {"project": "NJT", "device": "ETM", "old_suite": "", "old_suite_id": None,
+         "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True},
+    ]
+
+
+def _load_suite_targets() -> list[dict]:
+    """Reads the git-tracked target list, bootstrapping it with the default seed if the file
+    doesn't exist yet (fresh clone, or an isolated test temp path)."""
+    path = _suite_targets_path()
+    if not path.is_file():
+        defaults = _default_seed_targets()
+        _save_suite_targets(defaults)
+        return defaults
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return data.get("targets") or []
+
+
+def _save_suite_targets(entries: list[dict]) -> None:
+    path = _suite_targets_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        yaml.safe_dump({"version": 1, "targets": entries}, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+
+def _sync_target_to_yaml(project: str, device: str, old_suite: str, new_suite: str,
+                          new_suite_id: int | None, old_suite_id: int | None, fresh_build: bool) -> None:
+    """Write-through so any create/edit made via upsert_suite_mapping (i.e. the existing
+    "Add this pair" / "Edit this pair" UI) lands in the shared, git-trackable file too --
+    not just the caller's own local SQLite db. Committing + pushing this file is still a
+    manual step outside the app (see suite_targets_git_status) -- this only stages the
+    change on disk."""
+    entries = _load_suite_targets()
+    entry = {
+        "project": project, "device": device, "old_suite": old_suite, "old_suite_id": old_suite_id,
+        "new_suite": new_suite, "new_suite_id": new_suite_id, "fresh_build": fresh_build,
+    }
+    for i, e in enumerate(entries):
+        if e.get("project") == project and e.get("device") == device:
+            entries[i] = entry
+            break
+    else:
+        entries.append(entry)
+    _save_suite_targets(entries)
+
+
+def suite_targets_git_status() -> dict:
+    """Read-only check of whether Platform/config/suite_targets.yaml has changes that
+    haven't been committed, or commits that haven't been pushed -- this app never commits or
+    pushes it automatically (see docs/gareth-onboarding-guide.md: sharing a new target is a
+    deliberate, human "push this so others see it" step, same as every other repo write this
+    tool makes). Returns {"status": "clean"|"uncommitted"|"unpushed"|"unknown", ...}."""
+    repo_root = _repo_root()
+    rel_path = "Platform/config/suite_targets.yaml"
+    try:
+        porcelain = subprocess.run(
+            ["git", "status", "--porcelain", "--", rel_path],
+            cwd=repo_root, capture_output=True, text=True, timeout=10,
+        )
+        if porcelain.returncode != 0:
+            return {"status": "unknown", "detail": porcelain.stderr.strip()}
+        if porcelain.stdout.strip():
+            return {"status": "uncommitted"}
+        ahead = subprocess.run(
+            ["git", "log", "@{u}..", "--oneline", "--", rel_path],
+            cwd=repo_root, capture_output=True, text=True, timeout=10,
+        )
+        if ahead.returncode != 0:
+            return {"status": "unknown", "detail": ahead.stderr.strip() or "no upstream configured"}
+        if ahead.stdout.strip():
+            return {"status": "unpushed"}
+        return {"status": "clean"}
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"status": "unknown", "detail": str(exc)}
 
 
 def _load_or_create_key() -> bytes:
@@ -191,34 +302,15 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
         )
-        # Seed every real, documented old/new pair found in system-test-ops — never invent
-        # others. TVM and HHD confirmed by George directly on 2026-09-08 (both had multiple
-        # "old" suites feeding the new one; he named the one real Acceptance suite to treat
-        # as the reference for each).
-        # INSERT OR IGNORE so re-running init_db doesn't clobber George's own edits.
-        seed_pairs = [
-            # (project, device, old_suite, new_suite, new_suite_id, old_suite_id)
-            # cite: system-test-ops CLAUDE.md + knowledge/projects/translink.md:14 (old id 9317)
-            ("Translink", "POS", "AA-POS Acceptance Test", "GG - POS - Claude Suite", 30253, 9317),
-            # cite: knowledge/devices/etm.md:89 (old id 4943) + proposals/etm-suite-restructure/*
-            ("Translink", "ETM", "AA-ETM-Acceptance Test", "NEW ETM-Acceptance Suite", 30254, 4943),
-            # cite: proposals/gv-suite-restructure/old-suite-audit.md:7 (old id 14973)
-            ("Translink", "GV", "AA - Gate Validator - Acceptance Test", "NEW GV Test Suite", 30286, 14973),
-            # cite: proposals/tvm-suite-restructure/old-suite-audit.md:14 (old id 5602, richest source) + George, 2026-09-08
-            ("Translink", "TVM", "AA-TVM-Acceptance Test-V03", "NEW TVM Test Suite", 30284, 5602),
-            # cite: proposals/hhd-suite-restructure/old-suite-audit.md:19 (old id 5446, primary) + George, 2026-09-08
-            ("Translink", "HHD", "AA-HHD-Acceptance", "NEW HHD Test Suite", 30285, 5446),
-            # cite: proposals/pv-suite-restructure/build-complete.md:3 (old id 10047), pv-mode-tagging.changelog.md:81
-            ("Translink", "PV", "AA-Platform Validator Acceptance Test", "NEW PV-Acceptance Test Suite", 30255, 10047),
-            # BOS & ABT: not a real SIT device_type (checked EquipmentTypes.json directly,
-            # 2026-09-10 -- SIT only knows ETM/TVM/POS/BV/PV/GV/HHD/Sub-components/P+R), but a
-            # real TestRail concept per George's own call: "BOS and ABT... kinda go under a
-            # project, relate to all devices and have their own suite" -- so it's modelled as
-            # a device under the project here, sourced from real suite data, just not
-            # SIT-taxonomy-derived. cite: proposals/bos-abt-suite-restructure/old-suite-audit.md:10
-            ("Translink", "BOS", "2.1-Backoffice Systems - Acceptance Suite", "NEW BOS & ABT Suite", 30279, 14441),
-        ]
-        for project, device, old_suite, new_suite, new_suite_id, old_suite_id in seed_pairs:
+        # Seed from the git-tracked Platform/config/suite_targets.yaml (2026-09-14) --
+        # replaces the old hardcoded Python literal list so that adding a target through the
+        # UI (upsert_suite_mapping -> _sync_target_to_yaml) is visible to a colleague after
+        # they commit+push that file and a teammate `git pull`s, without a code change.
+        # INSERT OR IGNORE so re-running init_db doesn't clobber a user's own local edits.
+        for target in _load_suite_targets():
+            project, device = target["project"], target["device"]
+            old_suite, new_suite = target.get("old_suite") or "", target["new_suite"]
+            new_suite_id, old_suite_id = target.get("new_suite_id"), target.get("old_suite_id")
             conn.execute(
                 """INSERT OR IGNORE INTO suite_mappings
                    (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
@@ -236,17 +328,6 @@ def init_db() -> None:
                    WHERE user_id = ? AND project = ? AND device = ? AND old_suite_id IS NULL""",
                 (old_suite_id, DEFAULT_USER_ID, project, device),
             )
-        # NJT FR: George's explicit call (2026-09-10) — treat this as a genuine fresh build,
-        # not an old/new migration. The real test case for "can this tool build a suite
-        # purely from documentation" with no prior suite to reference. Real new suite (id
-        # 30295, name "NJT - SystemTestOps" — cite: proposals/njt-fr-suite-restructure/
-        # functional-states.cases.yaml:1-2), no old_suite at all.
-        conn.execute(
-            """INSERT OR IGNORE INTO suite_mappings
-               (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
-               VALUES (?, 'NJT', 'ETM', '', 'NJT - SystemTestOps', 30295, NULL, datetime('now'))""",
-            (DEFAULT_USER_ID,),
-        )
 
 
 def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
@@ -332,6 +413,7 @@ def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: s
     if not fresh_build and not old_suite.strip():
         raise ValueError("old_suite is required unless this is an explicit fresh build (no prior suite to reference).")
     old_suite = "" if fresh_build else old_suite.strip()
+    project, device, new_suite = project.strip(), device.strip(), new_suite.strip()
     with _connect() as conn:
         conn.execute(
             """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
@@ -341,8 +423,16 @@ def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: s
                              new_suite_id = COALESCE(excluded.new_suite_id, suite_mappings.new_suite_id),
                              old_suite_id = COALESCE(excluded.old_suite_id, suite_mappings.old_suite_id),
                              updated_at = excluded.updated_at""",
-            (user_id, project.strip(), device.strip(), old_suite.strip(), new_suite.strip(), new_suite_id, old_suite_id),
+            (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id),
         )
+        row = conn.execute(
+            "SELECT new_suite_id, old_suite_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
+            (user_id, project, device),
+        ).fetchone()
+    # Write-through to the shared, git-tracked file -- only for the real single-user default,
+    # matching the fact this whole file (and this app) has no multi-user concept yet.
+    if user_id == DEFAULT_USER_ID:
+        _sync_target_to_yaml(project, device, old_suite, new_suite, row["new_suite_id"], row["old_suite_id"], fresh_build)
 
 
 def delete_suite_mapping(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> bool:

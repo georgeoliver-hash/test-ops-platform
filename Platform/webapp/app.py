@@ -136,6 +136,15 @@ def put_suite_mapping(body: SuiteMappingIn):
     return {"ok": True}
 
 
+@app.get("/api/suite-mappings/git-status")
+def get_suite_targets_git_status():
+    """Read-only: has Platform/config/suite_targets.yaml (the shared target list) got local
+    changes not yet committed, or commits not yet pushed to origin? This app never runs
+    git commit/push itself for this file -- sharing a newly added target with a colleague is
+    a deliberate manual step, same as every other repo write this tool makes."""
+    return store.suite_targets_git_status()
+
+
 @app.delete("/api/suite-mappings/{project}/{device}")
 def remove_suite_mapping(project: str, device: str):
     deleted = store.delete_suite_mapping(project, device)

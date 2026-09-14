@@ -289,6 +289,7 @@
         <span id="approveCheckLabel">I approve pointing this console at the suites shown above.</span>
       </label>
       <div id="approveStatus" style="font-size:12px;color:var(--ink-soft);margin-top:4px;"></div>
+      <div id="targetsGitStatus" style="font-size:11.5px;color:var(--ink-soft);margin-top:8px;font-style:italic;"></div>
     </div>
     <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply" disabled>Approve &amp; apply target</button></div>
   </div>
@@ -1627,6 +1628,26 @@ async function loadSuiteMappings() {
     rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, approved_by: r.approved_by, approved_at: r.approved_at}; });
     if (Object.keys(TAXONOMY).length && typeof refreshDevices === 'function') refreshDevices(); // pick up TestRail-only devices (e.g. BOS) that just loaded
   } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
+  refreshTargetsGitStatus();
+}
+
+// This target list (Platform/config/suite_targets.yaml) is git-tracked so a colleague's own
+// console can pick up a target you add -- but only once you actually commit+push it; this
+// app never does that automatically. Surfaces that state so an addition doesn't feel "done"
+// when it's still only sitting on this machine.
+async function refreshTargetsGitStatus() {
+  const el = document.getElementById('targetsGitStatus');
+  if (!el) return;
+  try {
+    const s = await fetchJSON('/api/suite-mappings/git-status');
+    const messages = {
+      clean: 'Target list is committed and pushed — up to date with origin.',
+      uncommitted: 'Target list has local changes not yet committed — commit Platform/config/suite_targets.yaml so others can see any target you added.',
+      unpushed: 'Target list is committed locally but not pushed yet — push so a colleague’s console picks it up on their next pull.',
+      unknown: 'Could not determine whether the shared target list is up to date' + (s.detail ? ` (${s.detail})` : '') + '.',
+    };
+    el.textContent = messages[s.status] || '';
+  } catch (e) { el.textContent = ''; }
 }
 
 fetchJSON('/api/taxonomy').then(t => { TAXONOMY = t; refreshDevices(); }).catch(() => {});
