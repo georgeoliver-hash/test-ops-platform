@@ -74,21 +74,21 @@ def _default_seed_targets() -> list[dict]:
     content plus source citations -- this is just enough to keep tests self-contained."""
     return [
         {"project": "Translink", "device": "POS", "old_suite": "AA-POS Acceptance Test", "old_suite_id": 9317,
-         "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False},
+         "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "ETM", "old_suite": "AA-ETM-Acceptance Test", "old_suite_id": 4943,
-         "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False},
+         "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "GV", "old_suite": "AA - Gate Validator - Acceptance Test", "old_suite_id": 14973,
-         "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False},
+         "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "TVM", "old_suite": "AA-TVM-Acceptance Test-V03", "old_suite_id": 5602,
-         "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False},
+         "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "HHD", "old_suite": "AA-HHD-Acceptance", "old_suite_id": 5446,
-         "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False},
+         "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "PV", "old_suite": "AA-Platform Validator Acceptance Test", "old_suite_id": 10047,
-         "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False},
+         "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False, "testrail_project_id": 42},
         {"project": "Translink", "device": "BOS", "old_suite": "2.1-Backoffice Systems - Acceptance Suite", "old_suite_id": 14441,
-         "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False},
+         "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False, "testrail_project_id": 42},
         {"project": "NJT", "device": "ETM", "old_suite": "", "old_suite_id": None,
-         "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True},
+         "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True, "testrail_project_id": 27},
     ]
 
 
@@ -114,7 +114,8 @@ def _save_suite_targets(entries: list[dict]) -> None:
 
 
 def _sync_target_to_yaml(project: str, device: str, old_suite: str, new_suite: str,
-                          new_suite_id: int | None, old_suite_id: int | None, fresh_build: bool) -> None:
+                          new_suite_id: int | None, old_suite_id: int | None, fresh_build: bool,
+                          testrail_project_id: int | None = None) -> None:
     """Write-through so any create/edit made via upsert_suite_mapping (i.e. the existing
     "Add this pair" / "Edit this pair" UI) lands in the shared, git-trackable file too --
     not just the caller's own local SQLite db. Committing + pushing this file is still a
@@ -124,6 +125,7 @@ def _sync_target_to_yaml(project: str, device: str, old_suite: str, new_suite: s
     entry = {
         "project": project, "device": device, "old_suite": old_suite, "old_suite_id": old_suite_id,
         "new_suite": new_suite, "new_suite_id": new_suite_id, "fresh_build": fresh_build,
+        "testrail_project_id": testrail_project_id,
     }
     for i, e in enumerate(entries):
         if e.get("project") == project and e.get("device") == device:
@@ -229,6 +231,15 @@ def init_db() -> None:
             conn.execute("ALTER TABLE suite_mappings ADD COLUMN approved_by TEXT")
         if "approved_at" not in cols:
             conn.execute("ALTER TABLE suite_mappings ADD COLUMN approved_at TEXT")
+        # The real TestRail project a target's suites live under (2026-09-14) -- NOT the
+        # same thing as this console's own `project` label. Found live: a single global
+        # .env TESTRAIL_PROJECT_ID default (42, "TFTS - System Test", where Translink's
+        # suites live) can't correctly serve every target -- NJT's real suites (30169,
+        # 30295) live under a different real project (27, "UK Bus Projects"). NULL means
+        # "not confirmed yet" -- the runner falls back to today's existing behaviour
+        # (omit --project, rely on .env) rather than guessing.
+        if "testrail_project_id" not in cols:
+            conn.execute("ALTER TABLE suite_mappings ADD COLUMN testrail_project_id INTEGER")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS credentials (
                 user_id INTEGER PRIMARY KEY,
@@ -311,11 +322,12 @@ def init_db() -> None:
             project, device = target["project"], target["device"]
             old_suite, new_suite = target.get("old_suite") or "", target["new_suite"]
             new_suite_id, old_suite_id = target.get("new_suite_id"), target.get("old_suite_id")
+            testrail_project_id = target.get("testrail_project_id")
             conn.execute(
                 """INSERT OR IGNORE INTO suite_mappings
-                   (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
-                (DEFAULT_USER_ID, project, device, old_suite, new_suite, new_suite_id, old_suite_id),
+                   (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))""",
+                (DEFAULT_USER_ID, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id),
             )
             # Backfill for rows created before new_suite_id/old_suite_id existed (pre-migration)
             conn.execute(
@@ -328,6 +340,12 @@ def init_db() -> None:
                    WHERE user_id = ? AND project = ? AND device = ? AND old_suite_id IS NULL""",
                 (old_suite_id, DEFAULT_USER_ID, project, device),
             )
+            if testrail_project_id is not None:
+                conn.execute(
+                    """UPDATE suite_mappings SET testrail_project_id = ?
+                       WHERE user_id = ? AND project = ? AND device = ? AND testrail_project_id IS NULL""",
+                    (testrail_project_id, DEFAULT_USER_ID, project, device),
+                )
 
 
 def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
@@ -340,11 +358,24 @@ def list_suite_mappings(user_id: int = DEFAULT_USER_ID) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
             "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, "
-            "approved_by, approved_at, updated_at "
+            "testrail_project_id, approved_by, approved_at, updated_at "
             "FROM suite_mappings WHERE user_id = ? ORDER BY project, device",
             (user_id,),
         ).fetchall()
         return [dict(r) for r in rows]
+
+
+def get_testrail_project_id(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> int | None:
+    """The real TestRail project id a target's suites live under -- distinct from this
+    console's own `project` label, which is never guaranteed to match a real TestRail
+    project name (found live: 'NJTdryrun' isn't one; even a real label like 'NJT' isn't
+    itself proof of which of the 40+ real TestRail projects its suites actually sit in)."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT testrail_project_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
+            (user_id, project, device),
+        ).fetchone()
+        return row["testrail_project_id"] if row else None
 
 
 def approve_suite_mapping(project: str, device: str, approved_by: str, user_id: int = DEFAULT_USER_ID) -> dict | None:
@@ -400,7 +431,7 @@ def get_suite_ids(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> 
         return dict(row) if row else None
 
 
-def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, new_suite_id: int | None = None, old_suite_id: int | None = None, fresh_build: bool = False, user_id: int = DEFAULT_USER_ID) -> None:
+def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: str, new_suite_id: int | None = None, old_suite_id: int | None = None, fresh_build: bool = False, testrail_project_id: int | None = None, user_id: int = DEFAULT_USER_ID) -> None:
     """`fresh_build=True` means this target genuinely has no old suite — the tool is
     building a suite purely from documentation, not migrating an existing one (George,
     2026-09-10: NJT is the real first case for this — 'the purpose here was to see if the
@@ -416,23 +447,24 @@ def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: s
     project, device, new_suite = project.strip(), device.strip(), new_suite.strip()
     with _connect() as conn:
         conn.execute(
-            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
                ON CONFLICT(user_id, project, device)
                DO UPDATE SET old_suite = excluded.old_suite, new_suite = excluded.new_suite,
                              new_suite_id = COALESCE(excluded.new_suite_id, suite_mappings.new_suite_id),
                              old_suite_id = COALESCE(excluded.old_suite_id, suite_mappings.old_suite_id),
+                             testrail_project_id = COALESCE(excluded.testrail_project_id, suite_mappings.testrail_project_id),
                              updated_at = excluded.updated_at""",
-            (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id),
+            (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id),
         )
         row = conn.execute(
-            "SELECT new_suite_id, old_suite_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
+            "SELECT new_suite_id, old_suite_id, testrail_project_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
             (user_id, project, device),
         ).fetchone()
     # Write-through to the shared, git-tracked file -- only for the real single-user default,
     # matching the fact this whole file (and this app) has no multi-user concept yet.
     if user_id == DEFAULT_USER_ID:
-        _sync_target_to_yaml(project, device, old_suite, new_suite, row["new_suite_id"], row["old_suite_id"], fresh_build)
+        _sync_target_to_yaml(project, device, old_suite, new_suite, row["new_suite_id"], row["old_suite_id"], fresh_build, row["testrail_project_id"])
 
 
 def delete_suite_mapping(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> bool:

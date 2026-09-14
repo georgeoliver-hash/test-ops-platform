@@ -283,13 +283,20 @@
             <input type="checkbox" id="editFreshBuild">
             Fresh build — no old suite to reference (building purely from documentation)
           </label>
+          <div class="field" style="margin:0;">
+            <label>TestRail project (the REAL TestRail project these suites live under — not the console project/device above, which is just this tool's own label)</label>
+            <select id="editTestrailProject" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);"><option value="">Loading…</option></select>
+            <div id="editTestrailProjectError" style="display:none;font-size:11.5px;color:var(--ink-soft);margin-top:4px;">Couldn't reach TestRail to list real projects/suites — type the suite name and numeric id directly below instead.</div>
+          </div>
           <div class="field" style="margin:0;" id="editOldSuiteField">
             <label>Old suite (read-only source)</label>
+            <select id="editOldSuiteSelect" style="width:100%;margin-bottom:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:none;"></select>
             <input type="text" id="editOldSuite" placeholder="Suite name" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
             <input type="number" id="editOldSuiteId" placeholder="Numeric TestRail suite id (e.g. 14441)" style="width:100%;margin-top:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
           </div>
           <div class="field" style="margin:0;">
             <label>New suite (write target)</label>
+            <select id="editNewSuiteSelect" style="width:100%;margin-bottom:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:none;"></select>
             <input type="text" id="editNewSuite" placeholder="Suite name" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
             <input type="number" id="editNewSuiteId" placeholder="Numeric TestRail suite id (e.g. 30295) — required to actually run pipelines" style="width:100%;margin-top:6px;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);">
           </div>
@@ -1640,7 +1647,7 @@ async function loadSuiteMappings() {
   try {
     const rows = await fetchJSON('/api/suite-mappings');
     SUITE_MAPPINGS = {};
-    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, old_suite_id: r.old_suite_id, new_suite_id: r.new_suite_id, approved_by: r.approved_by, approved_at: r.approved_at}; });
+    rows.forEach(r => { SUITE_MAPPINGS[`${r.project}|${r.device}`] = {old: r.old_suite, new: r.new_suite, old_suite_id: r.old_suite_id, new_suite_id: r.new_suite_id, testrail_project_id: r.testrail_project_id, approved_by: r.approved_by, approved_at: r.approved_at}; });
     if (Object.keys(TAXONOMY).length && typeof refreshDevices === 'function') refreshDevices(); // pick up TestRail-only devices (e.g. BOS) that just loaded
   } catch (e) { /* leave whatever we had; readout will show "not configured" worst case */ }
   refreshTargetsGitStatus();
@@ -1768,6 +1775,60 @@ const editOldSuiteId = document.getElementById('editOldSuiteId');
 const editNewSuiteId = document.getElementById('editNewSuiteId');
 const editNewProject = document.getElementById('editNewProject');
 const editNewDevice = document.getElementById('editNewDevice');
+const editTestrailProject = document.getElementById('editTestrailProject');
+const editTestrailProjectError = document.getElementById('editTestrailProjectError');
+const editOldSuiteSelect = document.getElementById('editOldSuiteSelect');
+const editNewSuiteSelect = document.getElementById('editNewSuiteSelect');
+let CURRENT_TESTRAIL_PROJECT_ID = null;
+
+// Real dropdowns fed from TestRail itself -- added 2026-09-14 after a target got pointed
+// at the wrong real TestRail project (a hand-typed id has no way to catch that mistake).
+// Falls back to the existing free-text suite name/id inputs if TestRail can't be reached.
+async function loadTestrailProjectsDropdown(preselectId) {
+  try {
+    const projects = await fetchJSON('/api/testrail/projects');
+    editTestrailProject.innerHTML = '<option value="">— pick a TestRail project —</option>' +
+      projects.map(p => `<option value="${p.id}">${esc(p.name)} (${p.id})</option>`).join('');
+    editTestrailProject.disabled = false;
+    editTestrailProjectError.style.display = 'none';
+    if (preselectId) { editTestrailProject.value = String(preselectId); await loadTestrailSuitesDropdowns(preselectId); }
+  } catch (e) {
+    editTestrailProject.innerHTML = '<option value="">(unavailable)</option>';
+    editTestrailProject.disabled = true;
+    editTestrailProjectError.style.display = 'block';
+  }
+}
+async function loadTestrailSuitesDropdowns(projectId) {
+  editOldSuiteSelect.style.display = 'none';
+  editNewSuiteSelect.style.display = 'none';
+  if (!projectId) return;
+  try {
+    const suites = await fetchJSON(`/api/testrail/suites?project_id=${encodeURIComponent(projectId)}`);
+    const options = '<option value="">— pick a suite, or type one below —</option>' +
+      suites.map(s => `<option value="${s.id}" data-name="${esc(s.name)}">${esc(s.name)} (${s.id})</option>`).join('');
+    editOldSuiteSelect.innerHTML = options;
+    editNewSuiteSelect.innerHTML = options;
+    editOldSuiteSelect.style.display = '';
+    editNewSuiteSelect.style.display = '';
+  } catch (e) { /* leave the free-text inputs as the only option */ }
+}
+editTestrailProject.addEventListener('change', () => {
+  CURRENT_TESTRAIL_PROJECT_ID = editTestrailProject.value ? parseInt(editTestrailProject.value, 10) : null;
+  loadTestrailSuitesDropdowns(CURRENT_TESTRAIL_PROJECT_ID);
+});
+editOldSuiteSelect.addEventListener('change', () => {
+  const opt = editOldSuiteSelect.selectedOptions[0];
+  if (!opt || !opt.value) return;
+  editOldSuite.value = opt.dataset.name || '';
+  editOldSuiteId.value = opt.value;
+});
+editNewSuiteSelect.addEventListener('change', () => {
+  const opt = editNewSuiteSelect.selectedOptions[0];
+  if (!opt || !opt.value) return;
+  editNewSuite.value = opt.dataset.name || '';
+  editNewSuiteId.value = opt.value;
+});
+
 suiteEditBtn.addEventListener('click', () => {
   const pair = SUITE_MAPPINGS[currentPairKey()];
   const isFresh = !!pair && !pair.old;
@@ -1779,6 +1840,8 @@ suiteEditBtn.addEventListener('click', () => {
   editNewSuiteId.value = pair && pair.new_suite_id != null ? pair.new_suite_id : '';
   editNewProject.value = '';
   editNewDevice.value = '';
+  CURRENT_TESTRAIL_PROJECT_ID = pair && pair.testrail_project_id != null ? pair.testrail_project_id : null;
+  loadTestrailProjectsDropdown(CURRENT_TESTRAIL_PROJECT_ID);
   suiteEditForm.style.display = 'flex';
 });
 document.getElementById('suiteEditCancel').addEventListener('click', () => { suiteEditForm.style.display = 'none'; });
@@ -1797,7 +1860,7 @@ document.getElementById('suiteEditSave').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/suite-mappings', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({project, device, old_suite, new_suite, new_suite_id, old_suite_id, fresh_build}),
+      body: JSON.stringify({project, device, old_suite, new_suite, new_suite_id, old_suite_id, fresh_build, testrail_project_id: CURRENT_TESTRAIL_PROJECT_ID}),
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     await loadSuiteMappings();

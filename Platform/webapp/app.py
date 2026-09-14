@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -86,6 +87,11 @@ class SuiteMappingIn(BaseModel):
     new_suite_id: int | None = None
     old_suite_id: int | None = None
     fresh_build: bool = False
+    # The real TestRail project these suites live under -- NOT the same as `project` above
+    # (this console's own label). Found live, 2026-09-14: NJT's real suites live under TestRail
+    # project 27 ("UK Bus Projects"), not the .env default (42, where Translink's suites live)
+    # -- a single global default can't serve every target correctly.
+    testrail_project_id: int | None = None
 
 
 class RunRequest(BaseModel):
@@ -130,10 +136,47 @@ def get_suite_mappings():
 @app.post("/api/suite-mappings")
 def put_suite_mapping(body: SuiteMappingIn):
     try:
-        store.upsert_suite_mapping(body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id, body.fresh_build)
+        store.upsert_suite_mapping(
+            body.project, body.device, body.old_suite, body.new_suite, body.new_suite_id, body.old_suite_id,
+            body.fresh_build, body.testrail_project_id,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True}
+
+
+@app.get("/api/testrail/projects")
+def get_testrail_projects():
+    """Real project list straight from TestRail -- for a dropdown, so a target never again
+    gets pointed at the wrong project by a hand-typed id (found live, 2026-09-14: NJT's
+    suites live under project 27, not the .env default 42)."""
+    parts = [str(runner._VENV_PYTHON), "-m", "system_test_ops", "list-projects"]
+    try:
+        result = subprocess.run(parts, cwd=str(runner.SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise HTTPException(status_code=500, detail=f"Could not reach TestRail via the CLI: {exc}") from exc
+    if result.returncode != 0:
+        raise HTTPException(status_code=500, detail=(result.stderr or result.stdout or "list-projects failed").strip())
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail=f"Unexpected output from list-projects: {exc}") from exc
+
+
+@app.get("/api/testrail/suites")
+def get_testrail_suites(project_id: int):
+    """Real suite list for one TestRail project -- same rationale as /api/testrail/projects."""
+    parts = [str(runner._VENV_PYTHON), "-m", "system_test_ops", "list-suites", "--project", str(project_id)]
+    try:
+        result = subprocess.run(parts, cwd=str(runner.SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise HTTPException(status_code=500, detail=f"Could not reach TestRail via the CLI: {exc}") from exc
+    if result.returncode != 0:
+        raise HTTPException(status_code=500, detail=(result.stderr or result.stdout or "list-suites failed").strip())
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail=f"Unexpected output from list-suites: {exc}") from exc
 
 
 @app.get("/api/suite-mappings/git-status")

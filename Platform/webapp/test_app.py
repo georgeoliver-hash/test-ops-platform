@@ -164,6 +164,48 @@ def test_delete_unknown_mapping_is_404():
     assert res.status_code == 404
 
 
+def test_suite_mapping_upsert_persists_testrail_project_id():
+    """A hand-typed console project label (e.g. "NJTdryrun") is never itself a real
+    TestRail project -- the real one is stored separately and must round-trip."""
+    res = client.post("/api/suite-mappings", json={
+        "project": "Perth", "device": "POS", "old_suite": "Old", "new_suite": "New",
+        "new_suite_id": 1, "testrail_project_id": 13,
+    })
+    assert res.status_code == 200
+    mapping = next(m for m in client.get("/api/suite-mappings").json()
+                   if m["project"] == "Perth" and m["device"] == "POS")
+    assert mapping["testrail_project_id"] == 13
+    client.delete("/api/suite-mappings/Perth/POS")
+
+
+def test_get_testrail_projects_returns_parsed_json(monkeypatch):
+    fake_result = type("R", (), {"returncode": 0, "stdout": '[{"id": 27, "name": "UK Bus Projects"}]', "stderr": ""})()
+    monkeypatch.setattr(app_module.subprocess, "run", lambda *a, **kw: fake_result)
+    res = client.get("/api/testrail/projects")
+    assert res.status_code == 200
+    assert res.json() == [{"id": 27, "name": "UK Bus Projects"}]
+
+
+def test_get_testrail_projects_cli_failure_returns_500(monkeypatch):
+    fake_result = type("R", (), {"returncode": 1, "stdout": "", "stderr": "error: no TestRail credentials"})()
+    monkeypatch.setattr(app_module.subprocess, "run", lambda *a, **kw: fake_result)
+    res = client.get("/api/testrail/projects")
+    assert res.status_code == 500
+    assert "no TestRail credentials" in res.json()["detail"]
+
+
+def test_get_testrail_suites_passes_project_id(monkeypatch):
+    captured = {}
+    def fake_run(cmd, **kw):
+        captured["cmd"] = cmd
+        return type("R", (), {"returncode": 0, "stdout": '[{"id": 30169, "name": "NJT Farebox and Register Replacement"}]', "stderr": ""})()
+    monkeypatch.setattr(app_module.subprocess, "run", fake_run)
+    res = client.get("/api/testrail/suites", params={"project_id": 27})
+    assert res.status_code == 200
+    assert res.json()[0]["id"] == 30169
+    assert "--project" in captured["cmd"] and "27" in captured["cmd"]
+
+
 def test_suite_mapping_upsert_writes_through_to_shared_yaml():
     """Adding/editing a target via the existing "Add/edit this pair" endpoint must land in
     the git-trackable Platform/config/suite_targets.yaml (isolated to a temp path for tests

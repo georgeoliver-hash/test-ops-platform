@@ -136,22 +136,33 @@ def _render(template: str, params: dict) -> str:
     return template.format_map(_SafeFormatDict(params))
 
 
-_OPTIONAL_FLAG_RE = re.compile(r"\[(--[\w-]+)\]")
+_OPTIONAL_FLAG_RE = re.compile(r"\[(--[\w-]+)(?:\s+([^\]]+))?\]")
+_UNRESOLVED_PLACEHOLDER_RE = re.compile(r"\{[\w.]+\}")
 
 
 def _resolve_optional_flags(command: str, params: dict) -> str:
-    """A YAML command like `export-automation --suite {suite_id} [--include-manual]` uses
-    `[--flag]` as documentation shorthand for "pass this only if the matching run input is
-    truthy" — not something a real subprocess argv should ever see literally. Resolves
-    `[--include-manual]` -> `--include-manual` if params['include_manual'] is truthy
-    (from a declared pipeline input, e.g. export-automation.yaml's), else strips it
-    entirely, generically for any `[--flag-name]` token."""
+    """A YAML command uses `[--flag]` as documentation shorthand for "pass this only if the
+    matching run input is truthy" (e.g. export-automation's `[--include-manual]`), and
+    `[--flag {value}]` for "pass this flag with a real value if one was supplied, else omit
+    the flag entirely" (e.g. onboard-suite's `[--project {testrail_project_id}]` — added
+    2026-09-14 after a target got audited against the wrong TestRail project because a
+    single global .env default can't correctly serve every target). Neither shape should
+    ever reach a real subprocess argv literally.
+
+    By the time this runs, `_render()` has already substituted any real `{placeholder}`
+    value into the command -- so `[--flag {value}]` has already become `[--flag 27]` if the
+    param was supplied, or is still literally `[--flag {value}]` if it wasn't (a missing key
+    is left alone by `_render`'s SafeFormatDict, never turned into the string "None")."""
     def repl(match: re.Match) -> str:
-        flag = match.group(1)
-        key = flag.lstrip("-").replace("-", "_")
-        value = params.get(key)
-        truthy = value is not None and str(value).strip().lower() in ("1", "true", "yes")
-        return flag if truthy else ""
+        flag, value = match.group(1), match.group(2)
+        if value is None:
+            key = flag.lstrip("-").replace("-", "_")
+            v = params.get(key)
+            truthy = v is not None and str(v).strip().lower() in ("1", "true", "yes")
+            return flag if truthy else ""
+        if _UNRESOLVED_PLACEHOLDER_RE.search(value):
+            return ""  # the param behind {value} was never supplied -- drop the whole flag
+        return f"{flag} {value}"
     resolved = _OPTIONAL_FLAG_RE.sub(repl, command)
     return re.sub(r"\s{2,}", " ", resolved).strip()
 
@@ -254,6 +265,13 @@ def _build_params(project: str, device: str, steps: list[Step], extra_inputs: di
         if suite_id is None:
             raise ValueError(f"No new_suite_id configured for {project}/{device} — add one in Settings first.")
         params["suite_id"] = suite_id
+    # Only set when a real value is confirmed for this target -- omitted (not None) so
+    # _render's SafeFormatDict leaves {testrail_project_id} literally unresolved rather than
+    # rendering the string "None", which [--project {testrail_project_id}]-style optional
+    # flags rely on to know the value was never supplied.
+    testrail_project_id = store.get_testrail_project_id(project, device)
+    if testrail_project_id is not None:
+        params["testrail_project_id"] = testrail_project_id
     return params
 
 

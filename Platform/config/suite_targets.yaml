@@ -17,6 +17,7 @@ targets:
     new_suite: "GG - POS - Claude Suite"
     new_suite_id: 30253
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # cite: knowledge/devices/etm.md:89 (old id 4943) + proposals/etm-suite-restructure/*
   - project: Translink
@@ -26,6 +27,7 @@ targets:
     new_suite: "NEW ETM-Acceptance Suite"
     new_suite_id: 30254
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # cite: proposals/gv-suite-restructure/old-suite-audit.md:7 (old id 14973)
   - project: Translink
@@ -35,6 +37,7 @@ targets:
     new_suite: "NEW GV Test Suite"
     new_suite_id: 30286
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # cite: proposals/tvm-suite-restructure/old-suite-audit.md:14 (old id 5602, richest source) + George, 2026-09-08
   - project: Translink
@@ -44,6 +47,7 @@ targets:
     new_suite: "NEW TVM Test Suite"
     new_suite_id: 30284
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # cite: proposals/hhd-suite-restructure/old-suite-audit.md:19 (old id 5446, primary) + George, 2026-09-08
   - project: Translink
@@ -53,6 +57,7 @@ targets:
     new_suite: "NEW HHD Test Suite"
     new_suite_id: 30285
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # cite: proposals/pv-suite-restructure/build-complete.md:3 (old id 10047), pv-mode-tagging.changelog.md:81
   - project: Translink
@@ -62,6 +67,7 @@ targets:
     new_suite: "NEW PV-Acceptance Test Suite"
     new_suite_id: 30255
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # BOS & ABT: not a real SIT device_type (checked EquipmentTypes.json directly, 2026-09-10 --
   # SIT only knows ETM/TVM/POS/BV/PV/GV/HHD/Sub-components/P+R), but a real TestRail concept
@@ -76,6 +82,7 @@ targets:
     new_suite: "NEW BOS & ABT Suite"
     new_suite_id: 30279
     fresh_build: false
+    testrail_project_id: 42  # "TFTS - System Test" -- confirmed, Translink's suites live here
 
   # NJT FR: George's explicit call (2026-09-10) -- treat this as a genuine fresh build, not
   # an old/new migration. The real test case for "can this tool build a suite purely from
@@ -89,3 +96,4 @@ targets:
     new_suite: "NJT - SystemTestOps"
     new_suite_id: 30295
     fresh_build: true
+    testrail_project_id: 27  # "UK Bus Projects" -- confirmed live, 2026-09-14 (George: NJT's suites live here, not the .env default project 42)

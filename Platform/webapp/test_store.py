@@ -229,6 +229,67 @@ def test_yaml_source_reproduces_the_same_eight_seeded_targets(store):
     assert mappings["NJT|ETM"]["old_suite_id"] is None
 
 
+def test_seeded_testrail_project_ids_are_the_real_confirmed_values(store):
+    """Translink's suites live under real TestRail project 42 ("TFTS - System Test"); NJT's
+    live under 27 ("UK Bus Projects") -- confirmed live, 2026-09-14, after a target got
+    audited against the wrong project because a single global .env default can't serve
+    every target. Never invent a value for a project we haven't confirmed."""
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["Translink|POS"]["testrail_project_id"] == 42
+    assert mappings["Translink|TVM"]["testrail_project_id"] == 42
+    assert mappings["Translink|BOS"]["testrail_project_id"] == 42
+    assert mappings["NJT|ETM"]["testrail_project_id"] == 27
+
+
+def test_get_testrail_project_id(store):
+    assert store.get_testrail_project_id("Translink", "POS") == 42
+    assert store.get_testrail_project_id("NJT", "ETM") == 27
+    assert store.get_testrail_project_id("NoSuchProject", "NoSuchDevice") is None
+
+
+def test_upsert_persists_testrail_project_id(store):
+    store.upsert_suite_mapping("Perth", "POS", "Old Perth Suite", "New Perth Suite",
+                                new_suite_id=40001, old_suite_id=5001, testrail_project_id=13)
+    assert store.get_testrail_project_id("Perth", "POS") == 13
+    entries = {(t["project"], t["device"]): t for t in store._load_suite_targets()}
+    assert entries[("Perth", "POS")]["testrail_project_id"] == 13
+
+
+def test_upsert_does_not_clobber_testrail_project_id_when_omitted(store):
+    """A later edit that doesn't mention testrail_project_id (e.g. the existing "Add/edit
+    this pair" flow before the real dropdown fetches a project) must not silently wipe out
+    an already-confirmed value."""
+    store.upsert_suite_mapping("Translink", "POS", "AA-POS Acceptance Test", "GG - POS - Claude Suite",
+                                new_suite_id=30253, old_suite_id=9317)  # no testrail_project_id passed
+    assert store.get_testrail_project_id("Translink", "POS") == 42
+
+
+def test_migration_backfills_testrail_project_id_without_clobbering_other_columns(store, tmp_path):
+    """Simulates a pre-migration db (column doesn't exist yet) getting the new column added
+    and backfilled from suite_targets.yaml on the next init_db() -- must not disturb
+    unrelated already-set columns like approved_by."""
+    store.approve_suite_mapping("NJT", "ETM", "George Oliver")
+    with store._connect() as conn:
+        conn.execute("ALTER TABLE suite_mappings RENAME TO suite_mappings_old")
+        conn.execute(
+            """CREATE TABLE suite_mappings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, project TEXT NOT NULL,
+                device TEXT NOT NULL, old_suite TEXT NOT NULL, new_suite TEXT NOT NULL,
+                new_suite_id INTEGER, old_suite_id INTEGER, approved_by TEXT, approved_at TEXT,
+                updated_at TEXT NOT NULL, UNIQUE(user_id, project, device)
+            )"""
+        )
+        conn.execute(
+            "INSERT INTO suite_mappings SELECT id, user_id, project, device, old_suite, new_suite, "
+            "new_suite_id, old_suite_id, approved_by, approved_at, updated_at FROM suite_mappings_old"
+        )
+        conn.execute("DROP TABLE suite_mappings_old")
+    store.init_db()
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["NJT|ETM"]["testrail_project_id"] == 27
+    assert mappings["NJT|ETM"]["approved_by"] == "George Oliver"  # untouched by the migration
+
+
 def test_load_suite_targets_bootstraps_missing_file_with_defaults(tmp_path, monkeypatch):
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path / "data"))
     targets_path = tmp_path / "does-not-exist-yet" / "suite_targets.yaml"
