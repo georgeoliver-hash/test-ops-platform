@@ -288,7 +288,16 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
         return "failed"
 
     output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
-    ok = returncode in (0, 1)  # 1 == "ran, found blocking findings" for audit-style CLIs — still a completed run
+    # Was `returncode in (0, 1)` on the theory that 1 means "ran fine, found blocking
+    # findings" for audit-style CLIs -- but system_test_ops's own SystemExit("error: ...")
+    # usage-error path (bad --project, bad --suite, etc.) ALSO exits 1, and every pipeline
+    # step that actually wants "found findings, still fine" (audit.yaml) already passes
+    # --no-gate specifically to force exit 0 on that case. So the (0, 1) leniency only
+    # ever masked real errors in practice -- found live: a bad --project value ("NJTdryrun"
+    # -- the console's own project label, not a real TestRail project name) printed a
+    # clear "error: project not found" to stderr and still got marked succeeded. Strict
+    # now, matching _run_gate_step's existing behaviour.
+    ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
     if not ok:
         return "failed"
