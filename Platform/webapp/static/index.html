@@ -1328,7 +1328,7 @@ async function onStepActionClick(e) {
   if (isApprovePush && !confirm(`This will actually push --commit to TestRail. Approve "${stepId}"?`)) return;
   btn.disabled = true;
   try {
-    const res = await fetch(`/api/pipelines/runs/${runId}/steps/${stepId}/resolve`, {method: 'POST'});
+    const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/resolve`, {method: 'POST'});
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     const resultEl = document.getElementById('pipelineRunResult');
     const stepListEl = document.getElementById('pipelineStepList');

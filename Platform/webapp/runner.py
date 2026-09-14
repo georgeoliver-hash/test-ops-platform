@@ -101,11 +101,49 @@ def _render(template: str, params: dict) -> str:
     return template.format_map(_SafeFormatDict(params))
 
 
-def _flatten_steps(pipeline: Pipeline, _seen: frozenset[str] = frozenset()) -> list[Step]:
+_AREA_PREFIX_RE = re.compile(r"^(fs\d+|hmi\d+|is\d+|ss\d+)-", re.IGNORECASE)
+
+
+def _slugify_area(spec_stem: str) -> str:
+    """A spec filename like `fs002-cloudfare-communication` -> `cloudfare-communication` —
+    strips the doc-numbering prefix these filenames use (fs002-/hmi01-/is001-/ss003-,
+    per the real system-test-ops naming convention), keeping the human-meaningful part."""
+    return _AREA_PREFIX_RE.sub("", spec_stem)
+
+
+def _functional_areas(project: str) -> list[str]:
+    """One functional area per ingested spec file for this project — generic, not
+    NJT-hardcoded: any project with knowledge/{project}/specs/*.md (via ingest-docs) gets
+    this fan-out. Empty if that folder doesn't exist yet (ingest-docs hasn't run) —
+    callers must fail loudly on empty, never silently produce zero sub-steps."""
+    specs_dir = SYSTEM_TEST_OPS_ROOT / "knowledge" / project.lower() / "specs"
+    if not specs_dir.is_dir():
+        return []
+    return [_slugify_area(f.stem) for f in sorted(specs_dir.glob("*.md"))]
+
+
+def step_area(step_id: str) -> str | None:
+    """Extracts the area slug from a fanned-out step id like `author_area[fare-structure]`
+    -> `fare-structure`; None for a step that was never fanned out."""
+    if step_id.endswith("]") and "[" in step_id:
+        return step_id[step_id.rindex("[") + 1:-1]
+    return None
+
+
+def _flatten_steps(pipeline: Pipeline, project: str, _seen: frozenset[str] = frozenset()) -> list[Step]:
     """Real, ordered step list with composite `{id, ref: <pipeline-id>}` steps inlined —
     so e.g. new-suite-from-docs shows ingest-docs' and onboard-suite's real steps, not two
     opaque "run this whole other pipeline" boxes. Nested step ids are qualified
-    `<ref-step-id>.<nested-step-id>` to stay unique."""
+    `<ref-step-id>.<nested-step-id>` to stay unique.
+
+    A `loop:`-annotated step (e.g. onboard-suite's `author_area`/`push_area`, "one per
+    functional area") is expanded here into one real step per functional area, ids
+    qualified `<step-id>[<area>]`, each with its own `loop` cleared so dispatch treats it
+    as a normal single step — that's what gives each area its own pipeline_run_steps row,
+    its own status pill, and (for push_area) its own independent Approve & Push gate. If
+    no areas can be derived yet (no ingested specs for this project), the ORIGINAL
+    unexpanded step is kept (with `loop` still set) so _dispatch_step can fail it loudly
+    rather than silently running zero sub-steps."""
     if pipeline.id in _seen:
         raise RuntimeError(f"Circular composite pipeline reference at '{pipeline.id}'")
     seen = _seen | {pipeline.id}
@@ -113,8 +151,15 @@ def _flatten_steps(pipeline: Pipeline, _seen: frozenset[str] = frozenset()) -> l
     for step in pipeline.steps:
         if step.is_composite_ref:
             nested_pipeline = load_pipeline(step.ref)
-            for nested in _flatten_steps(nested_pipeline, seen):
+            for nested in _flatten_steps(nested_pipeline, project, seen):
                 out.append(nested.model_copy(update={"id": f"{step.id}.{nested.id}"}))
+        elif getattr(step, "loop", None):
+            areas = _functional_areas(project)
+            if not areas:
+                out.append(step)  # loop stays set -> _dispatch_step fails it with a clear message
+            else:
+                for area in areas:
+                    out.append(step.model_copy(update={"id": f"{step.id}[{area}]", "loop": None}))
         else:
             out.append(step)
     return out
@@ -224,16 +269,25 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     return "succeeded" if ok else "failed"
 
 
-def _run_agent_step(run_id: str, step: Step) -> str:
+def _run_agent_step(run_id: str, step: Step, area: str | None = None) -> str:
     allowed_tools = AGENT_TOOL_GRANTS.get(step.agent or "", _DEFAULT_AGENT_TOOLS)
     prior_run = store.get_run(run_id) or {}
     report_path = prior_run.get("report_path")
-    if report_path and not (SYSTEM_TEST_OPS_ROOT / report_path).is_file():
+    if area:
+        # A fanned-out per-area step (e.g. author_area[fare-structure]) — one real, scoped
+        # instruction per area, never "do all areas" or a copy of an old draft.
+        produces = step.produces.replace("<area>", area) if isinstance(step.produces, str) else f"{area}.cases.yaml"
+        prompt = (
+            f"For the '{area}' functional area only, carry out the '{step.id.split('[')[0]}' step "
+            f"of this pipeline ({step.note or 'see pipeline definition'}). Ground everything in "
+            f"knowledge/{{project}}/specs/ for this area — never invent case content. Produce: {produces}."
+        )
+    elif report_path and not (SYSTEM_TEST_OPS_ROOT / report_path).is_file():
         note = f"A prior step reported {report_path}, but that file wasn't found to read — nothing to summarise."
         store.update_step(run_id, step.id, status="succeeded", output=note, finished_at=_now())
         store.update_run(run_id, summary=note)
         return "succeeded"
-    if report_path:
+    elif report_path:
         prompt = (
             f"Read the file at {report_path} and {step.note or 'summarise it in plain language'}. "
             f"No preamble, no markdown headers, 3-6 sentences."
@@ -276,14 +330,28 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
         store.update_step(run_id, step.id, status="skipped", finished_at=_now())
         return "skipped"
 
-    command = _render(step.command, params) if step.command else None
-    forced_human = bool(command) and "push" in command and "--commit" in command
-
     store.update_step(run_id, step.id, status="running", started_at=_now())
 
+    # A loop-annotated step that _flatten_steps couldn't fan out (no ingested specs yet
+    # for this project) reaches dispatch unexpanded — fail it clearly rather than running
+    # it once as if it were a normal step.
+    if getattr(step, "loop", None):
+        msg = (f"Can't fan out '{step.id}' ({step.loop}) — no ingested functional-area "
+               f"specs found for this project yet. Run ingest-docs first.")
+        store.update_step(run_id, step.id, status="failed", output=msg, finished_at=_now())
+        return "failed"
+
+    area = step_area(step.id)
+    command = _render(step.command, params) if step.command else None
+    if command and area:
+        command = command.replace("<area>", area)  # e.g. push --file <area>.cases.yaml --commit
+    forced_human = bool(command) and "push" in command and "--commit" in command
+
     if forced_human or step.kind is StepKind.human:
+        actions = getattr(step, "actions", None)
+        fallback = "; ".join(actions) if isinstance(actions, list) and actions else None
         output = f"[requires approval before this runs] {command}" if forced_human else (
-            step.note or getattr(step, "action", None) or "Human step — awaiting confirmation."
+            step.note or getattr(step, "action", None) or fallback or "Human step — awaiting confirmation."
         )
         store.update_step(run_id, step.id, status="waiting_human", output=output)
         return "waiting_human"
@@ -293,7 +361,7 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
     if step.kind is StepKind.gate:
         return _run_gate_step(run_id, step, command)
     if step.kind is StepKind.agent:
-        return _run_agent_step(run_id, step)
+        return _run_agent_step(run_id, step, area=area)
 
     # No kind and no ref (a pure note/informational step) — nothing to execute.
     store.update_step(run_id, step.id, status="succeeded", output=step.note or "(informational step, nothing to run)", finished_at=_now())
@@ -302,7 +370,7 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
 
 def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, start_index: int) -> None:
     pipeline = load_pipeline(pipeline_id)
-    steps = _flatten_steps(pipeline)
+    steps = _flatten_steps(pipeline, project)
     extra_inputs = _run_extra_inputs.get(run_id, {})
     try:
         params = _build_params(project, device, steps, extra_inputs)
@@ -338,7 +406,7 @@ def start_run(pipeline_id: str, project: str, device: str, extra_inputs: dict[st
     Raises KeyError for an unknown pipeline id, ValueError if a required suite id isn't
     configured for this target — both map to HTTP 404/400 in app.py."""
     pipeline = load_pipeline(pipeline_id)
-    steps = _flatten_steps(pipeline)
+    steps = _flatten_steps(pipeline, project)
     extra_inputs = extra_inputs or {}
     _build_params(project, device, steps, extra_inputs)  # validate up front — don't create a run row if this will fail immediately
 
@@ -370,8 +438,12 @@ def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
     have — needed here because pipeline_run_steps only stores the step's *output* summary,
     not its original templated command."""
     pipeline = load_pipeline(run["pipeline_id"])
-    steps = _flatten_steps(pipeline)
+    steps = _flatten_steps(pipeline, run["project"])
     step = next((s for s in steps if s.id == step_id), None)
+    if step is not None:
+        area = step_area(step_id)
+        if area and step.command:
+            step = step.model_copy(update={"command": step.command.replace("<area>", area)})
     if step is None or not step.command:
         return None
     extra_inputs = _run_extra_inputs.get(run_id, {})
@@ -398,12 +470,14 @@ def resolve_step(run_id: str, step_id: str) -> None:
     command = _step_command(run_id, run, step_id)
     is_push_gate = bool(command) and "push" in command and "--commit" in command
     if is_push_gate and not store.is_target_approved(run["project"], run["device"]):
+        # Refused, but retryable: leave the step at waiting_human (not failed) so approving
+        # the target and clicking "Approve & Push" again just works, rather than requiring
+        # the whole run to be restarted from scratch.
         store.update_step(
-            run_id, step_id, status="failed", finished_at=_now(),
-            output=f"Refused: {run['project']}/{run['device']} has no persisted approval "
-                   "(Approve this target first, then retry Approve & Push).",
+            run_id, step_id, status="waiting_human",
+            output=f"Refused: {run['project']}/{run['device']} has no persisted approval yet — "
+                   "approve this target, then retry Approve & Push.",
         )
-        store.update_run(run_id, status="failed", error="Target not approved for a push+--commit step.")
         raise TargetNotApprovedError(f"{run['project']}/{run['device']} is not approved.")
 
     store.update_step(run_id, step_id, status="succeeded", finished_at=_now())

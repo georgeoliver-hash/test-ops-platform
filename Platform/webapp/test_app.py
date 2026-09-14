@@ -516,10 +516,11 @@ def test_resolve_push_commit_step_refused_when_target_not_approved(monkeypatch):
     res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area/resolve")
     assert res.status_code == 403
 
+    # left retryable, not failed outright -- approving the target and clicking again just works
     step = store.get_step(run_id, "push_area")
-    assert step["status"] == "failed"
+    assert step["status"] == "waiting_human"
     run = store.get_run(run_id)
-    assert run["status"] == "failed"
+    assert run["status"] == "waiting_human"
 
 
 def test_resolve_push_commit_step_succeeds_once_target_approved(monkeypatch):
@@ -542,6 +543,111 @@ def test_resolve_push_commit_step_succeeds_once_target_approved(monkeypatch):
     assert res.status_code == 200
     run = store.get_run(run_id)
     assert run["status"] == "succeeded"
+
+
+def test_loop_step_fans_out_one_per_ingested_spec(tmp_path, monkeypatch):
+    """author_area's `loop: "one per functional area"` expands into one real step row per
+    knowledge/{project}/specs/*.md file — not one generic step run once."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "fs002-fare-structure.md").write_text("x")
+    (specs_dir / "fs002-operator-menu.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-loop", trigger=Trigger(ui_action="fake_loop"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok", ""))
+
+    run_id = runner_module.start_run("fake-loop", "FakeProj", "ETM")
+    steps = store.get_steps(run_id)
+    ids = sorted(s["step_id"] for s in steps)
+    assert ids == ["author_area[fare-structure]", "author_area[operator-menu]"]
+    assert all(s["status"] == "succeeded" for s in steps)
+
+
+def test_loop_step_fails_clearly_with_no_ingested_specs(tmp_path, monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)  # empty -- no knowledge/ dir at all
+
+    fake_pipeline = Pipeline(
+        id="fake-loop-empty", trigger=Trigger(ui_action="fake_loop_empty"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    run_id = runner_module.start_run("fake-loop-empty", "FakeProj", "ETM")
+    steps = store.get_steps(run_id)
+    assert [s["step_id"] for s in steps] == ["author_area"]
+    assert steps[0]["status"] == "failed"
+    assert "ingest-docs" in steps[0]["output"]
+
+
+def test_fanned_out_push_steps_each_require_own_resolve_and_shared_target_approval(tmp_path, monkeypatch):
+    """Two areas' push_area steps: each needs its OWN resolve call (independent step
+    rows), but both check the SAME per-target approval flag — approving the target once
+    unlocks both areas' push, matching Phase 4's per-target (not per-area) approval."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj2" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "fs002-area-one.md").write_text("x")
+    (specs_dir / "fs002-area-two.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-loop-push", trigger=Trigger(ui_action="fake_loop_push"), description="test pipeline",
+        steps=[Step(id="push_area", kind=StepKind.cli, loop="one per functional area",
+                     command="python -m system_test_ops push --file <area>.cases.yaml --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok", ""))
+
+    run_id = runner_module.start_run("fake-loop-push", "FakeProj2", "ETM")
+    steps = {s["step_id"]: s for s in store.get_steps(run_id)}
+    assert set(steps) == {"push_area[area-one]", "push_area[area-two]"}
+    # the run engine is sequential -- it pauses at the FIRST push gate; the second area's
+    # step doesn't reach waiting_human until the first is resolved past.
+    assert steps["push_area[area-one]"]["status"] == "waiting_human"
+    assert steps["push_area[area-two]"]["status"] == "pending"
+
+    # unapproved -> refused, retryable (stays waiting_human)
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area[area-one]/resolve")
+    assert res.status_code == 403
+    assert store.get_step(run_id, "push_area[area-one]")["status"] == "waiting_human"
+
+    # a mapping must exist before it can be approved (approve is UPDATE-only, not upsert)
+    add_res = client.post("/api/suite-mappings", json={
+        "project": "FakeProj2", "device": "ETM", "old_suite": "", "new_suite": "Fake Suite",
+        "new_suite_id": 99999, "fresh_build": True,
+    })
+    assert add_res.status_code == 200
+
+    # approve the TARGET once -> both areas' push steps succeed independently, each via
+    # its own resolve call, both checking the same target-approval flag
+    approve_res = client.post("/api/suite-mappings/FakeProj2/ETM/approve", json={"approved_by": "George Oliver"})
+    assert approve_res.status_code == 200
+
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area[area-one]/resolve")
+    assert res.status_code == 200
+    assert store.get_step(run_id, "push_area[area-one]")["status"] == "succeeded"
+    assert store.get_step(run_id, "push_area[area-two]")["status"] == "waiting_human"  # now reached, paused again
+
+    res2 = client.post(f"/api/pipelines/runs/{run_id}/steps/push_area[area-two]/resolve")
+    assert res2.status_code == 200
+    assert store.get_step(run_id, "push_area[area-two]")["status"] == "succeeded"
+    assert store.get_run(run_id)["status"] == "succeeded"
 
 
 def test_get_run_404_for_unknown_id():
