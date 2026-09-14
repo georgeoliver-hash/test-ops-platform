@@ -476,6 +476,17 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
         store.update_step(run_id, step.id, status="succeeded", output=step.note or "(no command declared for this step — nothing to run)", finished_at=_now())
         return "succeeded"
 
+    # A declared-but-not-supplied optional input (e.g. onboard-suite's flow_data_path --
+    # a real Overflow UX export that genuinely may not exist for a from-scratch build)
+    # leaves _render's placeholder literally in the command (`_SafeFormatDict` doesn't
+    # raise on a missing key). Running that literally crashes the underlying CLI with a
+    # confusing traceback (found live: mine_flows tried int('<id>')-style literal-argument
+    # crashes before this existed) -- skip cleanly instead of pretending there's something
+    # to execute.
+    if command and re.search(r"\{[\w.]+\}", command):
+        store.update_step(run_id, step.id, status="skipped", output=f"Skipped — missing input for: {command}", finished_at=_now())
+        return "skipped"
+
     if step.kind is StepKind.cli:
         return _run_cli_step(run_id, step, command)
     if step.kind is StepKind.gate:
