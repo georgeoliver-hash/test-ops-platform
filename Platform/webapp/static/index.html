@@ -1124,6 +1124,9 @@ async function renderDocs() {
         const res = await fetch(`/api/docs?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`, {method: 'POST', body: fd});
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
         renderDocs();
+        refreshSetupGate();  // found live: the readiness banner never re-checked after an
+                              // upload, so it kept saying "docs/knowledge" missing even once
+                              // real docs existed -- it only ever refreshed on page load/target-apply.
       } catch (e) { msg.textContent = 'Upload failed: ' + e.message; }
     });
     content.querySelectorAll('[data-del-doc]').forEach(btn => {
@@ -1132,6 +1135,7 @@ async function renderDocs() {
           const res = await fetch(`/api/docs/${encodeURIComponent(project)}/${encodeURIComponent(device)}/${encodeURIComponent(btn.dataset.delDoc)}`, {method: 'DELETE'});
           if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
           renderDocs();
+          refreshSetupGate();  // same reasoning as upload -- deleting the last doc should re-fade it
         } catch (e) { alert('Could not remove: ' + e.message); }
       });
     });
