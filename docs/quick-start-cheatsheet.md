@@ -10,15 +10,18 @@
 6. Start the console: `cd test-ops-platform` then `.venv\Scripts\python.exe -m uvicorn Platform.webapp.app:app --host 127.0.0.1 --port 8791`.
 7. Open `http://127.0.0.1:8791` in your browser.
 
-## Using it
+## Using it — the full journey for a new project
 
-1. Click the target name at the top and pick or add your project/device/suite (use the real dropdowns to pick the TestRail project and suite — never type numbers by hand).
-2. Tick "I approve" and click "Approve & apply target" — adding the pair alone doesn't switch to it.
+1. Click the target name at the top, click **"Add / edit this pair"**, type your new project/device name, tick "Fresh build" (no old suite), and pick the real TestRail project + suite from the dropdowns — never type numbers by hand.
+2. Tick "I approve" and click **"Approve & apply target"** — adding the pair alone doesn't switch to it.
 3. Click **Start** and **Run** to check readiness first.
-4. Upload your docs, then open **ingest-docs** and click **Run**, clicking **Continue** at each pause after reading what it says.
-5. Once specs are committed, open **onboard-suite** and click **Run**, again reading and clicking **Continue** at each pause.
-6. When you reach a push step, actually read what it's about to push, then click **Approve & Push** only when you're happy with it.
-7. If a step fails, click **"Retry from here"** on that step — never restart the whole run from scratch.
+4. Upload your requirement documents on the Docs page.
+5. Open **ingest-docs**, click **Run**, and click **Continue** at each pause after actually reading what it says.
+6. Once the specs are committed (via GitHub Desktop or `git commit`), open **onboard-suite** and click **Run**.
+7. Read each pause carefully and click **Continue** — some of these are asking you to confirm real facts, not just rubber-stamp.
+8. When you reach a push step, actually read what it's about to push into TestRail, then click **Approve & Push** only when you're happy with it — do this once per functional area.
+9. If a step fails, click **"Retry from here"** on that step — never restart the whole run from scratch.
+10. Once `onboard-suite` finishes, open **export-automation** and click **Run** — this produces a backlog of which pushed cases are flagged automatable.
 
 ## Passing failures to Claude
 
