@@ -1886,7 +1886,18 @@ document.getElementById('suiteEditSave').addEventListener('click', async () => {
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     await loadSuiteMappings();
-    refreshSuiteReadout();
+    // Point the outer Project/Device dropdowns at what was JUST saved -- otherwise the
+    // approve checkbox / "Approve & apply target" button keep checking whatever pair was
+    // selected before (e.g. Translink/POS), which never matches the new pair, so ticking
+    // approve silently does nothing. Found live: George's colleague added NJT/ETM via the
+    // free-text fields while Translink/POS was still the outer selection.
+    refreshDevices();
+    selProject.value = project;
+    fillSelect(selDevice, devicesForProject(project));
+    selDevice.value = device;
+    refreshModels();
+    suiteEditForm.style.display = 'none';
+    updateApplyEnabled();
   } catch (e) { alert('Could not save: ' + e.message); }
 });
 suiteDeleteBtn.addEventListener('click', async () => {
