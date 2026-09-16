@@ -1356,13 +1356,25 @@ function renderRunStep(runId, step) {
     : step.status === 'failed'
     ? `<button class="btn step-retry-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}" title="Re-run from this step, not the whole pipeline">Retry from here</button>`
     : '';
+  // Found live, repeatedly: with only a status pill per step, there was no way to see WHY
+  // a step behaved oddly (wrote nothing, asked a clarifying question, etc.) without me
+  // manually reading the SQLite db directly -- every step's real output is now one click
+  // away instead, same info the top-level "Result" card shows but for THIS step specifically.
+  const hasOutput = step.output && step.output.trim();
   return `
-    <div class="run-step-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
-      <div>
-        <strong style="font-size:13px;">${esc(step.step_id)}</strong>
-        <span class="chip" style="margin-left:8px;">${esc(step.status)}</span>
+    <div class="run-step-row" style="padding:6px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div>
+          <strong style="font-size:13px;">${esc(step.step_id)}</strong>
+          <span class="chip" style="margin-left:8px;">${esc(step.status)}</span>
+        </div>
+        ${actionBtn}
       </div>
-      ${actionBtn}
+      ${hasOutput ? `
+        <details style="margin-top:4px;">
+          <summary style="cursor:pointer;font-size:12px;color:var(--ink-soft);">View this step's output</summary>
+          <pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:8px;border-radius:6px;margin-top:6px;max-height:400px;overflow:auto;">${esc(step.output)}</pre>
+        </details>` : ''}
     </div>`;
 }
 
