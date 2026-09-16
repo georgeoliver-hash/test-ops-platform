@@ -1122,3 +1122,20 @@ def test_run_comments_unavailable_for_unconfigured_target():
     res = client.get("/api/run-comments", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
     assert res.json()["available"] is False
+
+
+def test_live_suite_id_is_optional_unlike_suite_id():
+    """{live_suite_id} (ingest-docs' pull_live_cases) must not block a whole run from
+    starting for a project with no suite target configured yet, unlike {suite_id} (audit,
+    onboard-suite) which genuinely can't proceed without one. Found live: cross_examine's
+    live-suite comparison should be skippable, not a hard requirement to even run
+    ingest-docs' earlier, unrelated steps (convert/distil)."""
+    from model.pipelines import Step, StepKind
+    from Platform.webapp import runner as runner_module
+
+    steps = [Step(id="x", kind=StepKind.cli, command="python -m system_test_ops cases --suite {live_suite_id}")]
+    params = runner_module._build_params("NoSuchProject", "NoSuchDevice", steps)
+    assert "live_suite_id" not in params  # left unresolved -> the step skips cleanly
+
+    params = runner_module._build_params("Translink", "POS", steps)
+    assert params["live_suite_id"] == 30253  # a real configured target resolves it

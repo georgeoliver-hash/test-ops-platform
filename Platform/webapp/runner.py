@@ -271,6 +271,14 @@ def _build_params(project: str, device: str, steps: list[Step], extra_inputs: di
         if suite_id is None:
             raise ValueError(f"No new_suite_id configured for {project}/{device} — add one in Settings first.")
         params["suite_id"] = suite_id
+    # Same value as {suite_id} above, but genuinely OPTIONAL (e.g. ingest-docs' pull_live_cases,
+    # which should still let the rest of ingest-docs run for a project with no suite target
+    # configured yet -- only that one step cleanly skips, via the unresolved-placeholder check,
+    # rather than {suite_id}'s hard-required-or-refuse-to-start-the-whole-run behaviour above).
+    if "{live_suite_id}" in all_commands:
+        live_suite_id = store.get_new_suite_id(project, device)
+        if live_suite_id is not None:
+            params["live_suite_id"] = live_suite_id
     # Only set when a real value is confirmed for this target -- omitted (not None) so
     # _render's SafeFormatDict leaves {testrail_project_id} literally unresolved rather than
     # rendering the string "None", which [--project {testrail_project_id}]-style optional
