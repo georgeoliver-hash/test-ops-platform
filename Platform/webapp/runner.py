@@ -388,11 +388,22 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
     if area:
         # A fanned-out per-area step (e.g. author_area[fare-structure]) — one real, scoped
         # instruction per area, never "do all areas" or a copy of an old draft.
-        produces_area = step.produces.replace("<area>", area) if isinstance(step.produces, str) else f"{area}.cases.yaml"
+        produces_area = _render(step.produces, params).replace("<area>", area) if isinstance(step.produces, str) else f"{area}.cases.yaml"
+        # Explicit real suite_id, not left for the agent to guess -- found live: without
+        # this, gherkin-author wrote a literal "suite_id: TBD" placeholder (a reasonable
+        # instinct given it wasn't told the real value, but it breaks push's own
+        # int(spec_suite) check, which only tolerates a real number or YAML null).
+        new_suite_id = params.get("new_suite_id")
+        suite_line = (
+            f" Use the real value suite_id: {new_suite_id} in the generated YAML's suite_id "
+            f"field (not a placeholder like TBD)." if new_suite_id is not None else
+            " No confirmed suite id yet -- write suite_id: null (not a placeholder like TBD)."
+        )
         prompt = (
             f"For the '{area}' functional area only, carry out the '{step.id.split('[')[0]}' step "
             f"of this pipeline ({step.note or 'see pipeline definition'}). Ground everything in "
-            f"knowledge/{{project}}/specs/ for this area — never invent case content. Produce: {produces_area}."
+            f"knowledge/{params.get('project', '')}/specs/ for this area — never invent case content. "
+            f"Produce: {produces_area}.{suite_line}"
         )
     elif reads:
         # A step with its own real reads/produces (e.g. ingest-docs' distil/cross_examine)
