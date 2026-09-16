@@ -315,10 +315,14 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
     try:
         returncode, stdout, stderr = _run_subprocess(parts, cwd=str(_step_cwd(step)), timeout=_CLI_TIMEOUT, run_id=run_id)
     except subprocess.TimeoutExpired:
-        store.update_step(run_id, step.id, status="failed", output=f"Timed out after {_CLI_TIMEOUT}s.", finished_at=_now())
+        msg = f"Timed out after {_CLI_TIMEOUT}s."
+        store.update_step(run_id, step.id, status="failed", output=msg, finished_at=_now())
+        store.update_run(run_id, cli_output=msg)
         return "failed"
     except OSError as exc:
-        store.update_step(run_id, step.id, status="failed", output=f"Could not start: {exc}", finished_at=_now())
+        msg = f"Could not start: {exc}"
+        store.update_step(run_id, step.id, status="failed", output=msg, finished_at=_now())
+        store.update_run(run_id, cli_output=msg)
         return "failed"
 
     output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
@@ -334,6 +338,13 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
     ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
     if not ok:
+        # Was left unset on failure -- the run's own cli_output/report_path stayed whatever
+        # a PRIOR successful step had last written, so the UI's "Run failed" card showed
+        # that earlier step's output instead of the real failure. Found live, repeatedly,
+        # across this whole project: a failed push_area's displayed "Result" was actually
+        # the previous area's successful push output, making every failure look like it
+        # was reporting the wrong step.
+        store.update_run(run_id, cli_output=output)
         return "failed"
 
     match = re.search(r"-> (\S.*)$", stdout or "", re.MULTILINE)
@@ -356,10 +367,13 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
         returncode, stdout, stderr = _run_subprocess(parts, cwd=str(_step_cwd(step)), timeout=_CLI_TIMEOUT, run_id=run_id)
     except (subprocess.TimeoutExpired, OSError) as exc:
         store.update_step(run_id, step.id, status="failed", output=str(exc), finished_at=_now())
+        store.update_run(run_id, cli_output=str(exc))
         return "failed"
     output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
     ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    if not ok:
+        store.update_run(run_id, cli_output=output)  # see _run_cli_step for why this matters
     return "succeeded" if ok else "failed"
 
 
@@ -456,18 +470,19 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
         # written -- a timeout must never look like a completed step).
         note = f"Timed out after {_AGENT_TIMEOUT}s before finishing — no output to trust. Re-run this step (consider fewer/smaller source files if this recurs)."
         store.update_step(run_id, step.id, status="failed", output=note, finished_at=_now())
+        store.update_run(run_id, summary=note)
         return "failed"
     except OSError as exc:
-        store.update_step(run_id, step.id, status="failed", output=f"Could not run agent: {exc}", finished_at=_now())
+        msg = f"Could not run agent: {exc}"
+        store.update_step(run_id, step.id, status="failed", output=msg, finished_at=_now())
+        store.update_run(run_id, summary=msg)
         return "failed"
 
     output = (stdout or "").strip() or "(the agent returned no output)"
     ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
-    if ok:
-        store.update_run(run_id, summary=output)
-        return "succeeded"
-    return "failed"
+    store.update_run(run_id, summary=output)  # on failure too -- see _run_cli_step for why
+    return "succeeded" if ok else "failed"
 
 
 def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:

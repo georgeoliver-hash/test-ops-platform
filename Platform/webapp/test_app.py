@@ -597,6 +597,38 @@ def test_retry_409s_when_run_is_not_failed(monkeypatch):
     assert res.status_code == 409
 
 
+def test_failed_run_shows_the_failing_steps_own_output_not_a_prior_steps(monkeypatch):
+    """Found live, repeatedly: a failed step's "Run failed" card showed a PRIOR successful
+    step's output instead of the real failure, because store.update_run(cli_output=...)
+    was only ever called on success -- the run's own cli_output field just kept whatever
+    the last successful step had written. Every failure this session looked like it was
+    reporting the wrong step until this was traced down."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-stale-output", trigger=Trigger(ui_action="fake_stale_output"), description="test pipeline",
+        steps=[
+            Step(id="step_one", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+            Step(id="step_two", kind=StepKind.cli, command="python -m system_test_ops audit --suite 2"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if "1" in cmd:
+            return 0, "step one's real, distinctive output", ""
+        return 1, "", "step two's real, distinctive error"
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-stale-output", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert "step two's real, distinctive error" in run["cli_output"]
+    assert "step one's real, distinctive output" not in run["cli_output"]
+
+
 def test_resolve_409s_when_step_not_waiting(monkeypatch):
     from model.pipelines import Pipeline, Step, StepKind, Trigger
     from Platform.webapp import runner as runner_module
