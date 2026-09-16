@@ -485,6 +485,23 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
     return "succeeded" if ok else "failed"
 
 
+def _is_forced_human_command(command: str | None) -> bool:
+    """True for any command that performs a real write this project's own tooling gates
+    behind explicit confirmation -- regardless of what `kind:` a pipeline YAML declares.
+    `--apply` added after finding tools/enrich_cases.py wired into export-automation with
+    no gate at all: it's a real TestRail write (priority/estimate/[Automatable: ...] on
+    Expected), same class of action as push --commit, and this codebase already uses
+    --apply consistently for exactly that ("write for real", vs. a dry-run print) across
+    every tool that has one -- never used for anything read-only."""
+    if not command:
+        return False
+    return (
+        ("push" in command and "--commit" in command)  # a real TestRail push --commit
+        or "git push" in command  # a real push to a repo remote (e.g. test-automation-sit)
+        or "--apply" in command  # a real TestRail write (e.g. enrich_cases.py --apply)
+    )
+
+
 def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
     """Returns one of: skipped | waiting_human | succeeded | failed."""
     when = getattr(step, "when", None)
@@ -509,10 +526,7 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
         command = command.replace("<area>", area)  # e.g. push --file <area>.cases.yaml --commit
     if command:
         command = _resolve_optional_flags(command, params)  # e.g. [--include-manual]
-    forced_human = bool(command) and (
-        ("push" in command and "--commit" in command)  # a real TestRail push --commit
-        or "git push" in command  # a real push to a repo remote (e.g. test-automation-sit)
-    )
+    forced_human = _is_forced_human_command(command)
 
     if forced_human or step.kind is StepKind.human:
         actions = getattr(step, "actions", None)
@@ -672,7 +686,7 @@ def resolve_step(run_id: str, step_id: str) -> None:
         )
         raise TargetNotApprovedError(f"{run['project']}/{run['device']} is not approved.")
 
-    forced_human = bool(command) and (is_push_gate or "git push" in command)
+    forced_human = _is_forced_human_command(command)
     if forced_human and step is not None:
         # This step was forced into waiting_human specifically so a human could approve the
         # real command before it runs -- approving must actually RUN it now, not just mark

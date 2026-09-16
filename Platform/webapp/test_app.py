@@ -862,7 +862,11 @@ def test_export_automation_runs_end_to_end_with_optional_flag(monkeypatch):
     """export-automation's `export` step's `[--include-manual]` is documentation shorthand
     -- resolved to a real --include-manual flag only when that declared input is truthy,
     stripped entirely otherwise. report_counts (an unnamed agent step) runs the same
-    default-Read-tools path audit.yaml's summarise step already uses."""
+    default-Read-tools path audit.yaml's summarise step already uses.
+
+    The pipeline's first step, `enrich` (tools/enrich_cases.py --apply), is a real TestRail
+    write -- same class of action as push --commit -- so it's correctly forced into
+    waiting_human before export ever runs, exactly like any other real write in this tool."""
     from Platform.webapp import runner as runner_module
 
     monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
@@ -880,10 +884,16 @@ def test_export_automation_runs_end_to_end_with_optional_flag(monkeypatch):
         "export-automation", "Translink", "TVM", extra_inputs={"include_manual": "true"},
     )
     run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"  # paused at enrich -- a real TestRail write
+
+    resolve_res = client.post(f"/api/pipelines/runs/{run_id}/steps/enrich/resolve")
+    assert resolve_res.status_code == 200
+    run = store.get_run(run_id)
     assert run["status"] == "succeeded"
     assert run["summary"] == "12 of 40 cases automatable, 2 destructive, 5 manual-only."
 
-    export_cmd = seen_cmds[0]
+    enrich_cmd, export_cmd = seen_cmds[0], seen_cmds[1]
+    assert "--apply" in enrich_cmd
     assert "--include-manual" in export_cmd
     assert not any("[" in part for part in export_cmd)  # bracket shorthand never reaches argv
 
@@ -899,8 +909,9 @@ def test_export_automation_strips_optional_flag_when_not_requested(monkeypatch):
         return 0, "ok", ""
 
     monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
-    runner_module.start_run("export-automation", "Translink", "TVM")
-    assert "--include-manual" not in seen_cmds[0]
+    run_id = runner_module.start_run("export-automation", "Translink", "TVM")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/enrich/resolve")
+    assert "--include-manual" not in seen_cmds[1]  # seen_cmds[0] is enrich, not export
 
 
 def test_write_automation_loads_and_pauses_at_confirm_devices(monkeypatch):
@@ -984,6 +995,31 @@ def test_git_push_command_is_always_forced_human_regardless_of_declared_kind(mon
 
     run_id = runner_module.start_run("fake-git-push", "Translink", "POS")
     step = store.get_step(run_id, "push_it")
+    assert step["status"] == "waiting_human"
+
+
+def test_apply_flag_is_always_forced_human_regardless_of_declared_kind(monkeypatch):
+    """Same safety override, generalized again: found live when tools/enrich_cases.py
+    --apply (a real TestRail write -- priority/estimate/[Automatable: ...]) got wired into
+    export-automation with no gate at all. This codebase uses --apply consistently, across
+    every tool that has one, to mean exactly "write for real" -- never anything read-only."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-apply", trigger=Trigger(ui_action="fake_apply"), description="test pipeline",
+        steps=[Step(id="enrich_it", kind=StepKind.cli, command="python tools/enrich_cases.py --suite 1 --apply")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_called(*a, **kw):
+        raise AssertionError("--apply must never be auto-executed")
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_called)
+
+    run_id = runner_module.start_run("fake-apply", "Translink", "POS")
+    step = store.get_step(run_id, "enrich_it")
     assert step["status"] == "waiting_human"
 
 
