@@ -37,8 +37,8 @@
 
   .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;}
   .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:4px 8px 24px;}
-  .sidebar .logo-row img{height:48px;width:auto;filter:brightness(0) invert(1);display:block;}
-  .sidebar .tool-name{font-family:"Poppins";font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--sidebar-ink);padding:0 8px 18px;}
+  .sidebar .logo-row img{height:60px;width:auto;filter:brightness(0) invert(1);display:block;}
+  .sidebar .tool-name{font-family:"Poppins";font-size:14.5px;font-weight:700;letter-spacing:.02em;color:#fff;padding:0 8px 18px;}
   nav.navgroups{flex:1;overflow-y:auto;}
   .navgroup{margin-bottom:18px;}
   .navgroup .label{font-size:16.5px;font-weight:600;color:var(--sidebar-ink);padding:0 10px 6px;}
@@ -186,6 +186,10 @@
   .navgroup.collapsible .navgroup-items{display:none;}
   .navgroup.collapsible.open .navgroup-items{display:block;}
   .navitem.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+  /* Bug fix (2026-09-17): toggled on gated nav groups (navBuild/navAudit/navMaintain) by
+     refreshSetupGate() but this rule never existed, so the group label itself never visibly
+     dimmed -- only the individual .navitem.disabled buttons inside it did. */
+  .navgroup.setup-gated > .navgroup-header .label{opacity:.5;}
 
   .console-tabs{display:flex;gap:4px;padding:0 8px 16px;}
   .console-tab{flex:1;font-family:inherit;font-size:12px;font-weight:600;padding:7px 0;border-radius:7px;border:none;background:none;color:var(--sidebar-ink-dim);cursor:pointer;}
@@ -568,8 +572,29 @@ async function renderHealth() {
           </div>
           ${deltaCard}
         </div>
-        <div>${lastAuditCard}${gapsCard}${docsCard}</div>
+        <div>${lastAuditCard}<div class="card" id="recentActivityCard"><h2>Recent activity — last run per function</h2><div class="loading">Loading…</div></div>${gapsCard}${docsCard}</div>
       </div>`);
+
+    // Real per-function last-run timestamps (George's ask: "blocks that show the date, time
+    // of the last function that was done, so add feature, then another one"), reusing the
+    // same /api/pipelines/{id}/last-run each pipeline detail page already shows — not a new
+    // data source, just surfaced in one place instead of clicking into each pipeline.
+    const ACTIVITY_PIPELINES = ['ingest-docs', 'onboard-suite', 'add-feature', 'consolidate', 'audit', 'export-automation'];
+    Promise.all(ACTIVITY_PIPELINES.map(pid =>
+      fetchJSON(`/api/pipelines/${pid}/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
+        .then(r => ({pid, ...r})).catch(() => ({pid, status: null}))
+    )).then(rows => {
+      const el = document.getElementById('recentActivityCard');
+      if (!el) return;
+      const pillFor = (s) => s === 'succeeded' ? 'ok' : s === 'failed' ? 'bad' : s ? 'warn' : '';
+      el.innerHTML = `<h2>Recent activity — last run per function</h2>
+        <table><tr><th>Function</th><th>Last run</th></tr>
+          ${rows.map(r => `<tr><td>${esc(r.pid)}</td><td>${
+            r.status ? `<span class="pill ${pillFor(r.status)}">${esc(r.status)}</span> ${r.updated_at ? esc(new Date(r.updated_at + 'Z').toLocaleString()) : ''}`
+                      : '<span style="color:var(--ink-soft);">Never run</span>'
+          }</td></tr>`).join('')}
+        </table>`;
+    });
 
     async function loadRunComments() {
       const which = document.getElementById('runCommentsWhich').value;
@@ -625,7 +650,7 @@ async function renderHealth() {
 // shows up in an "Ungrouped" bucket instead of silently vanishing.
 const PIPELINE_STAGES = [
   {title: 'How to get started', ids: ['start', 'ingest-docs', 'new-suite-from-docs']},
-  {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation']},
+  {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation', 'write-automation']},
   {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'maintain']},
   {title: 'Human led', ids: ['resolve-gaps']},
 ];
@@ -737,7 +762,7 @@ async function renderFlowsBody(container) {
         const rows = g.transitions.map(t => `<tr><td>${esc(t.from_screen)}</td><td>→</td><td>${esc(t.to_screen)}</td><td><span class="pill human">${esc(t.type)}</span></td><td>${esc(t.keys || '')}</td></tr>`).join('');
         area.innerHTML = `
           <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${g.screens.length} screens, ${g.transitions.length} transitions. Source: <code>${esc(g.source_path)}</code></p>
-          <table><tr><th>From</th><th></th><th>To</th><th>Trigger</th><th>Keys</th></tr>${rows}</table>`;
+          <table><tr><th>From</th><th></th><th>To</th><th>Trigger</th><th title="The physical/virtual device key(s) that fire this transition (e.g. Enter, Menu) — read straight from SIT's own screenflow_map.jsonc 'Keys' field per transition.">Keys ⓘ</th></tr>${rows}</table>`;
       } catch (e) { area.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
     }
     document.getElementById('flowProject').addEventListener('change', loadDevices);
@@ -1287,6 +1312,7 @@ async function renderPipelineDetail(id) {
         </div>
         ${runButton}
       </div>
+      <div id="pipelineAlreadyDone"></div>
       <div class="legend">
         ${detail.guardrails.map(g => `<span class="chip"><span class="sw" style="background:var(--gate)"></span>${esc(g)}</span>`).join('')}
       </div>
@@ -1294,6 +1320,30 @@ async function renderPipelineDetail(id) {
       <div class="card"><div class="flow" style="display:block;">${steps}</div></div>
       <div id="pipelineStepList" class="card" style="margin-top:10px;display:none;"></div>
       <div id="pipelineRunResult"></div>`);
+
+    // "Already Done" / setup-complete badges — real, from the same last-run + setup-status
+    // data the Suite Health page already uses, not a guess. George's ask (onboard-suite):
+    // "if a suite has already been onboarded... a highlighted 'Already Done' state instead
+    // of the plain run button" -- and (Start): "a tick + highlighted 'you're all set' state".
+    const alreadyDoneEl = document.getElementById('pipelineAlreadyDone');
+    if (alreadyDoneEl && target.project && target.device) {
+      if (id === 'start') {
+        fetchJSON(`/api/setup-status?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
+          .then(status => {
+            if (status.ready) {
+              alreadyDoneEl.innerHTML = `<div class="card" style="border-color:var(--ok);background:var(--ok-bg);color:var(--ok);margin-bottom:0;">✓ ${esc(target.project)}/${esc(target.device)} is fully set up — credentials, a suite target, and docs/knowledge are all configured. Nothing left to do here.</div>`;
+            }
+          }).catch(() => {});
+      } else {
+        fetchJSON(`/api/pipelines/${id}/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
+          .then(last => {
+            if (last && last.status === 'succeeded') {
+              const when = last.updated_at ? new Date(last.updated_at + 'Z').toLocaleString() : '';
+              alreadyDoneEl.innerHTML = `<div class="card" style="border-color:var(--ok);background:var(--ok-bg);color:var(--ok);margin-bottom:0;">✓ Already done for ${esc(target.project)}/${esc(target.device)} — last succeeded ${esc(when)}. Re-run only if something's changed.</div>`;
+            }
+          }).catch(() => {});
+      }
+    }
 
     document.getElementById('pipelineRunBtn')?.addEventListener('click', () => runPipeline(id, target));
     // Delegated listener, attached once — the step list's innerHTML gets replaced on every
@@ -1446,9 +1496,16 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
 // exactly one group here -- `start` was missing for a while (found via ISSUES.md feedback,
 // 2026-09-08): it's real, has a real /start slash command, but wasn't in any group, so it
 // silently never showed up in the sidebar even though every other pipeline did.
+// ingest-docs moved from Build into Start (2026-09-17, ISSUES.md): it's a genuine
+// before-anything-else step (raw docs -> knowledge notes, no TestRail write, no suite
+// target needed) and Start is deliberately the one group never setup-gated -- so it
+// belongs alongside `start` itself, not behind the credentials/suite-target gate.
+// write-automation found real, already wired end-to-end in runner.py (confirm_devices ->
+// test-author agent -> commit_push, with real test coverage) but was never added to a nav
+// group -- so it existed but had no way to reach it from the sidebar at all (2026-09-17).
 const GROUPS = {
-  'Start': ['start'],
-  Build: ['onboard-suite', 'new-suite-from-docs', 'ingest-docs', 'add-feature', 'consolidate', 'export-automation'],
+  'Start': ['start', 'ingest-docs'],
+  Build: ['onboard-suite', 'new-suite-from-docs', 'add-feature', 'consolidate', 'export-automation', 'write-automation'],
   Audit: ['audit-coverage', 'audit-flows', 'audit', 'resolve-gaps'],
   Maintain: ['fold-defect', 'review-runs', 'maintain'],
 };
@@ -1483,19 +1540,34 @@ populateGroupedNav();
 
 /* ---------------- Test Automation console (SIT keywords + screen flows — view only) ---------------- */
 /* ---------------- Automation dashboard: real test-count summary ---------------- */
-async function renderAutomationDashboard() {
+async function renderAutomationDashboard(project, device_type) {
   loading();
   try {
-    const d = await fetchJSON('/api/automation/tests');
+    const params = new URLSearchParams();
+    if (project) params.set('project', project);
+    if (device_type) params.set('device_type', device_type);
+    const d = await fetchJSON(`/api/automation/tests${params.toString() ? '?' + params : ''}`);
     const s = d.summary;
-    const barRow = (label, obj, cls) => Object.entries(obj).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
+    const barRow = (label, obj, cls) => Object.keys(obj).length ? Object.entries(obj).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <span style="width:100px;font-size:12.5px;flex:none;">${esc(k)}</span>
         <div style="flex:1;background:var(--bg);border-radius:4px;height:8px;overflow:hidden;"><div style="height:100%;width:${Math.max(4, v/s.total_tests*100)}%;background:var(--${cls});"></div></div>
         <span style="font-size:12px;color:var(--ink-soft);width:24px;text-align:right;">${v}</span>
-      </div>`).join('');
+      </div>`).join('') : '<p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p>';
     setContent(`
       <div class="page-head"><h1>Automation dashboard</h1><p>Real counts, parsed live from test-automation-sit's own .robot files — not SIT keywords, actual written tests.</p></div>
+      <div class="card">
+        <div style="display:flex;gap:10px;">
+          <select id="adProjectFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="">All projects</option>
+            ${d.projects.map(p => `<option value="${esc(p)}" ${p===project?'selected':''}>${esc(p)}</option>`).join('')}
+          </select>
+          <select id="adDeviceFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="">All devices</option>
+            ${d.device_types.map(dv => `<option value="${esc(dv)}" ${dv===device_type?'selected':''}>${esc(dv)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
       <div class="stat-row">
         <div class="stat"><span class="n">${s.total_tests}</span><span class="l">tests written</span></div>
         <div class="stat"><span class="n">${s.total_suites}</span><span class="l">suites</span></div>
@@ -1506,7 +1578,25 @@ async function renderAutomationDashboard() {
         <div class="card"><h2>By project</h2>${barRow('', s.by_project, 'ai')}</div>
         <div class="card"><h2>By device type</h2>${barRow('', s.by_device_type, 'code')}</div>
       </div>
-      <div class="card"><h2>By function/feature <a href="#" data-goto-aview="tests" style="font-size:11.5px;font-weight:400;">See all tests →</a></h2>${barRow('', s.by_feature, 'gate')}</div>`);
+      <div class="card"><h2>By function/feature <a href="#" data-goto-aview="tests" style="font-size:11.5px;font-weight:400;">See all tests →</a></h2>${barRow('', s.by_feature, 'gate')}</div>
+      <div class="card" id="exportAutomationCard"></div>`);
+    document.getElementById('adProjectFilter').addEventListener('change', (e) => renderAutomationDashboard(e.target.value, document.getElementById('adDeviceFilter').value));
+    document.getElementById('adDeviceFilter').addEventListener('change', (e) => renderAutomationDashboard(document.getElementById('adProjectFilter').value, e.target.value));
+
+    // Surfaces export-automation's last run here too (George's ask: "this should export
+    // into the automation tab somewhere... last date and time of the export") -- tied to
+    // the console's current suite target, not this dashboard's own project/device filters
+    // above (export-automation runs per suite target, not per automation-test filter).
+    const cur = window.CURRENT_TARGET || {};
+    const exportEl = document.getElementById('exportAutomationCard');
+    if (exportEl && cur.project && cur.device) {
+      fetchJSON(`/api/pipelines/export-automation/last-run?project=${encodeURIComponent(cur.project)}&device=${encodeURIComponent(cur.device)}`)
+        .then(last => {
+          exportEl.innerHTML = `<h2>export-automation — ${esc(cur.project)}/${esc(cur.device)} <a href="#" data-goto-pipeline="export-automation" class="corner-link">Run →</a></h2>
+            ${last.status ? `<p style="font-size:13.5px;margin:0;"><span class="pill ${last.status==='succeeded'?'ok':last.status==='failed'?'bad':'warn'}">${esc(last.status)}</span> — ${esc(last.updated_at ? new Date(last.updated_at+'Z').toLocaleString() : '')}</p>${last.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(last.summary)}</p>` : ''}<p style="margin-top:8px;"><a href="#" data-goto-pipeline="write-automation" style="font-size:12.5px;">Write automation from this backlog →</a></p>`
+                        : `<p style="color:var(--ink-soft);font-size:13px;">Never run for ${esc(cur.project)}/${esc(cur.device)} yet.</p>`}`;
+        }).catch(() => { exportEl.innerHTML = ''; });
+    } else if (exportEl) { exportEl.innerHTML = ''; }
   } catch (e) { errbox('Could not load automation dashboard: ' + e.message); }
 }
 

@@ -1139,3 +1139,21 @@ def test_live_suite_id_is_optional_unlike_suite_id():
 
     params = runner_module._build_params("Translink", "POS", steps)
     assert params["live_suite_id"] == 30253  # a real configured target resolves it
+
+
+def test_automation_tests_summary_reflects_the_project_device_filter():
+    """ISSUES.md, 2026-09-17: filtering the automation dashboard by project/device used to
+    silently keep showing GLOBAL stat totals -- get_automation_tests always ran summarize()
+    over the full unfiltered suite list, never the filtered one, even though the endpoint
+    already accepted project/device_type query params for the underlying suite list."""
+    unfiltered = client.get("/api/automation/tests").json()
+    if not unfiltered["projects"]:
+        return  # no real test-automation-sit checkout available in this environment
+    project = unfiltered["projects"][0]
+    filtered = client.get(f"/api/automation/tests?project={project}").json()
+    assert filtered["summary"]["total_tests"] <= unfiltered["summary"]["total_tests"]
+    # The filtered summary must actually be RE-DERIVED from the filtered suites, not just
+    # the unfiltered summary's pre-existing by_project[project] bucket copied over.
+    expected_total = sum(len(s["cases"]) for s in filtered["suites"])
+    assert filtered["summary"]["total_tests"] == expected_total
+    assert set(filtered["summary"]["by_project"].keys()) <= {project}

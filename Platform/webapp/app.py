@@ -653,7 +653,7 @@ def get_automation_tests(project: str | None = None, device_type: str | None = N
     files -- how many tests exist, for what project/device/feature (George, 2026-09-10).
     Not the same axis as SIT keywords -- this counts actual written tests."""
     suites = automation_tests.load_all_suites()
-    summary = automation_tests.summarize(suites)
+    all_summary = automation_tests.summarize(suites)  # unfiltered -- dropdowns always list every real project/device seen, not just what's currently filtered to
     filtered = suites
     if project:
         filtered = [s for s in filtered if (s.project or "").lower() == project.lower()]
@@ -662,10 +662,14 @@ def get_automation_tests(project: str | None = None, device_type: str | None = N
     if q:
         needle = q.lower()
         filtered = [s for s in filtered if any(needle in c.name.lower() for c in s.cases) or needle in (s.feature or "").lower()]
+    # Bug fix (2026-09-17): summary used to always be computed from the FULL suite list even
+    # when project/device_type filters were passed -- so a filtered dashboard view's stat
+    # cards/bars silently kept showing global totals instead of the filtered picture.
+    summary = all_summary if filtered is suites else automation_tests.summarize(filtered)
     return {
         "summary": summary,
-        "projects": sorted(summary["by_project"].keys()),
-        "device_types": sorted(summary["by_device_type"].keys()),
+        "projects": sorted(all_summary["by_project"].keys()),
+        "device_types": sorted(all_summary["by_device_type"].keys()),
         "suites": [s.model_dump() for s in filtered],
     }
 

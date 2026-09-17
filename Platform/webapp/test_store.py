@@ -70,6 +70,28 @@ def test_delete_mapping(store):
     assert not any(m["project"] == "NJT" for m in store.list_suite_mappings())
 
 
+def test_delete_mapping_also_removes_it_from_the_shared_yaml(store):
+    # Regression: delete_suite_mapping used to only touch the local per-machine SQLite
+    # row, never the git-tracked suite_targets.yaml mirror that upsert_suite_mapping
+    # write-throughs to -- so a deleted target could linger in the shared file forever
+    # (or, worse, still be sitting there from before this session's git history even
+    # started, silently visible to anyone who later pulls it).
+    store.upsert_suite_mapping("Dryrun", "ETM", "Old Dryrun", "New Dryrun")
+    assert any(e.get("project") == "Dryrun" for e in store._load_suite_targets())
+
+    store.delete_suite_mapping("Dryrun", "ETM")
+
+    assert not any(e.get("project") == "Dryrun" for e in store._load_suite_targets())
+    # Other real targets already in the shared file must survive untouched.
+    assert any(e.get("project") == "Translink" and e.get("device") == "POS" for e in store._load_suite_targets())
+
+
+def test_delete_mapping_for_a_nonexistent_pair_does_not_touch_the_yaml(store):
+    before = store._load_suite_targets()
+    assert store.delete_suite_mapping("Nope", "Nope") is False
+    assert store._load_suite_targets() == before
+
+
 def test_credentials_not_configured_by_default(store):
     status = store.get_credentials_status()
     assert status == {"configured": False}

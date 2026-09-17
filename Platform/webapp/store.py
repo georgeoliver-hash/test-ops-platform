@@ -138,6 +138,17 @@ def _sync_target_to_yaml(project: str, device: str, old_suite: str, new_suite: s
     _save_suite_targets(entries)
 
 
+def _remove_target_from_yaml(project: str, device: str) -> bool:
+    """Mirror-image of _sync_target_to_yaml, for deletes. Same manual-commit-required
+    caveat applies -- this only stages the removal on disk, same as a create/edit does."""
+    entries = _load_suite_targets()
+    kept = [e for e in entries if not (e.get("project") == project and e.get("device") == device)]
+    if len(kept) == len(entries):
+        return False
+    _save_suite_targets(kept)
+    return True
+
+
 def suite_targets_git_status() -> dict:
     """Read-only check of whether Platform/config/suite_targets.yaml has changes that
     haven't been committed, or commits that haven't been pushed -- this app never commits or
@@ -504,7 +515,13 @@ def delete_suite_mapping(project: str, device: str, user_id: int = DEFAULT_USER_
             "DELETE FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",
             (user_id, project, device),
         )
-        return cur.rowcount > 0
+        deleted = cur.rowcount > 0
+    # Mirror the create/edit write-through (upsert_suite_mapping) so a delete doesn't leave
+    # a stale entry sitting in the shared, git-trackable file forever -- same single-user-only
+    # scope, same "committing + pushing is still a manual step" caveat as the yaml sync above.
+    if deleted and user_id == DEFAULT_USER_ID:
+        _remove_target_from_yaml(project, device)
+    return deleted
 
 
 def create_run(run_id: str, pipeline_id: str, project: str, device: str) -> None:
