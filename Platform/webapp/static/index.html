@@ -36,9 +36,11 @@
   @media (max-width:860px){.shell{grid-template-columns:1fr;} .sidebar{display:none;}}
 
   .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;}
-  .sidebar .logo-row{display:flex;align-items:center;gap:8px;padding:4px 8px 24px;}
+  /* Logo + title centred as one unit, stacked (2026-09-18, ISSUES.md ask: "centre of top
+     left of page - aligned centrally one after the other"). */
+  .sidebar .logo-row{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 8px 20px;}
   .sidebar .logo-row img{height:60px;width:auto;filter:brightness(0) invert(1);display:block;}
-  .sidebar .tool-name{font-family:"Poppins";font-size:14.5px;font-weight:700;letter-spacing:.02em;color:#fff;padding:0 8px 18px;}
+  .sidebar .tool-name{font-family:"Poppins";font-size:14.5px;font-weight:700;letter-spacing:.02em;color:#fff;padding:0 8px 18px;text-align:center;}
   nav.navgroups{flex:1;overflow-y:auto;}
   .navgroup{margin-bottom:18px;}
   .navgroup .label{font-size:16.5px;font-weight:600;color:var(--sidebar-ink);padding:0 10px 6px;}
@@ -58,19 +60,32 @@
   .btn.primary{background:var(--p1);border-color:var(--p1);color:#fff;}
 
   .content{padding:26px 28px 60px;width:100%;max-width:1600px;}
-  .page-head{margin-bottom:22px;}
+  .page-head{margin-bottom:16px;}
   .page-head h1{font-size:22px;margin:0 0 4px;font-weight:600;}
   .page-head p{color:var(--ink-soft);margin:0;font-size:13.5px;}
+  /* Global title-row pattern (2026-09-18, ISSUES.md): a page's title stays put, but its
+     "meta" line (generated date, warnings, quick facts) renders as small pills to the right
+     of the title instead of a paragraph underneath -- tighter to the title, still tidy.
+     Opt-in via pageHeadPills(title, subtitle, pills[]) rather than a blanket rewrite of every
+     view, so pages keep a plain descriptive subtitle where that's genuinely what they have. */
+  .page-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .page-head-row h1{font-size:22px;margin:0;font-weight:600;}
+  .page-head-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .sync-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--p1);background:var(--p1);color:#fff;cursor:pointer;}
+  .sync-btn:hover{background:var(--p1-700);border-color:var(--p1-700);}
+  .sync-btn:disabled{opacity:.6;cursor:default;}
+  .sync-btn .spin{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
   .fixture-note{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--warn);background:var(--warn-bg);padding:4px 10px;border-radius:99px;margin-bottom:16px;}
 
-  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px;}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;}
   .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);}
   .stat .n{font-family:"Poppins";font-size:24px;font-weight:600;display:block;font-variant-numeric:tabular-nums;}
   .stat .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
   .stat.ok .n{color:var(--ok);} .stat.warn .n{color:var(--warn);} .stat.bad .n{color:var(--bad);}
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px;position:relative;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;position:relative;}
   .card .corner-link{position:absolute;top:14px;right:16px;font-size:11px;font-weight:500;padding:3px 10px;border:1px solid var(--line);border-radius:5px;color:var(--ink);text-decoration:none;background:var(--bg);}
   .card .corner-link:hover{border-color:var(--accent, var(--ink));}
   .card h2{font-size:15px;margin:0 0 12px;font-weight:600;padding-right:70px;}
@@ -195,25 +210,62 @@
   .console-tab{flex:1;font-family:inherit;font-size:12px;font-weight:600;padding:7px 0;border-radius:7px;border:none;background:none;color:var(--sidebar-ink-dim);cursor:pointer;}
   .console-tab:hover{color:var(--sidebar-ink);}
   .console-tab.active{background:rgba(255,255,255,.1);color:#fff;}
+
+  /* Sidebar parent-group headers as a pill/tab (2026-09-18, ISSUES.md ask: "pills or tabs,
+     clearer arrows, more obvious to open/close") -- a soft background block instead of bare
+     text, chevron kept but a touch bigger. */
+  .navgroup.collapsible .navgroup-header{background:rgba(255,255,255,.05);border-radius:8px;padding:8px 10px;margin-bottom:2px;}
+  .navgroup.collapsible .navgroup-header:hover{background:rgba(255,255,255,.09);}
+  .navgroup.collapsible.open .navgroup-header{background:rgba(255,255,255,.1);}
+  .navgroup.collapsible .navgroup-header .chevron{font-size:12px;}
+  /* "How to get started" stage styled Arrive purple with numbered pill sub-items
+     (2026-09-18, ISSUES.md ask) -- opt-in class applied only to that one stage-group so
+     the other stages (Once set up / Maintenance / Human led) keep today's plain look. */
+  .stage-group.stage-featured .stage-header{background:var(--p1);color:#fff;}
+  .stage-group.stage-featured .stage-header .chevron{color:#fff;}
+  .stage-group.stage-featured .pipeline-row{border:1px solid var(--accent-soft-border);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+  .step-order-pill{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--p1);color:#fff;font-size:11px;font-weight:700;flex:none;margin-right:8px;}
+
+  /* Repo map: nested folder tree (2026-09-18, ISSUES.md ask for a GitHub-style browser) */
+  .repo-tree-folder{margin:2px 0;}
+  .repo-tree-folder-head{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;}
+  .repo-tree-folder-head:hover{background:var(--bg);}
+  .repo-tree-folder-head .chevron{font-size:10px;transition:transform .15s;}
+  .repo-tree-folder.open > .repo-tree-folder-head .chevron{transform:rotate(90deg);}
+  .repo-tree-folder-body{display:none;margin-left:18px;border-left:1px solid var(--line);padding-left:10px;}
+  .repo-tree-folder.open > .repo-tree-folder-body{display:block;}
+
+  /* Gap register: click-a-gap modal (2026-09-18, ISSUES.md ask) */
+  .gap-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;}
+  .gap-modal-overlay.open{display:flex;}
+  .gap-modal{background:var(--surface);border-radius:12px;max-width:560px;width:92%;max-height:85vh;overflow-y:auto;padding:20px;}
 </style>
 
 <div class="shell">
   <aside class="sidebar">
-    <div class="logo-row"><img src="/assets/arrive-logo.png" alt="Arrive"></div>
-    <div class="tool-name">Test-Ops Console</div>
+    <div class="logo-row"><img src="/assets/arrive-logo.png" alt="Arrive"><div class="tool-name">Test-Ops Console</div></div>
     <div class="console-tabs">
       <button class="console-tab active" id="tabTestOps">Test-Ops</button>
       <button class="console-tab" id="tabAutomation">Automation</button>
     </div>
     <nav class="navgroups" id="navgroups">
       <div class="navgroup collapsible open" id="navOverview">
-        <div class="navgroup-header"><div class="label">Overview</div><span class="chevron">▸</span></div>
+        <div class="navgroup-header"><div class="label">Dashboards</div><span class="chevron">▸</span></div>
         <div class="navgroup-items">
           <button class="navitem active" data-view="health"><span class="dot"></span>Suite health</button>
-          <button class="navitem" data-view="pipelines"><span class="dot"></span>All processes</button>
-          <button class="navitem" data-view="features"><span class="dot"></span>Features</button>
-          <button class="navitem" data-view="repomap"><span class="dot"></span>Repo map</button>
-          <button class="navitem" data-view="gaps"><span class="dot"></span>Gap register</button>
+          <button class="navitem" data-view="pipelines"><span class="dot"></span>Processes &amp; Flows</button>
+          <button class="navitem" data-view="features"><span class="dot"></span>Knowledge &amp; Feature Files</button>
+          <button class="navitem" data-view="repomap"><span class="dot"></span>Repo structure &amp; map</button>
+        </div>
+      </div>
+      <!-- Gap register promoted to its own top-level group (2026-09-18, ISSUES.md: "make Gap
+           Register a whole parent menu item"), no longer nested under Dashboards. Its
+           Project/Device/Common/Bespoke split is implemented as tabs on the one page rather
+           than 4 separate sidebar entries -- same real data, less nav sprawl. -->
+      <div class="navgroup" id="navGapRegisterTop">
+        <div class="navgroup-header" style="cursor:default;"><div class="label">Gap Register</div></div>
+        <div class="navgroup-items">
+          <button class="navitem" data-view="gaps"><span class="dot"></span>All gaps</button>
         </div>
       </div>
       <div class="navgroup collapsible" id="navStart"></div>
@@ -321,6 +373,10 @@
   </div>
 </div>
 
+<div class="gap-modal-overlay" id="gapModalOverlay">
+  <div class="gap-modal" id="gapModalBody"></div>
+</div>
+
 <script>
 const KIND_META = {
   cli:   {label: 'CODE',  cls: 'code'},
@@ -362,7 +418,12 @@ const PIPELINE_PLAIN = {
   start: 'The front door — checks your setup is ready, asks what you want to do, and points you to the right process.',
   'add-feature': 'Adds test coverage for a new feature by extending the flow it changes.',
   'audit-coverage': "Checks whether the suite already covers a given JIRA release, and drafts what's missing. Doesn't change TestRail.",
-  'audit-flows': "Compares a device's real user-flow map against the suite, and fills in what's already covered.",
+  // Answered on ISSUES.md, 2026-09-18: "what is it auditing, an uploaded doc, or the SIT
+  // flows?" -- neither, exactly. Its inputs (per audit-flows.yaml) are knowledge/flows/
+  // {project}-{device}-*.md -- transcribed Overflow UX exports, NOT a raw doc you upload
+  // here, and NOT the same thing as the SIT screenflow_map.jsonc graphs shown under
+  // Automation > Screen flows (a different, device-behaviour-level flow map entirely).
+  'audit-flows': "Compares a device's UX flow map (knowledge/flows/*.md, transcribed from Overflow — not an uploaded doc, and not the same as SIT's own screen-flow graphs) against the live suite, and fills in what's already covered.",
   audit: "Checks a suite's cases follow the house test-writing standard. Doesn't change anything.",
   consolidate: 'Merges near-duplicate cases that test the same thing into one clean case.',
   'export-automation': "Hands off cases marked automatable to the automation-tests repo, as a to-do list.",
@@ -548,7 +609,15 @@ async function renderHealth() {
       </div>`;
 
     setContent(`
-      <div class="page-head"><h1>Suite health — ${esc(bs.project)}</h1><p>${esc(bs.suite)} · generated ${esc(bs.generated_at)}</p></div>
+      <div class="page-head-row">
+        <h1>Suite health — ${esc(bs.project)}</h1>
+        <div class="page-head-pills">
+          <span class="pill code">${esc(bs.suite)}</span>
+          <span class="pill human">generated ${esc(bs.generated_at)}</span>
+          ${bs.is_fixture ? `<span class="pill warn">⚠ fixture data</span>` : ''}
+          <button class="sync-btn" id="healthSyncBtn">↻ Sync</button>
+        </div>
+      </div>
       ${fixtureNote}
       <div class="stat-row">
         <div class="stat"><span class="n">${bs.cases_total}</span><span class="l">cases total</span></div>
@@ -589,7 +658,7 @@ async function renderHealth() {
       const pillFor = (s) => s === 'succeeded' ? 'ok' : s === 'failed' ? 'bad' : s ? 'warn' : '';
       el.innerHTML = `<h2>Recent activity — last run per function</h2>
         <table><tr><th>Function</th><th>Last run</th></tr>
-          ${rows.map(r => `<tr><td>${esc(r.pid)}</td><td>${
+          ${rows.map(r => `<tr><td>${esc(PIPELINE_DISPLAY_NAME[r.pid] || r.pid)}</td><td>${
             r.status ? `<span class="pill ${pillFor(r.status)}">${esc(r.status)}</span> ${r.updated_at ? esc(new Date(r.updated_at + 'Z').toLocaleString()) : ''}`
                       : '<span style="color:var(--ink-soft);">Never run</span>'
           }</td></tr>`).join('')}
@@ -615,6 +684,16 @@ async function renderHealth() {
             </li>`).join('')}</ul>`;
       } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
     }
+    // Real re-sync, not a fake spinner: re-runs the exact same live fetches this page
+    // just did on load (build-stats, run-health, gaps, docs, last-audit, suite comparison,
+    // run comments, recent activity) -- George's ask for a "sync old vs new, run comments,
+    // recent activity" button, in Arrive colours.
+    document.getElementById('healthSyncBtn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span> Syncing…';
+      await renderHealth();
+    });
     document.getElementById('runCommentsWhich').addEventListener('change', loadRunComments);
     loadRunComments();
 
@@ -648,18 +727,21 @@ async function renderHealth() {
 // in exactly one group below; PIPELINE_STAGES's own ids are checked against the live
 // /api/pipelines list at render time so a newly added pipeline that isn't grouped yet
 // shows up in an "Ungrouped" bucket instead of silently vanishing.
+// new-suite-from-docs dropped (2026-09-18, ISSUES.md: "get rid of entirely"). resolve-gaps
+// moved from its own "Human led" stage into Maintenance, matching the sidebar move -- also
+// gets a direct button on the Gap Register page itself (see renderGaps).
 const PIPELINE_STAGES = [
-  {title: 'How to get started', ids: ['start', 'ingest-docs', 'new-suite-from-docs']},
+  {title: 'How to get started', ids: ['start', 'ingest-docs'], featured: true},
   {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation', 'write-automation']},
-  {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'maintain']},
-  {title: 'Human led', ids: ['resolve-gaps']},
+  {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'maintain', 'resolve-gaps']},
 ];
 
-function pipelineRowHTML(p) {
+function pipelineRowHTML(p, orderNum) {
+  const displayName = pipelineDisplayName(p);
   return `
     <div class="pipeline-row" data-id="${esc(p.id)}">
       <div class="head">
-        <div class="name">${esc(p.id)} ${p.slash_command ? `<code>${esc(p.slash_command)}</code>` : ''}</div>
+        <div class="name">${orderNum ? `<span class="step-order-pill">${orderNum}</span>` : ''}${esc(displayName)} ${p.slash_command ? `<code>${esc(p.slash_command)}</code>` : ''} ${displayName.toLowerCase() !== p.id ? `<span style="color:var(--ink-soft);font-weight:400;font-size:11px;">(${esc(p.id)})</span>` : ''}</div>
         <div class="density">
           ${p.density.agent ? `<span class="density-chip pill ai">${p.density.agent} AI</span>` : ''}
           ${p.density.cli ? `<span class="density-chip pill code">${p.density.cli} code</span>` : ''}
@@ -703,13 +785,17 @@ async function renderProcessesTab(container) {
     const list = await fetchJSON('/api/pipelines');
     const byId = Object.fromEntries(list.map(p => [p.id, p]));
     const grouped = new Set(PIPELINE_STAGES.flatMap(s => s.ids));
-    const ungrouped = list.filter(p => !grouped.has(p.id));
+    // new-suite-from-docs deliberately excluded from "Ungrouped" too (2026-09-18, ISSUES.md:
+    // "get rid of entirely") -- the pipeline/backend is untouched, just never surfaced here.
+    const HIDDEN_FROM_NAV = new Set(['new-suite-from-docs']);
+    const ungrouped = list.filter(p => !grouped.has(p.id) && !HIDDEN_FROM_NAV.has(p.id));
     const stages = [...PIPELINE_STAGES, ...(ungrouped.length ? [{title: 'Ungrouped', ids: ungrouped.map(p => p.id)}] : [])];
     const stageHTML = stages.map((stage, i) => {
-      const rows = stage.ids.filter(id => byId[id]).map(id => pipelineRowHTML(byId[id])).join('');
+      const ids = stage.ids.filter(id => byId[id]);
+      const rows = ids.map((id, idx) => pipelineRowHTML(byId[id], stage.featured ? idx + 1 : null)).join('');
       if (!rows) return '';
       return `
-        <div class="stage-group ${i === 0 ? 'open' : ''}">
+        <div class="stage-group ${i === 0 ? 'open' : ''} ${stage.featured ? 'stage-featured' : ''}">
           <div class="stage-header"><span>${esc(stage.title)}</span><span class="chevron">▸</span></div>
           <div class="stage-body">${rows}</div>
         </div>`;
@@ -807,73 +893,124 @@ function commonVariantNames(d, featureKey) {
   return new Set(Object.entries(byName).filter(([, projects]) => projects.size > 1).map(([name]) => name));
 }
 
+// Variant-row rendering, shared by both the "By feature" and "By device type" groupings
+// below -- one variant is one <tr> either way, only what it's nested under changes.
+function variantRowsHTML(feature, filtered, common) {
+  return filtered.map(v => {
+    const confPill = v.citation.confidence === 'confirmed' ? 'ok' : v.citation.confidence === 'gap' ? 'bad' : 'warn';
+    const isCommon = common.has(v.variant_name);
+    return `<tr class="variant-row">
+      <td class="chevron-cell"><span class="chevron">▸</span></td>
+      <td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td>
+      <td><span class="pill ${isCommon ? 'gate' : 'human'}">${isCommon ? 'Common' : 'Bespoke'}</span></td>
+      <td><span class="pill ${isCommon ? 'gate' : 'code'}">${esc(v.citation.source_ref)}</span></td>
+    </tr>
+    <tr class="variant-detail" style="display:none">
+      <td></td>
+      <td colspan="5">
+        <div class="variant-detail-body">
+          <p>${v.note ? esc(v.note) : '<span class="step-detail-empty">No description recorded for this variant yet.</span>'}</p>
+          <div class="legend" style="margin:0;">
+            <span class="chip"><span class="sw" style="background:var(--code)"></span>${esc(v.citation.source_kind)}</span>
+            <span class="pill ${confPill}">${esc(v.citation.confidence)}</span>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
 function renderFeatureCards() {
   const d = FEATURES_DATA;
   const project = document.getElementById('featProjectFilter')?.value || '';
   const device = document.getElementById('featDeviceFilter')?.value || '';
   const q = (document.getElementById('featSearch')?.value || '').toLowerCase().trim();
-  const filtering = !!(project || device || q);
-
-  const byFeature = {};
-  d.features.forEach(f => byFeature[f.key] = {feature: f, variants: []});
-  d.variants.forEach(v => byFeature[v.feature_key]?.variants.push(v));
+  const scope = document.querySelector('.feat-scope-btn.active')?.dataset.scope || 'all'; // all|common|bespoke
+  const groupBy = document.getElementById('featGroupBy')?.value || 'feature'; // feature|device
+  const filtering = !!(project || device || q || scope !== 'all');
 
   const matchesSearch = (...fields) => !q || fields.some(f => (f || '').toLowerCase().includes(q));
+  let shownFeatures = 0, shownVariants = 0, groupCount = 0;
+  let cards = '';
 
-  let shownFeatures = 0, shownVariants = 0;
-  const cards = Object.values(byFeature).map(({feature, variants}) => {
-    const filtered = variants.filter(v =>
-      (!project || v.project.toLowerCase() === project.toLowerCase()) &&
-      (!device || (v.device_type || '').toLowerCase() === device.toLowerCase()) &&
-      (matchesSearch(v.variant_name, v.note, v.citation.source_ref) || matchesSearch(feature.name, feature.description, feature.key))
-    );
-    if (!filtered.length) return '';
-    shownFeatures++; shownVariants += filtered.length;
-    const common = commonVariantNames(d, feature.key);
-    return `
-      <div class="stage-group ${filtering ? 'open' : ''}">
-        <div class="stage-header">
-          <span>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft);font-weight:400;">${esc(feature.key)}</code></span>
-          <span class="chevron">▸</span>
-        </div>
-        <div class="stage-body">
-          <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
-          <table>
-            <tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Scope</th><th>Cited source</th></tr>
-            ${filtered.map(v => {
-              const confPill = v.citation.confidence === 'confirmed' ? 'ok' : v.citation.confidence === 'gap' ? 'bad' : 'warn';
-              const isCommon = common.has(v.variant_name);
-              return `<tr class="variant-row">
-                <td class="chevron-cell"><span class="chevron">▸</span></td>
-                <td>${esc(v.project)}</td><td>${esc(v.device_type || '—')}</td><td>${esc(v.variant_name)}</td>
-                <td><span class="pill ${isCommon ? 'gate' : 'human'}">${isCommon ? 'Common' : 'Bespoke'}</span></td>
-                <td><span class="pill ${isCommon ? 'gate' : 'code'}">${esc(v.citation.source_ref)}</span></td>
-              </tr>
-              <tr class="variant-detail" style="display:none">
-                <td></td>
-                <td colspan="5">
-                  <div class="variant-detail-body">
-                    <p>${v.note ? esc(v.note) : '<span class="step-detail-empty">No description recorded for this variant yet.</span>'}</p>
-                    <div class="legend" style="margin:0;">
-                      <span class="chip"><span class="sw" style="background:var(--code)"></span>${esc(v.citation.source_kind)}</span>
-                      <span class="pill ${confPill}">${esc(v.citation.confidence)}</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>`;
-            }).join('')}
-          </table>
-        </div>
-      </div>`;
-  }).join('');
+  if (groupBy === 'device') {
+    // Real grouping, not a fabricated taxonomy: George asked for something mirroring
+    // "flows of devices, and structure of TestRail suites" (e.g. Communication/Signing
+    // on/Ticket purchasing) -- no such conceptual-area field exists on Feature today
+    // (see Platform/model/features.py), so that specific taxonomy isn't buildable without
+    // inventing category names nobody's confirmed. device_type IS real, already-cited data
+    // and does mirror how suites are actually organised (etm-suite-restructure etc.), so
+    // grouping by it is the honest first pass rather than fabricating broader labels.
+    const byDevice = {};
+    d.variants.forEach(v => { (byDevice[v.device_type || 'Unspecified'] ||= []).push(v); });
+    cards = Object.keys(byDevice).sort().map(dev => {
+      const rowsByFeature = {};
+      byDevice[dev].forEach(v => (rowsByFeature[v.feature_key] ||= []).push(v));
+      const featureBlocks = Object.entries(rowsByFeature).map(([fkey, variants]) => {
+        const feature = d.features.find(f => f.key === fkey) || {key: fkey, name: fkey, description: ''};
+        const filtered = variants.filter(v =>
+          (!project || v.project.toLowerCase() === project.toLowerCase()) &&
+          (!device || (v.device_type || '').toLowerCase() === device.toLowerCase()) &&
+          (matchesSearch(v.variant_name, v.note, v.citation.source_ref) || matchesSearch(feature.name, feature.description, feature.key))
+        );
+        const common = commonVariantNames(d, feature.key);
+        const scoped = filtered.filter(v => scope === 'all' || (scope === 'common') === common.has(v.variant_name));
+        if (!scoped.length) return '';
+        shownVariants += scoped.length;
+        return `<tr><td colspan="6" style="background:var(--bg);font-weight:600;font-size:12.5px;padding-top:10px;">${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft);font-weight:400;">${esc(feature.key)}</code></td></tr>${variantRowsHTML(feature, scoped, common)}`;
+      }).join('');
+      if (!featureBlocks) return '';
+      groupCount++;
+      return `
+        <div class="repo-tree-folder ${filtering ? 'open' : ''}">
+          <div class="repo-tree-folder-head"><span class="chevron">▸</span>${esc(dev)}</div>
+          <div class="repo-tree-folder-body">
+            <table><tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Scope</th><th>Cited source</th></tr>${featureBlocks}</table>
+          </div>
+        </div>`;
+    }).join('');
+    shownFeatures = groupCount;
+  } else {
+    const byFeature = {};
+    d.features.forEach(f => byFeature[f.key] = {feature: f, variants: []});
+    d.variants.forEach(v => byFeature[v.feature_key]?.variants.push(v));
+    cards = Object.values(byFeature).map(({feature, variants}) => {
+      const filtered = variants.filter(v =>
+        (!project || v.project.toLowerCase() === project.toLowerCase()) &&
+        (!device || (v.device_type || '').toLowerCase() === device.toLowerCase()) &&
+        (matchesSearch(v.variant_name, v.note, v.citation.source_ref) || matchesSearch(feature.name, feature.description, feature.key))
+      );
+      const common = commonVariantNames(d, feature.key);
+      const scoped = filtered.filter(v => scope === 'all' || (scope === 'common') === common.has(v.variant_name));
+      if (!scoped.length) return '';
+      shownFeatures++; shownVariants += scoped.length;
+      return `
+        <div class="stage-group ${filtering ? 'open' : ''}">
+          <div class="stage-header">
+            <span>${esc(feature.name)} <code style="font-size:11px;color:var(--ink-soft);font-weight:400;">${esc(feature.key)}</code></span>
+            <span class="chevron">▸</span>
+          </div>
+          <div class="stage-body">
+            <p style="color:var(--ink-soft);font-size:13px;margin:0 0 12px;">${esc(feature.description)}</p>
+            <table>
+              <tr><th></th><th>Project</th><th>Device</th><th>Variant</th><th>Scope</th><th>Cited source</th></tr>
+              ${variantRowsHTML(feature, scoped, common)}
+            </table>
+          </div>
+        </div>`;
+    }).join('');
+  }
 
   const cardsEl = document.getElementById('featureCards');
   cardsEl.innerHTML = cards ||
     '<div class="card"><p style="color:var(--ink-soft);font-size:13px;">No features/variants match this filter.</p></div>';
   wireStageAccordions(cardsEl);
+  cardsEl.querySelectorAll('.repo-tree-folder-head').forEach(head => {
+    head.addEventListener('click', () => head.parentElement.classList.toggle('open'));
+  });
   const countEl = document.getElementById('featureFilterCount');
   if (countEl) countEl.textContent = filtering
-    ? `Showing ${shownFeatures} feature(s), ${shownVariants} variant(s) matching this filter.` : `${shownFeatures} feature(s) total — click a feature to expand its variants.`;
+    ? `Showing ${shownFeatures} group(s), ${shownVariants} variant(s) matching this filter.` : `${shownFeatures} feature(s) total — click a feature to expand its variants.`;
 }
 
 function renderGapsFoundTab(container, d, target) {
@@ -904,7 +1041,7 @@ async function renderFeatures() {
     const defaultDevice = devices.find(dv => dv.toLowerCase() === (target.device || '').toLowerCase()) || '';
 
     setContent(`
-      <div class="page-head"><h1>Features — common vs. bespoke</h1><p>The functionality axis: same behaviour, cited per-project embodiment.</p></div>
+      <div class="page-head"><h1>Knowledge &amp; Feature Files</h1><p>The functionality axis: same behaviour, cited per-project embodiment.</p></div>
       <div class="tab-bar">
         <button class="tab-btn active" data-ftab="features">Features</button>
         <button class="tab-btn" data-ftab="gaps">Gaps found</button>
@@ -927,12 +1064,31 @@ async function renderFeatures() {
             </select>
             <input id="featSearch" placeholder="Search phrase, note, or citation…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
           </div>
-          <div id="featureFilterCount" style="font-size:12px;color:var(--ink-soft);"></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div class="tab-bar" style="margin:0;">
+              <button class="tab-btn feat-scope-btn active" data-scope="all">All</button>
+              <button class="tab-btn feat-scope-btn" data-scope="common">Common only</button>
+              <button class="tab-btn feat-scope-btn" data-scope="bespoke">Bespoke only</button>
+            </div>
+            <label style="font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;">Group by
+              <select id="featGroupBy" style="font-family:inherit;font-size:13px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+                <option value="feature">Feature</option>
+                <option value="device">Device type</option>
+              </select>
+            </label>
+          </div>
+          <div id="featureFilterCount" style="font-size:12px;color:var(--ink-soft);margin-top:6px;"></div>
         </div>
         <div id="featureCards"></div>`;
       renderFeatureCards();
       document.getElementById('featProjectFilter').addEventListener('change', renderFeatureCards);
       document.getElementById('featDeviceFilter').addEventListener('change', renderFeatureCards);
+      document.getElementById('featGroupBy').addEventListener('change', renderFeatureCards);
+      body.querySelectorAll('.feat-scope-btn').forEach(btn => btn.addEventListener('click', () => {
+        body.querySelectorAll('.feat-scope-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderFeatureCards();
+      }));
       let featDebounce;
       document.getElementById('featSearch').addEventListener('input', () => { clearTimeout(featDebounce); featDebounce = setTimeout(renderFeatureCards, 150); });
     }
@@ -974,6 +1130,31 @@ function repoLinkFor(sectionTitle, filePath) {
   return `https://github.com/georgeoliver-hash/${repo}/blob/${branch}/${rel}`;
 }
 
+// GitHub-style expandable folder tree (2026-09-18, ISSUES.md ask), built client-side from
+// the real file paths /api/repo-map already returns -- no backend change needed, since each
+// file's `path` already carries its real folder structure.
+function buildFileTreeHTML(sectionTitle, files) {
+  const root = {};
+  files.forEach(f => {
+    const parts = f.path.replace(/\\/g, '/').split('/');
+    let node = root;
+    parts.slice(0, -1).forEach(seg => { node.children ||= {}; node = (node.children[seg] ||= {}); });
+    (node.files ||= []).push({...f, name: parts[parts.length - 1]});
+  });
+  function renderNode(node, depth) {
+    const folderHTML = Object.entries(node.children || {}).map(([name, child]) => `
+      <div class="repo-tree-folder ${depth === 0 ? 'open' : ''}">
+        <div class="repo-tree-folder-head"><span class="chevron">▸</span>📁 ${esc(name)}</div>
+        <div class="repo-tree-folder-body">${renderNode(child, depth + 1)}</div>
+      </div>`).join('');
+    const fileRows = (node.files || []).map(f => `
+      <tr><td><a href="${esc(repoLinkFor(sectionTitle, f.path))}" target="_blank" rel="noopener" style="font-size:12px;font-family:monospace;">${esc(f.name)}</a></td><td>${esc(f.purpose)}</td><td>${f.lines}</td></tr>`).join('');
+    const fileTable = fileRows ? `<table><tr><th>File</th><th>Purpose</th><th>Lines</th></tr>${fileRows}</table>` : '';
+    return folderHTML + fileTable;
+  }
+  return renderNode(root, 0);
+}
+
 async function renderRepoMap() {
   loading();
   try {
@@ -983,33 +1164,104 @@ async function renderRepoMap() {
         <div class="stage-header"><span>${esc(s.title)}</span><span class="chevron">▸</span></div>
         <div class="stage-body">
           ${REPO_MAP_SECTION_PLAIN[s.title] ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${esc(REPO_MAP_SECTION_PLAIN[s.title])}</p>` : ''}
-          <table><tr><th>File</th><th>Purpose</th><th>Lines</th></tr>
-          ${s.files.map(f => `<tr><td><a href="${esc(repoLinkFor(s.title, f.path))}" target="_blank" rel="noopener" style="font-size:12px;font-family:monospace;">${esc(f.path)}</a></td><td>${esc(f.purpose)}</td><td>${f.lines}</td></tr>`).join('')}
-          </table>
+          ${buildFileTreeHTML(s.title, s.files)}
         </div>
       </div>`).join('');
     setContent(`
-      <div class="page-head"><h1>Repo map</h1><p>Generated live, right now, from real docstrings/frontmatter — not a cached snapshot. File names link out to the real GitHub source (system-test-ops and test-ops-platform are two separate repos, not one).</p></div>
+      <div class="page-head"><h1>Repo structure &amp; map</h1><p>Generated live, right now, from real docstrings/frontmatter — not a cached snapshot. Click a folder to expand it; file names link out to the real GitHub source (system-test-ops and test-ops-platform are two separate repos, not one).</p></div>
       ${html}`);
     wireStageAccordions(content);
+    content.querySelectorAll('.repo-tree-folder-head').forEach(head => {
+      head.addEventListener('click', () => head.parentElement.classList.toggle('open'));
+    });
   } catch (e) { errbox('Could not load repo map: ' + e.message); }
 }
 
 /* ---------------- Gap register ---------------- */
+// Restructured 2026-09-18 (ISSUES.md): promoted to its own top-level sidebar item (see the
+// #navGapRegisterTop block), split into Project/Device/Common/Bespoke scopes (backed by the
+// real /api/gap-register `scope` param -- see app.py), click-a-row opens a modal to answer
+// it instead of scrolling to a free-standing form, and a direct "Resolve gaps" button.
+// NOT built here, flagged honestly rather than faked: a real "sync" that pushes an answered
+// gap back into a fresh audit/re-authoring pipeline run. resolve-gaps (the real pipeline)
+// already turns GAP/UNCONFIRMED markers into cited facts, but wiring "I answered this in the
+// console" through to "a pipeline run picks it up and edits the actual case" is genuinely
+// more than a UI change -- it's the same pipeline-execution-from-the-console wiring the
+// "Run" buttons elsewhere are already waiting on, not something to fake with a spinner here.
 const GAP_PAGE_SIZE = 25;
 let gapOffset = 0;
+let gapScope = 'project';
 const ENTRY_TYPE_LABEL = {answer: 'Answer', clarification_request: 'Clarification requested', conflict: 'Conflicts with spec'};
+const GAP_SCOPE_TABS = [
+  {key: 'project', label: 'Project GAPs'},
+  {key: 'device', label: 'Device GAPs'},
+  {key: 'common', label: 'Common GAPs'},
+  {key: 'bespoke', label: 'Bespoke GAPs'},
+];
+
+function openGapModal(marker) {
+  const overlay = document.getElementById('gapModalOverlay');
+  const body = document.getElementById('gapModalBody');
+  const target = window.CURRENT_TARGET || {};
+  body.innerHTML = `
+    <div class="modal-head" style="padding:0 0 12px;"><h3 style="margin:0;">${esc(marker.kind)} — <code style="font-size:12px;">${esc(marker.file)}:${marker.line}</code></h3><button class="modal-close" id="gapModalClose">&times;</button></div>
+    <p style="font-size:13.5px;">${esc(marker.text)}</p>
+    ${marker.project ? `<p style="font-size:12px;color:var(--ink-soft);">Project: <b>${esc(marker.project)}</b>${marker.device ? ` · Device: <b>${esc(marker.device)}</b>` : ''}</p>` : ''}
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+      <input id="gapModalQuestion" placeholder="Question (what needs confirming?)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+      <textarea id="gapModalAnswer" placeholder="Your answer" rows="3" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
+      <div style="display:flex;gap:8px;">
+        <select id="gapModalEntryType" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          <option value="answer">Answer</option>
+          <option value="clarification_request">Clarification requested</option>
+          <option value="conflict">Conflicts with spec</option>
+        </select>
+        <input id="gapModalDevice" placeholder="Device (optional)" value="${esc(marker.device || target.device || '')}" style="flex:1;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+      </div>
+      <div id="gapModalMsg" style="font-size:12.5px;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button class="btn" id="gapModalCancel">Cancel</button>
+        <button class="btn primary" id="gapModalSave">Log entry</button>
+      </div>
+    </div>`;
+  overlay.classList.add('open');
+  const close = () => overlay.classList.remove('open');
+  document.getElementById('gapModalClose').addEventListener('click', close);
+  document.getElementById('gapModalCancel').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); }, {once: true});
+  document.getElementById('gapModalSave').addEventListener('click', async () => {
+    const question = document.getElementById('gapModalQuestion').value.trim();
+    const answer = document.getElementById('gapModalAnswer').value.trim();
+    const device = document.getElementById('gapModalDevice').value.trim();
+    const entry_type = document.getElementById('gapModalEntryType').value;
+    const msg = document.getElementById('gapModalMsg');
+    if (!question || !answer) { msg.textContent = 'Question and answer are both required.'; return; }
+    try {
+      const res = await fetch('/api/gap-answers', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({project: marker.project || target.project, device: device || null, gap_ref: `${marker.file}:${marker.line}`, question, answer, entry_type}),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+      close();
+      renderGaps();
+    } catch (e) { msg.textContent = 'Could not save: ' + e.message; }
+  });
+}
 
 async function renderGaps() {
   loading();
   const target = window.CURRENT_TARGET || {};
-  const projectFilter = (target.project || '').toLowerCase();
+  const project = (target.project || '').toLowerCase();
+  const device = (target.device || '').toUpperCase();
   try {
+    const params = new URLSearchParams({limit: GAP_PAGE_SIZE, offset: gapOffset, scope: gapScope});
+    if (project) params.set('project', project);
+    if (device) params.set('device', device);
     const [d, answers] = await Promise.all([
-      fetchJSON(`/api/gap-register?limit=${GAP_PAGE_SIZE}&offset=${gapOffset}${projectFilter ? `&project=${encodeURIComponent(projectFilter)}` : ''}`),
+      fetchJSON(`/api/gap-register?${params}`),
       fetchJSON(`/api/gap-answers?project=${encodeURIComponent(target.project || '')}`).catch(() => []),
     ]);
-    const rows = d.shown.map(g => `<tr><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text)}</td></tr>`).join('');
+    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text.slice(0, 100))}</td><td>${g.project ? `<span class="pill gate">${esc(g.project)}${g.device ? '/' + esc(g.device) : ''}</span>` : `<span class="pill human">common</span>`}</td></tr>`).join('');
     const pageStart = d.total ? d.offset + 1 : 0;
     const pageEnd = Math.min(d.offset + d.shown.length, d.total);
     const answerList = (type) => answers.filter(a => (a.entry_type || 'answer') === type).map(a => `
@@ -1022,11 +1274,25 @@ async function renderGaps() {
       const items = answerList(type);
       return `<div><h3 style="font-size:13px;margin:10px 0 6px;">${esc(label)}</h3>${items ? `<ul class="activity">${items}</ul>` : `<p style="color:var(--ink-soft);font-size:13px;">None logged yet.</p>`}</div>`;
     };
+    const scopeNote = {
+      project: `for ${esc(target.project || '(no target)')}, all devices`,
+      device: `for ${esc(target.project || '(no target)')} / ${esc(target.device || '(no device)')}`,
+      common: 'shared/cross-cutting content, not any one project\'s',
+      bespoke: 'repo-wide, everything that IS tagged to a project',
+    }[gapScope];
     setContent(`
-      <div class="page-head"><h1>Gap register</h1><p>${d.total} real GAP/UNCONFIRMED marker(s) found${projectFilter ? ` for ${esc(target.project)}` : ' repo-wide'}, showing ${pageStart}-${pageEnd}.</p></div>
+      <div class="page-head-row">
+        <h1>Gap Register</h1>
+        <div class="page-head-pills">
+          <span class="pill code">${d.total} marker(s)</span>
+          <a href="#" data-goto-pipeline="resolve-gaps" class="sync-btn" style="text-decoration:none;">Resolve gaps →</a>
+        </div>
+      </div>
+      <div class="tab-bar">${GAP_SCOPE_TABS.map(t => `<button class="tab-btn gap-scope-btn ${t.key === gapScope ? 'active' : ''}" data-scope="${t.key}">${esc(t.label)}</button>`).join('')}</div>
+      <p style="color:var(--ink-soft);font-size:12.5px;margin:8px 0 12px;">${scopeNote}, showing ${pageStart}-${pageEnd}. Click a row to answer it.</p>
       ${d.is_fixture ? `<div class="fixture-note">⚠ Fixture data from a real gap-register run, 2026-09-07 — not live.</div>` : ''}
       <div class="card">
-        <table><tr><th>Kind</th><th>Location</th><th>Text</th></tr>${rows}</table>
+        <table><tr><th>Kind</th><th>Location</th><th>Text</th><th>Scope</th></tr>${rows || `<tr><td colspan="4" style="color:var(--ink-soft);">No markers in this scope.</td></tr>`}</table>
         <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
           <button class="btn" id="gapPrevBtn" ${gapOffset === 0 ? 'disabled' : ''}>← Prev</button>
           <button class="btn" id="gapNextBtn" ${pageEnd >= d.total ? 'disabled' : ''}>Next →</button>
@@ -1035,7 +1301,7 @@ async function renderGaps() {
       </div>
       <div class="card">
         <h2>Answer log — ${esc(target.project || 'no target')}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record of gap questions and answers — plain storage, never AI-written. Does not edit the actual gap-register/knowledge files yet (that needs the same write-pipeline wiring everything else is waiting on) — this is the local decision trail in the meantime.</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record of gap questions and answers — plain storage, never AI-written. Does not edit the actual gap-register/knowledge files yet, and answering here does not automatically re-audit or re-edit the suite — that needs the same pipeline-execution wiring flagged above. This is the local decision trail in the meantime; click a row above to add to it, or use the quick form below for a reference that isn't in the table (e.g. a case id).</p>
         <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;margin-bottom:14px;">
           <input id="gapRefInput" placeholder="Gap reference (e.g. file:line, or a case id like C4104592)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
           <input id="gapQuestionInput" placeholder="Question" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
@@ -1056,6 +1322,13 @@ async function renderGaps() {
         ${answerTab('conflict', 'Conflicts with spec')}
       </div>`);
 
+    content.querySelectorAll('.gap-scope-btn').forEach(btn => btn.addEventListener('click', () => {
+      gapScope = btn.dataset.scope; gapOffset = 0; renderGaps();
+    }));
+    content.querySelectorAll('tr[data-gap-idx]').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', () => openGapModal(d.shown[Number(row.dataset.gapIdx)]));
+    });
     document.getElementById('gapPrevBtn').addEventListener('click', () => { gapOffset = Math.max(0, gapOffset - GAP_PAGE_SIZE); renderGaps(); });
     document.getElementById('gapNextBtn').addEventListener('click', () => { gapOffset += GAP_PAGE_SIZE; renderGaps(); });
     document.getElementById('gapAnswerSaveBtn').addEventListener('click', async () => {
@@ -1306,7 +1579,7 @@ async function renderPipelineDetail(id) {
     setContent(`
       <div class="pipeline-detail-head">
         <div>
-          <h1 style="font-size:20px;margin:0;">${esc(id)} ${meta.slash_command ? `<code style="font-size:12px;color:var(--ink-soft);font-weight:400;">${esc(meta.slash_command)}</code>` : ''}</h1>
+          <h1 style="font-size:20px;margin:0;">${esc(PIPELINE_DISPLAY_NAME[id] || id)} ${meta.slash_command ? `<code style="font-size:12px;color:var(--ink-soft);font-weight:400;">${esc(meta.slash_command)}</code>` : ''} ${PIPELINE_DISPLAY_NAME[id] ? `<span style="color:var(--ink-soft);font-weight:400;font-size:12px;">(${esc(id)})</span>` : ''}</h1>
           ${PIPELINE_PLAIN[id] ? `<p style="font-size:14px;font-weight:500;margin:6px 0 2px;">${esc(PIPELINE_PLAIN[id])}</p>` : ''}
           <p>${esc(detail.description)}</p>
         </div>
@@ -1503,12 +1776,42 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
 // write-automation found real, already wired end-to-end in runner.py (confirm_devices ->
 // test-author agent -> commit_push, with real test coverage) but was never added to a nav
 // group -- so it existed but had no way to reach it from the sidebar at all (2026-09-17).
+// new-suite-from-docs removed from nav entirely (2026-09-18, ISSUES.md: "no need really...
+// just get rid of entirely") -- pipeline/backend untouched, just not surfaced any more.
+// resolve-gaps moved from Audit into Maintain (2026-09-18, ISSUES.md: "move to maintain
+// i think") -- also gets its own button directly on the Gap Register page (see renderGaps).
 const GROUPS = {
   'Start': ['start', 'ingest-docs'],
-  Build: ['onboard-suite', 'new-suite-from-docs', 'add-feature', 'consolidate', 'export-automation', 'write-automation'],
-  Audit: ['audit-coverage', 'audit-flows', 'audit', 'resolve-gaps'],
-  Maintain: ['fold-defect', 'review-runs', 'maintain'],
+  Build: ['onboard-suite', 'add-feature', 'consolidate', 'export-automation', 'write-automation'],
+  Audit: ['audit-coverage', 'audit-flows', 'audit'],
+  Maintain: ['fold-defect', 'review-runs', 'maintain', 'resolve-gaps'],
 };
+// Display-only renames (2026-09-18, ISSUES.md) -- never the real pipeline `id` or group DOM
+// id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
+const GROUP_DISPLAY_NAME = {
+  Start: 'Get Started', Build: 'Tools', Audit: 'Audit',
+  // George wrote two different names for this group in two separate notes ("Maintenance" and,
+  // later, "Health Check") -- picked "Maintenance" since it matches the Processes tab's
+  // existing "Maintenance" stage title already; flag if "Health Check" was actually meant.
+  Maintain: 'Maintenance',
+};
+const PIPELINE_DISPLAY_NAME = {
+  start: 'Check setup',
+  'onboard-suite': 'New Suite Onboarding',
+  'add-feature': 'Onboard New JIRA',
+  consolidate: 'Check Duplication',
+  'export-automation': 'Automation Hand Off',
+  'write-automation': 'Write Automated Test Cases',
+  'audit-coverage': 'Audit Coverage vs Release',
+  'audit-flows': 'Audit flow maps',
+  audit: 'Audit Syntax',
+  'fold-defect': 'Defect Steps to Case',
+  'review-runs': 'Review latest run comments',
+};
+function pipelineDisplayName(p) {
+  if (PIPELINE_DISPLAY_NAME[p.id]) return PIPELINE_DISPLAY_NAME[p.id];
+  return p.slash_command ? p.slash_command.replace('/', '').replace(/-/g, ' ') : p.id;
+}
 
 function setActiveNav(btn) {
   document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active'));
@@ -1523,9 +1826,9 @@ async function populateGroupedNav() {
       const el = document.getElementById('nav' + groupName);
       const items = ids.filter(id => byId[id]).map(id => {
         const p = byId[id];
-        return `<button class="navitem" data-pipeline="${esc(id)}"><span class="dot"></span>${esc(p.slash_command ? p.slash_command.replace('/', '').replace(/-/g,' ') : id)}</button>`;
+        return `<button class="navitem" data-pipeline="${esc(id)}"><span class="dot"></span>${esc(pipelineDisplayName(p))}</button>`;
       }).join('');
-      el.innerHTML = `<div class="navgroup-header"><div class="label">${esc(groupName)}</div><span class="chevron">▸</span></div><div class="navgroup-items">${items}</div>`;
+      el.innerHTML = `<div class="navgroup-header"><div class="label">${esc(GROUP_DISPLAY_NAME[groupName] || groupName)}</div><span class="chevron">▸</span></div><div class="navgroup-items">${items}</div>`;
     }
     document.querySelectorAll('.navgroup.collapsible .navgroup-header').forEach(header => {
       header.addEventListener('click', () => header.parentElement.classList.toggle('open'));

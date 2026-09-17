@@ -569,24 +569,74 @@ def _infer_gap_project(file_path: str) -> str | None:
     return None
 
 
+# Device tag, same honest approach as _infer_gap_project: real path-hint checks against the
+# actual system-test-ops directory/naming convention (<device>-suite-restructure/,
+# coherence-audit/fixes/<device>-*, knowledge/flows/<project>-<device>-*), never a content
+# guess. Checked against the real gaps.json fixture's actual paths, 2026-09-18 (ISSUES.md:
+# "if I change target to Translink POS and Translink ETM then device GAPs will differ").
+# A marker with no matching hint gets device=None -- an honest "not inferable", not a guess.
+_GAP_DEVICE_PATH_HINTS = {
+    "etm": ("etm-suite-restructure", "njt-fr-suite-restructure", "-etm-", "fixes\\etm",
+            "fixes/etm", "fixes\\etm-deep-audit", "knowledge\\njt\\specs", "knowledge/njt/specs"),
+    "pos": ("pos-suite-restructure", "-pos-", "fixes\\pos", "fixes/pos"),
+    "gv": ("gv-suite-restructure", "-gv-", "fixes\\gv", "fixes/gv"),
+    "hhd": ("hhd-suite-restructure", "-hhd-", "fixes\\hhd", "fixes/hhd"),
+    "pv": ("pv-suite-restructure", "-pv-", "fixes\\pv", "fixes/pv"),
+    "tvm": ("tvm-suite-restructure", "-tvm-", "fixes\\tvm", "fixes/tvm"),
+    "bos": ("bos-abt-suite-restructure", "abt-", "fixes\\abt", "fixes/abt", "spec-grounded\\abt", "spec-grounded/abt"),
+}
+
+
+def _infer_gap_device(file_path: str) -> str | None:
+    lowered = file_path.lower()
+    for device, hints in _GAP_DEVICE_PATH_HINTS.items():
+        if any(h in lowered for h in hints):
+            return device.upper()
+    return None
+
+
 @app.get("/api/gap-register")
-def get_gap_register(limit: int = 25, offset: int = 0, project: str | None = None):
+def get_gap_register(
+    limit: int = 25, offset: int = 0, project: str | None = None,
+    device: str | None = None, scope: str | None = None,
+):
     """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo
     (re-run 2026-09-08, 972 found repo-wide). Supports real offset/limit pagination and an
     optional best-effort project filter (see _infer_gap_project) -- George's ask
     (2026-09-11): scope this to the current target, and let people page through all of it
-    rather than only ever seeing the first N."""
+    rather than only ever seeing the first N.
+
+    `scope` (added 2026-09-18, ISSUES.md's "Project GAPs / Device GAPs / Common GAPs /
+    Bespoke GAPs" split) narrows further:
+      - "project": markers tagged with the given `project` (device ignored -- stays stable
+        across a device switch within the same project, per George's ask).
+      - "device": markers tagged with BOTH the given `project` AND `device`.
+      - "common": markers with no inferred project at all -- genuinely shared/cross-cutting
+        content (e.g. proposals/coherence-audit), not any one project's.
+      - "bespoke": markers WITH an inferred project -- the complement of "common". Deliberately
+        repo-wide, not narrowed to the current target, since "common vs bespoke" is a
+        shape-of-the-whole-repo question, not a per-target one.
+    """
     path = FIXTURES / "gaps.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
     markers = json.loads(path.read_text(encoding="utf-8"))
     for m in markers:
         m["project"] = _infer_gap_project(m["file"])
-    if project:
+        m["device"] = _infer_gap_device(m["file"])
+    if scope == "project" and project:
+        markers = [m for m in markers if m["project"] == project.lower()]
+    elif scope == "device" and project and device:
+        markers = [m for m in markers if m["project"] == project.lower() and m["device"] == device.upper()]
+    elif scope == "common":
+        markers = [m for m in markers if m["project"] is None]
+    elif scope == "bespoke":
+        markers = [m for m in markers if m["project"] is not None]
+    elif project:
         markers = [m for m in markers if m["project"] == project.lower()]
     return {
         "total": len(markers), "shown": markers[offset:offset + limit],
-        "offset": offset, "limit": limit, "is_fixture": True,
+        "offset": offset, "limit": limit, "is_fixture": True, "scope": scope,
     }
 
 

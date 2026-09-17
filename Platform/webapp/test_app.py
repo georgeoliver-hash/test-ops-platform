@@ -120,6 +120,38 @@ def test_gap_register_fixture_capped_but_total_shown():
     assert data["total"] > 5
 
 
+def test_gap_register_every_marker_gets_a_device_field():
+    res = client.get("/api/gap-register?limit=1000")
+    assert res.status_code == 200
+    markers = res.json()["shown"]
+    assert markers  # sanity: fixture actually has content
+    assert all("device" in m for m in markers)
+    # real, checked finding: this repo's ETM-tagged markers genuinely exist
+    assert any(m["device"] == "ETM" for m in markers)
+
+
+def test_gap_register_scope_project_ignores_device_and_stays_stable():
+    # George's ask: switching device within the same project must not change Project GAPs.
+    res_pos = client.get("/api/gap-register?scope=project&project=translink&device=POS&limit=1000")
+    res_etm = client.get("/api/gap-register?scope=project&project=translink&device=ETM&limit=1000")
+    assert res_pos.json()["total"] == res_etm.json()["total"] > 0
+
+
+def test_gap_register_scope_device_narrower_than_scope_project():
+    project_total = client.get("/api/gap-register?scope=project&project=translink&limit=1000").json()["total"]
+    device_total = client.get("/api/gap-register?scope=device&project=translink&device=ETM&limit=1000").json()["total"]
+    assert 0 < device_total <= project_total
+
+
+def test_gap_register_scope_common_and_bespoke_are_a_real_partition():
+    common = client.get("/api/gap-register?scope=common&limit=1000").json()
+    bespoke = client.get("/api/gap-register?scope=bespoke&limit=1000").json()
+    everything = client.get("/api/gap-register?limit=1000").json()
+    assert common["total"] + bespoke["total"] == everything["total"]
+    assert all(m["project"] is None for m in common["shown"])
+    assert all(m["project"] is not None for m in bespoke["shown"])
+
+
 def test_index_html_served():
     res = client.get("/")
     assert res.status_code == 200
