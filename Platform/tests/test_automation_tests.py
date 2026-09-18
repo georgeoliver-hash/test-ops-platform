@@ -39,6 +39,16 @@ def test_provisioning_suites_fall_back_to_per_test_or_path_tags():
     assert by_name["test_etm_device_events.robot"].project == "translink"
 
 
+def test_excludes_njt_reference_material_copied_from_sit():
+    # Real bug found 2026-09-18: projects/njt/reference/ holds verbatim copies of sit's own
+    # Farebox test files (grounding material, never move/delete from sit -- see that
+    # folder's own README) -- these are sit's real tests, not ones written in this repo, so
+    # counting them here inflated NJT's dashboard numbers by 16 phantom suites the day the
+    # reference folder was expanded with more of them.
+    suites = load_all_suites()
+    assert not any("reference" in s.source_file.replace("\\", "/").split("/") for s in suites)
+
+
 def test_summarize_totals_match_sum_of_suites():
     suites = load_all_suites()
     summary = summarize(suites)

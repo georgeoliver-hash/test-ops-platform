@@ -121,13 +121,21 @@ def _parse_robot_file(path: Path, root: Path) -> AutomationSuite:
 
 
 def load_all_suites() -> list[AutomationSuite]:
-    """Every real .robot suite under projects/ — not the stale POS-handover export."""
+    """Every real .robot suite under projects/ — not the stale POS-handover export.
+
+    Excludes anything under a `reference/` directory (2026-09-18 fix): projects/<name>/
+    reference/ holds verbatim copies of sit's own files for grounding this repo's work
+    (e.g. projects/njt/reference/farebox-tests/*.sit-reference.robot) -- real Farebox tests,
+    but sit's, not this repo's. Without this exclusion they were double-counted as if
+    written here, inflating NJT's dashboard numbers by 16 phantom suites the day the
+    reference folder was expanded."""
     projects_dir = ROOT / "projects"
     if not projects_dir.is_dir():
         return []
     return [
         _parse_robot_file(p, ROOT)
         for p in sorted(projects_dir.rglob("*.robot"))
+        if "reference" not in p.relative_to(projects_dir).parts
     ]
 
 
