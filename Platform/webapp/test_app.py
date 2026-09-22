@@ -152,6 +152,16 @@ def test_gap_register_scope_common_and_bespoke_are_a_real_partition():
     assert all(m["project"] is not None for m in bespoke["shown"])
 
 
+def test_gap_register_scope_bespoke_narrows_to_project_when_one_is_given():
+    # ISSUES.md round 2, real bug George found: targeting Translink/POS but Bespoke still
+    # showed other projects' (e.g. NJT/ETM) markers. scope=bespoke must now also respect a
+    # given `project`, same as project/device scopes -- only repo-wide with NO project at all.
+    repo_wide = client.get("/api/gap-register?scope=bespoke&limit=1000").json()
+    scoped = client.get("/api/gap-register?scope=bespoke&project=translink&limit=1000").json()
+    assert 0 < scoped["total"] <= repo_wide["total"]
+    assert all(m["project"] == "translink" for m in scoped["shown"])
+
+
 def test_index_html_served():
     res = client.get("/")
     assert res.status_code == 200
@@ -812,6 +822,43 @@ def test_loop_step_fans_out_one_per_ingested_spec(tmp_path, monkeypatch):
     assert all(s["status"] == "succeeded" for s in steps)
 
 
+def test_consecutive_loop_steps_interleave_per_area_not_run_fully_then_fully(tmp_path, monkeypatch):
+    """onboard-suite's real shape: author_area then push_area, both 'one per functional
+    area'. Must produce author[A1], push[A1], author[A2], push[A2] -- one area reviewed
+    and pushed before the next area is even drafted -- not author[A1], author[A2],
+    push[A1], push[A2] (draft everything, then push everything). Real ask, ISSUES.md:
+    'the author area, and push area i think do one by one... so you can review after
+    each one'."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "fs002-fare-structure.md").write_text("x")
+    (specs_dir / "fs002-operator-menu.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-author-push", trigger=Trigger(ui_action="fake_author_push"), description="test pipeline",
+        steps=[
+            Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area"),
+            Step(id="push_area", kind=StepKind.cli, loop="one per functional area",
+                 command="python -m system_test_ops push --file area.cases.yaml --commit"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok", ""))
+
+    run_id = runner_module.start_run("fake-author-push", "FakeProj", "ETM")
+    steps = store.get_steps(run_id)
+    ids = [s["step_id"] for s in steps]
+    assert ids == [
+        "author_area[fare-structure]", "push_area[fare-structure]",
+        "author_area[operator-menu]", "push_area[operator-menu]",
+    ]
+
+
 def test_loop_step_fails_clearly_with_no_ingested_specs(tmp_path, monkeypatch):
     from model.pipelines import Pipeline, Step, StepKind, Trigger
     from Platform.webapp import runner as runner_module
@@ -978,6 +1025,10 @@ def test_write_automation_agent_step_runs_in_test_automation_sit_cwd(monkeypatch
     run_id = runner_module.start_run("write-automation", "Translink", "TVM")
     res = client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
     assert res.status_code == 200
+    # stage_backlog (added 2026-09-17) is its own human gate, between confirm_devices and
+    # write_tests -- both must resolve before write_tests ever runs.
+    res = client.post(f"/api/pipelines/runs/{run_id}/steps/stage_backlog/resolve")
+    assert res.status_code == 200
 
     # write_tests ran (succeeded) and the run advanced to commit_push, which pauses next
     assert store.get_step(run_id, "write_tests")["status"] == "succeeded"
@@ -1001,6 +1052,7 @@ def test_write_automation_never_auto_pushes(monkeypatch):
 
     run_id = runner_module.start_run("write-automation", "Translink", "TVM")
     client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/stage_backlog/resolve")
     step = store.get_step(run_id, "commit_push")
     assert step["status"] == "waiting_human"
     run = store.get_run(run_id)
@@ -1113,6 +1165,25 @@ def test_last_run_null_when_never_run():
     res = client.get("/api/pipelines/audit/last-run", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
     assert res.json()["status"] is None
+
+
+def test_pipeline_runs_endpoint_returns_history_with_extra_inputs():
+    """ISSUES.md round 4's Log tab: /runs must return real past runs for this exact
+    pipeline+target, newest first, with whatever extra_inputs (e.g. fix_version) that run
+    was actually given -- and null, not fabricated, for one that had none."""
+    store.create_run("log-run-1", "audit-coverage", "LogTestProj", "POS", extra_inputs={"fix_version": "1.0.0"})
+    store.create_run("log-run-2", "audit-coverage", "LogTestProj", "POS", extra_inputs={"fix_version": "2.0.0, 2.1.0"})
+    res = client.get("/api/pipelines/audit-coverage/runs", params={"project": "LogTestProj", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert [r["id"] for r in body] == ["log-run-2", "log-run-1"]
+    assert body[0]["extra_inputs"] == {"fix_version": "2.0.0, 2.1.0"}
+
+
+def test_pipeline_runs_endpoint_empty_for_never_run():
+    res = client.get("/api/pipelines/audit/runs", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json() == []
 
 
 def test_suite_comparison_unavailable_for_unconfigured_target():

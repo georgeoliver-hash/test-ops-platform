@@ -213,21 +213,43 @@ def _flatten_steps(pipeline: Pipeline, project: str, _seen: frozenset[str] = fro
     if pipeline.id in _seen:
         raise RuntimeError(f"Circular composite pipeline reference at '{pipeline.id}'")
     seen = _seen | {pipeline.id}
+    steps = pipeline.steps
     out: list[Step] = []
-    for step in pipeline.steps:
+    i = 0
+    while i < len(steps):
+        step = steps[i]
         if step.is_composite_ref:
             nested_pipeline = load_pipeline(step.ref)
             for nested in _flatten_steps(nested_pipeline, project, seen):
                 out.append(nested.model_copy(update={"id": f"{step.id}.{nested.id}"}))
-        elif getattr(step, "loop", None):
+            i += 1
+            continue
+        if getattr(step, "loop", None):
             areas = _functional_areas(project)
             if not areas:
                 out.append(step)  # loop stays set -> _dispatch_step fails it with a clear message
-            else:
-                for area in areas:
-                    out.append(step.model_copy(update={"id": f"{step.id}[{area}]", "loop": None}))
-        else:
-            out.append(step)
+                i += 1
+                continue
+            # A run of consecutive loop steps sharing the same `loop:` text (e.g.
+            # onboard-suite's author_area/push_area, both "one per functional area") is
+            # interleaved per area -- author[A1] -> push[A1] -> author[A2] -> push[A2] --
+            # rather than running one step across every area before the next starts. That
+            # matches the real ask (ISSUES.md): review + approve each area's drafted cases
+            # before the next area is even drafted, not draft everything then push
+            # everything. Guarded on matching `loop` text so unrelated loop steps elsewhere
+            # never get grouped by accident.
+            group = [step]
+            j = i + 1
+            while j < len(steps) and getattr(steps[j], "loop", None) == step.loop:
+                group.append(steps[j])
+                j += 1
+            for area in areas:
+                for gstep in group:
+                    out.append(gstep.model_copy(update={"id": f"{gstep.id}[{area}]", "loop": None}))
+            i = j
+            continue
+        out.append(step)
+        i += 1
     return out
 
 
@@ -621,7 +643,7 @@ def start_run(pipeline_id: str, project: str, device: str, extra_inputs: dict[st
 
     run_id = str(uuid.uuid4())
     _run_extra_inputs[run_id] = extra_inputs
-    store.create_run(run_id, pipeline_id, project, device)
+    store.create_run(run_id, pipeline_id, project, device, extra_inputs=extra_inputs)
     store.create_step_rows(run_id, [(s.id, s.kind.value if s.kind else None) for s in steps])
     _cancel_events[run_id] = threading.Event()
 

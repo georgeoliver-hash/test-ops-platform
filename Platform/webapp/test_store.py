@@ -178,6 +178,36 @@ def test_get_steps_empty_for_unknown_run(store):
     assert store.get_steps("no-such-run") == []
 
 
+def test_get_runs_returns_history_newest_first(store):
+    store.create_run("run-a", "audit-coverage", "Translink", "POS", extra_inputs={"fix_version": "4.2.0"})
+    store.create_run("run-b", "audit-coverage", "Translink", "POS", extra_inputs={"fix_version": "4.3.0, 4.4.0"})
+    runs = store.get_runs("audit-coverage", "Translink", "POS")
+    assert [r["id"] for r in runs] == ["run-b", "run-a"]
+    assert runs[0]["extra_inputs"] == {"fix_version": "4.3.0, 4.4.0"}
+    assert runs[1]["extra_inputs"] == {"fix_version": "4.2.0"}
+
+
+def test_get_runs_extra_inputs_none_when_not_given(store):
+    store.create_run("run-c", "audit", "Translink", "POS")
+    runs = store.get_runs("audit", "Translink", "POS")
+    assert runs[0]["extra_inputs"] is None
+
+
+def test_get_runs_scoped_to_pipeline_and_target(store):
+    store.create_run("run-d", "audit-coverage", "Translink", "POS")
+    store.create_run("run-e", "audit-coverage", "NJT", "ETM")
+    store.create_run("run-f", "audit", "Translink", "POS")
+    runs = store.get_runs("audit-coverage", "Translink", "POS")
+    assert [r["id"] for r in runs] == ["run-d"]
+
+
+def test_get_runs_respects_limit(store):
+    for i in range(5):
+        store.create_run(f"run-limit-{i}", "audit", "Translink", "POS")
+    runs = store.get_runs("audit", "Translink", "POS", limit=2)
+    assert len(runs) == 2
+
+
 def test_get_step_none_for_unknown_step(store):
     store.create_run("run-2", "audit", "Translink", "POS")
     store.create_step_rows("run-2", [("only_step", "human")])

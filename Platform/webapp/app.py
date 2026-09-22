@@ -493,6 +493,15 @@ def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
     return store.get_latest_run(pipeline_id, project, device) or {"status": None}
 
 
+@app.get("/api/pipelines/{pipeline_id}/runs")
+def get_pipeline_runs(pipeline_id: str, project: str, device: str, limit: int = 20):
+    """Real run history for this pipeline+target (ISSUES.md round 4's Log tab ask) --
+    every real row, not just the latest. `extra_inputs` (e.g. which fix_version/JIRA
+    key(s) a run was actually given) comes back per-run where it was recorded; older runs
+    predating that column just have it as null, shown honestly, never backfilled."""
+    return store.get_runs(pipeline_id, project, device, limit=limit)
+
+
 @app.get("/api/run-comments")
 def get_run_comments(project: str, device: str, which: str = "new", last_n: int = 5):
     """Real TestRail run-result comments (reviewer notes on Passed/Failed/Invalid/etc),
@@ -613,9 +622,12 @@ def get_gap_register(
       - "device": markers tagged with BOTH the given `project` AND `device`.
       - "common": markers with no inferred project at all -- genuinely shared/cross-cutting
         content (e.g. proposals/coherence-audit), not any one project's.
-      - "bespoke": markers WITH an inferred project -- the complement of "common". Deliberately
-        repo-wide, not narrowed to the current target, since "common vs bespoke" is a
-        shape-of-the-whole-repo question, not a per-target one.
+      - "bespoke": markers WITH an inferred project. CHANGED (ISSUES.md round 2, real ask,
+        overriding the original 2026-09-18 design call noted below): now ALSO narrowed to
+        the current `project` when one is given -- George found NJT/ETM questions showing
+        under Bespoke while targeting Translink/POS and asked for it scoped like the other
+        three. Only falls back to repo-wide (every bespoke marker, any project) when no
+        `project` is supplied at all, so the tab still shows something with no target set.
     """
     path = FIXTURES / "gaps.json"
     if not path.is_file():
@@ -630,6 +642,8 @@ def get_gap_register(
         markers = [m for m in markers if m["project"] == project.lower() and m["device"] == device.upper()]
     elif scope == "common":
         markers = [m for m in markers if m["project"] is None]
+    elif scope == "bespoke" and project:
+        markers = [m for m in markers if m["project"] == project.lower()]
     elif scope == "bespoke":
         markers = [m for m in markers if m["project"] is not None]
     elif project:

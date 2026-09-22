@@ -19,6 +19,7 @@ Security notes (read before touching this file):
 """
 from __future__ import annotations
 
+import json
 import os
 import sqlite3
 import subprocess
@@ -314,6 +315,15 @@ def init_db() -> None:
                 updated_at TEXT NOT NULL
             )"""
         )
+        # What a run was actually GIVEN as its extra pipeline inputs (e.g. audit-coverage's
+        # fix_version, add-feature's feature_or_jira_key) -- George's ask (ISSUES.md round
+        # 4): a per-pipeline log needs to show which real JIRA value(s) a past run was
+        # reviewed against, not just that it ran. Stored as a JSON object, same shape as
+        # runner.py's `extra_inputs` dict; NULL for any run predating this column (shown
+        # honestly as "not recorded" by the frontend, never backfilled/guessed).
+        run_cols = {r["name"] for r in conn.execute("PRAGMA table_info(pipeline_runs)").fetchall()}
+        if "extra_inputs" not in run_cols:
+            conn.execute("ALTER TABLE pipeline_runs ADD COLUMN extra_inputs TEXT")
         # Granular per-step tracking alongside pipeline_runs (added for the generic
         # step-executor, 2026-09-14) -- pipeline_runs stays the overall run's status/
         # summary; this table is what a "waiting_human" gate, a per-step output tail, and
@@ -524,12 +534,19 @@ def delete_suite_mapping(project: str, device: str, user_id: int = DEFAULT_USER_
     return deleted
 
 
-def create_run(run_id: str, pipeline_id: str, project: str, device: str) -> None:
+def create_run(
+    run_id: str, pipeline_id: str, project: str, device: str,
+    extra_inputs: dict[str, str] | None = None,
+) -> None:
+    """`extra_inputs` (e.g. audit-coverage's fix_version, add-feature's
+    feature_or_jira_key) is persisted as JSON so the Log tab (get_runs) can show what a
+    past run was actually given -- None/empty stored as NULL, not "{}", so old and
+    input-less runs both read as "not recorded" the same honest way."""
     with _connect() as conn:
         conn.execute(
-            """INSERT INTO pipeline_runs (id, pipeline_id, project, device, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, 'running', datetime('now'), datetime('now'))""",
-            (run_id, pipeline_id, project, device),
+            """INSERT INTO pipeline_runs (id, pipeline_id, project, device, status, extra_inputs, created_at, updated_at)
+               VALUES (?, ?, ?, ?, 'running', ?, datetime('now'), datetime('now'))""",
+            (run_id, pipeline_id, project, device, json.dumps(extra_inputs) if extra_inputs else None),
         )
 
 
@@ -605,6 +622,28 @@ def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
             (pipeline_id, project, device),
         ).fetchone()
         return dict(row) if row else None
+
+
+def get_runs(pipeline_id: str, project: str, device: str, limit: int = 20) -> list[dict]:
+    """Real run history for this pipeline+target, newest first — the Log tab (ISSUES.md
+    round 4: "each pipeline needs a log tab to keep any info of previous runs"). Same
+    table/ordering as get_latest_run, just not capped to one row. `extra_inputs` is
+    decoded from its stored JSON back into a dict (None for a run that had none, or that
+    predates this column — the frontend shows that honestly as "not recorded", never
+    guessed)."""
+    with _connect() as conn:
+        rows = conn.execute(
+            """SELECT * FROM pipeline_runs WHERE pipeline_id = ? AND project = ? AND device = ?
+               ORDER BY created_at DESC, rowid DESC LIMIT ?""",
+            (pipeline_id, project, device, limit),
+        ).fetchall()
+        out = []
+        for r in rows:
+            d = dict(r)
+            raw = d.get("extra_inputs")
+            d["extra_inputs"] = json.loads(raw) if raw else None
+            out.append(d)
+        return out
 
 
 def add_gap_answer(
