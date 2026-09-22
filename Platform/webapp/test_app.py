@@ -15,12 +15,39 @@ from __future__ import annotations
 import os
 import tempfile
 
+import yaml
+
 os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-test-")
-# Isolated from the real, committed Platform/config/suite_targets.yaml -- without this, any
-# test that upserts a suite mapping would write through to the actual repo file on disk.
-os.environ["TESTOPS_SUITE_TARGETS_PATH"] = os.path.join(
+# Isolated from the real, committed system-test-ops/knowledge/suite_targets.yaml -- without
+# this, any test that upserts a suite mapping would write through to the actual sibling-repo
+# file on disk. Pre-seeded with the same 8 real targets that used to live as a hardcoded
+# fallback in store.py itself (removed 2026-09-22, since an in-code duplicate of the real
+# registry was exactly the kind of drift-prone copy this whole change set exists to remove)
+# -- so every test below still sees the same fixture data it always has.
+_TEST_TARGETS_PATH = os.path.join(
     tempfile.mkdtemp(prefix="testops-webapp-test-targets-"), "suite_targets.yaml"
 )
+_TEST_SEED_TARGETS = [
+    {"project": "Translink", "device": "POS", "old_suite": "AA-POS Acceptance Test", "old_suite_id": 9317,
+     "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "ETM", "old_suite": "AA-ETM-Acceptance Test", "old_suite_id": 4943,
+     "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "GV", "old_suite": "AA - Gate Validator - Acceptance Test", "old_suite_id": 14973,
+     "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "TVM", "old_suite": "AA-TVM-Acceptance Test-V03", "old_suite_id": 5602,
+     "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "HHD", "old_suite": "AA-HHD-Acceptance", "old_suite_id": 5446,
+     "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "PV", "old_suite": "AA-Platform Validator Acceptance Test", "old_suite_id": 10047,
+     "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "BOS", "old_suite": "2.1-Backoffice Systems - Acceptance Suite", "old_suite_id": 14441,
+     "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "NJT", "device": "ETM", "old_suite": "", "old_suite_id": None,
+     "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True, "testrail_project_id": 27, "new_testrail_project_id": 27},
+]
+with open(_TEST_TARGETS_PATH, "w", encoding="utf-8") as _f:
+    yaml.safe_dump({"version": 1, "targets": _TEST_SEED_TARGETS}, _f, sort_keys=False)
+os.environ["TESTOPS_SUITE_TARGETS_PATH"] = _TEST_TARGETS_PATH
 
 from fastapi.testclient import TestClient  # noqa: E402
 

@@ -297,19 +297,10 @@
           <button class="navitem" data-view="pipelines"><span class="dot"></span>Pipeline Info</button>
           <button class="navitem" data-view="features"><span class="dot"></span>Knowledge</button>
           <button class="navitem" data-view="repomap"><span class="dot"></span>Repos</button>
-        </div>
-      </div>
-      <!-- Gaps: promoted to its own top-level group, now a real accordion (ISSUES.md round 2:
-           "make Gaps a button the same as the other accordions" + "Project/Device/Common/
-           Bespoke gaps should be accordion options that open to the filtered tab"). Each sub-
-           item sets gapScope and jumps straight to that filtered view. -->
-      <div class="navgroup collapsible" id="navGapRegisterTop">
-        <div class="navgroup-header"><div class="label">Gaps</div><span class="chevron">▸</span></div>
-        <div class="navgroup-items">
-          <button class="navitem" data-gap-scope="project"><span class="dot"></span>Project gaps</button>
-          <button class="navitem" data-gap-scope="device"><span class="dot"></span>Device gaps</button>
-          <button class="navitem" data-gap-scope="common"><span class="dot"></span>Common gaps</button>
-          <button class="navitem" data-gap-scope="bespoke"><span class="dot"></span>Bespoke gaps</button>
+          <!-- Gaps moved back into Dashboards (George, 2026-09-22: the dedicated 4-way
+               accordion was "a bad idea on menu" -- one nav item, scope switching happens
+               via the Gaps page's own tab bar, same as every other dashboard page). -->
+          <button class="navitem" data-view="gaps"><span class="dot"></span>Gaps</button>
         </div>
       </div>
       <div class="navgroup collapsible" id="navStart"></div>
@@ -1327,10 +1318,10 @@ let gapOffset = 0;
 let gapScope = 'project';
 const ENTRY_TYPE_LABEL = {answer: 'Answer', clarification_request: 'Clarification requested', conflict: 'Conflicts with spec'};
 const GAP_SCOPE_TABS = [
-  {key: 'project', label: 'Project GAPs'},
-  {key: 'device', label: 'Device GAPs'},
-  {key: 'common', label: 'Common GAPs'},
-  {key: 'bespoke', label: 'Bespoke GAPs'},
+  {key: 'project', label: 'Project gaps'},
+  {key: 'device', label: 'Device gaps'},
+  {key: 'common', label: 'Common gaps'},
+  {key: 'bespoke', label: 'Bespoke gaps'},
 ];
 
 function openGapModal(marker) {
@@ -2150,20 +2141,6 @@ document.getElementById('sidebarToggleBtn')?.addEventListener('click', () => {
   document.getElementById('appShell').classList.toggle('sidebar-collapsed');
 });
 
-/* ---------------- Gaps sidebar sub-items -- jump straight to the filtered scope
-   (ISSUES.md round 2: "Project gaps, Device gaps... accordion options that open to the
-   filtered tab"). Real scope values, same ones renderGaps' own tab bar already uses. --- */
-document.querySelectorAll('.navitem[data-gap-scope]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    setActiveNav(btn);
-    gapScope = btn.dataset.gapScope;
-    gapOffset = 0;
-    ACTIVE_VIEW = 'gaps';
-    CURRENT_RERENDER = renderGaps;
-    renderGaps();
-  });
-});
-
 /* ---------------- GLOBALLY: opening one sidebar accordion closes sibling accordions
    (ISSUES.md round 2 ask; the same "close siblings" idea is applied separately to the
    Processes/Features stage groups and repo-map folders at their own toggle sites, since
@@ -2370,13 +2347,14 @@ document.querySelectorAll('.navitem[data-aview]').forEach(btn => {
   btn.addEventListener('click', () => { setActiveNav(btn); AUTOMATION_VIEWS[btn.dataset.aview](); });
 });
 // "Pull cases" / "Write" (ISSUES.md round 2: export-automation/write-automation moved into
-// the Automation tab) -- these jump to the SAME real Test-Ops pipeline-run screen, they
-// don't duplicate it. Decided with George: reuse the existing run UI rather than build a
-// second one inside this tab.
+// the Automation tab) -- these jump to the SAME real pipeline-run screen Test-Ops uses,
+// they don't duplicate it, but they must stay ON the Automation tab while doing it --
+// was calling tabTestOps.click() first, which flipped the whole console back to the
+// Test-Ops sidebar (George: "annoyingly takes you back to the test ops area") even though
+// the pipeline-run content itself is tab-agnostic and never needed that switch.
 document.querySelectorAll('.navitem[data-aview-pipeline]').forEach(btn => {
   btn.addEventListener('click', () => {
     setActiveNav(btn);
-    tabTestOps.click();
     renderPipelineDetail(btn.dataset.aviewPipeline);
   });
 });
@@ -2507,10 +2485,11 @@ async function loadSuiteMappings() {
   refreshTargetsGitStatus();
 }
 
-// This target list (Platform/config/suite_targets.yaml) is git-tracked so a colleague's own
-// console can pick up a target you add -- but only once you actually commit+push it; this
-// app never does that automatically. Surfaces that state so an addition doesn't feel "done"
-// when it's still only sitting on this machine.
+// This target list (system-test-ops/knowledge/suite_targets.yaml -- the ONE canonical copy,
+// read/written directly on the sibling checkout, not a separate copy in this repo) is
+// git-tracked so a colleague's own console/CLI can pick up a target you add -- but only once
+// you actually commit+push it; this app never does that automatically. Surfaces that state so
+// an addition doesn't feel "done" when it's still only sitting on this machine.
 async function refreshTargetsGitStatus() {
   const el = document.getElementById('targetsGitStatus');
   if (!el) return;
@@ -2518,7 +2497,7 @@ async function refreshTargetsGitStatus() {
     const s = await fetchJSON('/api/suite-mappings/git-status');
     const messages = {
       clean: 'Target list is committed and pushed — up to date with origin.',
-      uncommitted: 'Target list has local changes not yet committed — commit Platform/config/suite_targets.yaml so others can see any target you added.',
+      uncommitted: 'Target list has local changes not yet committed — commit system-test-ops/knowledge/suite_targets.yaml so others can see any target you added.',
       unpushed: 'Target list is committed locally but not pushed yet — push so a colleague’s console picks it up on their next pull.',
       unknown: 'Could not determine whether the shared target list is up to date' + (s.detail ? ` (${s.detail})` : '') + '.',
     };

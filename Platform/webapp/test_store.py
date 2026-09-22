@@ -7,14 +7,44 @@ resolves its data dir fresh on every call rather than caching it at import time.
 from __future__ import annotations
 
 import pytest
+import yaml
+
+# Test-only fixture data mirroring the real, committed system-test-ops/knowledge/
+# suite_targets.yaml. Deliberately lives HERE, not as a hardcoded fallback inside store.py
+# itself (2026-09-22: that in-code fallback had already drifted from the real file -- see
+# store._load_suite_targets's docstring -- which is exactly the duplication this was fixed
+# to remove). Tests get their own explicit, visible copy instead of relying on production
+# code silently bootstrapping one.
+_SEED_TARGETS = [
+    {"project": "Translink", "device": "POS", "old_suite": "AA-POS Acceptance Test", "old_suite_id": 9317,
+     "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "ETM", "old_suite": "AA-ETM-Acceptance Test", "old_suite_id": 4943,
+     "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "GV", "old_suite": "AA - Gate Validator - Acceptance Test", "old_suite_id": 14973,
+     "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "TVM", "old_suite": "AA-TVM-Acceptance Test-V03", "old_suite_id": 5602,
+     "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "HHD", "old_suite": "AA-HHD-Acceptance", "old_suite_id": 5446,
+     "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "PV", "old_suite": "AA-Platform Validator Acceptance Test", "old_suite_id": 10047,
+     "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "Translink", "device": "BOS", "old_suite": "2.1-Backoffice Systems - Acceptance Suite", "old_suite_id": 14441,
+     "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
+    {"project": "NJT", "device": "ETM", "old_suite": "", "old_suite_id": None,
+     "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True, "testrail_project_id": 27, "new_testrail_project_id": 27},
+]
 
 
 @pytest.fixture()
 def store(tmp_path, monkeypatch):
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
-    # Isolated from the real, committed Platform/config/suite_targets.yaml -- without this,
-    # any test that upserts a mapping would write through to the actual repo file on disk.
-    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(tmp_path / "suite_targets.yaml"))
+    # Isolated from the real, committed system-test-ops/knowledge/suite_targets.yaml --
+    # without this, any test that upserts a mapping would write through to the actual
+    # sibling-repo file on disk. Pre-seeded with the fixture data above so every existing
+    # test keeps seeing the same 8 targets it always has.
+    targets_path = tmp_path / "suite_targets.yaml"
+    targets_path.write_text(yaml.safe_dump({"version": 1, "targets": _SEED_TARGETS}, sort_keys=False), encoding="utf-8")
+    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(targets_path))
     from Platform.webapp import store as mod
 
     mod.init_db()
@@ -357,7 +387,10 @@ def test_migration_backfills_testrail_project_id_without_clobbering_other_column
     assert mappings["NJT|ETM"]["approved_by"] == "George Oliver"  # untouched by the migration
 
 
-def test_load_suite_targets_bootstraps_missing_file_with_defaults(tmp_path, monkeypatch):
+def test_load_suite_targets_returns_empty_when_missing_no_phantom_seed(tmp_path, monkeypatch):
+    """2026-09-22: this used to bootstrap a hardcoded fallback list onto disk -- itself a
+    second, silently-drifting copy of the real registry. Now a missing file (e.g. no sibling
+    system-test-ops checkout yet) just means an honest empty list; nothing is written."""
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path / "data"))
     targets_path = tmp_path / "does-not-exist-yet" / "suite_targets.yaml"
     monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(targets_path))
@@ -365,8 +398,8 @@ def test_load_suite_targets_bootstraps_missing_file_with_defaults(tmp_path, monk
 
     assert not targets_path.is_file()
     entries = mod._load_suite_targets()
-    assert len(entries) == 8
-    assert targets_path.is_file()  # bootstrapped onto disk, not just returned in-memory
+    assert entries == []
+    assert not targets_path.is_file()  # never bootstrapped -- nothing to silently drift from
 
 
 def test_suite_targets_git_status_reports_unknown_outside_a_git_repo(tmp_path, monkeypatch):
@@ -375,23 +408,18 @@ def test_suite_targets_git_status_reports_unknown_outside_a_git_repo(tmp_path, m
     monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
     from Platform.webapp import store as mod
 
-    monkeypatch.setattr(mod, "_repo_root", lambda: tmp_path)
+    monkeypatch.setattr(mod, "_system_test_ops_root", lambda: tmp_path)
     status = mod.suite_targets_git_status()
     assert status["status"] == "unknown"
 
 
-def test_migration_backfills_approval_columns_without_clobbering_rows(tmp_path, monkeypatch):
+def test_migration_backfills_approval_columns_without_clobbering_rows(store):
     """Simulates a DB created before approved_by/approved_at existed -- init_db's ALTER
     TABLE migration must add the columns without touching any existing row's data."""
-    monkeypatch.setenv("TESTOPS_WEBAPP_DATA_DIR", str(tmp_path))
-    monkeypatch.setenv("TESTOPS_SUITE_TARGETS_PATH", str(tmp_path / "suite_targets.yaml"))
-    from Platform.webapp import store as mod
-
-    mod.init_db()
-    mod.approve_suite_mapping("NJT", "ETM", "George Oliver")
+    store.approve_suite_mapping("NJT", "ETM", "George Oliver")
 
     # re-running init_db (as app.py does on every startup) must be a no-op for existing data
-    mod.init_db()
-    mappings = {m["project"] + "|" + m["device"]: m for m in mod.list_suite_mappings()}
+    store.init_db()
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
     assert mappings["NJT|ETM"]["approved_by"] == "George Oliver"
     assert mappings["Translink|POS"]["approved_by"] is None

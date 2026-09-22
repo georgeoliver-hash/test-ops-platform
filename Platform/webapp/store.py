@@ -57,50 +57,46 @@ def _ensure_data_dir() -> None:
 
 
 def _repo_root() -> Path:
-    """test-ops-platform's own repo root (Platform/webapp/store.py -> Platform -> repo root)
-    -- where `Platform/config/suite_targets.yaml` lives and where its git status is checked."""
+    """test-ops-platform's own repo root (Platform/webapp/store.py -> Platform -> repo root)."""
     return Path(__file__).resolve().parent.parent.parent
 
 
+def _system_test_ops_root() -> Path:
+    """The sibling `system-test-ops` checkout -- same convention as runner.py's
+    SYSTEM_TEST_OPS_ROOT / app.py's SYSTEM_TEST_OPS_KNOWLEDGE (a fixed sibling path, no env
+    override needed today since this is a single-machine, single-user tool). Overridable via
+    SYSTEM_TEST_OPS_ROOT for anyone running the two checkouts somewhere non-standard."""
+    override = os.environ.get("SYSTEM_TEST_OPS_ROOT")
+    return Path(override) if override else _repo_root().parent / "system-test-ops"
+
+
 def _suite_targets_path() -> Path:
-    """Overridable for tests (TESTOPS_SUITE_TARGETS_PATH), same convention as
-    TESTOPS_WEBAPP_DATA_DIR -- so tests never read/write the real, git-tracked repo file."""
+    """The ONE canonical suite registry -- `system-test-ops/knowledge/suite_targets.yaml`.
+
+    Added 2026-09-22: this console used to keep its own separate copy at
+    Platform/config/suite_targets.yaml (plus a hardcoded Python fallback list that had
+    already drifted from it). Two git-tracked copies of the same per-project/device mapping,
+    synced "by hand", is exactly the kind of duplication that let TESTRAIL_WRITE_SUITE_ID
+    drift to a stale id undetected (see system-test-ops/knowledge/suite_targets.yaml's own
+    header). Now there is exactly one file; this app reads and writes it directly on the
+    sibling checkout. Overridable for tests via TESTOPS_SUITE_TARGETS_PATH, same convention
+    as TESTOPS_WEBAPP_DATA_DIR.
+    """
     override = os.environ.get("TESTOPS_SUITE_TARGETS_PATH")
-    return Path(override) if override else _repo_root() / "Platform" / "config" / "suite_targets.yaml"
-
-
-def _default_seed_targets() -> list[dict]:
-    """Bootstraps `suite_targets.yaml` the first time it's missing (e.g. a fresh test temp
-    dir). The real, committed copy at Platform/config/suite_targets.yaml carries the same
-    content plus source citations -- this is just enough to keep tests self-contained."""
-    return [
-        {"project": "Translink", "device": "POS", "old_suite": "AA-POS Acceptance Test", "old_suite_id": 9317,
-         "new_suite": "GG - POS - Claude Suite", "new_suite_id": 30253, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "ETM", "old_suite": "AA-ETM-Acceptance Test", "old_suite_id": 4943,
-         "new_suite": "NEW ETM-Acceptance Suite", "new_suite_id": 30254, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "GV", "old_suite": "AA - Gate Validator - Acceptance Test", "old_suite_id": 14973,
-         "new_suite": "NEW GV Test Suite", "new_suite_id": 30286, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "TVM", "old_suite": "AA-TVM-Acceptance Test-V03", "old_suite_id": 5602,
-         "new_suite": "NEW TVM Test Suite", "new_suite_id": 30284, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "HHD", "old_suite": "AA-HHD-Acceptance", "old_suite_id": 5446,
-         "new_suite": "NEW HHD Test Suite", "new_suite_id": 30285, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "PV", "old_suite": "AA-Platform Validator Acceptance Test", "old_suite_id": 10047,
-         "new_suite": "NEW PV-Acceptance Test Suite", "new_suite_id": 30255, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "Translink", "device": "BOS", "old_suite": "2.1-Backoffice Systems - Acceptance Suite", "old_suite_id": 14441,
-         "new_suite": "NEW BOS & ABT Suite", "new_suite_id": 30279, "fresh_build": False, "testrail_project_id": 42, "new_testrail_project_id": 42},
-        {"project": "NJT", "device": "ETM", "old_suite": "", "old_suite_id": None,
-         "new_suite": "NJT - SystemTestOps", "new_suite_id": 30295, "fresh_build": True, "testrail_project_id": 27, "new_testrail_project_id": 27},
-    ]
+    return Path(override) if override else _system_test_ops_root() / "knowledge" / "suite_targets.yaml"
 
 
 def _load_suite_targets() -> list[dict]:
-    """Reads the git-tracked target list, bootstrapping it with the default seed if the file
-    doesn't exist yet (fresh clone, or an isolated test temp path)."""
+    """Reads the canonical, git-tracked target list from the system-test-ops checkout.
+
+    Returns [] if it's missing (no sibling checkout yet, or it hasn't been created there) --
+    this deliberately does NOT bootstrap a hardcoded fallback list any more. A silent second
+    copy is the exact failure mode this was changed to remove; an empty list is visible and
+    honest, a phantom seed is not.
+    """
     path = _suite_targets_path()
     if not path.is_file():
-        defaults = _default_seed_targets()
-        _save_suite_targets(defaults)
-        return defaults
+        return []
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return data.get("targets") or []
 
@@ -119,10 +115,10 @@ def _sync_target_to_yaml(project: str, device: str, old_suite: str, new_suite: s
                           testrail_project_id: int | None = None,
                           new_testrail_project_id: int | None = None) -> None:
     """Write-through so any create/edit made via upsert_suite_mapping (i.e. the existing
-    "Add this pair" / "Edit this pair" UI) lands in the shared, git-trackable file too --
-    not just the caller's own local SQLite db. Committing + pushing this file is still a
-    manual step outside the app (see suite_targets_git_status) -- this only stages the
-    change on disk."""
+    "Add this pair" / "Edit this pair" UI) lands in the ONE shared, git-trackable file
+    (system-test-ops/knowledge/suite_targets.yaml) too -- not just the caller's own local
+    SQLite db. Committing + pushing that file is still a manual step outside the app (see
+    suite_targets_git_status) -- this only stages the change on disk."""
     entries = _load_suite_targets()
     entry = {
         "project": project, "device": device, "old_suite": old_suite, "old_suite_id": old_suite_id,
@@ -151,13 +147,15 @@ def _remove_target_from_yaml(project: str, device: str) -> bool:
 
 
 def suite_targets_git_status() -> dict:
-    """Read-only check of whether Platform/config/suite_targets.yaml has changes that
-    haven't been committed, or commits that haven't been pushed -- this app never commits or
-    pushes it automatically (see docs/gareth-onboarding-guide.md: sharing a new target is a
-    deliberate, human "push this so others see it" step, same as every other repo write this
-    tool makes). Returns {"status": "clean"|"uncommitted"|"unpushed"|"unknown", ...}."""
-    repo_root = _repo_root()
-    rel_path = "Platform/config/suite_targets.yaml"
+    """Read-only check of whether system-test-ops/knowledge/suite_targets.yaml has changes
+    that haven't been committed, or commits that haven't been pushed -- this app never
+    commits or pushes it automatically (see docs/gareth-onboarding-guide.md: sharing a new
+    target is a deliberate, human "push this so others see it" step, same as every other
+    repo write this tool makes). Checked against the sibling system-test-ops checkout, since
+    that repo -- not this one -- is where the canonical file now lives (2026-09-22).
+    Returns {"status": "clean"|"uncommitted"|"unpushed"|"unknown", ...}."""
+    repo_root = _system_test_ops_root()
+    rel_path = "knowledge/suite_targets.yaml"
     try:
         porcelain = subprocess.run(
             ["git", "status", "--porcelain", "--", rel_path],
@@ -344,10 +342,11 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
         )
-        # Seed from the git-tracked Platform/config/suite_targets.yaml (2026-09-14) --
-        # replaces the old hardcoded Python literal list so that adding a target through the
-        # UI (upsert_suite_mapping -> _sync_target_to_yaml) is visible to a colleague after
-        # they commit+push that file and a teammate `git pull`s, without a code change.
+        # Seed from the git-tracked system-test-ops/knowledge/suite_targets.yaml (2026-09-14,
+        # repointed at the sibling checkout 2026-09-22 -- see _suite_targets_path) so that
+        # adding a target through the UI (upsert_suite_mapping -> _sync_target_to_yaml) is
+        # visible to a colleague, or to a system-test-ops CLI push, after they commit+push
+        # that file and a teammate `git pull`s, without a code change.
         # INSERT OR IGNORE so re-running init_db doesn't clobber a user's own local edits.
         for target in _load_suite_targets():
             project, device = target["project"], target["device"]

@@ -186,10 +186,11 @@ def get_testrail_suites(project_id: int):
 
 @app.get("/api/suite-mappings/git-status")
 def get_suite_targets_git_status():
-    """Read-only: has Platform/config/suite_targets.yaml (the shared target list) got local
-    changes not yet committed, or commits not yet pushed to origin? This app never runs
-    git commit/push itself for this file -- sharing a newly added target with a colleague is
-    a deliberate manual step, same as every other repo write this tool makes."""
+    """Read-only: has system-test-ops/knowledge/suite_targets.yaml (the ONE canonical target
+    list, shared with the wider department via that repo) got local changes not yet
+    committed, or commits not yet pushed to origin? This app never runs git commit/push
+    itself for this file -- sharing a newly added target with a colleague is a deliberate
+    manual step, same as every other repo write this tool makes."""
     return store.suite_targets_git_status()
 
 
