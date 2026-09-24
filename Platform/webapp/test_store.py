@@ -423,3 +423,143 @@ def test_migration_backfills_approval_columns_without_clobbering_rows(store):
     mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
     assert mappings["NJT|ETM"]["approved_by"] == "George Oliver"
     assert mappings["Translink|POS"]["approved_by"] is None
+
+
+def test_get_run_cost_sums_agent_steps_only(store):
+    store.create_run("run-cost-1", "add-feature", "Translink", "POS")
+    store.create_step_rows("run-cost-1", [("understand_feature", "agent"), ("inventory", "cli"), ("apply_rubric", "agent")])
+    store.update_step("run-cost-1", "understand_feature", cost_usd=0.02, input_tokens=100, output_tokens=50)
+    store.update_step("run-cost-1", "apply_rubric", cost_usd=0.03, input_tokens=200, output_tokens=80)
+    # cli step never gets cost data -- left NULL, must not break the SUM
+    cost = store.get_run_cost("run-cost-1")
+    assert cost["available"] is True
+    assert round(cost["cost_usd"], 4) == 0.05
+    assert cost["input_tokens"] == 300
+    assert cost["output_tokens"] == 130
+
+
+def test_get_run_cost_unavailable_when_no_cost_recorded(store):
+    store.create_run("run-cost-2", "audit", "Translink", "POS")
+    store.create_step_rows("run-cost-2", [("run_audit", "cli")])
+    assert store.get_run_cost("run-cost-2") == {"available": False}
+
+
+def test_get_all_pipelines_cost_summary_averages_across_runs(store):
+    store.create_run("run-cost-a", "add-feature", "Translink", "POS")
+    store.create_step_rows("run-cost-a", [("understand_feature", "agent")])
+    store.update_step("run-cost-a", "understand_feature", cost_usd=0.10, input_tokens=1000, output_tokens=100)
+
+    store.create_run("run-cost-b", "add-feature", "NJT", "ETM")
+    store.create_step_rows("run-cost-b", [("understand_feature", "agent")])
+    store.update_step("run-cost-b", "understand_feature", cost_usd=0.20, input_tokens=2000, output_tokens=200)
+
+    # a pipeline with no cost-tracked runs at all must not appear -- never a fabricated 0
+    store.create_run("run-cost-c", "audit", "Translink", "POS")
+    store.create_step_rows("run-cost-c", [("run_audit", "cli")])
+
+    summary = {row["pipeline_id"]: row for row in store.get_all_pipelines_cost_summary()}
+    assert "audit" not in summary
+    assert summary["add-feature"]["runs_counted"] == 2
+    assert round(summary["add-feature"]["avg_cost_usd"], 4) == 0.15
+    assert summary["add-feature"]["avg_input_tokens"] == 1500
+    assert summary["add-feature"]["avg_output_tokens"] == 150
+
+
+def test_scheduled_check_roundtrip_and_defaults(store):
+    assert store.get_scheduled_check("Translink", "POS") is None
+    store.set_scheduled_check("Translink", "POS", enabled=True, interval_days=7)
+    row = store.get_scheduled_check("Translink", "POS")
+    assert row["enabled"] == 1
+    assert row["interval_days"] == 7
+    assert row["last_run_at"] is None
+
+
+def test_scheduled_check_update_preserves_upsert(store):
+    store.set_scheduled_check("Translink", "POS", enabled=True, interval_days=7)
+    store.set_scheduled_check("Translink", "POS", enabled=True, interval_days=14)
+    rows = store.list_scheduled_checks()
+    assert len(rows) == 1
+    assert rows[0]["interval_days"] == 14
+
+
+def test_due_scheduled_checks_never_run_is_due_immediately(store):
+    store.set_scheduled_check("Translink", "POS", enabled=True, interval_days=7)
+    due = store.get_due_scheduled_checks()
+    assert [(d["project"], d["device"]) for d in due] == [("Translink", "POS")]
+
+
+def test_due_scheduled_checks_respects_interval(store):
+    from datetime import datetime, timezone
+    store.set_scheduled_check("Translink", "POS", enabled=True, interval_days=7)
+    store.mark_scheduled_check_run("Translink", "POS", "run-1", datetime.now(timezone.utc).isoformat())
+    assert store.get_due_scheduled_checks() == []
+
+
+def test_due_scheduled_checks_excludes_disabled(store):
+    store.set_scheduled_check("Translink", "POS", enabled=False, interval_days=7)
+    assert store.get_due_scheduled_checks() == []
+
+
+def test_unreviewed_scheduled_scan_suggestions_excludes_other_pipelines_and_failed_runs(store):
+    store.create_run("sched-1", "scheduled-scan", "Translink", "POS")
+    store.update_run("sched-1", status="succeeded", summary="Nothing changed since last check.")
+    store.create_run("sched-2", "onboard-suite", "Translink", "POS")
+    store.update_run("sched-2", status="succeeded", summary="unrelated pipeline")
+    store.create_run("sched-3", "scheduled-scan", "NJT", "ETM")
+    store.update_run("sched-3", status="failed")
+    ids = {r["id"] for r in store.get_unreviewed_scheduled_scan_suggestions()}
+    assert ids == {"sched-1"}
+
+
+def test_mark_scheduled_scan_suggestion_reviewed_removes_it_from_feed(store):
+    store.create_run("sched-4", "scheduled-scan", "Translink", "TVM")
+    store.update_run("sched-4", status="succeeded", summary="Found a new gap.")
+    assert "sched-4" in {r["id"] for r in store.get_unreviewed_scheduled_scan_suggestions()}
+    store.mark_scheduled_scan_suggestion_reviewed("sched-4")
+    assert "sched-4" not in {r["id"] for r in store.get_unreviewed_scheduled_scan_suggestions()}
+
+
+def test_resolve_ingest_docs_source_prefers_current_subfolder(tmp_path, monkeypatch):
+    import Platform.webapp.store as store_module
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    current = tmp_path / "TestOpsRequirements" / "translink" / "_current"
+    current.mkdir(parents=True)
+    (current / "spec.docx").write_text("x", encoding="utf-8")
+    (tmp_path / "TestOpsRequirements" / "translink" / "_dropped_versions.txt").write_text("log", encoding="utf-8")
+
+    result = store_module.resolve_ingest_docs_source("translink")
+    assert result["source"] == "requirements_folder"
+    assert result["path"] == str(current)
+
+
+def test_resolve_ingest_docs_source_falls_back_to_project_folder_without_current(tmp_path, monkeypatch):
+    import Platform.webapp.store as store_module
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    root = tmp_path / "TestOpsRequirements" / "njt"
+    root.mkdir(parents=True)
+    (root / "real-spec.pdf").write_bytes(b"x")
+
+    result = store_module.resolve_ingest_docs_source("njt")
+    assert result["source"] == "requirements_folder"
+    assert result["path"] == str(root)
+
+
+def test_resolve_ingest_docs_source_ignores_underscore_only_folder(tmp_path, monkeypatch):
+    """A project folder with only tool-generated logs (no real docs, no _current) must
+    NOT be treated as a real source -- caller falls back to the upload folder instead."""
+    import Platform.webapp.store as store_module
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    root = tmp_path / "TestOpsRequirements" / "emptyproj"
+    root.mkdir(parents=True)
+    (root / "_excluded_archive.txt").write_text("log", encoding="utf-8")
+
+    result = store_module.resolve_ingest_docs_source("emptyproj")
+    assert result["source"] == "no_requirements_folder"
+    assert result["path"] is None
+
+
+def test_resolve_ingest_docs_source_none_when_no_folder_at_all(tmp_path, monkeypatch):
+    import Platform.webapp.store as store_module
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    result = store_module.resolve_ingest_docs_source("nosuchproject")
+    assert result == {"path": None, "source": "no_requirements_folder"}

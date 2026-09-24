@@ -22,6 +22,12 @@ _FORCE_TAGS = re.compile(r"^Force Tags\s+(.+)$", re.MULTILINE)
 _TAG_TOKEN = re.compile(r"(project|device_types|feature):(\S+)")
 _TEST_CASE_NAME = re.compile(r"^(\S[^\n]*)$", re.MULTILINE)
 _PER_TEST_TAGS = re.compile(r"^\s*\[Tags\]\s+(.+)$", re.MULTILINE)
+# `[Setup]    Skip    GAP: ...` -- a placeholder acknowledging automation hasn't
+# started (e.g. no device-driving library exists yet), not a real written test. Found
+# live, 2026-09-23: 459 of NJT's 460 "tests written" were exactly this -- George: "the
+# tests written for automation 460 for NJT is wrong right?" -- counting these as
+# "written" the same as a real, executable test was the bug.
+_PER_TEST_SKIP_GAP = re.compile(r"^\s*\[Setup\]\s+Skip\s+GAP", re.MULTILINE | re.IGNORECASE)
 
 
 def _default_root() -> Path:
@@ -38,6 +44,7 @@ ROOT = _default_root()
 class AutomationTestCase(BaseModel):
     name: str
     tags: list[str] = Field(default_factory=list)  # per-test [Tags], e.g. "destructive"
+    is_gap_stub: bool = False  # [Setup] Skip GAP: ... -- a placeholder, not a real written test
 
 
 class AutomationSuite(BaseModel):
@@ -99,20 +106,25 @@ def _parse_robot_file(path: Path, root: Path) -> AutomationSuite:
                 body = body.split(marker, 1)[0]
         current_name = None
         current_tags: list[str] = []
+        current_is_gap_stub = False
         for line in body.splitlines():
             if not line.strip():
                 continue
             if not line[0].isspace():
                 if current_name:
-                    cases.append(AutomationTestCase(name=current_name, tags=current_tags))
+                    cases.append(AutomationTestCase(name=current_name, tags=current_tags, is_gap_stub=current_is_gap_stub))
                 current_name = line.strip()
                 current_tags = []
+                current_is_gap_stub = False
             else:
-                tag_match = _PER_TEST_TAGS.match(line.strip())
+                stripped = line.strip()
+                tag_match = _PER_TEST_TAGS.match(stripped)
                 if tag_match:
                     current_tags.extend(t.strip() for t in tag_match.group(1).split())
+                elif _PER_TEST_SKIP_GAP.match(stripped):
+                    current_is_gap_stub = True
         if current_name:
-            cases.append(AutomationTestCase(name=current_name, tags=current_tags))
+            cases.append(AutomationTestCase(name=current_name, tags=current_tags, is_gap_stub=current_is_gap_stub))
 
     return AutomationSuite(
         source_file=str(path.relative_to(root)),
@@ -128,19 +140,37 @@ def load_all_suites() -> list[AutomationSuite]:
     (e.g. projects/njt/reference/farebox-tests/*.sit-reference.robot) -- real Farebox tests,
     but sit's, not this repo's. Without this exclusion they were double-counted as if
     written here, inflating NJT's dashboard numbers by 16 phantom suites the day the
-    reference folder was expanded."""
+    reference folder was expanded.
+
+    Also drops `[Setup] Skip GAP: ...` placeholder cases, and any suite left with none
+    (2026-09-23, George: "a complete gap stub just doesn't need to be included in the
+    data until written properly"). Found live: 459 of NJT's 460 reported "tests written"
+    were exactly this -- scaffolding that cites a real TestRail case but skips itself and
+    automates nothing. A written test that merely needs a small assertion tweak is still
+    a written test and stays; a pure skip-stub isn't one yet. Filtered HERE, at the single
+    source, so counts, lists, filters and dashboards can't disagree about it."""
     projects_dir = ROOT / "projects"
     if not projects_dir.is_dir():
         return []
-    return [
+    suites = [
         _parse_robot_file(p, ROOT)
         for p in sorted(projects_dir.rglob("*.robot"))
         if "reference" not in p.relative_to(projects_dir).parts
     ]
+    written: list[AutomationSuite] = []
+    for suite in suites:
+        real_cases = [c for c in suite.cases if not c.is_gap_stub]
+        if real_cases:
+            written.append(suite.model_copy(update={"cases": real_cases}))
+    return written
 
 
 def summarize(suites: list[AutomationSuite]) -> dict:
-    """Real counts: total tests, by project, by device_type, by feature."""
+    """Real counts: total tests, by project, by device_type, by feature.
+
+    Counts whatever it's given -- `load_all_suites` has already dropped GAP-stub
+    placeholders, so "tests" here always means genuinely written ones (see that
+    function's docstring for why)."""
     by_project: dict[str, int] = {}
     by_device: dict[str, int] = {}
     by_feature: dict[str, int] = {}

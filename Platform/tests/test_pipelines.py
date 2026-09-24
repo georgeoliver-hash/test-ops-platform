@@ -29,14 +29,32 @@ def pipelines(monkeypatch):
     yield mod
 
 
-def test_index_lists_all_fifteen_pipelines(pipelines):
+def test_index_lists_all_seventeen_pipelines(pipelines):
     index = pipelines.load_pipeline_index()
     ids = {e.id for e in index}
     assert "onboard-suite" in ids
     assert "audit-flows" in ids
     assert "resolve-gaps" in ids
     assert "write-automation" in ids  # 2026-09-14: new NJT automation-authoring pipeline
-    assert len(ids) == 15
+    # 2026-09-22: consolidation_sanity_check/traceability_check split out of maintain.yaml
+    # into their own standalone, independently-runnable pipelines (George: "what if people
+    # wanna do a smaller AI-effective pipeline of checking a different health check?").
+    assert "consolidation-check" in ids
+    assert "traceability-check" in ids
+    # 2026-09-22: write automation straight from docs/JIRA (partial or either one) before
+    # any TestRail suite exists -- George: "it might not always be a full doc, jira or
+    # story... we want some automation done" at project start.
+    assert "draft-automation" in ids
+    # 2026-09-22: periodic, read-only doc-change watcher that only ever suggests a next
+    # pipeline -- never applies anything itself. George: "does our tool need to
+    # automatically read the docs, check our suites... and make these changes" -- answer
+    # was suggest, never auto-apply, same human-gate rule every write pipeline follows.
+    assert "scheduled-scan" in ids
+    # 2026-09-22: select functional area(s) via checkbox (real TestRail sections, per
+    # @feature's own mapping in docs/gherkin-standard.md) and create a TestRail run
+    # scoped to just those cases -- George: "select EMV, no sign on stuff, run just that."
+    assert "targeted-run" in ids
+    assert len(ids) == 20
 
 
 def test_route_by_ui_action_matches_slash_command(pipelines):

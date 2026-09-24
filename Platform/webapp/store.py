@@ -24,6 +24,7 @@ import os
 import sqlite3
 import subprocess
 from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -338,6 +339,45 @@ def init_db() -> None:
                 PRIMARY KEY (run_id, step_id)
             )"""
         )
+        # Real per-agent-step cost/token usage (George, 2026-09-22: "a pipeline AI token
+        # usage visual to each pipeline"). `claude -p --output-format json` hands this back
+        # for free on every agent-kind step -- see runner.py's _run_agent_step. NULL for a
+        # cli/gate/human step (never called the CLI) and for any run predating this column
+        # (shown honestly as "not recorded", never backfilled/guessed).
+        step_cols = {r["name"] for r in conn.execute("PRAGMA table_info(pipeline_run_steps)").fetchall()}
+        if "cost_usd" not in step_cols:
+            conn.execute("ALTER TABLE pipeline_run_steps ADD COLUMN cost_usd REAL")
+        if "input_tokens" not in step_cols:
+            conn.execute("ALTER TABLE pipeline_run_steps ADD COLUMN input_tokens INTEGER")
+        if "output_tokens" not in step_cols:
+            conn.execute("ALTER TABLE pipeline_run_steps ADD COLUMN output_tokens INTEGER")
+        # Per-target scheduled-scan settings (George, 2026-09-22: "does our tool need to
+        # automatically read the docs... and make suggestions"). Opt-in per project/device
+        # -- absent/disabled means never scanned, same "ask, don't silently start" rule as
+        # everything else here. `last_run_at` NULL means never run yet (always due once
+        # enabled, not treated as "just ran").
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS scheduled_check_settings (
+                project TEXT NOT NULL,
+                device TEXT NOT NULL,
+                enabled INTEGER NOT NULL DEFAULT 0,
+                interval_days INTEGER NOT NULL DEFAULT 7,
+                last_run_at TEXT,
+                last_run_id TEXT,
+                PRIMARY KEY (project, device)
+            )"""
+        )
+        # Real "reviewed/dismissed" state for one scheduled-scan run's suggestion (George,
+        # 2026-09-22: "a good report to get going with actionables" -- the raw Log tab
+        # already showed this, but nothing marked it seen, so the feed would grow forever
+        # with no way to clear it). A row existing here means reviewed; absent means still
+        # a live, unreviewed suggestion.
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS scheduled_scan_reviews (
+                run_id TEXT PRIMARY KEY,
+                reviewed_at TEXT NOT NULL
+            )"""
+        )
         conn.execute(
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
@@ -610,6 +650,146 @@ def get_step(run_id: str, step_id: str) -> dict | None:
         return dict(row) if row else None
 
 
+def get_run_cost(run_id: str) -> dict:
+    """Real total cost/tokens for one run, summed across whichever of its steps were
+    agent-kind (only those call `claude -p`, see runner.py's _run_agent_step). Honest
+    "not recorded" (not a fabricated 0) for a run with no cost-tracked steps yet -- either
+    it predates this column, or it genuinely had no agent steps."""
+    with _connect() as conn:
+        row = conn.execute(
+            """SELECT SUM(cost_usd) AS cost_usd, SUM(input_tokens) AS input_tokens,
+                      SUM(output_tokens) AS output_tokens, COUNT(cost_usd) AS n_steps
+               FROM pipeline_run_steps WHERE run_id = ?""",
+            (run_id,),
+        ).fetchone()
+    if not row or not row["n_steps"]:
+        return {"available": False}
+    return {
+        "available": True, "cost_usd": row["cost_usd"],
+        "input_tokens": row["input_tokens"] or 0, "output_tokens": row["output_tokens"] or 0,
+    }
+
+
+def get_all_pipelines_cost_summary() -> list[dict]:
+    """Average real cost/tokens per run, per pipeline, across every run that has recorded
+    cost data -- not scoped to one project/device target, this is a tool-wide AI-usage
+    signal (George, 2026-09-22: "a pipeline AI token usage visual"). Only pipelines with
+    at least one cost-tracked run appear -- a pure cli/human/gate pipeline (no agent
+    steps) or one that predates this column simply isn't listed, never shown as a
+    fabricated zero."""
+    with _connect() as conn:
+        rows = conn.execute(
+            """SELECT r.pipeline_id AS pipeline_id,
+                      COUNT(DISTINCT r.id) AS n_runs,
+                      SUM(s.cost_usd) AS total_cost,
+                      SUM(s.input_tokens) AS total_in,
+                      SUM(s.output_tokens) AS total_out
+               FROM pipeline_run_steps s
+               JOIN pipeline_runs r ON r.id = s.run_id
+               WHERE s.cost_usd IS NOT NULL
+               GROUP BY r.pipeline_id
+               ORDER BY total_cost DESC"""
+        ).fetchall()
+    return [
+        {
+            "pipeline_id": row["pipeline_id"],
+            "runs_counted": row["n_runs"],
+            "avg_cost_usd": row["total_cost"] / row["n_runs"],
+            "avg_input_tokens": (row["total_in"] or 0) / row["n_runs"],
+            "avg_output_tokens": (row["total_out"] or 0) / row["n_runs"],
+        }
+        for row in rows
+    ]
+
+
+def set_scheduled_check(project: str, device: str, enabled: bool, interval_days: int) -> None:
+    """Opt a target into (or out of) periodic scheduled-scan checks. Never enabled by
+    default for any target -- a human turns it on explicitly, same "ask, don't silently
+    start" rule as everything else here."""
+    with _connect() as conn:
+        conn.execute(
+            """INSERT INTO scheduled_check_settings (project, device, enabled, interval_days)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(project, device) DO UPDATE SET enabled = ?, interval_days = ?""",
+            (project, device, int(enabled), interval_days, int(enabled), interval_days),
+        )
+
+
+def get_scheduled_check(project: str, device: str) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM scheduled_check_settings WHERE project = ? AND device = ?", (project, device),
+        ).fetchone()
+        return dict(row) if row else None
+
+
+def list_scheduled_checks() -> list[dict]:
+    with _connect() as conn:
+        rows = conn.execute("SELECT * FROM scheduled_check_settings ORDER BY project, device").fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_due_scheduled_checks() -> list[dict]:
+    """Every enabled target whose interval has elapsed since its last run -- `last_run_at`
+    NULL (never run) counts as due immediately, not as "just ran". Comparison done in
+    Python, not SQL date math, to keep the "now" clock in one obvious place."""
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM scheduled_check_settings WHERE enabled = 1", (),
+        ).fetchall()
+    due = []
+    now = datetime.now(timezone.utc)
+    for r in rows:
+        row = dict(r)
+        if row["last_run_at"] is None:
+            due.append(row)
+            continue
+        last = datetime.fromisoformat(row["last_run_at"])
+        if now - last >= timedelta(days=row["interval_days"]):
+            due.append(row)
+    return due
+
+
+def mark_scheduled_check_run(project: str, device: str, run_id: str, when: str) -> None:
+    """Upsert, not a plain UPDATE -- "Run now" is meant to work ad-hoc for any target, not
+    only one that already opted into recurring auto-scans (see runner.start_scheduled_scan/
+    app.py's run-now endpoint). A fresh row this creates defaults to enabled=0 -- running it
+    once manually must never silently opt a target into the recurring background poll."""
+    with _connect() as conn:
+        conn.execute(
+            """INSERT INTO scheduled_check_settings (project, device, last_run_at, last_run_id)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(project, device) DO UPDATE SET last_run_at = ?, last_run_id = ?""",
+            (project, device, when, run_id, when, run_id),
+        )
+
+
+def get_unreviewed_scheduled_scan_suggestions() -> list[dict]:
+    """Every completed scheduled-scan run across every target that hasn't been marked
+    reviewed yet -- the actionable feed itself. `summary` is already the real
+    `suggest_next` step's own output (the last agent step in the pipeline writes it there
+    via runner.py's normal update_run(summary=...) call) -- no extra plumbing needed to
+    surface it. Includes a run whose suggestion was "nothing changed" just as honestly as
+    one with a real finding -- dismissing is how the feed gets decluttered, this never
+    tries to guess which summaries are "worth" showing."""
+    with _connect() as conn:
+        rows = conn.execute(
+            """SELECT r.* FROM pipeline_runs r
+               LEFT JOIN scheduled_scan_reviews v ON v.run_id = r.id
+               WHERE r.pipeline_id = 'scheduled-scan' AND r.status = 'succeeded' AND v.run_id IS NULL
+               ORDER BY r.created_at DESC"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def mark_scheduled_scan_suggestion_reviewed(run_id: str) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO scheduled_scan_reviews (run_id, reviewed_at) VALUES (?, datetime('now'))",
+            (run_id,),
+        )
+
+
 def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
     """Most recent real run for this pipeline+target — a genuine 'last audited' timestamp,
     not a guess, now that runs are actually tracked (see runner.py). Was flagged in
@@ -735,10 +915,68 @@ def _uploads_root() -> Path:
     return _data_dir() / "uploads"
 
 
+class UnsafeNameError(ValueError):
+    """A project/device value that can't be trusted as a single path segment."""
+
+
+def safe_path_segment(value: str, field: str) -> str:
+    """One trusted path segment, or raise. `save_doc` already sanitised the FILENAME, but
+    project/device were interpolated into the path raw -- so `project=../../PWNED` wrote
+    outside the data dir entirely (found 2026-09-23 by an end-to-end sweep, real, and the
+    same flaw reached /api/docs/bulk and the delete route). Sanitising the last segment of
+    a path is worthless if an earlier one can escape."""
+    cleaned = (value or "").strip()
+    if not cleaned:
+        raise UnsafeNameError(f"{field} must not be blank.")
+    if cleaned in (".", "..") or any(sep in cleaned for sep in ("/", "\\", "\0")) or cleaned != Path(cleaned).name:
+        raise UnsafeNameError(f"{field} must be a plain name, not a path (got {value!r}).")
+    return cleaned
+
+
 def _uploads_dir(project: str, device: str) -> Path:
     """One folder per project/device pair — mirrors suite_mappings' keying, so a doc dropped
-    here has an unambiguous target when a future ingest-docs run picks it up."""
-    return _uploads_root() / project / device
+    here has an unambiguous target when a future ingest-docs run picks it up. Both segments
+    are validated: neither may escape the uploads root."""
+    return _uploads_root() / safe_path_segment(project, "project") / safe_path_segment(device, "device")
+
+
+def resolve_ingest_docs_source(project: str) -> dict:
+    """Real ingest-docs docs_path resolution -- prefers the actual synced requirements
+    library (%USERPROFILE%\\TestOpsRequirements\\<project>\\_current\\, Google Drive for
+    Desktop) over the console's own small per-project/device upload folder, which was the
+    real bug (George, 2026-09-22: "the platform basically says there is no docs uploaded
+    for translink pos" -- because it was checking the wrong, near-empty folder while the
+    real 352-file Translink library sat untouched in _current/).
+
+    `_current` specifically, not the project folder itself -- that top level also holds
+    ingest_docs.py's own reconciliation logs (_dropped_versions.txt etc.), which would
+    get re-ingested as if they were real requirement docs if pointed at directly. Not
+    every project necessarily has this `_current` convention (it may predate this tool),
+    so falls back to the project folder itself if THAT has real (non `_`-prefixed) files,
+    and only then to the device-scoped upload folder -- never silently prefers the wrong
+    one when a real synced library exists.
+    """
+    # A blank/whitespace project used to resolve to TestOpsRequirements ITSELF -- the
+    # parent of every project -- so the Ingest form would have been handed a docs_path
+    # spanning njt AND translink at once (and a whitespace name 500'd outright, since
+    # Windows reports `...\   ` as a dir then fails to iterate it). Both found
+    # 2026-09-23 by an end-to-end sweep. Refuse rather than resolve to something wrong.
+    try:
+        safe_project = safe_path_segment(project, "project")
+    except UnsafeNameError:
+        return {"path": None, "source": "no_requirements_folder"}
+    root = Path.home() / "TestOpsRequirements" / safe_project.lower()
+    try:
+        current = root / "_current"
+        if current.is_dir() and any(current.rglob("*")):
+            return {"path": str(current), "source": "requirements_folder"}
+        if root.is_dir() and any(p for p in root.iterdir() if not p.name.startswith(("_", "."))):
+            return {"path": str(root), "source": "requirements_folder"}
+    except OSError:
+        # An unreadable/bogus path (permissions, a name Windows accepts then chokes on)
+        # is "no usable source", not a crash.
+        return {"path": None, "source": "no_requirements_folder"}
+    return {"path": None, "source": "no_requirements_folder"}
 
 
 def uploads_dir_path(project: str, device: str) -> str:
@@ -791,7 +1029,11 @@ def check_docs_for_changes(project: str, requirements_dir: Path, user_id: int = 
     safe" pass audit just got). This only answers "what changed since I last looked",
     honestly, so nothing gets silently missed while that pipeline doesn't exist yet."""
     if not requirements_dir.is_dir():
-        return {"exists": False, "new": [], "changed": [], "removed": [], "unchanged_count": 0}
+        # Same keys as the real return below, including total_files -- these two shapes
+        # used to differ (no total_files here), which the frontend only survived because
+        # it happened to check `exists` first and bail. One identical shape means a
+        # caller can read any field without knowing which branch it came from.
+        return {"exists": False, "new": [], "changed": [], "removed": [], "unchanged_count": 0, "total_files": 0}
 
     current = {}
     for f in requirements_dir.rglob("*"):

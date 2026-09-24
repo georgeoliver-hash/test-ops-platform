@@ -29,8 +29,16 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
+import threading
+import time
+import uuid
+import zipfile
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -75,7 +83,33 @@ WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
 KEEP_DEVICE_TYPES = ["ETM", "POS", "TVM", "GV", "PV", "HHD", "BV"]
 
-app = FastAPI(title="Test-Ops Console API")
+# Periodic scheduled-scan checker (George, 2026-09-22: "does our tool need to
+# automatically read the docs... and make suggestions"). This app isn't a 24/7 service
+# (single-user, local, per store.py's own module docstring) -- "scheduled" here honestly
+# means "checked on the next app usage after the interval has elapsed", via this
+# in-process poll, NOT a real always-on cron. A target only ever gets scanned if it was
+# explicitly opted in via /api/scheduled-checks (never on by default).
+_SCHEDULER_POLL_SECONDS = 1800
+
+
+def _scheduled_check_loop() -> None:
+    while True:
+        try:
+            for due in store.get_due_scheduled_checks():
+                run_id = runner.start_scheduled_scan(due["project"], due["device"])
+                store.mark_scheduled_check_run(due["project"], due["device"], run_id, datetime.now(timezone.utc).isoformat())
+        except Exception:
+            pass  # best-effort background loop -- one bad target must never kill the whole poller
+        time.sleep(_SCHEDULER_POLL_SECONDS)
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    threading.Thread(target=_scheduled_check_loop, daemon=True).start()
+    yield
+
+
+app = FastAPI(title="Test-Ops Console API", lifespan=_lifespan)
 store.init_db()
 
 
@@ -286,16 +320,56 @@ def list_docs(project: str, device: str):
     return store.list_docs(project, device)
 
 
+def _validated_target(project: str, device: str) -> tuple[str, str]:
+    """400 on any project/device that isn't a plain name. These are interpolated into a
+    real filesystem path (uploads/<project>/<device>/), so `project=../../PWNED` wrote
+    outside the data dir entirely before this existed -- found 2026-09-23 by an
+    end-to-end sweep."""
+    try:
+        return store.safe_path_segment(project, "project"), store.safe_path_segment(device, "device")
+    except store.UnsafeNameError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/api/docs/folder")
 def get_docs_folder(project: str, device: str):
-    """Absolute path of this target's upload folder — lets the ingest-docs run form default
-    its required `docs_path` input to where docs were actually dropped, instead of George
-    hand-typing a path."""
-    return {"path": store.uploads_dir_path(project, device)}
+    """Real docs_path for the Ingest run form -- prefers the actual synced requirements
+    library (TestOpsRequirements/<project>/_current/) over the console's own small
+    upload folder, which was silently winning even when it was empty and the real docs
+    sat untouched elsewhere (George, 2026-09-22: "the platform says there is no docs
+    uploaded for translink pos"). `source` tells the frontend which one it got, so it can
+    say so honestly instead of implying "uploaded" when it's really the synced folder.
+
+    Returns `options` too: when BOTH a synced library and uploaded files exist, the user
+    picks. Preferring the synced folder silently meant uploads were ignored with no hint
+    (George, 2026-09-23: he'd have uploaded 660MB and Ingest would have read the other
+    folder anyway) -- the preference is still the default, it's just no longer a secret."""
+    project, device = _validated_target(project, device)
+
+    def _count(path: Path) -> int:
+        try:
+            return sum(1 for f in path.rglob("*") if f.is_file())
+        except OSError:
+            return 0
+
+    options = []
+    real = store.resolve_ingest_docs_source(project)
+    if real["path"]:
+        options.append({"path": real["path"], "source": "requirements_folder",
+                        "label": "Synced requirements folder", "file_count": _count(Path(real["path"]))})
+    uploads = Path(store.uploads_dir_path(project, device))
+    upload_count = _count(uploads)
+    if upload_count or not options:
+        options.append({"path": str(uploads), "source": "uploads_folder",
+                        "label": "Docs uploaded in this console", "file_count": upload_count})
+
+    chosen = options[0]
+    return {"path": chosen["path"], "source": chosen["source"], "options": options}
 
 
 @app.post("/api/docs")
 async def upload_doc(project: str, device: str, file: UploadFile = File(...)):
+    project, device = _validated_target(project, device)
     if not file.filename:
         raise HTTPException(status_code=400, detail="No filename given.")
     content = await file.read()
@@ -306,8 +380,191 @@ async def upload_doc(project: str, device: str, file: UploadFile = File(...)):
     return {"ok": True}
 
 
+# Sized for a real project library, not a toy: Translink's is ~660MB / 352 files
+# decompressed (2026-09-23). Still a genuine zip-bomb guard, just not one that blocks
+# the actual job. The zip is read straight off UploadFile's on-disk spool rather than
+# into memory, so a big archive costs disk, not RAM.
+_ZIP_MAX_ENTRIES = 5000
+_ZIP_MAX_TOTAL_BYTES = 3 * 1024 * 1024 * 1024  # 3GB decompressed
+
+
+@app.post("/api/docs/bulk")
+async def upload_docs_bulk(project: str, device: str, files: list[UploadFile] = File(...)):
+    """Upload several files at once, OR one .zip containing many -- George, 2026-09-22:
+    "a way to upload a zip file or folder... instead of me uploading one file by one".
+    A .zip's entries are extracted and saved individually (flattened to their basename,
+    same as a normal upload -- this folder was never nested); any non-.zip file in the
+    same request is saved as-is, so "select 12 files + drag a zip" in one go both work.
+    Real zip-bomb guard: refuses if declared entry count/total size is excessive, checked
+    BEFORE extracting anything."""
+    project, device = _validated_target(project, device)
+    saved: list[str] = []
+    errors: list[str] = []
+    for upload in files:
+        name = upload.filename or ""
+        if name.lower().endswith(".zip"):
+            try:
+                # UploadFile already spools to a temp file on disk past ~1MB, so hand
+                # zipfile that file object directly -- `await upload.read()` on a 660MB
+                # archive would have pulled the entire thing into memory for no reason.
+                upload.file.seek(0)
+                with zipfile.ZipFile(upload.file) as zf:
+                    infos = [i for i in zf.infolist() if not i.is_dir()]
+                    if len(infos) > _ZIP_MAX_ENTRIES:
+                        errors.append(f"{name}: refused -- {len(infos)} entries exceeds the {_ZIP_MAX_ENTRIES} limit.")
+                        continue
+                    total = sum(i.file_size for i in infos)
+                    if total > _ZIP_MAX_TOTAL_BYTES:
+                        errors.append(f"{name}: refused -- {total} decompressed bytes exceeds the {_ZIP_MAX_TOTAL_BYTES} limit.")
+                        continue
+                    for info in infos:
+                        if "__MACOSX/" in info.filename or info.filename.endswith(".DS_Store"):
+                            continue  # zip metadata junk, not a real doc -- checked on the full path, not just the flattened basename
+                        entry_name = Path(info.filename).name  # flattened -- never trust the zip's own path (traversal-safe)
+                        if not entry_name or entry_name.startswith("."):
+                            continue  # directory-only entries with no basename, or a dotfile
+                        try:
+                            store.save_doc(project, device, entry_name, zf.read(info))
+                            saved.append(entry_name)
+                        except ValueError as exc:
+                            errors.append(f"{entry_name}: {exc}")
+            except zipfile.BadZipFile:
+                errors.append(f"{name}: not a valid zip file.")
+            continue
+        if not name:
+            errors.append("(unnamed file): no filename given.")
+            continue
+        content = await upload.read()
+        try:
+            store.save_doc(project, device, name, content)
+            saved.append(name)
+        except ValueError as exc:
+            errors.append(f"{name}: {exc}")
+    return {"ok": True, "saved": saved, "errors": errors}
+
+
+
+# --- Upload review gate (George, 2026-09-23: "a gate here for uploads too, that older
+# versioned numbers are not counted... you get a pop up where you say not needed / no and
+# skip") ------------------------------------------------------------------------------
+# Files land in a staging folder first, get classified, and only what you keep is
+# committed. Staged once, not uploaded twice -- a 630MB library over the wire twice would
+# be absurd.
+_UPLOAD_STAGING: dict[str, dict] = {}
+
+
+def _ingest_doc_helpers():
+    """Reuse ingest_docs.py's OWN version/exclusion rules rather than re-implementing
+    them here -- a second copy would drift from the tool that actually does the ingest."""
+    tools_dir = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "tools"
+    if str(tools_dir) not in sys.path:
+        sys.path.insert(0, str(tools_dir))
+    from ingest_docs import excluded_reason, family_key, version_of  # noqa: PLC0415
+    return excluded_reason, family_key, version_of
+
+
+def _classify_staged(names: list[str]) -> dict:
+    """Split staged files into keep / superseded / excluded, using the real ingest rules."""
+    try:
+        excluded_reason, family_key, version_of = _ingest_doc_helpers()
+    except Exception:
+        return {"keep": names, "superseded": [], "excluded": [], "rules_available": False}
+
+    excluded, families = [], {}
+    for rel in names:
+        reason = excluded_reason(rel)
+        if reason:
+            excluded.append({"file": rel, "reason": reason})
+            continue
+        families.setdefault(family_key(rel), []).append((version_of(rel.split("/")[-1]), rel))
+
+    keep, superseded = [], []
+    for members in families.values():
+        members.sort(reverse=True)
+        keep.append(members[0][1])
+        for _, rel in members[1:]:
+            superseded.append({"file": rel, "superseded_by": members[0][1]})
+    return {"keep": sorted(keep), "superseded": superseded, "excluded": excluded, "rules_available": True}
+
+
+@app.post("/api/docs/bulk/stage")
+async def stage_docs_bulk(project: str, device: str, files: list[UploadFile] = File(...)):
+    """Upload once into a staging folder and report what's in it -- older versions of the
+    same doc, and non-document noise -- so a human decides before anything is kept."""
+    project, device = _validated_target(project, device)
+    token = uuid.uuid4().hex
+    staging = Path(tempfile.mkdtemp(prefix=f"testops-upload-{token}-"))
+    names, errors = [], []
+    for upload in files:
+        name = upload.filename or ""
+        if name.lower().endswith(".zip"):
+            try:
+                upload.file.seek(0)
+                with zipfile.ZipFile(upload.file) as zf:
+                    infos = [i for i in zf.infolist() if not i.is_dir()]
+                    if len(infos) > _ZIP_MAX_ENTRIES:
+                        errors.append(f"{name}: refused -- {len(infos)} entries exceeds the {_ZIP_MAX_ENTRIES} limit.")
+                        continue
+                    total = sum(i.file_size for i in infos)
+                    if total > _ZIP_MAX_TOTAL_BYTES:
+                        errors.append(f"{name}: refused -- {total} decompressed bytes exceeds the {_ZIP_MAX_TOTAL_BYTES} limit.")
+                        continue
+                    for info in infos:
+                        if "__MACOSX/" in info.filename or info.filename.endswith(".DS_Store"):
+                            continue
+                        rel = info.filename.replace("\\", "/")
+                        flat = Path(rel).name
+                        if not flat or flat.startswith("."):
+                            continue
+                        (staging / flat).write_bytes(zf.read(info))
+                        names.append(rel)  # keep the zip's own path -- archive/ rules need it
+            except zipfile.BadZipFile:
+                errors.append(f"{name}: not a valid zip file.")
+            continue
+        if not name:
+            errors.append("(unnamed file): no filename given.")
+            continue
+        (staging / Path(name).name).write_bytes(await upload.read())
+        names.append(name)
+
+    verdict = _classify_staged(names)
+    _UPLOAD_STAGING[token] = {"dir": str(staging), "project": project, "device": device, "names": names}
+    return {"token": token, "errors": errors, **verdict}
+
+
+class CommitStagedIn(BaseModel):
+    token: str
+    skip: list[str] = []
+
+
+@app.post("/api/docs/bulk/commit")
+def commit_docs_bulk(body: CommitStagedIn):
+    """Keep everything staged except `skip`, then bin the staging folder."""
+    staged = _UPLOAD_STAGING.pop(body.token, None)
+    if staged is None:
+        raise HTTPException(status_code=404, detail="Nothing staged under that token (already committed, or the server restarted).")
+    staging = Path(staged["dir"])
+    skip = {Path(s).name for s in body.skip}
+    saved, errors = [], []
+    for rel in staged["names"]:
+        flat = Path(rel).name
+        if flat in skip:
+            continue
+        src = staging / flat
+        if not src.is_file():
+            continue
+        try:
+            store.save_doc(staged["project"], staged["device"], flat, src.read_bytes())
+            saved.append(flat)
+        except ValueError as exc:
+            errors.append(f"{flat}: {exc}")
+    shutil.rmtree(staging, ignore_errors=True)
+    return {"ok": True, "saved": saved, "skipped": sorted(skip), "errors": errors}
+
+
 @app.delete("/api/docs/{project}/{device}/{filename}")
 def remove_doc(project: str, device: str, filename: str):
+    project, device = _validated_target(project, device)
     if not store.delete_doc(project, device, filename):
         raise HTTPException(status_code=404, detail="No such file")
     return {"ok": True}
@@ -316,12 +573,25 @@ def remove_doc(project: str, device: str, filename: str):
 @app.post("/api/docs/{project}/refresh-check")
 def refresh_docs_check(project: str):
     """Real change-detection against the project's local requirements folder
-    (%USERPROFILE%\\TestOpsRequirements\\<project>\\, see .env.example's documented
-    convention) -- what's new/changed/removed since the last check. Does NOT re-parse
-    anything into knowledge/*.md; that's the still-unbuilt ingest-docs pipeline. This just
-    means nothing silently goes stale between now and when that exists."""
-    req_dir = Path.home() / "TestOpsRequirements" / project.lower()
+    (%USERPROFILE%\\TestOpsRequirements\\<project>\\_current\\, see .env.example's
+    documented convention) -- what's new/changed/removed since the last check. Fixed
+    2026-09-22: was pointing at the project folder's TOP level, which also holds
+    ingest_docs.py's own reconciliation logs (_dropped_versions.txt etc.) -- those were
+    being reported as doc "changes" too. Uses the same real resolution as
+    /api/docs/folder, so both agree on where the real docs actually are."""
+    real = store.resolve_ingest_docs_source(project)
+    req_dir = Path(real["path"]) if real["path"] else (Path.home() / "TestOpsRequirements" / project.lower())
     return store.check_docs_for_changes(project, req_dir)
+
+
+# Confirmed non-client (George, 2026-09-22: "remove sit1 not a project") -- SIT1 is real,
+# mirrored data (Resources/Common/ConfigSets/SIT1 in the real `sit` repo), but it sits
+# there alongside that repo's own Generic/Product/Universal scaffolding, not the real
+# clients (Translink, NJT, NTA, EdinTram, Rouen, UKBus, PerthSys). It's the SIT
+# framework's own internal/demo ConfigSet, not a Flowbird project -- excluded here only,
+# never deleted from the mirror itself (not ours to touch, and it may serve a real
+# framework purpose there).
+NON_CLIENT_MIRRORED_PROJECTS = {"SIT1"}
 
 
 @app.get("/api/taxonomy")
@@ -330,6 +600,8 @@ def get_taxonomy():
     EquipmentTypes.json (model/devices.py). Same data the front-end target-switcher uses."""
     out = {}
     for project in devices.list_mirrored_projects():
+        if project in NON_CLIENT_MIRRORED_PROJECTS:
+            continue
         registry = devices.load_registry(project)
         out[project] = {
             et.device_type: et.equipment_type_names
@@ -376,18 +648,32 @@ def get_pipelines():
 
 
 @app.get("/api/pipelines/{pipeline_id}")
-def get_pipeline_detail(pipeline_id: str):
-    """Full ordered step list for one pipeline, straight from its real YAML file."""
+def get_pipeline_detail(pipeline_id: str, project: str | None = None):
+    """Full ordered step list for one pipeline, straight from its real YAML file.
+
+    Composite `{id, ref: <other-pipeline>}` steps are expanded to the steps that will
+    REALLY run, using the same runner.py flattening the executor itself uses. Without
+    this, new-suite-from-docs ("Build") showed two bare rows with no kind and no command
+    -- George, 2026-09-23: "what is build? just human things its not needed, there is no
+    run to be done here." It was in fact fully runnable; the page just wasn't showing the
+    ~20 real inlined steps behind those two rows."""
     try:
         p = pipelines.load_pipeline(pipeline_id)
     except (KeyError, FileNotFoundError) as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if any(s.is_composite_ref for s in p.steps):
+        try:
+            steps = runner._flatten_steps(p, project or "")
+        except Exception:
+            steps = p.steps  # a bad/circular ref shouldn't 500 the page -- show the raw shape
+    else:
+        steps = p.steps
     return {
         "id": p.id,
         "description": p.description,
         "trigger": p.trigger.model_dump(),
         "guardrails": p.guardrails,
-        "steps": [s.model_dump() for s in p.steps],
+        "steps": [s.model_dump() for s in steps],
         "inputs": [i.model_dump() for i in p.inputs],
         "runnable": runner.is_runnable(p.id),
     }
@@ -503,6 +789,88 @@ def get_pipeline_runs(pipeline_id: str, project: str, device: str, limit: int = 
     return store.get_runs(pipeline_id, project, device, limit=limit)
 
 
+@app.get("/api/pipelines/runs/{run_id}/cost")
+def get_pipeline_run_cost(run_id: str):
+    """Real total cost/tokens for one run, summed from its own agent steps' recorded
+    `claude -p --output-format json` usage (see runner.py). `available: false` for a run
+    with no cost-tracked steps -- predates the tracking, or genuinely had none (pure
+    cli/human/gate pipeline)."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    return store.get_run_cost(run_id)
+
+
+class ScheduledCheckIn(BaseModel):
+    project: str
+    device: str
+    enabled: bool
+    interval_days: int = 7
+
+
+class ScheduledCheckTargetIn(BaseModel):
+    project: str
+    device: str
+
+
+@app.get("/api/scheduled-checks")
+def list_scheduled_checks():
+    """Every target's real scheduled-scan settings (enabled/interval/last run) -- powers
+    the Scheduled checks page. Never includes a target that hasn't been explicitly opted
+    in (nothing is scanned by default)."""
+    return store.list_scheduled_checks()
+
+
+@app.post("/api/scheduled-checks")
+def set_scheduled_check(body: ScheduledCheckIn):
+    if body.interval_days < 1:
+        raise HTTPException(status_code=400, detail="interval_days must be at least 1.")
+    if body.interval_days > 365:
+        raise HTTPException(status_code=400, detail="interval_days must be 365 or fewer.")
+    # A blank target used to create an enabled row the background poller would then scan
+    # forever against a docs_path spanning every project (2026-09-23 sweep).
+    _validated_target(body.project, body.device)
+    store.set_scheduled_check(body.project, body.device, body.enabled, body.interval_days)
+    return {"ok": True}
+
+
+@app.get("/api/scheduled-checks/suggestions")
+def get_scheduled_scan_suggestions():
+    """The actionable feed itself (George, 2026-09-22: "a good report to get going with
+    actionables") -- every completed scheduled-scan run not yet marked reviewed, across
+    every target, newest first."""
+    return store.get_unreviewed_scheduled_scan_suggestions()
+
+
+@app.post("/api/scheduled-checks/suggestions/{run_id}/review")
+def review_scheduled_scan_suggestion(run_id: str):
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    store.mark_scheduled_scan_suggestion_reviewed(run_id)
+    return {"ok": True}
+
+
+@app.post("/api/scheduled-checks/run-now")
+def run_scheduled_check_now(body: ScheduledCheckTargetIn):
+    _validated_target(body.project, body.device)
+    """Manual "Run now" -- same real scheduled-scan pipeline the background poller uses,
+    just triggered on demand. Marks last_run_at too, so the automatic poller doesn't
+    immediately consider this target due again right after a manual run."""
+    run_id = runner.start_scheduled_scan(body.project, body.device)
+    store.mark_scheduled_check_run(body.project, body.device, run_id, datetime.now(timezone.utc).isoformat())
+    return {"ok": True, "run_id": run_id}
+
+
+@app.get("/api/ai-usage")
+def get_ai_usage():
+    """Per-pipeline average real cost/tokens per run, across every run with recorded cost
+    data -- the dashboard's AI-usage widget (George, 2026-09-22: "a pipeline AI token
+    usage visual to each pipeline... a medium sized quick view bit on main page of average
+    tokens used per run"). Tool-wide, not scoped to the current target."""
+    return store.get_all_pipelines_cost_summary()
+
+
 @app.get("/api/run-comments")
 def get_run_comments(project: str, device: str, which: str = "new", last_n: int = 5):
     """Real TestRail run-result comments (reviewer notes on Passed/Failed/Invalid/etc),
@@ -510,6 +878,29 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
     if which not in ("old", "new"):
         raise HTTPException(status_code=400, detail="which must be 'old' or 'new'")
     return runner.get_run_comments(project, device, which, last_n)
+
+
+class RelevancePreviewIn(BaseModel):
+    project: str
+    docs_path: str
+
+
+@app.post("/api/docs/relevance-preview")
+def preview_docs_relevance(body: RelevancePreviewIn):
+    """Real convert + relevance-gate check, standalone, before committing to a tracked
+    Ingest run (George, 2026-09-22: "an initial review of the docs before ingesting, so
+    it can pass the gate"). No AI, no distil -- just the same two real steps a run would
+    hit first, so a bad upload is caught here rather than mid-run."""
+    if not body.docs_path.strip() or not Path(body.docs_path).is_dir():
+        raise HTTPException(status_code=400, detail=f"docs_path is not a readable folder: {body.docs_path!r}")
+    return runner.preview_docs_relevance(body.project, body.docs_path)
+
+
+@app.get("/api/suite-sections")
+def get_suite_sections(project: str, device: str):
+    """Real, live section tree for the target's new suite -- the checkbox tree behind
+    targeted-run (George, 2026-09-22: "select EMV, not Sign On"). Read-only."""
+    return runner.get_suite_sections(project, device)
 
 
 @app.get("/api/suite-comparison")
@@ -605,6 +996,9 @@ def _infer_gap_device(file_path: str) -> str | None:
     return None
 
 
+_GAP_SCOPES = ("project", "device", "common", "bespoke")
+
+
 @app.get("/api/gap-register")
 def get_gap_register(
     limit: int = 25, offset: int = 0, project: str | None = None,
@@ -630,6 +1024,19 @@ def get_gap_register(
         three. Only falls back to repo-wide (every bespoke marker, any project) when no
         `project` is supplied at all, so the tab still shows something with no target set.
     """
+    # Validated 2026-09-23 (end-to-end sweep): limit=-1 previously ignored the limit and
+    # dumped all 972 markers (~219KB), offset=-1 silently returned an empty page beside a
+    # non-zero total, and an unknown scope ("banana", "BESPOKE", "") was silently treated
+    # as no-scope -- while the sibling /api/run-comments already 400s on a bad `which`.
+    # Ceiling is generous on purpose -- "fetch them all" is a real, legitimate call
+    # (there are ~972 markers repo-wide, and the Gaps page's partition views rely on it).
+    # The actual bug was a NEGATIVE limit silently returning everything.
+    if limit < 1 or limit > 2000:
+        raise HTTPException(status_code=400, detail="limit must be between 1 and 2000.")
+    if offset < 0:
+        raise HTTPException(status_code=400, detail="offset must be 0 or greater.")
+    if scope is not None and scope not in _GAP_SCOPES:
+        raise HTTPException(status_code=400, detail=f"scope must be one of {_GAP_SCOPES}.")
     path = FIXTURES / "gaps.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
@@ -756,6 +1163,57 @@ def get_repo_map():
         {"title": title, "files": [{"path": p, "purpose": purpose, "lines": loc} for p, purpose, loc in rows]}
         for title, rows in sections
     ]
+
+
+_REPORTS_ROOT = (_PLATFORM_ROOT.parent.parent / "system-test-ops" / "reports").resolve()
+
+
+@app.get("/api/reports")
+def list_reports(project: str | None = None):
+    """Real generated report artefacts (coverage.md, run-health-report.md,
+    build-complete.md, consolidation-audit.md, etc.) under system-test-ops/reports/ --
+    the Reports tab's file list (George, 2026-09-22: "start putting into the... report
+    spaces"). Filesystem-walked live, not a cached index -- these are gitignored, so
+    nothing but the real disk state is authoritative. Newest first. `project` filters to
+    that top-level folder (reports/<project>/...) when given."""
+    if not _REPORTS_ROOT.is_dir():
+        return []
+    out = []
+    for path in _REPORTS_ROOT.rglob("*"):
+        if path.is_dir():
+            continue
+        rel = path.relative_to(_REPORTS_ROOT)
+        parts = rel.parts
+        # Only a real subdirectory is a project -- a file sitting loose directly in
+        # reports/ (e.g. alignment-audit.md) used to become its own fake "project"
+        # alongside the real ones (2026-09-23 sweep).
+        report_project = parts[0] if len(parts) > 1 else ""
+        if project and report_project.lower() != project.lower():
+            continue
+        stat = path.stat()
+        out.append({
+            "project": report_project,
+            "path": str(rel).replace("\\", "/"),
+            "filename": path.name,
+            "size": stat.st_size,
+            "modified_at": stat.st_mtime,
+        })
+    out.sort(key=lambda r: r["modified_at"], reverse=True)
+    return out
+
+
+@app.get("/api/reports/content")
+def get_report_content(path: str):
+    """Raw text of one report file, for the Reports tab's preview -- `path` must resolve
+    inside reports/, never outside it (real path-traversal guard, not just a string check:
+    resolves symlinks/`..` and confirms the result is still under _REPORTS_ROOT)."""
+    candidate = (_REPORTS_ROOT / path).resolve()
+    if _REPORTS_ROOT not in candidate.parents or not candidate.is_file():
+        raise HTTPException(status_code=404, detail="No such report file")
+    try:
+        return {"path": path, "text": candidate.read_text(encoding="utf-8", errors="replace")}
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"Could not read report: {exc}") from exc
 
 
 app.mount("/", StaticFiles(directory=str(WEBAPP_ROOT / "static"), html=True), name="static")

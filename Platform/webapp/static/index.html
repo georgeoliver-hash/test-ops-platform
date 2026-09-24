@@ -286,8 +286,8 @@
     <div class="console-tabs">
       <button class="console-tab active" id="tabTestOps">Test-Ops</button>
       <button class="console-tab" id="tabAutomation">Automation</button>
-      <button class="console-tab placeholder" disabled title="Future phase — not built yet">Project<span class="soon">soon</span></button>
-      <button class="console-tab placeholder" disabled title="Future phase — not built yet">Reports<span class="soon">soon</span></button>
+      <button class="console-tab" id="tabProject">Project</button>
+      <button class="console-tab" id="tabReports">Reports</button>
     </div>
     <nav class="navgroups" id="navgroups">
       <div class="navgroup collapsible open" id="navOverview">
@@ -297,6 +297,7 @@
           <button class="navitem" data-view="pipelines"><span class="dot"></span>Pipeline Info</button>
           <button class="navitem" data-view="features"><span class="dot"></span>Knowledge</button>
           <button class="navitem" data-view="repomap"><span class="dot"></span>Repos</button>
+          <button class="navitem" data-view="scheduled"><span class="dot"></span>Scheduled checks<span id="scheduledBadge" style="display:none;"></span></button>
           <!-- Gaps moved back into Dashboards (George, 2026-09-22: the dedicated 4-way
                accordion was "a bad idea on menu" -- one nav item, scope switching happens
                via the Gaps page's own tab bar, same as every other dashboard page). -->
@@ -323,6 +324,10 @@
         <div class="label">Cases</div>
         <button class="navitem" data-aview-pipeline="export-automation"><span class="dot"></span>Pull cases</button>
         <button class="navitem" data-aview-pipeline="write-automation"><span class="dot"></span>Write</button>
+        <!-- Draft (2026-09-22): write automation straight from docs/JIRA (either, or
+             partial) before any TestRail suite exists -- for a fast-moving project that
+             wants automation started alongside the build, not after a full suite lands. -->
+        <button class="navitem" data-aview-pipeline="draft-automation"><span class="dot"></span>Draft</button>
       </div>
       <!-- Real Projects accordion (ISSUES.md round 2), sub-options = real projects that
            have automation tests today, pulled live from /api/automation/tests -- not a
@@ -432,6 +437,10 @@
   <div class="gap-modal" id="gapModalBody"></div>
 </div>
 
+<div class="gap-modal-overlay" id="uploadReviewOverlay">
+  <div class="gap-modal" id="uploadReviewBody"></div>
+</div>
+
 <script>
 const KIND_META = {
   cli:   {label: 'CODE',  cls: 'code'},
@@ -485,7 +494,7 @@ const PIPELINE_PLAIN = {
   'fold-defect': 'Folds a found-and-fixed bug into the test case that should have caught it, so it stays covered.',
   'ingest-docs': "Turns a project's raw requirement docs into short, cited notes the team can work from.",
   maintain: 'Periodic health check — run history, standards compliance, and duplicate cases.',
-  'new-suite-from-docs': "You upload requirement/design docs for a device, and it builds a suite grounded in them. The main 'build' button.",
+  'new-suite-from-docs': "Chains Ingest + Onboarding in one run. Real, but not offered as a button -- for a project the size of Translink it expands to 136 steps, 65 AI calls and 59 approval gates; run the two separately instead.",
   'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
   'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
   'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
@@ -614,13 +623,41 @@ content.addEventListener('click', (e) => {
 // POS numbers under whatever project/device happens to be targeted (misleading), say so
 // honestly and point at what's needed (either a fixture for that pair, or wired live creds).
 const HEALTH_FIXTURE_TARGET = {project: 'Translink', device: 'POS'};
+// Real, tool-wide average AI cost/tokens per run, per pipeline (George, 2026-09-22: "a
+// medium sized quick view bit on main page of average tokens used per run"). Not scoped
+// to the current target -- renders regardless of which project/device is selected, and
+// stays quietly empty if nothing's been cost-tracked yet rather than showing a fabricated
+// zero. Injected into a `#aiUsageCard` placeholder that must already exist in the DOM.
+function renderAiUsageWidget() {
+  const el = document.getElementById('aiUsageCard');
+  if (!el) return;
+  fetchJSON('/api/ai-usage').then(rows => {
+    if (!rows.length) {
+      el.innerHTML = `<h2>AI usage — average per run</h2><p style="color:var(--ink-soft);font-size:12.5px;">No cost-tracked runs yet.</p>`;
+      return;
+    }
+    const top = rows.slice(0, 6);
+    el.innerHTML = `<h2>AI usage — average per run</h2>
+      <table><tr><th>Pipeline</th><th>Avg cost</th><th>Avg tokens</th><th>Runs</th></tr>
+        ${top.map(r => `<tr>
+          <td>${esc(PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id)}</td>
+          <td>$${r.avg_cost_usd.toFixed(3)}</td>
+          <td>${Math.round(r.avg_input_tokens + r.avg_output_tokens).toLocaleString()}</td>
+          <td>${r.runs_counted}</td>
+        </tr>`).join('')}
+      </table>`;
+  }).catch(() => { el.innerHTML = `<h2>AI usage — average per run</h2><p class="errbox">Not available</p>`; });
+}
+
 async function renderHealth() {
   loading();
   const target = window.CURRENT_TARGET || HEALTH_FIXTURE_TARGET;
   if (target.project !== HEALTH_FIXTURE_TARGET.project || target.device !== HEALTH_FIXTURE_TARGET.device) {
     setContent(`
       <div class="page-head"><h1>Status — ${esc(target.project)} / ${esc(target.device)}</h1><p>No captured data for this target yet.</p></div>
-      <div class="fixture-note">⚠ Only Translink/POS has a captured build-stats/run-health/gap-register fixture (2026-08-07) — nothing exists yet for ${esc(target.project)}/${esc(target.device)}. Switch target back to Translink/POS to see real data, or capture a fixture / wire live TestRail credentials for this pair first.</div>`);
+      <div class="fixture-note">⚠ Only Translink/POS has a captured build-stats/run-health/gap-register fixture (2026-08-07) — nothing exists yet for ${esc(target.project)}/${esc(target.device)}. Switch target back to Translink/POS to see real data, or capture a fixture / wire live TestRail credentials for this pair first.</div>
+      <div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>`);
+    renderAiUsageWidget();
     return;
   }
   try {
@@ -719,8 +756,16 @@ async function renderHealth() {
           </div>
           ${deltaCard}
         </div>
-        <div>${lastAuditCard}<div class="card" id="recentActivityCard"><h2>Recent activity — last run per function</h2><div class="loading">Loading…</div></div>${gapsCard}${docsCard}</div>
+        <div>${lastAuditCard}<div class="card" id="recentActivityCard"><h2>Recent activity — last run per function</h2><div class="loading">Loading…</div></div><div class="card" id="scheduledSuggestionsCard"><h2>Open suggestions <a href="#" data-goto-view="scheduled" class="corner-link">See all →</a></h2><div class="loading">Loading…</div></div><div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>${gapsCard}${docsCard}</div>
       </div>`);
+    renderAiUsageWidget();
+    fetchJSON('/api/scheduled-checks/suggestions').then(rows => {
+      const el = document.getElementById('scheduledSuggestionsCard');
+      if (!el) return;
+      const n = rows.length;
+      el.innerHTML = `<h2>Open suggestions <a href="#" data-goto-view="scheduled" class="corner-link">See all →</a></h2>
+        ${n ? `<p style="font-size:13.5px;margin:0;"><span class="pill warn">${n}</span> waiting for review</p>` : `<p style="color:var(--ink-soft);font-size:13px;">None right now.</p>`}`;
+    }).catch(() => {});
 
     // Real per-function last-run timestamps (George's ask: "blocks that show the date, time
     // of the last function that was done, so add feature, then another one"), reusing the
@@ -805,13 +850,14 @@ async function renderHealth() {
 // in exactly one group below; PIPELINE_STAGES's own ids are checked against the live
 // /api/pipelines list at render time so a newly added pipeline that isn't grouped yet
 // shows up in an "Ungrouped" bucket instead of silently vanishing.
-// new-suite-from-docs dropped (2026-09-18, ISSUES.md: "get rid of entirely"). resolve-gaps
-// moved from its own "Human led" stage into Maintenance, matching the sidebar move -- also
-// gets a direct button on the Gap Register page itself (see renderGaps).
+// new-suite-from-docs is not listed here (briefly restored 2026-09-22, removed again
+// 2026-09-23 once the detail page showed what it really expands to -- see the GROUPS map).
+// resolve-gaps moved from its own "Human led" stage into Maintenance, matching the
+// sidebar move -- also gets a direct button on the Gap Register page itself (see renderGaps).
 const PIPELINE_STAGES = [
   {title: 'How to get started', ids: ['start', 'ingest-docs'], featured: true},
-  {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation', 'write-automation']},
-  {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'maintain', 'resolve-gaps']},
+  {title: 'Once set up', ids: ['onboard-suite', 'consolidate', 'add-feature', 'fold-defect', 'export-automation', 'write-automation', 'draft-automation', 'targeted-run']},
+  {title: 'Maintenance', ids: ['audit', 'audit-coverage', 'audit-flows', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps']},
 ];
 
 function pipelineRowHTML(p, orderNum) {
@@ -867,6 +913,34 @@ function wireStageAccordions(root) {
   });
 }
 
+// A pasted JIRA browser URL (e.g. https://yourorg.atlassian.net/browse/PROJ-123, or the
+// same with a query string/#comment suffix) -> just the key. Anything that doesn't match
+// is returned unchanged -- a bare key, a fix-version label, or free text all pass through
+// as-is (George, 2026-09-22: "i just wanna be able to have the ability to maybe even just
+// copy and paste the jira url... and it just knows what it's doing").
+const JIRA_URL_KEY_RE = /\/browse\/([A-Z][A-Z0-9]+-\d+)\b/i;
+function extractJiraKey(raw) {
+  const m = raw.match(JIRA_URL_KEY_RE);
+  return m ? m[1].toUpperCase() : raw;
+}
+
+// targeted-run's real section checkbox tree -- keeps the hidden `areas` extra-input in
+// sync with whichever boxes are checked, comma-joined by real section NAME (matching
+// exactly what `create-run --areas` substring-matches against each case's section_path
+// server-side -- no client-side translation, the value sent is the value TestRail
+// already uses).
+function wireAreasTree(root) {
+  root.querySelectorAll('[data-areas-tree]').forEach(tree => {
+    const hidden = tree.parentElement.querySelector('[data-extra-input="areas"]');
+    if (!hidden) return;
+    const sync = () => {
+      const checked = Array.from(tree.querySelectorAll('[data-area-checkbox]:checked')).map(el => el.value);
+      hidden.value = checked.join(', ');
+    };
+    tree.querySelectorAll('[data-area-checkbox]').forEach(cb => cb.addEventListener('change', sync));
+  });
+}
+
 // Repeatable chip/tag input for a multi-value pipeline input (fix_version /
 // feature_or_jira_key -- ISSUES.md round 4: "need a way to tell it multiple jiras").
 // Renders removable chips + an add box; keeps the real submitted value as one
@@ -887,7 +961,7 @@ function wireChipFields(root) {
         </span>`).join('');
     }
     function addFromInput() {
-      const v = textInput.value.trim();
+      const v = extractJiraKey(textInput.value.trim());
       if (!v) return;
       values.push(v);
       textInput.value = '';
@@ -914,8 +988,8 @@ async function renderProcessesTab(container) {
     const list = await fetchJSON('/api/pipelines');
     const byId = Object.fromEntries(list.map(p => [p.id, p]));
     const grouped = new Set(PIPELINE_STAGES.flatMap(s => s.ids));
-    // new-suite-from-docs deliberately excluded from "Ungrouped" too (2026-09-18, ISSUES.md:
-    // "get rid of entirely") -- the pipeline/backend is untouched, just never surfaced here.
+    // Deliberately offered nowhere (2026-09-23) -- see the GROUPS map for why. Without
+    // this it would simply reappear under "Ungrouped" instead of being removed.
     const HIDDEN_FROM_NAV = new Set(['new-suite-from-docs']);
     const ungrouped = list.filter(p => !grouped.has(p.id) && !HIDDEN_FROM_NAV.has(p.id));
     // Real bug fix (ISSUES.md round 2): "How to get started" stayed highlighted forever,
@@ -1484,12 +1558,67 @@ async function renderGaps() {
 }
 
 /* ---------------- Docs intake (for a future ingest-docs/add-feature run) ---------------- */
+/* ---------------- Upload review gate (2026-09-23) -- uploaded docs are staged and
+   classified first (archived folders, superseded versions, non-document noise) so a
+   human decides what's kept BEFORE it's stored and distilled. Uses ingest_docs.py's own
+   rules server-side, so this agrees with what the ingest itself would do. ------------ */
+async function commitStagedUpload(token, skip) {
+  const res = await fetch('/api/docs/bulk/commit', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({token, skip}),
+  });
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  const body = await res.json();
+  if (body.errors.length) alert('Kept ' + body.saved.length + '. ' + body.errors.length + ' problem(s): ' + body.errors.join('; '));
+  document.getElementById('uploadReviewOverlay').classList.remove('open');
+  renderDocs();
+  refreshSetupGate();  // the readiness banner only ever refreshed on load/target-apply
+  return body;
+}
+
+function openUploadReview(staged) {
+  const overlay = document.getElementById('uploadReviewOverlay');
+  const body = document.getElementById('uploadReviewBody');
+  const row = (file, note, checked) => `
+    <label style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.5px;border-bottom:1px solid var(--line);">
+      <input type="checkbox" data-skip-file="${esc(file)}" ${checked ? 'checked' : ''} style="margin-top:3px;">
+      <span><span style="overflow-wrap:anywhere;">${esc(file)}</span><br><span style="color:var(--ink-soft);font-size:11.5px;">${esc(note)}</span></span>
+    </label>`;
+  body.innerHTML = `
+    <h2 style="margin-top:0;">Review before keeping</h2>
+    <p style="color:var(--ink-soft);font-size:12.5px;">${staged.keep.length} file(s) look current and will be kept. These ${staged.superseded.length + staged.excluded.length} look like they shouldn't be — <b>ticked means skip</b>. Untick anything you actually want.</p>
+    <div style="max-height:320px;overflow:auto;margin:10px 0;">
+      ${staged.excluded.map(e => row(e.file, 'Excluded: ' + e.reason, true)).join('')}
+      ${staged.superseded.map(s => row(s.file, 'Superseded by ' + s.superseded_by.split('/').pop(), true)).join('')}
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn" id="uploadReviewCancel">Cancel</button>
+      <button class="btn primary" id="uploadReviewConfirm">Keep the rest</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('uploadReviewCancel').addEventListener('click', () => overlay.classList.remove('open'));
+  document.getElementById('uploadReviewConfirm').addEventListener('click', async () => {
+    const skip = Array.from(body.querySelectorAll('[data-skip-file]:checked')).map(el => el.dataset.skipFile);
+    try { await commitStagedUpload(staged.token, skip); }
+    catch (e) { alert('Could not save: ' + e.message); }
+  });
+}
+
 async function renderDocs() {
   loading();
   const {project, device} = window.CURRENT_TARGET || {};
   if (!project || !device) { errbox('No target selected — use "Change target" first.'); return; }
   try {
     const docs = await fetchJSON(`/api/docs?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`);
+    // Which folder Ingest will ACTUALLY read for this project -- the synced requirements
+    // library if there is one, else this upload folder. Surfaced here because the page
+    // previously implied uploading was the only route in, which sent George trying to
+    // push a 660MB zip of a library already sitting on disk (2026-09-23).
+    let source = null, sourcePath = null;
+    try {
+      const f = await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`);
+      source = f.source; sourcePath = f.path;
+    } catch (e) { /* best-effort only */ }
     const rows = docs.map(d => `
       <tr>
         <td>${esc(d.filename)}</td>
@@ -1498,11 +1627,28 @@ async function renderDocs() {
         <td><button class="btn" data-del-doc="${esc(d.filename)}" style="font-size:12px;padding:5px 10px;">Remove</button></td>
       </tr>`).join('');
     setContent(`
-      <div class="page-head"><h1>Docs — ${esc(project)} / ${esc(device)}</h1><p>Drop requirement specs, UX flows, or defect docs here for this project/device. Storage only today — no pipeline consumes this folder yet; that needs the same agent-run wiring the "Run" buttons on pipeline pages are waiting on.</p></div>
-      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);">ℹ Uploaded here, not yet auto-fed into ingest-docs / add-feature — that pipeline hookup is the next real step, not built yet.</div>
+      <div class="page-head"><h1>Docs — ${esc(project)} / ${esc(device)}</h1><p>Where Ingest reads this project's requirement docs from, and somewhere to attach the odd extra file.</p></div>
+      ${source === 'requirements_folder' ? `
+      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);">
+        ✓ Ingest reads <b>${esc(project)}</b> straight from your synced requirements folder — <code>${esc(sourcePath)}</code>.
+        Nothing to upload: keep that folder up to date (Google Drive for Desktop) and Ingest picks it up.
+        The upload below is only for the odd extra file that isn't in there.
+      </div>` : `
+      <div class="fixture-note">
+        ⚠ No synced requirements folder found for <b>${esc(project)}</b>, so Ingest will fall back to the uploads below
+        (<code>${esc(sourcePath || '')}</code>). For a full project library, sync it to
+        <code>%USERPROFILE%\TestOpsRequirements\${esc(project.toLowerCase())}\_current\</code> instead of uploading it —
+        far quicker than pushing it through the browser.
+      </div>`}
       <div class="card">
-        <h2>Upload a doc</h2>
-        <input type="file" id="docFileInput" style="margin-bottom:10px;">
+        <h2>Upload docs</h2>
+        <ol style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;padding-left:18px;line-height:1.55;">
+          <li>Gather the <b>latest version of each spec</b> you want covered — one folder is easiest.</li>
+          <li>Leave out anything archived, superseded, or not a requirement doc (drawings, videos, CAD, MS Project). If some slip in, the next step catches them.</li>
+          <li>Zip that folder (or pick the files directly — several at once is fine). Up to 3GB unzipped, 5000 files.</li>
+          <li>Upload. You'll get a <b>review step</b> listing anything that looks archived or superseded, so you decide what's kept before it's stored.</li>
+        </ol>
+        <input type="file" id="docFileInput" multiple style="margin-bottom:10px;">
         <button class="btn primary" id="docUploadBtn">Upload</button>
         <div id="docUploadMsg" style="margin-top:8px;font-size:12.5px;"></div>
       </div>
@@ -1540,17 +1686,20 @@ async function renderDocs() {
     document.getElementById('docUploadBtn').addEventListener('click', async () => {
       const input = document.getElementById('docFileInput');
       const msg = document.getElementById('docUploadMsg');
-      if (!input.files.length) { msg.textContent = 'Choose a file first.'; return; }
+      if (!input.files.length) { msg.textContent = 'Choose a file (or files, or a .zip) first.'; return; }
       const fd = new FormData();
-      fd.append('file', input.files[0]);
-      msg.textContent = 'Uploading…';
+      for (const f of input.files) fd.append('files', f);
+      msg.textContent = 'Uploading and checking…';
       try {
-        const res = await fetch(`/api/docs?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`, {method: 'POST', body: fd});
+        // Stage -> review -> commit, so archived/superseded docs are caught BEFORE they
+        // are stored, rather than after they've been distilled into knowledge (George,
+        // 2026-09-23 -- his Archieve/ folders had been ingested as current specs).
+        const res = await fetch(`/api/docs/bulk/stage?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`, {method: 'POST', body: fd});
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
-        renderDocs();
-        refreshSetupGate();  // found live: the readiness banner never re-checked after an
-                              // upload, so it kept saying "docs/knowledge" missing even once
-                              // real docs existed -- it only ever refreshed on page load/target-apply.
+        const staged = await res.json();
+        if (staged.errors.length) alert(staged.errors.length + ' problem(s): ' + staged.errors.join('; '));
+        if (staged.superseded.length + staged.excluded.length) { openUploadReview(staged); return; }
+        await commitStagedUpload(staged.token, []);
       } catch (e) { msg.textContent = 'Upload failed: ' + e.message; }
     });
     content.querySelectorAll('[data-del-doc]').forEach(btn => {
@@ -1564,6 +1713,155 @@ async function renderDocs() {
       });
     });
   } catch (e) { errbox('Could not load docs: ' + e.message); }
+}
+
+/* ---------------- Scheduled checks (2026-09-22): periodic, read-only doc-change watcher
+   per target -- George: "does our tool need to automatically read the docs... make
+   suggestions... do we need a way of seeing this automation happening". Opt-in per
+   target (nothing scanned by default); every real run is the same scheduled-scan
+   pipeline everything else here already tracks (cost, Log tab), just triggered either by
+   the background poller or this page's "Run now". ---------------- */
+function _scheduledDueCount(settings) {
+  const now = Date.now();
+  return settings.filter(s => {
+    if (!s.enabled) return false;
+    if (!s.last_run_at) return true;
+    return new Date(s.last_run_at + 'Z').getTime() + s.interval_days * 86400000 <= now;
+  }).length;
+}
+
+// Populates the sidebar badge without needing the whole page open (George: "a way of
+// seeing this automation happening") -- called once at startup and again whenever the
+// Scheduled checks page itself refreshes. Counts unreviewed SUGGESTIONS, not overdue
+// targets -- that's the number that's actually actionable ("something is waiting for a
+// decision"), overdue-but-not-yet-run is just internal scheduling state.
+function refreshScheduledBadge() {
+  fetchJSON('/api/scheduled-checks/suggestions').then(suggestions => {
+    const badge = document.getElementById('scheduledBadge');
+    if (!badge) return;
+    const n = suggestions.length;
+    badge.style.display = n ? '' : 'none';
+    badge.textContent = ` ${n}`;
+    badge.className = 'pill warn';
+    badge.style.marginLeft = '6px'; badge.style.fontSize = '10px';
+  }).catch(() => {});
+}
+
+// The actionable report itself (George, 2026-09-22: "a good report to get going with
+// actionables... display the checks status and suggestions... make decisions from
+// there"). Each card is one completed scheduled-scan run's real suggest_next output,
+// with Dismiss (marks it reviewed -- never shown again) and a link to the full run log
+// for the real detail (steps, cost, what changed) behind the summary.
+async function renderSuggestionsPanel(container) {
+  container.innerHTML = '<div class="loading">Loading suggestions…</div>';
+  try {
+    const suggestions = await fetchJSON('/api/scheduled-checks/suggestions');
+    if (!suggestions.length) {
+      container.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">No open suggestions right now.</p>`;
+      return;
+    }
+    container.innerHTML = suggestions.map(s => `
+      <div class="card" data-suggestion-run="${esc(s.id)}" style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+          <b>${esc(s.project)} / ${esc(s.device)}</b>
+          <span style="font-size:11.5px;color:var(--ink-soft);">${s.created_at ? esc(new Date(s.created_at + 'Z').toLocaleString()) : ''}</span>
+        </div>
+        <p style="font-size:13px;margin:8px 0;">${esc(s.summary || '(no summary recorded)')}</p>
+        <div style="display:flex;gap:10px;">
+          <button class="btn" data-suggestion-dismiss>Dismiss</button>
+          <a href="#" data-suggestion-log>View full log →</a>
+        </div>
+      </div>`).join('');
+    container.querySelectorAll('[data-suggestion-run]').forEach(card => {
+      const runId = card.dataset.suggestionRun;
+      const row = suggestions.find(s => s.id === runId);
+      card.querySelector('[data-suggestion-dismiss]').addEventListener('click', async () => {
+        await fetch(`/api/scheduled-checks/suggestions/${encodeURIComponent(runId)}/review`, {method: 'POST'}).catch(() => {});
+        card.remove();
+        refreshScheduledBadge();
+      });
+      card.querySelector('[data-suggestion-log]').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.CURRENT_TARGET = {project: row.project, device: row.device};
+        saveLastTarget(window.CURRENT_TARGET);
+        renderPipelineDetail('scheduled-scan');
+      });
+    });
+  } catch (e) { container.innerHTML = `<div class="errbox">Could not load suggestions: ${esc(e.message)}</div>`; }
+}
+
+async function renderScheduledPage() {
+  loading();
+  try {
+    const [settings, taxonomy] = await Promise.all([fetchJSON('/api/scheduled-checks'), fetchJSON('/api/taxonomy')]);
+    const byKey = Object.fromEntries(settings.map(s => [`${s.project}|${s.device}`, s]));
+    const allTargets = [];
+    for (const p of Object.keys(taxonomy)) for (const d of Object.keys(taxonomy[p] || {})) allTargets.push([p, d]);
+    // Any configured target not in the live taxonomy (a project/device since renamed or
+    // removed) still shows -- real stored state, never silently hidden.
+    for (const s of settings) if (!allTargets.some(([p, d]) => p === s.project && d === s.device)) allTargets.push([s.project, s.device]);
+    const now = Date.now();
+    const rows = allTargets.map(([p, d]) => {
+      const s = byKey[`${p}|${d}`];
+      const enabled = s ? !!s.enabled : false;
+      const interval = s ? s.interval_days : 7;
+      let dueText = '<span style="color:var(--ink-soft);">—</span>';
+      if (enabled) {
+        if (!s.last_run_at) dueText = `<span class="pill warn">due now</span>`;
+        else {
+          const dueAt = new Date(s.last_run_at + 'Z').getTime() + interval * 86400000;
+          dueText = dueAt <= now ? `<span class="pill warn">due now</span>` : `due ${new Date(dueAt).toLocaleDateString()}`;
+        }
+      }
+      return `<tr data-sched-row="${esc(p)}|${esc(d)}">
+        <td>${esc(p)}</td><td>${esc(d)}</td>
+        <td><input type="checkbox" data-sched-enabled ${enabled ? 'checked' : ''}></td>
+        <td><input type="number" min="1" value="${interval}" data-sched-interval style="width:60px;" ${enabled ? '' : 'disabled'}></td>
+        <td style="font-size:12px;color:var(--ink-soft);">${s && s.last_run_at ? esc(new Date(s.last_run_at + 'Z').toLocaleString()) : 'Never'}</td>
+        <td style="font-size:12px;">${dueText}</td>
+        <td><button class="btn" data-sched-run>Run now</button> ${s && s.last_run_id ? `<a href="#" data-sched-log>View log →</a>` : ''}</td>
+      </tr>`;
+    }).join('');
+    refreshScheduledBadge();
+    setContent(`
+      <div class="page-head"><h1>Scheduled checks</h1><p>Watches each opted-in project/device's local requirements docs on an interval. When something's changed, it ingests and suggests what to do next — it never applies anything itself. This app isn't a 24/7 service, so "scheduled" means checked on the next time it's running after the interval elapses, or click Run now any time.</p></div>
+      <h2 style="font-size:15px;margin:4px 0 10px;">Open suggestions</h2>
+      <div id="suggestionsPanel"><div class="loading">Loading…</div></div>
+      <h2 style="font-size:15px;margin:18px 0 10px;">Settings</h2>
+      <div class="card">
+        <table><tr><th>Project</th><th>Device</th><th>Enabled</th><th>Interval (days)</th><th>Last run</th><th>Status</th><th></th></tr>${rows}</table>
+      </div>`);
+    renderSuggestionsPanel(document.getElementById('suggestionsPanel'));
+    content.querySelectorAll('[data-sched-row]').forEach(row => {
+      const [project, device] = row.dataset.schedRow.split('|');
+      const enabledEl = row.querySelector('[data-sched-enabled]');
+      const intervalEl = row.querySelector('[data-sched-interval]');
+      const save = () => {
+        intervalEl.disabled = !enabledEl.checked;
+        fetch('/api/scheduled-checks', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({project, device, enabled: enabledEl.checked, interval_days: Number(intervalEl.value) || 7}),
+        }).catch(() => {});
+      };
+      enabledEl.addEventListener('change', save);
+      intervalEl.addEventListener('change', save);
+      row.querySelector('[data-sched-run]')?.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/scheduled-checks/run-now', {
+            method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({project, device}),
+          });
+          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+          renderScheduledPage();
+        } catch (e) { alert('Could not start: ' + e.message); }
+      });
+      row.querySelector('[data-sched-log]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.CURRENT_TARGET = {project, device};
+        saveLastTarget(window.CURRENT_TARGET);
+        renderPipelineDetail('scheduled-scan');
+      });
+    });
+  } catch (e) { errbox('Could not load Scheduled checks: ' + e.message); }
 }
 
 /* ---------------- Settings — TestRail credentials + all suite mappings, real API ---------------- */
@@ -1687,10 +1985,14 @@ async function renderPipelineDetail(id) {
     const SYSTEM_DERIVED_INPUTS = ['project', 'device', 'old_suite_id', 'new_suite_id', 'suite_id'];
     const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name));
     let docsFolder = null;
+    let docsSource = null;
+    let docsOptions = [];
     const isIngestDocs = extraInputs.some(i => i.name === 'docs_path');
     if (isIngestDocs && target.project && target.device) {
-      try { docsFolder = (await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)).path; }
-      catch (e) { /* best-effort default only */ }
+      try {
+        const r = await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
+        docsFolder = r.path; docsSource = r.source; docsOptions = r.options || [];
+      } catch (e) { /* best-effort default only */ }
     }
     // George's ask (ISSUES.md round 4): "ingest docs page needs overview of the current
     // documents uploaded for the target area" -- this data already existed (the separate
@@ -1701,12 +2003,56 @@ async function renderPipelineDetail(id) {
       try { currentDocs = await fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
       catch (e) { /* best-effort only */ }
     }
-    const currentDocsHtml = isIngestDocs ? `
+    // targeted-run's real section tree (George, 2026-09-22) -- fetched here, same
+    // pattern as docsFolder/currentDocs above, so the checkbox list renders with real
+    // data on first paint rather than a placeholder needing a second async fill.
+    let suiteSections = null;
+    if (id === 'targeted-run' && target.project && target.device) {
+      try {
+        const res = await fetchJSON(`/api/suite-sections?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
+        if (res.available) suiteSections = res.sections;
+      } catch (e) { /* best-effort only */ }
+    }
+    // Fixed 2026-09-22: this used to always show the console's small per-target upload
+    // list, even when docsFolder had actually resolved to the real synced requirements
+    // library instead -- said "no docs uploaded" for Translink/POS while 352 real docs
+    // sat untouched in TestOpsRequirements/translink/_current/. Now honest about which
+    // source docs_path actually is.
+    // When both a synced library and console uploads exist, let the user pick which one
+    // this run reads -- otherwise the synced folder silently wins and uploaded docs are
+    // ignored with no hint (2026-09-23). Defaults to the synced folder, as before.
+    const docsSourcePickerHtml = (isIngestDocs && docsOptions.length > 1) ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">Which docs should this run read?</b>
+        <select class="input" id="docsSourcePicker" style="display:block;margin-top:6px;">
+          ${docsOptions.map((o, idx) => `<option value="${esc(o.path)}" ${idx === 0 ? 'selected' : ''}>${esc(o.label)} — ${o.file_count} file(s)</option>`).join('')}
+        </select>
+        <p style="color:var(--ink-soft);font-size:12px;margin:6px 0 0;">Both exist for this target, so pick one. The docs path below updates to match.</p>
+      </div>` : '';
+    const currentDocsHtml = isIngestDocs ? (
+      docsSource === 'requirements_folder' ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">Using your synced requirements folder</b>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">${esc(docsFolder)}</p>
+        <p style="color:var(--ink-soft);font-size:12px;margin:4px 0 0;">This is the real, Google-Drive-synced library for this project — nothing to upload here. The Docs page's upload is only for attaching a few extra one-off files.</p>
+      </div>` : `
       <div class="card" style="margin-top:10px;">
         <b style="font-size:13px;">Currently uploaded for ${esc(target.project || '?')}/${esc(target.device || '?')}</b>
         ${currentDocs === null ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">Set a project/device target to see this.</p>`
           : currentDocs.length ? `<ul style="margin:8px 0 0;padding-left:18px;font-size:12.5px;">${currentDocs.map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul>`
-          : `<p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">No docs uploaded for this target yet — add them on the Docs page first.</p>`}
+          : `<p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">No docs uploaded for this target yet, and no synced requirements folder found either — add docs on the Docs page, or sync them to %USERPROFILE%\\TestOpsRequirements\\${esc((target.project||'').toLowerCase())}\\_current\\.</p>`}
+      </div>`
+    ) : '';
+    // Real preview, before committing to a tracked run (George, 2026-09-22: "an initial
+    // review of the docs before ingesting, so it can pass the gate"). Runs the exact same
+    // convert + relevance_check steps the real run would hit first -- no AI, so cheap to
+    // run as many times as needed while cleaning up a folder of docs.
+    const relevancePreviewHtml = isIngestDocs ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">Check relevance before running</b>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 8px;">Converts and scores every doc against this project's real, existing vocabulary — the same gate the real run hits first, without starting a tracked run.</p>
+        <button class="btn" id="relevancePreviewBtn">Check relevance</button>
+        <div id="relevancePreviewResult" style="margin-top:8px;"></div>
       </div>` : '';
     // docs_path is system-resolved from the target's own docs folder, not free text — a
     // typed path here can silently point ingest_docs.py somewhere wrong and break the run
@@ -1719,10 +2065,28 @@ async function renderPipelineDetail(id) {
     // JIRA-dropdown question, the decision (with George) was inline help text only, no new
     // searchable-dropdown backend work for now.
     const INPUT_HELP_TEXT = {
-      feature_or_jira_key: 'One or more JIRA keys like PROJ-123 (pulled live from JIRA — add several with the field below), or just a plain description of the feature/change if there’s no ticket.',
-      fix_version: 'One or more fix versions/releases — add several with the field below to review them together in one run.',
+      feature_or_jira_key: 'One or more JIRA keys, epic keys, or pasted browser URLs (a URL is auto-shortened to its key) — add several with the field below — or just a plain description of the feature/change if there’s no ticket. An epic pulls in all its child stories as one combined change.',
+      fix_version: 'One or more fix versions/releases, epic keys, or single ticket keys (bare key or a pasted browser URL) — add several with the field below to review them together in one run.',
       flow_data_path: 'Optional. Only if you have an Overflow UX flow-data JSON export for this device — leave blank otherwise (a from-scratch build genuinely may not have one; it’s skipped cleanly, not an error).',
+      only_file: 'Optional. Got just one new or changed document since the last ingest? Type its path (relative to the docs folder above) here and only that file gets converted — leave blank to re-scan the whole folder as usual.',
+      areas: 'Tick every real section this run should cover — e.g. tick EMV, leave Sign On unticked to run just EMV. A case counts if its section matches any ticked area.',
+      run_name: 'What this run will be called in TestRail — e.g. "EMV regression sweep".',
     };
+    // Design/audit-flows real step-by-step guide (George, 2026-09-22: "this page needs a
+    // very easy step-by-step guide at the top of what exactly the human user needs to do
+    // to get a file type that matters to put here"). Sourced directly from the real
+    // knowledge/flows/README.md process (Overflow is genuinely the only documented source
+    // today) — not inventing a broader set of accepted formats than actually exists.
+    const flowGuideHtml = id === 'audit-flows' ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">How to get a flow map this pipeline can use</b>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 10px;">This checks a device's flow map against its live TestRail suite — it needs a real <code>knowledge/flows/{project}-{device}-*.md</code> file first. Two ways to make one, either is fine:</p>
+        <ol style="font-size:12.5px;color:var(--ink-soft);margin:0 0 8px;padding-left:20px;">
+          <li>Export the flow from Overflow to PDF, drop it in <code>knowledge/flows/</code>, and ask Claude to transcribe it once into a structured <code>&lt;project&gt;-&lt;device&gt;.md</code> flow map.</li>
+          <li><b>Or</b>, for large/annotated diagrams: open the flow in Overflow with the Claude Chrome extension, ask it to <i>transcribe, not summarize</i> every board (screen names, exact annotation text, decision points, what triggers each connection), and paste the result in as that same <code>.md</code> file.</li>
+        </ol>
+        <p style="color:var(--ink-soft);font-size:12px;margin:0;">No flow map yet for this device? This pipeline will say so and point you back here rather than guessing — run <a href="#" data-goto-pipeline="audit-coverage">Release</a> in the meantime for JIRA-based coverage instead.</p>
+      </div>` : '';
     // Multiple JIRAs in one run (ISSUES.md round 4: "need a way to tell it multiple jiras
     // sometimes... fix version / release... or bugs / epics"). Real JQL already supports
     // `fixVersion in (...)`/`key in (...)` -- this is a UI-only change (chip input joined
@@ -1738,6 +2102,34 @@ async function renderPipelineDetail(id) {
           const locked = isDocsPath && docsFolder;
           const value = isDocsPath ? (docsFolder || '') : (i.default || '');
           const help = INPUT_HELP_TEXT[i.name];
+          // targeted-run's `areas` (George, 2026-09-22: "select EMV, no sign on stuff,
+          // run just that") -- a real checkbox tree of the target's actual TestRail
+          // sections, populated async below, not free text. @feature(<area>) IS the
+          // section per docs/gherkin-standard.md, so this is exactly what create-run
+          // --areas matches against.
+          if (id === 'targeted-run' && i.name === 'areas') {
+            const byParent = {};
+            (suiteSections || []).forEach(s => { (byParent[s.parent_id] = byParent[s.parent_id] || []).push(s); });
+            const renderLevel = (parentId, depth) => (byParent[parentId] || []).map(s => `
+              <div style="margin-left:${depth * 18}px;">
+                <label style="font-size:13px;display:flex;align-items:center;gap:6px;padding:2px 0;">
+                  <input type="checkbox" data-area-checkbox value="${esc(s.name)}"> ${esc(s.name)}
+                </label>
+                ${renderLevel(s.id, depth + 1)}
+              </div>`).join('');
+            const treeHtml = suiteSections === null
+              ? `<p style="color:var(--ink-soft);font-size:12.5px;">No suite configured for this target yet, or the live TestRail call failed — set a project/device target first.</p>`
+              : suiteSections.length === 0
+                ? `<p style="color:var(--ink-soft);font-size:12.5px;">This suite has no sections yet.</p>`
+                : renderLevel(null, 0);
+            return `
+          <label style="display:block;font-size:13px;margin-bottom:6px;">
+            Areas${i.required ? ' *' : ''}
+            ${help ? `<div style="color:var(--ink-soft);font-size:12px;margin:2px 0 4px;">${esc(help)}</div>` : ''}
+          </label>
+          <div id="areasTree" data-areas-tree style="margin-bottom:6px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px;">${treeHtml}</div>
+          <input type="hidden" data-extra-input="areas" value="" />`;
+          }
           if (JIRA_CHIP_FIELDS.has(i.name)) {
             return `
           <label style="display:block;font-size:13px;margin-bottom:6px;">
@@ -1747,7 +2139,7 @@ async function renderPipelineDetail(id) {
           <div class="jira-chip-field" data-chip-field="${esc(i.name)}" style="margin-bottom:6px;">
             <div class="jira-chip-list" data-chip-list style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
             <div style="display:flex;gap:6px;">
-              <input type="text" class="input" data-chip-text-input placeholder="${i.name === 'fix_version' ? 'e.g. 4.2.0, then Add' : 'e.g. PROJ-123, then Add'}" style="flex:1;" />
+              <input type="text" class="input" data-chip-text-input placeholder="${i.name === 'fix_version' ? 'e.g. 4.2.0, or an epic/ticket key or URL, then Add' : 'PROJ-123, an epic key, or a pasted JIRA URL, then Add'}" style="flex:1;" />
               <button type="button" class="btn" data-chip-add>Add</button>
             </div>
             <input type="hidden" data-extra-input="${esc(i.name)}" value="" />
@@ -1779,6 +2171,20 @@ async function renderPipelineDetail(id) {
           </label>`;
         }).join('')}
       </div>` : '';
+    // Universal "what are you trying to achieve" field (George, 2026-09-24) -- unlike
+    // extraInputsHtml above, NOT built from this pipeline's own declared `inputs:` list, so
+    // it shows up for every pipeline regardless of what that pipeline declares. Submission
+    // needs no extra wiring: runPipeline() already collects every `[data-extra-input]`
+    // element on the page into extra_inputs, and run history already renders whatever lands
+    // in extra_inputs (see loadRunHistory), so `intent` just rides both of those for free.
+    const intentHtml = `
+      <div class="card" style="margin-top:10px;">
+        <label style="display:block;font-size:13px;margin-bottom:6px;">
+          What are you trying to achieve with this run? <span style="color:var(--ink-soft);">(optional)</span>
+          <div style="color:var(--ink-soft);font-size:12px;margin:2px 0 4px;">Extra context for the agent steps in this run -- e.g. "I need this grounded for back-office comms testing, not just device navigation." Doesn't override the pipeline's own steps, just helps it make better judgment calls.</div>
+        </label>
+        <textarea class="input" data-extra-input="intent" rows="3" style="display:block;width:100%;margin-top:2px;resize:vertical;"></textarea>
+      </div>`;
     const runButton = detail.runnable
       ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
       : `<div class="tooltip-wrap"><button class="btn primary" disabled>Run</button><span class="tip">Not wired yet — only read-only pipelines are, so far</span></div>`;
@@ -1800,14 +2206,45 @@ async function renderPipelineDetail(id) {
         <button class="tab-btn" id="pipelineTabLog" data-ptab="log">Log</button>
       </div>
       <div id="pipelineDetailsBody">
+        ${flowGuideHtml}
         ${extraInputsHtml}
+        ${intentHtml}
+        ${docsSourcePickerHtml}
         ${currentDocsHtml}
+        ${relevancePreviewHtml}
         <div class="card"><div class="flow" style="display:block;">${steps}</div></div>
         <div id="pipelineStepList" class="card" style="margin-top:10px;display:none;"></div>
         <div id="pipelineRunResult"></div>
       </div>
       <div id="pipelineLogBody" style="display:none;"></div>`);
     wireChipFields(content);
+    wireAreasTree(content);
+    document.getElementById('docsSourcePicker')?.addEventListener('change', (e) => {
+      const el = content.querySelector('[data-extra-input="docs_path"]');
+      if (el) el.value = e.target.value;
+    });
+    document.getElementById('relevancePreviewBtn')?.addEventListener('click', async () => {
+      const resultEl = document.getElementById('relevancePreviewResult');
+      const docsPathEl = content.querySelector('[data-extra-input="docs_path"]');
+      const projectVal = target.project;
+      const docsPathVal = docsPathEl ? docsPathEl.value : '';
+      if (!projectVal || !docsPathVal) {
+        resultEl.innerHTML = `<p style="color:var(--warn);font-size:12.5px;">Need a project target and a resolved docs path first.</p>`;
+        return;
+      }
+      resultEl.innerHTML = `<div class="loading">Converting and checking relevance…</div>`;
+      try {
+        const res = await fetch('/api/docs/relevance-preview', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({project: projectVal, docs_path: docsPathVal}),
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        const body = await res.json();
+        resultEl.innerHTML = body.ok
+          ? `<p style="font-size:13px;"><span class="pill ok">Clean</span> Every doc looks relevant — safe to Run.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:200px;overflow:auto;">${esc(body.output)}</pre>`
+          : `<p style="font-size:13px;"><span class="pill bad">${esc(body.stage)}</span> Fix this before running — the real run would stop here too.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:240px;overflow:auto;">${esc(body.output)}</pre>`;
+      } catch (e) { resultEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    });
     document.getElementById('pipelineTabDetails')?.addEventListener('click', (e) => {
       e.currentTarget.classList.add('active');
       document.getElementById('pipelineTabLog')?.classList.remove('active');
@@ -1897,22 +2334,30 @@ async function renderPipelineLog(id, target, container) {
     }
     // Same status->pill-colour mapping renderRunStep already uses for a live run's steps.
     const RUN_PILL_CLASS = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'};
-    const rows = runs.map(r => {
+    // Real per-run AI cost (George, 2026-09-22: token/cost visibility) -- best-effort, one
+    // call per run; a run with no cost-tracked steps just shows "—", never a fabricated 0.
+    const costs = await Promise.all(runs.map(r => fetchJSON(`/api/pipelines/runs/${r.id}/cost`).catch(() => ({available: false}))));
+    const rows = runs.map((r, i) => {
       const when = r.created_at ? new Date(r.created_at + 'Z').toLocaleString() : '';
       const given = r.extra_inputs && Object.keys(r.extra_inputs).length
         ? Object.entries(r.extra_inputs).filter(([, v]) => v).map(([k, v]) => `<b>${esc(k)}:</b> ${esc(v)}`).join('<br>')
         : '<span style="color:var(--ink-soft);">not recorded</span>';
+      const c = costs[i];
+      const costCell = c.available
+        ? `$${c.cost_usd.toFixed(3)} <span style="color:var(--ink-soft);">(${(c.input_tokens + c.output_tokens).toLocaleString()} tok)</span>`
+        : `<span style="color:var(--ink-soft);">—</span>`;
       return `<tr>
         <td style="white-space:nowrap;">${esc(when)}</td>
         <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
         <td style="font-size:12.5px;">${given}</td>
+        <td style="font-size:12.5px;white-space:nowrap;">${costCell}</td>
         <td style="font-size:12.5px;color:var(--ink-soft);">${esc(r.summary || '')}</td>
       </tr>`;
     }).join('');
     container.innerHTML = `
       <div class="card">
         <table style="width:100%;">
-          <tr><th>When</th><th>Status</th><th>Given</th><th>Summary</th></tr>
+          <tr><th>When</th><th>Status</th><th>Given</th><th>AI cost</th><th>Summary</th></tr>
           ${rows}
         </table>
       </div>`;
@@ -2094,9 +2539,16 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
 // untouched either way.
 const GROUPS = {
   'Start': ['start', 'ingest-docs'],
-  Build: ['onboard-suite', 'add-feature', 'consolidate'],
+  // new-suite-from-docs deliberately has NO button (2026-09-23). It IS real and runnable
+  // -- it chains Ingest + Onboarding -- but once the detail page was fixed to show the
+  // steps it really expands to, the cost was obvious: for Translink that's 136 steps, 65
+  // AI calls and 59 separate Approve & Push gates in one click. Running Ingest, checking
+  // the relevance gate and what distilled, THEN onboarding is both cheaper and safer, and
+  // you click approve the same number of times either way. The pipeline file stays as
+  // plumbing; it just isn't offered as a button.
+  Build: ['onboard-suite', 'add-feature', 'consolidate', 'targeted-run'],
   Audit: ['audit-coverage', 'audit-flows', 'audit'],
-  Maintain: ['fold-defect', 'review-runs', 'maintain', 'resolve-gaps'],
+  Maintain: ['fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps'],
 };
 // Display-only renames (round 2, ISSUES.md) -- never the real pipeline `id` or group DOM
 // id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
@@ -2108,17 +2560,21 @@ const GROUP_DISPLAY_NAME = {
 const PIPELINE_DISPLAY_NAME = {
   start: 'Setup',
   'onboard-suite': 'Onboarding',
-  'add-feature': 'JIRA',
-  consolidate: 'Duplication',
+  'add-feature': 'Feature',
+  consolidate: 'Merge',
   'export-automation': 'Pull cases',
   'write-automation': 'Write',
-  'audit-coverage': 'JIRA Coverage',
-  'audit-flows': 'Flow Maps',
-  audit: 'Gherkin',
-  'fold-defect': 'Defects',
-  'review-runs': 'Review runs',
-  maintain: 'Testrail',
-  'resolve-gaps': 'Push gaps',
+  'draft-automation': 'Draft',
+  'targeted-run': 'Targeted run',
+  'audit-coverage': 'Release',
+  'audit-flows': 'Design',
+  audit: 'Standard',
+  'fold-defect': 'Defect',
+  'review-runs': 'History',
+  'consolidation-check': 'Merge check',
+  'traceability-check': 'Trace check',
+  maintain: 'Checkup',
+  'resolve-gaps': 'Resolve',
 };
 // "Proper English" rule (ISSUES.md round 2): a label the TOOL generates (this fallback,
 // when a pipeline has no explicit display name above) must read as a normal sentence/
@@ -2189,12 +2645,31 @@ async function renderAutomationDashboard(project, device_type) {
     if (device_type) params.set('device_type', device_type);
     const d = await fetchJSON(`/api/automation/tests${params.toString() ? '?' + params : ''}`);
     const s = d.summary;
-    const barRow = (label, obj, cls) => Object.keys(obj).length ? Object.entries(obj).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="width:100px;font-size:12.5px;flex:none;">${esc(k)}</span>
-        <div style="flex:1;background:var(--bg);border-radius:4px;height:8px;overflow:hidden;"><div style="height:100%;width:${Math.max(4, v/s.total_tests*100)}%;background:var(--${cls});"></div></div>
-        <span style="font-size:12px;color:var(--ink-soft);width:24px;text-align:right;">${v}</span>
-      </div>`).join('') : '<p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p>';
+    // Horizontal bar, one hue, sorted high->low -- the right form for "compare magnitude"
+    // with long category names (feature names like sso_etm_to_ivn_interface). Rebuilt
+    // 2026-09-23: was a flex row with a hard 100px label that long names overflowed,
+    // wrapping to two lines while the bar and value stayed on the first -- George: "with
+    // a like bar, but overlaps the text... will always look weird for all projects".
+    // A grid keeps label / track / value in their own columns at any name length, and
+    // scales to any project's feature set. (Not a pie: pie is for a single ratio against
+    // a limit, not 10+ ranked magnitudes.)
+    // GAP stubs are excluded from this data entirely (George, 2026-09-23: "a complete gap
+    // stub just doesn't need to be included in the data until written properly") -- the
+    // parser still identifies them, purely so they can be left out. A written test that
+    // merely needs a small assertion tweak still counts; a pure skip-stub doesn't exist yet.
+    const barRow = (label, obj, cls) => {
+      const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+      const max = Math.max(1, ...entries.map(([, v]) => v));
+      if (!entries.length) return '<p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p>';
+      return entries.map(([k, v]) => `
+      <div style="display:grid;grid-template-columns:minmax(0,34%) 1fr auto;align-items:center;gap:10px;margin-bottom:7px;" title="${esc(k)}: ${v}">
+        <span style="font-size:12.5px;overflow-wrap:anywhere;line-height:1.3;">${esc(k)}</span>
+        <div style="background:var(--bg);border-radius:4px;height:8px;overflow:hidden;">
+          <div style="height:100%;width:${Math.max(2, v / max * 100)}%;background:var(--${cls});border-radius:4px;"></div>
+        </div>
+        <span style="font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap;">${v}</span>
+      </div>`).join('');
+    };
     setContent(`
       <div class="page-head"><h1>Automation dashboard</h1><p>Real counts, parsed live from test-automation-sit's own .robot files — not SIT keywords, actual written tests.</p></div>
       <div class="card">
@@ -2328,7 +2803,7 @@ async function renderFlows() {
   await renderFlowsBody(document.getElementById('flowsBodyStandalone'));
 }
 
-const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings};
+const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
 const AUTOMATION_VIEWS = {dashboard: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
@@ -2382,6 +2857,7 @@ async function populateAutomationProjectsNav() {
   } catch (e) { el.innerHTML = `<div class="navgroup-header"><div class="label">Projects</div></div>`; }
 }
 populateAutomationProjectsNav();
+refreshScheduledBadge();
 renderHealth();
 
 /* ---------------- User menu popup (Docs/Settings, moved off the main nav list) ---------------- */
@@ -2394,22 +2870,150 @@ userMenuBtn.addEventListener('click', (e) => {
 userMenuPopup.addEventListener('click', (e) => { e.stopPropagation(); userMenuPopup.style.display = 'none'; });
 document.addEventListener('click', () => { userMenuPopup.style.display = 'none'; });
 
+/* ---------------- Project tab (2026-09-22): a real per-project rollup -- which devices
+   are onboarded, suite health at a glance, open gaps, last audit -- built entirely from
+   existing endpoints (taxonomy, suite-mappings, setup-status, gap-register, last-run).
+   No new backend needed; this is a landing page over data that already exists but was
+   only ever visible one project/device at a time via Change target. ---------------- */
+async function renderProjectPage() {
+  loading();
+  try {
+    const [taxonomy, mappings] = await Promise.all([fetchJSON('/api/taxonomy'), fetchJSON('/api/suite-mappings')]);
+    const mapByKey = Object.fromEntries(mappings.map(m => [`${m.project}|${m.device}`, m]));
+    const projects = Object.keys(taxonomy).sort();
+    const cardsHtml = projects.map(p => {
+      const devices = Object.keys(taxonomy[p] || {}).sort();
+      const rows = devices.map(d => {
+        const m = mapByKey[`${p}|${d}`];
+        const onboarded = m && m.new_suite_id;
+        return `<tr data-proj-row="${esc(p)}|${esc(d)}" style="cursor:pointer;">
+          <td>${esc(d)}</td>
+          <td>${onboarded ? `<span class="pill ok">Onboarded</span>` : `<span class="pill warn">Not set up</span>`}</td>
+          <td style="font-size:12px;color:var(--ink-soft);" data-proj-audit="${esc(p)}|${esc(d)}">…</td>
+          <td style="font-size:12px;color:var(--ink-soft);" data-proj-gaps="${esc(p)}|${esc(d)}">…</td>
+        </tr>`;
+      }).join('');
+      return `<div class="card">
+        <h2>${esc(p)}</h2>
+        <table><tr><th>Device</th><th>Status</th><th>Last audit</th><th>Open gaps</th></tr>${rows}</table>
+      </div>`;
+    }).join('');
+    setContent(`<div class="page-head"><h1>Project</h1><p>Every project/device this console knows about, at a glance.</p></div>
+      <div class="grid2">${cardsHtml}</div>`);
+    content.querySelectorAll('[data-proj-row]').forEach(row => {
+      row.addEventListener('click', () => {
+        const [project, device] = row.dataset.projRow.split('|');
+        window.CURRENT_TARGET = {project, device};
+        saveLastTarget(window.CURRENT_TARGET);
+        const healthBtn = document.querySelector('.navitem[data-view="health"]');
+        if (healthBtn) setActiveNav(healthBtn); // tabTestOps's own click handler re-renders whichever navitem is active
+        document.getElementById('tabTestOps').click();
+      });
+    });
+    // Best-effort per-device live fills -- last audit + open-gap count. Fire-and-forget,
+    // each cell independently; one slow/failed lookup never blocks the rest of the page.
+    for (const p of projects) {
+      for (const d of Object.keys(taxonomy[p] || {})) {
+        fetchJSON(`/api/pipelines/audit/last-run?project=${encodeURIComponent(p)}&device=${encodeURIComponent(d)}`)
+          .then(r => { const el = content.querySelector(`[data-proj-audit="${p}|${d}"]`); if (el) el.textContent = r.status ? `${r.status} — ${new Date(r.updated_at + 'Z').toLocaleDateString()}` : 'Never run'; })
+          .catch(() => {});
+        fetchJSON(`/api/gap-register?project=${encodeURIComponent(p)}&device=${encodeURIComponent(d)}&scope=device&limit=1`)
+          .then(r => { const el = content.querySelector(`[data-proj-gaps="${p}|${d}"]`); if (el) el.textContent = String(r.total ?? 0); })
+          .catch(() => {});
+      }
+    }
+  } catch (e) { errbox('Could not load Project: ' + e.message); }
+}
+
+/* ---------------- Reports tab (2026-09-22): real generated report files (coverage.md,
+   run-health-report.md, build-complete.md, etc.) plus the SAME live numbers the Status
+   page already computes for whichever target is current -- a live dashboard view, not
+   just a stale file list (George: "integrate those reports into a real live view of the
+   data... as well as a link to the reports"). ---------------- */
+async function renderReportsPage() {
+  loading();
+  const target = window.CURRENT_TARGET || {};
+  try {
+    const [reports, liveSummary] = await Promise.all([
+      fetchJSON('/api/reports'),
+      target.project && target.device
+        ? fetchJSON('/api/build-stats').catch(() => null)
+        : Promise.resolve(null),
+    ]);
+    const liveHtml = liveSummary ? `
+      <div class="card">
+        <h2>Live — ${esc(target.project)}/${esc(target.device)}</h2>
+        <div class="stat-row">
+          <div class="stat"><span class="n">${liveSummary.cases_total}</span><span class="l">cases total</span></div>
+          <div class="stat ok"><span class="n">${liveSummary.delta.added.length}</span><span class="l">added</span></div>
+          <div class="stat warn"><span class="n">${liveSummary.delta.edited.length}</span><span class="l">edited</span></div>
+          ${liveSummary.gap_open_count !== null ? `<div class="stat bad"><span class="n">${liveSummary.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
+        </div>
+      </div>` : `<div class="card"><h2>Live data</h2><p style="color:var(--ink-soft);font-size:12.5px;">Set a project/device target (Change target) to see live numbers here too.</p></div>`;
+    const rows = reports.map((r, i) => `<tr data-report-idx="${i}" style="cursor:pointer;">
+      <td>${esc(r.project)}</td>
+      <td style="font-size:12.5px;">${esc(r.path)}</td>
+      <td style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">${new Date(r.modified_at * 1000).toLocaleString()}</td>
+      <td style="font-size:12px;color:var(--ink-soft);">${(r.size / 1024).toFixed(1)} KB</td>
+    </tr>`).join('');
+    setContent(`
+      <div class="page-head"><h1>Reports</h1><p>Every real report this console/system-test-ops has generated, plus a live view of the current target.</p></div>
+      ${liveHtml}
+      <div class="card">
+        <h2>Generated reports${reports.length ? ` (${reports.length})` : ''}</h2>
+        ${reports.length
+          ? `<table><tr><th>Project</th><th>Path</th><th>Generated</th><th>Size</th></tr>${rows}</table>`
+          : `<p style="color:var(--ink-soft);font-size:13px;">No report files found under system-test-ops/reports/ yet.</p>`}
+      </div>
+      <div id="reportPreview"></div>`);
+    content.querySelectorAll('[data-report-idx]').forEach(row => {
+      row.addEventListener('click', async () => {
+        const r = reports[Number(row.dataset.reportIdx)];
+        const el = document.getElementById('reportPreview');
+        el.innerHTML = `<div class="card"><div class="loading">Loading ${esc(r.filename)}…</div></div>`;
+        try {
+          const body = await fetchJSON(`/api/reports/content?path=${encodeURIComponent(r.path)}`);
+          el.innerHTML = `<div class="card"><h2>${esc(r.path)}</h2><pre style="white-space:pre-wrap;font-size:12.5px;max-height:480px;overflow:auto;">${esc(body.text)}</pre></div>`;
+        } catch (e) { el.innerHTML = `<div class="errbox">Could not load: ${esc(e.message)}</div>`; }
+      });
+    });
+  } catch (e) { errbox('Could not load Reports: ' + e.message); }
+}
+
 /* ---------------- Console-mode tab switcher ---------------- */
 const tabTestOps = document.getElementById('tabTestOps');
 const tabAutomation = document.getElementById('tabAutomation');
+const tabProject = document.getElementById('tabProject');
+const tabReports = document.getElementById('tabReports');
 const testOpsNav = document.getElementById('navgroups');
 const automationNav = document.getElementById('automationNavgroups');
+function setConsoleTabActive(tab) {
+  [tabTestOps, tabAutomation, tabProject, tabReports].forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+}
 tabTestOps.addEventListener('click', () => {
-  tabTestOps.classList.add('active'); tabAutomation.classList.remove('active');
+  setConsoleTabActive(tabTestOps);
   testOpsNav.style.display = ''; automationNav.style.display = 'none';
   const active = document.querySelector('#navgroups .navitem.active') || document.querySelector('#navgroups .navitem[data-view]');
   if (active) { setActiveNav(active); (VIEWS[active.dataset.view] || renderHealth)(); } else { renderHealth(); }
 });
 tabAutomation.addEventListener('click', () => {
-  tabAutomation.classList.add('active'); tabTestOps.classList.remove('active');
+  setConsoleTabActive(tabAutomation);
   testOpsNav.style.display = 'none'; automationNav.style.display = '';
   const firstBtn = document.querySelector('#automationNavgroups .navitem[data-aview]');
   if (firstBtn) { setActiveNav(firstBtn); AUTOMATION_VIEWS[firstBtn.dataset.aview](); }
+});
+tabProject.addEventListener('click', () => {
+  setConsoleTabActive(tabProject);
+  testOpsNav.style.display = 'none'; automationNav.style.display = 'none';
+  CURRENT_RERENDER = renderProjectPage;
+  renderProjectPage();
+});
+tabReports.addEventListener('click', () => {
+  setConsoleTabActive(tabReports);
+  testOpsNav.style.display = 'none'; automationNav.style.display = 'none';
+  CURRENT_RERENDER = renderReportsPage;
+  renderReportsPage();
 });
 
 /* ---------------- Target switcher — real taxonomy + real, API-backed suite mappings ---------------- */

@@ -50,8 +50,51 @@ def test_excludes_njt_reference_material_copied_from_sit():
 
 
 def test_summarize_totals_match_sum_of_suites():
+    """`total_tests` is WRITTEN tests only -- `[Setup] Skip GAP` placeholders never enter
+    the dataset (dropped in load_all_suites), so this straight equality still holds."""
     suites = load_all_suites()
     summary = summarize(suites)
     assert summary["total_tests"] == sum(len(s.cases) for s in suites)
     assert summary["total_suites"] == len(suites)
     assert sum(summary["by_project"].values()) == summary["total_tests"]
+
+
+def test_gap_stub_tests_are_dropped_entirely_not_counted_as_written(tmp_path, monkeypatch):
+    """Found live 2026-09-23: 459 of NJT's reported 460 "tests written" were
+    `[Setup] Skip GAP: ...` placeholders that automate nothing. They're dropped from the
+    dataset entirely -- not counted, not listed -- until genuinely written."""
+    from model import automation_tests as at
+
+    proj = tmp_path / "projects" / "fakeproj" / "tests"
+    proj.mkdir(parents=True)
+    (proj / "test_stub.robot").write_text(
+        "*** Settings ***\n"
+        "Force Tags    project:fakeproj    device_types:ETM    feature:comms\n\n"
+        "*** Test Cases ***\n"
+        "A stubbed case\n"
+        "    [Tags]    testrailid=C1\n"
+        "    [Setup]    Skip    GAP: no device library yet\n"
+        "    Case Is Not Yet Automatable\n",
+        encoding="utf-8",
+    )
+    (proj / "test_real.robot").write_text(
+        "*** Settings ***\n"
+        "Force Tags    project:fakeproj    device_types:ETM    feature:comms\n\n"
+        "*** Test Cases ***\n"
+        "A real case\n"
+        "    [Tags]    testrailid=C2\n"
+        "    Given the device is at idle\n"
+        "    Then something real happens\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(at, "ROOT", tmp_path)
+    summary = at.summarize(at.load_all_suites())
+
+    assert summary["total_tests"] == 1     # only the real one
+    assert summary["total_suites"] == 1    # the all-stub suite is dropped entirely
+    assert summary["by_project"]["fakeproj"] == 1
+    assert summary["by_feature"]["comms"] == 1
+    # the stub never reaches the dataset at all
+    suites = at.load_all_suites()
+    assert all(not c.is_gap_stub for s in suites for c in s.cases)
+    assert not any("test_stub.robot" in s.source_file for s in suites)

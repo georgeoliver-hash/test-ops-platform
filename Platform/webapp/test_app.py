@@ -12,9 +12,11 @@ the import itself happens at module load, before any pytest fixture could run fi
 """
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 
+import pytest
 import yaml
 
 os.environ["TESTOPS_WEBAPP_DATA_DIR"] = tempfile.mkdtemp(prefix="testops-webapp-test-")
@@ -78,6 +80,15 @@ def test_taxonomy_returns_real_projects():
     data = res.json()
     assert "Translink" in data
     assert "POS_Way6" in data["Translink"]["POS"]
+
+
+def test_taxonomy_excludes_sit1_non_client_scaffolding():
+    """SIT1 is real mirrored data (sit repo's own Resources/Common/ConfigSets/SIT1) but
+    it's that framework's internal/demo ConfigSet, not a Flowbird client -- confirmed
+    with George 2026-09-22 ("remove sit1 not a project") -- must never show in the
+    project dropdown."""
+    res = client.get("/api/taxonomy")
+    assert "SIT1" not in res.json()
 
 
 def test_features_returns_real_gap_for_njt():
@@ -356,6 +367,111 @@ def test_docs_upload_list_and_delete_roundtrip():
     assert client.get("/api/docs", params={"project": "NJT", "device": "BV"}).json() == []
 
 
+def test_bulk_upload_saves_multiple_individual_files():
+    res = client.post(
+        "/api/docs/bulk",
+        params={"project": "NJT", "device": "TVM"},
+        files=[
+            ("files", ("a.md", b"doc a", "text/markdown")),
+            ("files", ("b.md", b"doc b", "text/markdown")),
+        ],
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert set(body["saved"]) == {"a.md", "b.md"}
+    assert body["errors"] == []
+    names = {d["filename"] for d in client.get("/api/docs", params={"project": "NJT", "device": "TVM"}).json()}
+    assert names == {"a.md", "b.md"}
+
+
+def test_bulk_upload_extracts_a_real_zip():
+    import io
+    import zipfile
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("spec1.md", "content one")
+        zf.writestr("nested/spec2.md", "content two")  # flattened to spec2.md
+        zf.writestr("__MACOSX/junk", "ignore me")
+    res = client.post(
+        "/api/docs/bulk",
+        params={"project": "NJT", "device": "GV"},
+        files=[("files", ("docs.zip", buf.getvalue(), "application/zip"))],
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert set(body["saved"]) == {"spec1.md", "spec2.md"}
+
+
+def test_bulk_upload_refuses_zip_with_too_many_entries(monkeypatch):
+    import io
+    import zipfile
+    from Platform.webapp import app as app_module
+    monkeypatch.setattr(app_module, "_ZIP_MAX_ENTRIES", 2)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        for i in range(5):
+            zf.writestr(f"file{i}.md", "x")
+    res = client.post(
+        "/api/docs/bulk",
+        params={"project": "NJT", "device": "HHD"},
+        files=[("files", ("docs.zip", buf.getvalue(), "application/zip"))],
+    )
+    body = res.json()
+    assert body["saved"] == []
+    assert any("exceeds" in e for e in body["errors"])
+
+
+def test_bulk_upload_rejects_bad_zip():
+    res = client.post(
+        "/api/docs/bulk",
+        params={"project": "NJT", "device": "PV"},
+        files=[("files", ("broken.zip", b"not actually a zip", "application/zip"))],
+    )
+    body = res.json()
+    assert body["saved"] == []
+    assert "not a valid zip" in body["errors"][0]
+
+
+def test_relevance_preview_reports_convert_failure(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    class FakeResult:
+        returncode = 1
+        stdout = ""
+        stderr = "boom"
+
+    monkeypatch.setattr(runner_module.subprocess, "run", lambda *a, **k: FakeResult())
+    res = client.post("/api/docs/relevance-preview", json={"project": "NJT", "docs_path": str(tmp_path)})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["ok"] is False
+    assert body["stage"] == "convert"
+
+
+def test_relevance_preview_reports_relevance_failure(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    calls = []
+
+    def fake_run(cmd, cwd, capture_output, text, timeout):
+        calls.append(cmd)
+        class R: pass
+        r = R()
+        if "ingest_docs.py" in cmd[1]:
+            r.returncode = 0; r.stdout = "converted"; r.stderr = ""
+        else:
+            r.returncode = 1; r.stdout = "golf-brochure.txt flagged"; r.stderr = ""
+        return r
+
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/docs/relevance-preview", json={"project": "NJT", "docs_path": str(tmp_path)})
+    body = res.json()
+    assert body["ok"] is False
+    assert body["stage"] == "relevance_check"
+    assert "golf-brochure" in body["output"]
+    assert len(calls) == 2
+
+
 def test_docs_delete_unknown_is_404():
     res = client.delete("/api/docs/NoSuch/DEV/missing.md")
     assert res.status_code == 404
@@ -476,6 +592,33 @@ def test_ingest_docs_run_accepts_docs_path_and_templates_it_into_the_convert_ste
     convert_cmd = next(cmd for cmd in captured_cmds if "ingest_docs.py" in " ".join(cmd))
     assert "C:/docs/njt" in convert_cmd
     assert "--project" in convert_cmd and "NJT" in convert_cmd
+
+
+def test_ingest_docs_relevance_gate_blocks_distil_on_failure(monkeypatch):
+    """George, 2026-09-22: "we need to be checking the docs are 100% relevant" -- a
+    failing relevance_check (kind: gate) must stop the run before distil ever reads
+    anything, not just print a warning and continue."""
+    from Platform.webapp import runner as runner_module
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if "check_doc_relevance.py" in " ".join(cmd):
+            return 1, "1 doc(s) look UNRELATED to NJT -- golf-brochure.txt", ""
+        return 0, "ok\n", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    res = client.post(
+        "/api/pipelines/ingest-docs/run",
+        json={"project": "NJT", "device": "ETM", "extra_inputs": {"docs_path": "C:/docs/njt"}},
+    )
+    run_id = res.json()["run_id"]
+    client.post(f"/api/pipelines/runs/{run_id}/steps/sync_check/resolve")
+
+    steps = {s["step_id"]: s for s in client.get(f"/api/pipelines/runs/{run_id}/steps").json()}
+    assert steps["relevance_check"]["status"] == "failed"
+    assert steps["distil"]["status"] == "pending"  # never reached
+    assert client.get(f"/api/pipelines/runs/{run_id}").json()["status"] == "failed"
 
 
 def test_ingest_docs_commit_pr_is_a_plain_human_step_not_a_push_gate(monkeypatch):
@@ -1063,6 +1206,78 @@ def test_write_automation_agent_step_runs_in_test_automation_sit_cwd(monkeypatch
     assert str(runner_module.TEST_AUTOMATION_SIT_ROOT) in seen_cwds
 
 
+def test_run_intent_appended_to_agent_prompt(monkeypatch):
+    """The universal, optional 'what are you trying to achieve with this run' free-text
+    field (George, 2026-09-24) rides the existing extra_inputs mechanism -- no per-pipeline
+    inputs: declaration needed. When supplied, it must reach the real agent subprocess
+    prompt, clearly framed as context to weigh rather than a literal instruction."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    seen_cmds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        seen_cmds.append(cmd)
+        return 0, "wrote 3 .robot files", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run(
+        "write-automation", "Translink", "TVM",
+        extra_inputs={"intent": "Ground this in back-office comms, not just navigation."},
+    )
+    client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/stage_backlog/resolve")
+
+    assert store.get_step(run_id, "write_tests")["status"] == "succeeded"
+    write_tests_cmd = seen_cmds[0]
+    prompt = write_tests_cmd[write_tests_cmd.index("-p") + 1]
+    assert "Stated intent for this run" in prompt
+    assert "Ground this in back-office comms, not just navigation." in prompt
+    # framed as context, not a command that overrides the step's own instructions
+    assert "the step's own instructions above still govern" in prompt
+
+
+def test_run_intent_omitted_when_not_supplied(monkeypatch):
+    """Omitting intent (the common case, and every pre-existing run/test) must not change
+    the prompt at all -- this field is purely additive."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    seen_cmds = []
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        seen_cmds.append(cmd)
+        return 0, "wrote 3 .robot files", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("write-automation", "Translink", "TVM")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/confirm_devices/resolve")
+    client.post(f"/api/pipelines/runs/{run_id}/steps/stage_backlog/resolve")
+
+    write_tests_cmd = seen_cmds[0]
+    prompt = write_tests_cmd[write_tests_cmd.index("-p") + 1]
+    assert "Stated intent for this run" not in prompt
+
+
+def test_run_intent_persisted_and_visible_on_run_record(monkeypatch):
+    """intent is stored the same way every other extra_input already is (fix_version,
+    docs_path, ...) -- visible on the run record for run history, not used-and-discarded."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok", ""))
+
+    run_id = runner_module.start_run(
+        "write-automation", "Translink", "TVM", extra_inputs={"intent": "Focus on EMV only."},
+    )
+    run = store.get_run(run_id)
+    # get_run returns the raw TEXT column (unlike list_runs, which JSON-decodes it) --
+    # match that real, existing behavior rather than changing it as part of this feature.
+    assert json.loads(run["extra_inputs"])["intent"] == "Focus on EMV only."
+
+
 def test_write_automation_never_auto_pushes(monkeypatch):
     """commit_push is a human step describing `git commit && git push` — confirm nothing
     in this run ever actually invokes git, and the step pauses rather than executing."""
@@ -1107,6 +1322,51 @@ def test_git_push_command_is_always_forced_human_regardless_of_declared_kind(mon
     run_id = runner_module.start_run("fake-git-push", "Translink", "POS")
     step = store.get_step(run_id, "push_it")
     assert step["status"] == "waiting_human"
+
+
+def test_create_run_commit_command_is_always_forced_human_regardless_of_declared_kind(monkeypatch):
+    """Real gap found while building targeted-run (2026-09-22): create-run --commit is a
+    genuine TestRail write (creates a new run) but doesn't contain "push", so the
+    existing push+--commit safety check alone would have missed it. Confirms the fix."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-create-run", trigger=Trigger(ui_action="fake_create_run"), description="test pipeline",
+        steps=[Step(id="make_run", kind=StepKind.cli, command="python -m system_test_ops create-run --suite 1 --name X --areas EMV --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fail_if_called(*a, **kw):
+        raise AssertionError("create-run --commit must never be auto-executed")
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fail_if_called)
+
+    run_id = runner_module.start_run("fake-create-run", "Translink", "POS")
+    step = store.get_step(run_id, "make_run")
+    assert step["status"] == "waiting_human"
+
+
+def test_create_run_commit_also_requires_target_approval(monkeypatch):
+    """Same additional, independent precondition push --commit already has: approving
+    THIS step isn't enough if the project/device target itself was never approved."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-create-run-2", trigger=Trigger(ui_action="fake_create_run_2"), description="test pipeline",
+        steps=[Step(id="make_run", kind=StepKind.cli, command="python -m system_test_ops create-run --suite 1 --name X --areas EMV --commit")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(store, "is_target_approved", lambda project, device: False)
+
+    run_id = runner_module.start_run("fake-create-run-2", "UnapprovedProj", "TVM")
+    with pytest.raises(runner_module.TargetNotApprovedError):
+        runner_module.resolve_step(run_id, "make_run")
+    # left retryable, not failed
+    assert store.get_step(run_id, "make_run")["status"] == "waiting_human"
 
 
 def test_apply_flag_is_always_forced_human_regardless_of_declared_kind(monkeypatch):
@@ -1213,6 +1473,34 @@ def test_pipeline_runs_endpoint_empty_for_never_run():
     assert res.json() == []
 
 
+def test_run_cost_endpoint_sums_recorded_agent_steps():
+    store.create_run("cost-run-1", "add-feature", "CostTestProj", "POS")
+    store.create_step_rows("cost-run-1", [("understand_feature", "agent")])
+    store.update_step("cost-run-1", "understand_feature", cost_usd=0.05, input_tokens=500, output_tokens=60)
+    res = client.get("/api/pipelines/runs/cost-run-1/cost")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    assert round(body["cost_usd"], 4) == 0.05
+    assert body["input_tokens"] == 500
+
+
+def test_run_cost_endpoint_404_for_unknown_run():
+    res = client.get("/api/pipelines/runs/no-such-run/cost")
+    assert res.status_code == 404
+
+
+def test_ai_usage_endpoint_only_lists_pipelines_with_cost_data():
+    store.create_run("cost-run-2", "fold-defect", "CostTestProj", "TVM")
+    store.create_step_rows("cost-run-2", [("decide_fold_or_new", "agent")])
+    store.update_step("cost-run-2", "decide_fold_or_new", cost_usd=0.08, input_tokens=800, output_tokens=90)
+    res = client.get("/api/ai-usage")
+    assert res.status_code == 200
+    body = {row["pipeline_id"]: row for row in res.json()}
+    assert body["fold-defect"]["runs_counted"] >= 1
+    assert body["fold-defect"]["avg_cost_usd"] > 0
+
+
 def test_suite_comparison_unavailable_for_unconfigured_target():
     res = client.get("/api/suite-comparison", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
@@ -1254,6 +1542,24 @@ def test_run_comments_unavailable_for_unconfigured_target():
     assert res.json()["available"] is False
 
 
+def test_suite_sections_unavailable_for_unconfigured_target():
+    res = client.get("/api/suite-sections", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json()["available"] is False
+
+
+def test_suite_sections_returns_real_tree(monkeypatch):
+    def fake_run(cmd, cwd, capture_output, text, timeout):
+        class R: returncode = 0; stdout = '[{"id": 1, "name": "EMV", "parent_id": null}, {"id": 2, "name": "Sign On", "parent_id": null}]'; stderr = ""
+        return R()
+    monkeypatch.setattr(app_module.runner.subprocess, "run", fake_run)
+    res = client.get("/api/suite-sections", params={"project": "Translink", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    assert {"EMV", "Sign On"} == {s["name"] for s in body["sections"]}
+
+
 def test_live_suite_id_is_optional_unlike_suite_id():
     """{live_suite_id} (ingest-docs' pull_live_cases) must not block a whole run from
     starting for a project with no suite target configured yet, unlike {suite_id} (audit,
@@ -1287,3 +1593,225 @@ def test_automation_tests_summary_reflects_the_project_device_filter():
     expected_total = sum(len(s["cases"]) for s in filtered["suites"])
     assert filtered["summary"]["total_tests"] == expected_total
     assert set(filtered["summary"]["by_project"].keys()) <= {project}
+
+
+def test_reports_endpoint_lists_real_files_newest_first(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path)
+    (tmp_path / "translink" / "pos" / "2026-09-01").mkdir(parents=True)
+    (tmp_path / "translink" / "pos" / "2026-09-01" / "coverage.md").write_text("old", encoding="utf-8")
+    (tmp_path / "translink" / "pos" / "2026-09-20").mkdir(parents=True)
+    newer = tmp_path / "translink" / "pos" / "2026-09-20" / "coverage.md"
+    newer.write_text("new", encoding="utf-8")
+    import time
+    os.utime(newer, (time.time() + 10, time.time() + 10))
+    res = client.get("/api/reports")
+    assert res.status_code == 200
+    body = res.json()
+    assert body[0]["path"].endswith("2026-09-20/coverage.md".replace("/", "/")) or "2026-09-20" in body[0]["path"]
+    assert all(r["project"] == "translink" for r in body)
+
+
+def test_reports_endpoint_filters_by_project(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path)
+    (tmp_path / "translink").mkdir()
+    (tmp_path / "translink" / "x.md").write_text("a", encoding="utf-8")
+    (tmp_path / "njt").mkdir()
+    (tmp_path / "njt" / "y.md").write_text("b", encoding="utf-8")
+    res = client.get("/api/reports", params={"project": "njt"})
+    assert [r["filename"] for r in res.json()] == ["y.md"]
+
+
+def test_reports_endpoint_empty_when_no_reports_dir(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path / "does-not-exist")
+    res = client.get("/api/reports")
+    assert res.status_code == 200
+    assert res.json() == []
+
+
+def test_report_content_returns_real_text(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path)
+    (tmp_path / "translink").mkdir()
+    (tmp_path / "translink" / "coverage.md").write_text("# Real report\ncontent here", encoding="utf-8")
+    res = client.get("/api/reports/content", params={"path": "translink/coverage.md"})
+    assert res.status_code == 200
+    assert "Real report" in res.json()["text"]
+
+
+def test_report_content_refuses_path_traversal(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path / "reports")
+    (tmp_path / "reports").mkdir()
+    (tmp_path / "secret.txt").write_text("nope", encoding="utf-8")
+    res = client.get("/api/reports/content", params={"path": "../secret.txt"})
+    assert res.status_code == 404
+
+
+def test_report_content_404_for_missing_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path)
+    res = client.get("/api/reports/content", params={"path": "no-such-file.md"})
+    assert res.status_code == 404
+
+
+def test_scheduled_checks_endpoint_roundtrip():
+    res = client.post("/api/scheduled-checks", json={"project": "SchedProj", "device": "POS", "enabled": True, "interval_days": 10})
+    assert res.status_code == 200
+    rows = {(r["project"], r["device"]): r for r in client.get("/api/scheduled-checks").json()}
+    assert rows[("SchedProj", "POS")]["interval_days"] == 10
+    assert rows[("SchedProj", "POS")]["enabled"] == 1
+
+
+def test_scheduled_checks_endpoint_rejects_bad_interval():
+    res = client.post("/api/scheduled-checks", json={"project": "SchedProj", "device": "POS", "enabled": True, "interval_days": 0})
+    assert res.status_code == 400
+
+
+def test_scheduled_checks_run_now_starts_a_real_run_and_marks_last_run(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    monkeypatch.setattr(runner_module, "start_scheduled_scan", lambda project, device: "fake-run-id")
+    res = client.post("/api/scheduled-checks/run-now", json={"project": "SchedProj", "device": "TVM"})
+    assert res.status_code == 200
+    assert res.json()["run_id"] == "fake-run-id"
+    row = store.get_scheduled_check("SchedProj", "TVM")
+    assert row["last_run_id"] == "fake-run-id"
+    assert row["last_run_at"] is not None
+
+
+def test_scheduled_scan_skips_everything_when_docs_unchanged(monkeypatch, tmp_path):
+    """No real change in the requirements folder -> convert/distil/pull_live_cases/
+    cross_examine (all `when: docs_changed`) must all skip cleanly; only suggest_next
+    (which has no `when:`) actually runs."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    monkeypatch.setattr(runner_module, "_REQUIREMENTS_ROOT", tmp_path / "TestOpsRequirements")
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        return 0, "(the agent returned no output)", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_scheduled_scan("SchedProj", "POS")
+    steps = {s["step_id"]: s["status"] for s in store.get_steps(run_id)}
+    assert steps["convert"] == "skipped"
+    assert steps["distil"] == "skipped"
+    assert steps["pull_live_cases"] == "skipped"
+    assert steps["cross_examine"] == "skipped"
+    assert steps["suggest_next"] == "succeeded"
+    assert store.get_run(run_id)["status"] == "succeeded"
+
+
+def test_scheduled_scan_runs_real_steps_when_docs_changed(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    req_root = tmp_path / "TestOpsRequirements"
+    monkeypatch.setattr(runner_module, "_REQUIREMENTS_ROOT", req_root)
+    (req_root / "schedproj").mkdir(parents=True)
+    (req_root / "schedproj" / "spec.docx").write_text("v1", encoding="utf-8")
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        return 0, "(ok)", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_scheduled_scan("SchedProj", "POS")
+    steps = {s["step_id"]: s["status"] for s in store.get_steps(run_id)}
+    assert steps["convert"] == "succeeded"
+    assert steps["distil"] == "succeeded"
+    assert steps["cross_examine"] == "succeeded"
+    assert steps["suggest_next"] == "succeeded"
+
+
+def test_scheduled_scan_never_pauses_for_human_approval(monkeypatch, tmp_path):
+    """The whole point: this runs unattended. No step in scheduled-scan may ever end up
+    waiting_human -- there's no human present to resolve it."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    monkeypatch.setattr(runner_module, "_REQUIREMENTS_ROOT", tmp_path / "TestOpsRequirements")
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda cmd, cwd, timeout, run_id=None: (0, "(ok)", ""))
+
+    run_id = runner_module.start_scheduled_scan("SchedProj", "TVM")
+    statuses = {s["status"] for s in store.get_steps(run_id)}
+    assert "waiting_human" not in statuses
+    assert store.get_run(run_id)["status"] == "succeeded"
+
+
+def test_scheduled_scan_suggestions_endpoint_and_review():
+    store.create_run("sugg-run-1", "scheduled-scan", "SchedProj", "TVM")
+    store.update_run("sugg-run-1", status="succeeded", summary="Found a stale case, recommend Resolve.")
+    res = client.get("/api/scheduled-checks/suggestions")
+    assert res.status_code == 200
+    ids = {r["id"] for r in res.json()}
+    assert "sugg-run-1" in ids
+
+    res2 = client.post("/api/scheduled-checks/suggestions/sugg-run-1/review")
+    assert res2.status_code == 200
+    ids_after = {r["id"] for r in client.get("/api/scheduled-checks/suggestions").json()}
+    assert "sugg-run-1" not in ids_after
+
+
+def test_review_scheduled_scan_suggestion_404_for_unknown_run():
+    res = client.post("/api/scheduled-checks/suggestions/no-such-run/review")
+    assert res.status_code == 404
+
+
+def test_docs_upload_refuses_path_traversal_in_project_or_device():
+    """Found 2026-09-23 by an end-to-end sweep: save_doc sanitised the FILENAME but
+    project/device were interpolated into the path raw, so `project=../../PWNED` wrote
+    outside the data dir entirely. Sanitising the last path segment is worthless if an
+    earlier one can escape."""
+    for params in (
+        {"project": "../../PWNED", "device": "Z"},
+        {"project": "NJT", "device": "../../PWNED"},
+        {"project": "a/b", "device": "Z"},
+        {"project": "", "device": "Z"},
+        {"project": "   ", "device": "Z"},
+    ):
+        res = client.post("/api/docs", params=params, files={"file": ("evil.txt", b"x", "text/plain")})
+        assert res.status_code == 400, f"{params} was not rejected"
+
+    res = client.post(
+        "/api/docs/bulk",
+        params={"project": "../../PWNED", "device": "Z"},
+        files=[("files", ("evil.txt", b"x", "text/plain"))],
+    )
+    assert res.status_code == 400
+
+
+def test_docs_folder_refuses_blank_project_instead_of_all_projects_root():
+    """A blank project used to resolve to TestOpsRequirements itself -- the parent of
+    EVERY project -- handing Ingest a docs_path spanning all of them. Whitespace 500'd."""
+    for project in ("", "   ", "../.."):
+        res = client.get("/api/docs/folder", params={"project": project, "device": "POS"})
+        assert res.status_code == 400, f"project={project!r} was not rejected"
+
+
+def test_scheduled_checks_refuse_blank_target():
+    """A blank target created an enabled row the background poller would then scan
+    forever, against a docs_path covering every project."""
+    res = client.post("/api/scheduled-checks", json={"project": "", "device": "", "enabled": True, "interval_days": 7})
+    assert res.status_code == 400
+    res = client.post("/api/scheduled-checks/run-now", json={"project": "", "device": ""})
+    assert res.status_code == 400
+
+
+def test_gap_register_rejects_nonsense_paging_and_scope():
+    assert client.get("/api/gap-register?limit=-1").status_code == 400
+    assert client.get("/api/gap-register?limit=0").status_code == 400
+    assert client.get("/api/gap-register?offset=-1").status_code == 400
+    assert client.get("/api/gap-register?scope=banana").status_code == 400
+    # a real "give me everything" call still works
+    assert client.get("/api/gap-register?limit=1000").status_code == 200
+
+
+def test_reports_does_not_invent_projects_from_loose_files(tmp_path, monkeypatch):
+    """A file sitting directly in reports/ used to become its own fake 'project'."""
+    monkeypatch.setattr(app_module, "_REPORTS_ROOT", tmp_path)
+    (tmp_path / "alignment-audit.md").write_text("loose", encoding="utf-8")
+    (tmp_path / "translink").mkdir()
+    (tmp_path / "translink" / "coverage.md").write_text("real", encoding="utf-8")
+    projects = {r["project"] for r in client.get("/api/reports").json()}
+    assert projects == {"", "translink"}  # loose file has no project, never its own one

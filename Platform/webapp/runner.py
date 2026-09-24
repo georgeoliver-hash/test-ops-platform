@@ -81,7 +81,11 @@ AGENT_TOOL_GRANTS = {
 }
 _DEFAULT_AGENT_TOOLS = "Read"
 
-_CLI_TIMEOUT = 180
+# Raised from 180s (2026-09-23): the real Translink ingest_docs convert measured 163s --
+# inside the old limit, but only by 10%, so a slightly slower day would have timed out a
+# perfectly healthy run. Most cli steps are fast TestRail calls; a generous ceiling costs
+# nothing except how long a genuinely hung step takes to be noticed.
+_CLI_TIMEOUT = 600
 # 180s was fine for a one-file summarise (audit.yaml's "summarise" step) but nowhere near
 # enough for a step that reads and carefully cites multiple real source documents (found
 # live: ingest-docs' distil timed out reading 10 real PDFs). Generous ceiling for real work;
@@ -268,6 +272,27 @@ def _eval_when(expr: str, context: dict) -> bool:
 def _is_fresh_build(project: str, device: str) -> bool:
     ids = store.get_suite_ids(project, device)
     return bool(ids) and ids.get("old_suite_id") is None
+
+
+_REQUIREMENTS_ROOT = Path.home() / "TestOpsRequirements"
+
+
+def _docs_changed(project: str) -> bool:
+    """True if anything changed in this project's local requirements folder since the
+    last check -- backs scheduled-scan's `when: docs_changed` gate on its ingest step.
+
+    STATEFUL, same as store.check_docs_for_changes itself: every call resets the
+    comparison baseline to now, so this must be called at most ONCE per real run, never
+    speculatively -- which is why it's gated to the scheduled-scan pipeline specifically
+    in _run_pipeline_job below, not computed unconditionally for every pipeline the way
+    _is_fresh_build is (that one's a plain read, safe to compute every time; this one
+    consumes the diff it reports). Fixed 2026-09-22: was pointing at the project folder's
+    top level, which also holds ingest_docs.py's own reconciliation logs -- same bug,
+    same fix as app.py's refresh-check endpoint, via the same shared resolution."""
+    real = store.resolve_ingest_docs_source(project)
+    req_dir = Path(real["path"]) if real["path"] else (_REQUIREMENTS_ROOT / project.lower())
+    result = store.check_docs_for_changes(project, req_dir)
+    return bool(result["new"] or result["changed"] or result["removed"])
 
 
 def _build_params(project: str, device: str, steps: list[Step], extra_inputs: dict[str, str] | None = None) -> dict:
@@ -483,13 +508,29 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
         else:
             prompt = step.note or f"Carry out the '{step.id}' step of this pipeline."
 
+    # Optional, universal free-text field ("What are you trying to achieve with this run?",
+    # George 2026-09-24: "sometimes we need prompt fields on pipelines so users can also give
+    # a prompt to you about what there expecting to do with stuff you know") -- not a
+    # per-pipeline declared input, available on every run regardless of pipeline. Framed
+    # explicitly as context to WEIGH, not a literal instruction that overrides the step's own
+    # job -- found live (in conversation, not in this codebase) that an agent given a stated
+    # goal without that framing can silently widen or narrow scope past what the step actually
+    # asked for.
+    intent = params.get("intent")
+    if intent:
+        prompt += (
+            f"\n\nStated intent for this run (context for your judgment calls on this step -- "
+            f"weigh it, but the step's own instructions above still govern what you actually "
+            f"do): {intent}"
+        )
+
     try:
         returncode, stdout, stderr = _run_subprocess(
             [
                 "claude", "-p", prompt,
                 "--allowedTools", allowed_tools,
                 "--permission-prompts", "none",
-                "--output-format", "text",
+                "--output-format", "json",
             ],
             cwd=str(_step_cwd(step)), timeout=_AGENT_TIMEOUT, run_id=run_id,
         )
@@ -508,9 +549,27 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
         store.update_run(run_id, summary=msg)
         return "failed"
 
+    # `--output-format json` (was `text`, 2026-09-22) hands back real cost/token usage for
+    # free alongside the same result text -- the data behind the AI-usage widget (George:
+    # "a pipeline AI token usage visual to each pipeline"). A malformed/empty envelope
+    # (found live possible on a killed/crashed subprocess) falls back to the raw stdout as
+    # the output, with no cost recorded -- never fabricated, never crashes the step.
+    cost_usd = input_tokens = output_tokens = None
     output = (stdout or "").strip() or "(the agent returned no output)"
+    try:
+        envelope = json.loads(stdout)
+        output = (envelope.get("result") or "").strip() or "(the agent returned no output)"
+        cost_usd = envelope.get("total_cost_usd")
+        usage = envelope.get("usage") or {}
+        input_tokens = usage.get("input_tokens")
+        output_tokens = usage.get("output_tokens")
+    except (json.JSONDecodeError, AttributeError):
+        pass
     ok = returncode == 0
-    store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    store.update_step(
+        run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now(),
+        cost_usd=cost_usd, input_tokens=input_tokens, output_tokens=output_tokens,
+    )
     store.update_run(run_id, summary=output)  # on failure too -- see _run_cli_step for why
     return "succeeded" if ok else "failed"
 
@@ -529,6 +588,12 @@ def _is_forced_human_command(command: str | None) -> bool:
         ("push" in command and "--commit" in command)  # a real TestRail push --commit
         or "git push" in command  # a real push to a repo remote (e.g. test-automation-sit)
         or "--apply" in command  # a real TestRail write (e.g. enrich_cases.py --apply)
+        # a real TestRail write (creates a new run) -- added for the targeted-run
+        # pipeline (2026-09-22, "select EMV, not Sign On, run just that"). Doesn't
+        # contain "push", so the first check above would have missed it -- found
+        # BEFORE shipping, not live, by checking this function against the new command
+        # rather than assuming the existing patterns already covered every write verb.
+        or ("create-run" in command and "--commit" in command)
     )
 
 
@@ -609,7 +674,13 @@ def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, 
         store.update_run(run_id, status="failed", error=str(exc))
         return
 
+    # `docs_changed` is ONLY computed for scheduled-scan specifically -- it's stateful
+    # (see _docs_changed's own docstring: every call resets the comparison baseline), so
+    # computing it for every pipeline run would silently consume the diff a later real
+    # scheduled-scan run needed to see.
     context = {"fresh_build": _is_fresh_build(project, device)}
+    if pipeline_id == "scheduled-scan":
+        context["docs_changed"] = _docs_changed(project)
     cancel_event = _cancel_events.setdefault(run_id, threading.Event())
 
     for idx in range(start_index, len(steps)):
@@ -658,6 +729,18 @@ def start_audit_run(project: str, device: str) -> str:
     return start_run("audit", project, device)
 
 
+def start_scheduled_scan(project: str, device: str) -> str:
+    """The one entry point for a scheduled-scan run, used identically by the periodic
+    scheduler and the console's manual "Run now" button -- docs_path is supplied HERE,
+    automatically, via the same real resolution the Ingest page and refresh-check use
+    (TestOpsRequirements/<project>/_current/ when it exists), never left for a human to
+    type in (there's no human present on a scheduled run, and the manual button
+    shouldn't need to ask for something the system already knows)."""
+    real = store.resolve_ingest_docs_source(project)
+    docs_path = real["path"] or str(_REQUIREMENTS_ROOT / project.lower())
+    return start_run("scheduled-scan", project, device, extra_inputs={"docs_path": docs_path})
+
+
 class TargetNotApprovedError(RuntimeError):
     """Raised by resolve_step when a push+--commit gate is resolved for a target that has
     no persisted sign-off (store.is_target_approved) — independent of, and in addition to,
@@ -704,8 +787,15 @@ def resolve_step(run_id: str, step_id: str) -> None:
         raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
 
     step, command = _resolved_step(run_id, run, step_id)
-    is_push_gate = bool(command) and "push" in command and "--commit" in command
-    if is_push_gate and not store.is_target_approved(run["project"], run["device"]):
+    # A real write TO THE CONFIGURED TARGET (push --commit, or create-run --commit --
+    # added 2026-09-22 for targeted-run) requires that target's own persisted approval,
+    # in addition to this per-step human gate. Deliberately narrower than
+    # _is_forced_human_command above -- --apply and "git push" are real writes too, but
+    # not to this project/device's TestRail target specifically (--apply's target is
+    # implied by --suite same as these; "git push" is a DIFFERENT repo's remote
+    # entirely), so target-approval isn't the right check for those.
+    is_write_to_target = bool(command) and "--commit" in command and ("push" in command or "create-run" in command)
+    if is_write_to_target and not store.is_target_approved(run["project"], run["device"]):
         # Refused, but retryable: leave the step at waiting_human (not failed) so approving
         # the target and clicking "Approve & Push" again just works, rather than requiring
         # the whole run to be restarted from scratch.
@@ -867,6 +957,73 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
     except (json.JSONDecodeError, IndexError):
         return {"available": False, "reason": "Could not parse TestRail response."}
     return {"available": True, "suite_id": suite_id, **payload}
+
+
+def preview_docs_relevance(project: str, docs_path: str) -> dict:
+    """Runs ingest-docs' real convert + relevance_check steps synchronously, standalone --
+    no tracked run, no AI, no distil/cross_examine/commit_pr (George, 2026-09-22: "an
+    initial review of the docs before ingesting, so it can pass the gate"). Writes into
+    the SAME real dev/{project}-requirements/_text/ work dir the actual Ingest run would
+    use, so nothing here is thrown away -- a real Ingest run afterward doesn't redo this
+    conversion, `ingest_docs.py` is idempotent."""
+    convert = subprocess.run(
+        [str(_VENV_PYTHON), "tools/ingest_docs.py", "--project", project, "--src", docs_path],
+        # 120s was too short for a real library: Translink's 352 docs take ~2m45s
+        # (measured 2026-09-23), so the preview button timed out on the exact project
+        # it was built for. Generous ceiling; a genuinely hung convert still gets caught.
+        cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=900,
+    )
+    if convert.returncode != 0:
+        return {"ok": False, "stage": "convert", "output": (convert.stdout or "") + (convert.stderr or "")}
+    text_dir = f"dev/{project}-requirements/_text"
+    relevance = subprocess.run(
+        [str(_VENV_PYTHON), "tools/check_doc_relevance.py", "--project", project, "--text-dir", text_dir, "--src", docs_path],
+        cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+    )
+    return {
+        "ok": relevance.returncode == 0,
+        "stage": "relevance_check",
+        "convert_output": convert.stdout,
+        "output": (relevance.stdout or "") + (relevance.stderr or ""),
+    }
+
+
+def get_suite_sections(project: str, device: str) -> dict:
+    """Real, live section tree for the new (write-target) suite -- the checkbox tree
+    behind targeted-run's front end (George, 2026-09-22: "select EMV, not Sign On, run
+    just that"). Read-only. `@feature(<area>)` IS the section, per docs/gherkin-
+    standard.md -- this is the exact same data create-run --areas matches against, just
+    fetched here so the console can render a real tree instead of free text."""
+    ids = store.get_suite_ids(project, device)
+    if not ids or ids.get("new_suite_id") is None:
+        return {"available": False, "reason": "No new_suite_id configured for this target."}
+    suite_id = ids["new_suite_id"]
+    project_id = store.get_new_testrail_project_id(project, device) or store.get_testrail_project_id(project, device)
+    if project_id is None:
+        return {"available": False, "reason": "No TestRail project id configured for this target's new suite."}
+    script = (
+        "import json\n"
+        "from system_test_ops.testrail.client import TestRailClient\n"
+        "client = TestRailClient()\n"
+        f"project_id = {project_id!r}\n"
+        f"suite_id = {suite_id}\n"
+        "sections = client.get_sections(project_id, suite_id)\n"
+        "print(json.dumps([{'id': int(s['id']), 'name': s.get('name'), 'parent_id': (int(s['parent_id']) if s.get('parent_id') else None)} for s in sections]))\n"
+    )
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-c", script],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return {"available": False, "reason": f"Could not run TestRail query: {exc}"}
+    if result.returncode != 0:
+        return {"available": False, "reason": f"TestRail call failed: {result.stderr.strip()[-500:]}"}
+    try:
+        sections = json.loads(result.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        return {"available": False, "reason": "Could not parse TestRail response."}
+    return {"available": True, "suite_id": suite_id, "sections": sections}
 
 
 def compare_suite_case_counts(project: str, device: str) -> dict:
