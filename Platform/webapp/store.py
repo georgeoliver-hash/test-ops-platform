@@ -840,6 +840,24 @@ def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
         return dict(row) if row else None
 
 
+def get_recent_runs(limit: int = 50) -> list[dict]:
+    """Real run history across EVERY pipeline/project/device, newest first -- the Reports
+    tab's "Tool activity" feed (George, 2026-09-28: "reports can be more of a link to...
+    latest logs for the tool"). Same decoding as get_runs, just tool-wide instead of scoped
+    to one pipeline+target."""
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM pipeline_runs ORDER BY created_at DESC, rowid DESC LIMIT ?", (limit,),
+        ).fetchall()
+        out = []
+        for r in rows:
+            d = dict(r)
+            raw = d.get("extra_inputs")
+            d["extra_inputs"] = json.loads(raw) if raw else None
+            out.append(d)
+        return out
+
+
 def get_runs(pipeline_id: str, project: str, device: str, limit: int = 20) -> list[dict]:
     """Real run history for this pipeline+target, newest first — the Log tab (ISSUES.md
     round 4: "each pipeline needs a log tab to keep any info of previous runs"). Same
@@ -970,11 +988,22 @@ def safe_path_segment(value: str, field: str) -> str:
     return cleaned
 
 
-def _uploads_dir(project: str, device: str) -> Path:
+def _uploads_dir(project: str, device: str, kind: str = "functional") -> Path:
     """One folder per project/device pair — mirrors suite_mappings' keying, so a doc dropped
     here has an unambiguous target when a future ingest-docs run picks it up. Both segments
-    are validated: neither may escape the uploads root."""
-    return _uploads_root() / safe_path_segment(project, "project") / safe_path_segment(device, "device")
+    are validated: neither may escape the uploads root.
+
+    `kind` (George, 2026-09-28: "Functional docs, and then a Design docs area... anything
+    for UI/UX visuals" -- Figma exports, Overflow JSON, images, anything design/UX-shaped,
+    replacing today's single `flow_data_path` field on Onboarding): "functional" keeps the
+    ORIGINAL, unchanged path (`uploads/<project>/<device>/`) so every already-uploaded real
+    document stays exactly where the app already looks for it -- moving that base path would
+    silently orphan real files on disk. "design" is a real, separate sibling subfolder,
+    never mixed with functional docs."""
+    base = _uploads_root() / safe_path_segment(project, "project") / safe_path_segment(device, "device")
+    if kind == "design":
+        return base / "_design"
+    return base
 
 
 def resolve_ingest_docs_source(project: str) -> dict:
@@ -1026,16 +1055,16 @@ def resolve_ingest_docs_source(project: str) -> dict:
     return {"path": None, "source": "no_requirements_folder"}
 
 
-def uploads_dir_path(project: str, device: str) -> str:
+def uploads_dir_path(project: str, device: str, kind: str = "functional") -> str:
     """Absolute path to this target's upload folder — used to default ingest-docs' required
     `docs_path` run input to wherever docs were actually dropped via the UI, rather than
     making George hand-type a path. Returned even if the folder doesn't exist yet/is empty
     (str, not Path, since it crosses the API as plain JSON)."""
-    return str(_uploads_dir(project, device))
+    return str(_uploads_dir(project, device, kind))
 
 
-def list_docs(project: str, device: str) -> list[dict]:
-    d = _uploads_dir(project, device)
+def list_docs(project: str, device: str, kind: str = "functional") -> list[dict]:
+    d = _uploads_dir(project, device, kind)
     if not d.is_dir():
         return []
     out = []
@@ -1046,20 +1075,20 @@ def list_docs(project: str, device: str) -> list[dict]:
     return out
 
 
-def save_doc(project: str, device: str, filename: str, content: bytes) -> None:
+def save_doc(project: str, device: str, filename: str, content: bytes, kind: str = "functional") -> None:
     """Raw filename only — no path segments allowed, so a crafted name can't escape the
     project/device folder it was uploaded against."""
     safe_name = Path(filename).name
     if not safe_name or safe_name != filename:
         raise ValueError("Invalid filename.")
-    d = _uploads_dir(project, device)
+    d = _uploads_dir(project, device, kind)
     d.mkdir(parents=True, exist_ok=True)
     (d / safe_name).write_bytes(content)
 
 
-def delete_doc(project: str, device: str, filename: str) -> bool:
+def delete_doc(project: str, device: str, filename: str, kind: str = "functional") -> bool:
     safe_name = Path(filename).name
-    path = _uploads_dir(project, device) / safe_name
+    path = _uploads_dir(project, device, kind) / safe_name
     if not path.is_file():
         return False
     path.unlink()

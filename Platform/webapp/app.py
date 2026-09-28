@@ -314,11 +314,17 @@ def import_env_credentials():
 
 
 @app.get("/api/docs")
-def list_docs(project: str, device: str):
+def list_docs(project: str, device: str, kind: str = "functional"):
     """Files dropped for this project/device pair, ready for a future ingest-docs run to
     pick up. Storage only today — no pipeline actually consumes this folder yet (that needs
-    the agent-run wiring the 'Run' buttons on pipeline pages are already stubbed out for)."""
-    return store.list_docs(project, device)
+    the agent-run wiring the 'Run' buttons on pipeline pages are already stubbed out for).
+
+    `kind` (George, 2026-09-28): "functional" (default, unchanged) or "design" -- a real,
+    separate bucket for anything UI/UX-visual (Figma exports, Overflow JSON, images, ...),
+    replacing today's single flow_data_path field on Onboarding."""
+    if kind not in ("functional", "design"):
+        raise HTTPException(status_code=400, detail="kind must be 'functional' or 'design'.")
+    return store.list_docs(project, device, kind)
 
 
 def _validated_target(project: str, device: str) -> tuple[str, str]:
@@ -371,6 +377,35 @@ def get_docs_folder(project: str, device: str):
 
     chosen = max(options, key=lambda o: o["file_count"])
     return {"path": chosen["path"], "source": chosen["source"], "options": options}
+
+
+_CONVERTIBLE_EXTS = {".docx", ".xlsx", ".pdf", ".csv", ".txt"}
+
+
+@app.get("/api/docs/folder-files")
+def get_docs_folder_files(project: str, device: str):
+    """Real, actually-present convertible files under this target's resolved docs folder
+    (whichever `/api/docs/folder` would resolve to) -- George, 2026-09-28: "only_file? can
+    this not be a drop-down? of the recently uploaded files". Capped at 300 entries
+    (`truncated: true` past that) so a large synced library (e.g. Translink's real 650MB
+    folder) can't make this call pathologically slow or the response pathologically huge --
+    the field still accepts free text too, this is a convenience list, not the only path in."""
+    project, device = _validated_target(project, device)
+    real = store.resolve_ingest_docs_source(project)
+    uploads = Path(store.uploads_dir_path(project, device))
+    folder = Path(real["path"]) if real["path"] else uploads
+    if not folder.is_dir():
+        return {"available": False, "files": [], "truncated": False}
+    files = []
+    truncated = False
+    for f in sorted(folder.rglob("*")):
+        if not (f.is_file() and f.stat().st_size > 0 and f.suffix.lower() in _CONVERTIBLE_EXTS):
+            continue
+        if len(files) >= 300:
+            truncated = True
+            break
+        files.append(f.relative_to(folder).as_posix())
+    return {"available": True, "files": files, "truncated": truncated}
 
 
 _FBD_RE = re.compile(r"FBD-\d+", re.IGNORECASE)
@@ -464,13 +499,15 @@ def get_ingest_map(project: str, device: str):
 
 
 @app.post("/api/docs")
-async def upload_doc(project: str, device: str, file: UploadFile = File(...)):
+async def upload_doc(project: str, device: str, file: UploadFile = File(...), kind: str = "functional"):
     project, device = _validated_target(project, device)
+    if kind not in ("functional", "design"):
+        raise HTTPException(status_code=400, detail="kind must be 'functional' or 'design'.")
     if not file.filename:
         raise HTTPException(status_code=400, detail="No filename given.")
     content = await file.read()
     try:
-        store.save_doc(project, device, file.filename, content)
+        store.save_doc(project, device, file.filename, content, kind)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"ok": True}
@@ -659,9 +696,11 @@ def commit_docs_bulk(body: CommitStagedIn):
 
 
 @app.delete("/api/docs/{project}/{device}/{filename}")
-def remove_doc(project: str, device: str, filename: str):
+def remove_doc(project: str, device: str, filename: str, kind: str = "functional"):
     project, device = _validated_target(project, device)
-    if not store.delete_doc(project, device, filename):
+    if kind not in ("functional", "design"):
+        raise HTTPException(status_code=400, detail="kind must be 'functional' or 'design'.")
+    if not store.delete_doc(project, device, filename, kind):
         raise HTTPException(status_code=404, detail="No such file")
     return {"ok": True}
 
@@ -1020,6 +1059,13 @@ def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
     return store.get_latest_run(pipeline_id, project, device) or {"status": None}
 
 
+@app.get("/api/runs/recent")
+def get_recent_runs_across_everything(limit: int = 50):
+    """Real run activity across every pipeline/project/device -- the Reports tab's "Tool
+    activity" feed (George, 2026-09-28)."""
+    return store.get_recent_runs(limit=limit)
+
+
 @app.get("/api/pipelines/{pipeline_id}/runs")
 def get_pipeline_runs(pipeline_id: str, project: str, device: str, limit: int = 20):
     """Real run history for this pipeline+target (ISSUES.md round 4's Log tab ask) --
@@ -1331,10 +1377,86 @@ def get_gap_register(
         markers = [m for m in markers if m["project"] is not None]
     elif project:
         markers = [m for m in markers if m["project"] == project.lower()]
+    # George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers in plain English -- merged
+    # in here from clarify-gaps' real output, keyed by (file, line) -- the same stable
+    # identity gap-register's own mechanical grep uses. A marker with no cached rewrite yet
+    # (clarify-gaps never run for it) just has no `plain_english` field -- shown honestly
+    # as the raw marker text, never a fabricated rewrite.
+    if project:
+        clarify_path = runner.SYSTEM_TEST_OPS_ROOT / "reports" / project / "clarify-gaps" / "plain-english.json"
+        if clarify_path.is_file():
+            try:
+                rewrites = {(r["file"], r["line"]): r["plain_english"] for r in json.loads(clarify_path.read_text(encoding="utf-8"))}
+            except (json.JSONDecodeError, KeyError):
+                rewrites = {}
+            for m in markers:
+                pe = rewrites.get((m["file"], m["line"]))
+                if pe:
+                    m["plain_english"] = pe
     return {
         "total": len(markers), "shown": markers[offset:offset + limit],
         "offset": offset, "limit": limit, "is_fixture": True, "scope": scope,
     }
+
+
+class ClarifyOneIn(BaseModel):
+    project: str
+    file: str
+    line: int
+    text: str
+
+
+@app.post("/api/gap-register/clarify-one")
+def clarify_one_gap_marker(body: ClarifyOneIn):
+    """Rewrite exactly ONE marker into plain English -- George, 2026-09-28: "maybe we need
+    to re-write in plain english in each seperate gap, as it looks like the rewriting is
+    taking a long time" -- the full clarify-gaps pipeline re-greps the whole repo and runs
+    one big agent pass over every marker in scope, genuinely slow for a large scope. This
+    is the fast path: one marker, one short targeted agent call, no repo-wide re-grep.
+    Persists into the SAME cache file clarify-gaps writes, keyed by (file, line), so a
+    marker rewritten this way shows up in the table too and survives reloads -- and a
+    later full clarify-gaps run for that scope won't lose it (merges by key, doesn't wipe)."""
+    try:
+        # Lowercase to match the exact convention get_gap_register's merge-in already uses
+        # (its `project` query param is lowercased client-side before the request) -- a
+        # casing mismatch here would write to a cache path the merge-in never looks under.
+        project = store.safe_path_segment(body.project, "project").lower()
+    except store.UnsafeNameError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    prompt = (
+        f"Rewrite this GAP/UNCONFIRMED test-suite marker as a real, plain-English question "
+        f"a non-engineer could understand -- 1-2 sentences, grounded strictly in its own "
+        f"text below, never inventing a new fact or answering it. No preamble, no markdown, "
+        f"just the rewritten question:\n\n{body.text}"
+    )
+    try:
+        returncode, stdout, stderr = runner._run_subprocess(
+            ["claude", "-p", prompt, "--allowedTools", "", "--permission-prompts", "none", "--output-format", "json"],
+            cwd=str(runner.SYSTEM_TEST_OPS_ROOT), timeout=120,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        raise HTTPException(status_code=504, detail=f"Rewrite timed out or failed to start: {exc}") from exc
+    if returncode != 0:
+        raise HTTPException(status_code=502, detail=(stderr or stdout or "Rewrite failed").strip()[:500])
+    try:
+        plain_english = (json.loads(stdout).get("result") or "").strip()
+    except json.JSONDecodeError:
+        plain_english = (stdout or "").strip()
+    if not plain_english:
+        raise HTTPException(status_code=502, detail="Agent returned no rewrite.")
+
+    clarify_path = runner.SYSTEM_TEST_OPS_ROOT / "reports" / project / "clarify-gaps" / "plain-english.json"
+    clarify_path.parent.mkdir(parents=True, exist_ok=True)
+    existing = []
+    if clarify_path.is_file():
+        try:
+            existing = json.loads(clarify_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            existing = []
+    existing = [r for r in existing if not (r.get("file") == body.file and r.get("line") == body.line)]
+    existing.append({"file": body.file, "line": body.line, "plain_english": plain_english})
+    clarify_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
+    return {"plain_english": plain_english}
 
 
 @app.get("/api/gap-answers")
@@ -1394,6 +1516,23 @@ def get_automation_flow_graph(project: str, device_type: str):
     return graph.model_dump()
 
 
+@app.get("/api/sit-mirror/status")
+def get_sit_mirror_status():
+    """George, 2026-09-28: "is it not really up to date? real reflection of what we
+    actually have or is it purely based on the sit clone/pull we do?" -- answer, confirmed:
+    the Keywords/Screen-flows views under "SIT (view only)" read `sit-mirror/`, a one-way,
+    point-in-time copy (`tools/sync_sit_mirror.py`), never a live connection to the real sit
+    repo. This surfaces the one real, checkable fact that made the staleness concrete: the
+    mirror root's own filesystem mtime (last touched by a sync run), so the console can show
+    it honestly instead of silently looking as current as a live view would."""
+    root = functions._default_root()
+    if not root.is_dir():
+        return {"available": False}
+    mtime = datetime.fromtimestamp(root.stat().st_mtime, tz=timezone.utc)
+    days_stale = (datetime.now(timezone.utc) - mtime).days
+    return {"available": True, "last_synced": mtime.isoformat(), "days_stale": days_stale}
+
+
 @app.get("/api/automation/tests")
 def get_automation_tests(project: str | None = None, device_type: str | None = None, q: str | None = None):
     """Real automation-test inventory, parsed live from test-automation-sit's own .robot
@@ -1433,7 +1572,8 @@ def get_repo_map():
             status_code=503,
             detail=f"system-test-ops checkout not found at {sto_root} — set it up alongside test-ops-platform.",
         )
-    sections = build_sections(sto_root, _PLATFORM_ROOT.parent)
+    ats_root = _PLATFORM_ROOT.parent.parent / "test-automation-sit"
+    sections = build_sections(sto_root, _PLATFORM_ROOT.parent, ats_root if ats_root.is_dir() else None)
     return [
         {"title": title, "files": [{"path": p, "purpose": purpose, "lines": loc} for p, purpose, loc in rows]}
         for title, rows in sections
@@ -1489,6 +1629,19 @@ def get_report_content(path: str):
         return {"path": path, "text": candidate.read_text(encoding="utf-8", errors="replace")}
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Could not read report: {exc}") from exc
+
+
+@app.middleware("http")
+async def _no_stale_static_cache(request, call_next):
+    """Found live, 2026-09-28: George's browser kept showing the OLD index.html/JS after
+    several real, verified-live server updates -- StaticFiles serves Last-Modified/ETag but
+    no Cache-Control, so the browser's own heuristic caching could silently serve a stale
+    disk copy without even revalidating. This actively-iterated local dev console should
+    never look stale from a plain refresh -- forces every response to revalidate (still
+    cheap: a real change still round-trips, an unchanged file still gets a fast 304)."""
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-cache, must-revalidate"
+    return response
 
 
 app.mount("/", StaticFiles(directory=str(WEBAPP_ROOT / "static"), html=True), name="static")

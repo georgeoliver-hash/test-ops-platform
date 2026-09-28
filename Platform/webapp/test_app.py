@@ -191,6 +191,98 @@ def test_gap_register_scope_common_and_bespoke_are_a_real_partition():
     assert all(m["project"] is not None for m in bespoke["shown"])
 
 
+def test_gap_register_merges_in_real_plain_english_rewrite_when_cached(monkeypatch, tmp_path):
+    """George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers into plain English --
+    merged in here from clarify-gaps' real cached output, keyed by (file, line), the same
+    stable identity gap-register's own mechanical grep already uses. Never fabricated when
+    no cache exists for a given project."""
+    from Platform.webapp import runner as runner_module
+
+    everything = client.get("/api/gap-register?scope=project&project=translink&limit=1").json()
+    marker = everything["shown"][0]
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    cache_dir = tmp_path / "reports" / "translink" / "clarify-gaps"
+    cache_dir.mkdir(parents=True)
+    (cache_dir / "plain-english.json").write_text(json.dumps([
+        {"file": marker["file"], "line": marker["line"], "plain_english": "A real, plain-English rewrite of this exact marker."},
+    ]), encoding="utf-8")
+
+    res = client.get(f"/api/gap-register?scope=project&project=translink&limit=1")
+    rewritten = res.json()["shown"][0]
+    assert rewritten["plain_english"] == "A real, plain-English rewrite of this exact marker."
+
+
+def test_clarify_one_gap_marker_is_fast_and_persists_into_the_shared_cache(monkeypatch, tmp_path):
+    """George, 2026-09-28: "maybe we need to re-write in plain english in each seperate
+    gap, as it looks like the rewriting is taking a long time" -- the full clarify-gaps
+    pipeline re-greps the whole repo and runs one big pass over every marker in scope; this
+    is the fast path, one marker, one short targeted agent call. Must write into the SAME
+    cache file the full pipeline and gap-register's merge-in both use, keyed by
+    (file, line), so it shows up in the table for free and survives reloads."""
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    monkeypatch.setattr(
+        runner_module, "_run_subprocess",
+        lambda cmd, cwd, timeout: (0, json.dumps({"result": "A real, plain-English rewrite."}), ""),
+    )
+
+    res = client.post("/api/gap-register/clarify-one", json={
+        "project": "ClarifyOneTest", "file": "knowledge/clarifyonetest/specs/foo.md", "line": 42,
+        "text": "**GAP** -- some raw jargon-heavy marker text.",
+    })
+    assert res.status_code == 200
+    assert res.json()["plain_english"] == "A real, plain-English rewrite."
+
+    cache_path = tmp_path / "reports" / "clarifyonetest" / "clarify-gaps" / "plain-english.json"
+    assert cache_path.is_file()
+    cached = json.loads(cache_path.read_text(encoding="utf-8"))
+    assert cached == [{"file": "knowledge/clarifyonetest/specs/foo.md", "line": 42, "plain_english": "A real, plain-English rewrite."}]
+
+
+def test_clarify_one_gap_marker_updates_in_place_not_duplicated(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    monkeypatch.setattr(
+        runner_module, "_run_subprocess",
+        lambda cmd, cwd, timeout: (0, json.dumps({"result": "First rewrite."}), ""),
+    )
+    client.post("/api/gap-register/clarify-one", json={
+        "project": "ClarifyOneTest2", "file": "f.md", "line": 1, "text": "raw text",
+    })
+    monkeypatch.setattr(
+        runner_module, "_run_subprocess",
+        lambda cmd, cwd, timeout: (0, json.dumps({"result": "Updated rewrite."}), ""),
+    )
+    client.post("/api/gap-register/clarify-one", json={
+        "project": "ClarifyOneTest2", "file": "f.md", "line": 1, "text": "raw text",
+    })
+    cache_path = tmp_path / "reports" / "clarifyonetest2" / "clarify-gaps" / "plain-english.json"
+    cached = json.loads(cache_path.read_text(encoding="utf-8"))
+    assert cached == [{"file": "f.md", "line": 1, "plain_english": "Updated rewrite."}]
+
+
+def test_clarify_one_gap_marker_502s_on_agent_failure(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda cmd, cwd, timeout: (1, "", "boom"))
+    res = client.post("/api/gap-register/clarify-one", json={
+        "project": "ClarifyOneTest3", "file": "f.md", "line": 1, "text": "raw text",
+    })
+    assert res.status_code == 502
+
+
+def test_gap_register_plain_english_absent_when_no_cache_exists(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    res = client.get("/api/gap-register?scope=project&project=translink&limit=5")
+    assert all("plain_english" not in m for m in res.json()["shown"])
+
+
 def test_gap_register_scope_bespoke_narrows_to_project_when_one_is_given():
     # ISSUES.md round 2, real bug George found: targeting Translink/POS but Bespoke still
     # showed other projects' (e.g. NJT/ETM) markers. scope=bespoke must now also respect a
@@ -366,6 +458,36 @@ def test_docs_upload_list_and_delete_roundtrip():
     res = client.delete("/api/docs/NJT/BV/spec.md")
     assert res.status_code == 200
     assert client.get("/api/docs", params={"project": "NJT", "device": "BV"}).json() == []
+
+
+def test_design_docs_are_a_real_separate_bucket_from_functional_docs():
+    """George, 2026-09-28: "Functional docs, and then a Design docs area... so people can
+    upload purely that doc". Design docs must never mix with, or overwrite, Functional
+    docs stored for the same project/device -- and a functional-doc upload predating this
+    feature must stay exactly where it already was (never silently moved)."""
+    client.post(
+        "/api/docs", params={"project": "KindSplitTest", "device": "POS"},
+        files={"file": ("requirements.docx", b"a real functional doc", "application/octet-stream")},
+    )
+    client.post(
+        "/api/docs", params={"project": "KindSplitTest", "device": "POS", "kind": "design"},
+        files={"file": ("flow-export.json", b'{"real": "design doc"}', "application/json")},
+    )
+
+    functional = client.get("/api/docs", params={"project": "KindSplitTest", "device": "POS"}).json()
+    design = client.get("/api/docs", params={"project": "KindSplitTest", "device": "POS", "kind": "design"}).json()
+    assert [d["filename"] for d in functional] == ["requirements.docx"]
+    assert [d["filename"] for d in design] == ["flow-export.json"]
+
+    # Deleting one bucket's file never touches the other's.
+    client.delete("/api/docs/KindSplitTest/POS/flow-export.json?kind=design")
+    assert client.get("/api/docs", params={"project": "KindSplitTest", "device": "POS"}).json() == functional
+    assert client.get("/api/docs", params={"project": "KindSplitTest", "device": "POS", "kind": "design"}).json() == []
+
+
+def test_docs_kind_param_rejects_anything_other_than_functional_or_design():
+    res = client.get("/api/docs", params={"project": "KindSplitTest", "device": "POS", "kind": "banana"})
+    assert res.status_code == 400
 
 
 def test_bulk_upload_saves_multiple_individual_files():
@@ -1721,6 +1843,35 @@ def test_ingest_docs_run_knowledge_files_honest_when_distil_never_ran(monkeypatc
     assert body["files"] == []
 
 
+def test_flow_data_path_auto_resolves_from_design_docs_folder(monkeypatch, tmp_path):
+    """George, 2026-09-28: "docs path why is it still editable" logic extended to
+    flow_data_path -- no manually-typed field any more; onboard-suite auto-picks the first
+    real .json export sitting in this target's Design docs upload folder."""
+    from Platform.webapp import runner as runner_module
+    from Platform.webapp import store as store_module
+    from model.pipelines import Step
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    design_dir = store_module._uploads_dir("FlowDataPathTest", "POS", kind="design")
+    design_dir.mkdir(parents=True)
+    (design_dir / "overflow-export.json").write_text('{"real": "export"}', encoding="utf-8")
+
+    steps = [Step(id="mine_flows", kind="cli", command="python tools/extract_overflow_annotations.py {flow_data_path} out.md")]
+    params = runner_module._build_params("FlowDataPathTest", "POS", steps)
+    assert params["flow_data_path"].endswith("overflow-export.json")
+
+
+def test_flow_data_path_stays_unresolved_when_no_design_doc_uploaded(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+    from Platform.webapp import store as store_module
+    from model.pipelines import Step
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    steps = [Step(id="mine_flows", kind="cli", command="python tools/extract_overflow_annotations.py {flow_data_path} out.md")]
+    params = runner_module._build_params("FlowDataPathNoneTest", "POS", steps)
+    assert "flow_data_path" not in params
+
+
 def test_intent_never_reaches_a_cli_command_template():
     """Structural gate (George, 2026-09-24: 'we need a gate explicitly ... purely
     informational, don't make any edits or changes'): `intent` must be usable ONLY as
@@ -1946,6 +2097,19 @@ def test_pipeline_runs_endpoint_empty_for_never_run():
     res = client.get("/api/pipelines/audit/runs", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
     assert res.json() == []
+
+
+def test_recent_runs_endpoint_spans_every_pipeline_and_target():
+    """George, 2026-09-28: Reports tab "Tool activity" feed -- every real run, any
+    pipeline/project/device, not scoped to the current target like the per-pipeline Log
+    tab is."""
+    store.create_run("recent-run-a", "audit", "RecentRunsProjA", "POS")
+    store.create_run("recent-run-b", "add-feature", "RecentRunsProjB", "TVM")
+
+    res = client.get("/api/runs/recent?limit=50")
+    assert res.status_code == 200
+    ids = {r["id"] for r in res.json()}
+    assert {"recent-run-a", "recent-run-b"} <= ids
 
 
 def test_run_cost_endpoint_sums_recorded_agent_steps():
@@ -2344,6 +2508,105 @@ def test_docs_folder_defaults_to_whichever_source_has_more_real_files(monkeypatc
     by_source = {o["source"]: o["file_count"] for o in body["options"]}
     assert by_source["requirements_folder"] == 5  # placeholders excluded
     assert by_source["uploads_folder"] == 20
+
+
+def test_docs_folder_files_lists_real_convertible_files_only(monkeypatch, tmp_path):
+    """George, 2026-09-28: "only_file? can this not be a drop-down? of the recently
+    uploaded files". Real files only -- placeholder stubs and non-convertible extensions
+    excluded, same filtering _count already applies for /api/docs/folder's file_count."""
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    uploads = store_module._uploads_dir("FolderFilesTest", "POS")
+    uploads.mkdir(parents=True, exist_ok=True)
+    (uploads / "real.docx").write_bytes(b"real content")
+    (uploads / "placeholder.docx").write_bytes(b"")  # unsynced stub, 0 bytes
+    (uploads / "notes.txt.bak").write_bytes(b"not a real extension we convert")
+
+    res = client.get("/api/docs/folder-files", params={"project": "FolderFilesTest", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    assert body["files"] == ["real.docx"]
+    assert body["truncated"] is False
+
+
+def test_docs_folder_files_honest_when_folder_missing():
+    res = client.get("/api/docs/folder-files", params={"project": "NoSuchProjectAtAll", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is False
+    assert body["files"] == []
+
+
+def test_sit_mirror_status_reports_real_staleness(monkeypatch, tmp_path):
+    """George, 2026-09-28: "is it not really up to date... or is it purely based on the sit
+    clone/pull we do?" -- confirmed real: sit-mirror/ is a point-in-time copy, and it really
+    was 20 days stale when this was checked. Surfaced as a real, checkable fact (the mirror
+    folder's own filesystem mtime), never a fabricated "last synced: just now"."""
+    import os
+    import time
+
+    monkeypatch.setenv("SIT_SCHEMA_ROOT", str(tmp_path))
+    old_time = time.time() - (10 * 86400)
+    os.utime(tmp_path, (old_time, old_time))
+
+    res = client.get("/api/sit-mirror/status")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    assert body["days_stale"] >= 9
+
+
+def test_sit_mirror_status_honest_when_root_missing(monkeypatch, tmp_path):
+    import os
+
+    monkeypatch.setenv("SIT_SCHEMA_ROOT", str(tmp_path / "does-not-exist"))
+    res = client.get("/api/sit-mirror/status")
+    assert res.status_code == 200
+    assert res.json() == {"available": False}
+
+
+def test_repo_map_includes_test_automation_sit_when_present(tmp_path):
+    """George, 2026-09-28: "the repos? how come we dont have the test sit repo there as
+    well or all the repos related?" -- test-automation-sit (this team's OWN Robot
+    Framework suites -- not flowbird-group/sit, which stays excluded per this tool's own
+    docstring) was missing from the Repo Map entirely. `reference/` files stay excluded,
+    same real distinction model/automation_tests.py already draws (sit's own reference
+    material vs. this team's actually-written test suites)."""
+    from render_repo_map import build_sections
+
+    sto = tmp_path / "system-test-ops"
+    (sto / "system_test_ops").mkdir(parents=True)
+    platform_root = tmp_path / "test-ops-platform"
+    (platform_root / "Platform" / "model").mkdir(parents=True)
+    ats = tmp_path / "test-automation-sit"
+    real_suite = ats / "projects" / "njt" / "tests" / "test_real.robot"
+    real_suite.parent.mkdir(parents=True)
+    real_suite.write_text("*** Settings ***\nDocumentation    A real, written NJT test suite.\n", encoding="utf-8")
+    ref_file = ats / "projects" / "njt" / "reference" / "SomeSitReference.robot"
+    ref_file.parent.mkdir(parents=True)
+    ref_file.write_text("*** Settings ***\nDocumentation    sit's own reference material.\n", encoding="utf-8")
+
+    sections = build_sections(sto, platform_root, ats)
+    by_title = {title: rows for title, rows in sections}
+    suite_rows = by_title["test-automation-sit — written test suites (projects/)"]
+    paths = [p for p, _, _ in suite_rows]
+    assert any("test_real.robot" in p for p in paths)
+    assert not any("reference" in p for p in paths)
+
+
+def test_repo_map_omits_test_automation_sit_section_when_not_provided(tmp_path):
+    from render_repo_map import build_sections
+
+    sto = tmp_path / "system-test-ops"
+    (sto / "system_test_ops").mkdir(parents=True)
+    platform_root = tmp_path / "test-ops-platform"
+    (platform_root / "Platform" / "model").mkdir(parents=True)
+
+    sections = build_sections(sto, platform_root, None)
+    titles = [title for title, _ in sections]
+    assert not any("test-automation-sit" in t for t in titles)
 
 
 def test_ingest_map_traces_raw_docs_to_what_they_became(monkeypatch, tmp_path):

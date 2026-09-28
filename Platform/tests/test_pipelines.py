@@ -66,7 +66,27 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # draft build/add/edit updates for review, without a full onboard-suite rebuild. George:
     # "ingest one doc (or multiple) then build, add, edit, resolve... to existing test suite."
     assert "update-suite-from-docs" in ids
-    assert len(ids) == 22
+    # 2026-09-28: George, "no one will ever know what the question actually is... write it
+    # out in plain english... an AI summarize [pass]" -- rewrites GAP/UNCONFIRMED markers
+    # into plain English, never answers them (that's still /resolve-gaps' job).
+    assert "clarify-gaps" in ids
+    # 2026-09-28: real groundwork only -- George is supplying the real template/example
+    # report(s) separately; the drafting step's own note says so explicitly rather than
+    # inventing a layout in the meantime.
+    assert "generate-test-run-report" in ids
+    assert len(ids) == 24
+
+
+def test_clarify_gaps_only_rewords_never_answers(pipelines):
+    p = pipelines.load_pipeline("clarify-gaps")
+    kinds = {s.id: s.kind.value for s in p.steps}
+    assert kinds["collect_markers"] == "cli"
+    assert kinds["rewrite_plain_english"] == "agent"
+    assert p.trigger.slash_command == "/clarify-gaps"
+    rewrite = next(s for s in p.steps if s.id == "rewrite_plain_english")
+    assert rewrite.rule == "no_gap_fabrication"
+    input_names = {i.name for i in p.inputs}
+    assert {"project", "device", "scope"} <= input_names
 
 
 def test_update_suite_from_docs_is_doc_scoped_and_stops_for_human_review_before_push(pipelines):
@@ -84,6 +104,41 @@ def test_update_suite_from_docs_is_doc_scoped_and_stops_for_human_review_before_
     assert {"project", "device", "suite_id", "knowledge_files"} <= input_names
     cross_examine = next(s for s in p.steps if s.id == "cross_examine")
     assert "{knowledge_files}" in cross_examine.reads
+
+
+def test_consolidate_execute_folds_references_a_real_produced_file_not_a_placeholder(pipelines):
+    """Found live, 2026-09-28 (George ran /consolidate for real on Translink/POS):
+    `execute_folds` failed every time -- its command hardcoded the literal, never-
+    substituted placeholder `<folded>.cases.yaml` as the push target, and no earlier step
+    in this pipeline ever actually authored a real `.cases.yaml` from the confirmed fold
+    groups (find_fold_groups only ever wrote the audit/proposal .md). Fixed: a real
+    author_folds step (gherkin-author) now authors the staging file, and execute_folds
+    pushes that same real path -- not a placeholder."""
+    p = pipelines.load_pipeline("consolidate")
+    step_ids = [s.id for s in p.steps]
+    assert "author_folds" in step_ids
+    assert step_ids.index("confirm_aggressiveness") < step_ids.index("author_folds") < step_ids.index("execute_folds")
+    author_folds = next(s for s in p.steps if s.id == "author_folds")
+    execute_folds = next(s for s in p.steps if s.id == "execute_folds")
+    assert "<folded>" not in execute_folds.command
+    assert author_folds.produces in execute_folds.command
+    # Also fixed alongside: find_fold_groups' own produces path was missing the real
+    # {project}- prefix every other pipeline's proposals/ path uses (onboard-suite,
+    # add-feature, ...) -- it would have written to proposals/POS-suite-restructure/...
+    # instead of proposals/Translink-POS-suite-restructure/..., exactly what the live run
+    # actually did.
+    find_fold_groups = next(s for s in p.steps if s.id == "find_fold_groups")
+    assert find_fold_groups.produces.startswith("proposals/{project}-{device}-suite-restructure/")
+    assert author_folds.reads == [find_fold_groups.produces]
+
+
+def test_fold_defect_regression_register_path_matches_real_naming_convention(pipelines):
+    """Same missing-{project}-prefix bug as consolidate's find_fold_groups, found by the
+    same sweep: proposals/{device}-suite-restructure/... instead of the real convention
+    every other pipeline uses."""
+    p = pipelines.load_pipeline("fold-defect")
+    record_decision = next(s for s in p.steps if s.id == "record_decision")
+    assert record_decision.produces.startswith("proposals/{project}-{device}-suite-restructure/")
 
 
 def test_route_by_ui_action_matches_slash_command(pipelines):

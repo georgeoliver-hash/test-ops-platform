@@ -59,7 +59,37 @@ def _rows_for_md(root: Path, glob: str) -> list[tuple[str, str, int]]:
     return rows
 
 
-def build_sections(system_test_ops_root: Path, platform_root: Path) -> list[tuple[str, list[tuple[str, str, int]]]]:
+_ROBOT_DOC_RE = re.compile(r"^Documentation\s+(.+)$", re.M)
+
+
+def _robot_purpose(path: Path) -> str:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return "(unreadable)"
+    m = _ROBOT_DOC_RE.search(text)
+    return m.group(1).strip() if m else "(no Documentation line)"
+
+
+def _rows_for_robot(root: Path, glob: str) -> list[tuple[str, str, int]]:
+    """Real `.robot` suite files only -- excludes `reference/` (sit's own reference
+    material this repo mirrors, not this team's written test suites; see
+    model/automation_tests.py's identical exclusion and its own "counting sit's own
+    reference files as our tests" bug writeup for why that distinction matters)."""
+    rows = []
+    for path in sorted(root.glob(glob)):
+        if not (path.is_file() and path.suffix == ".robot"):
+            continue
+        if "reference" in path.relative_to(root).parts:
+            continue
+        loc = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
+        rows.append((str(path.relative_to(root.parent)), _robot_purpose(path), loc))
+    return rows
+
+
+def build_sections(
+    system_test_ops_root: Path, platform_root: Path, automation_tests_root: Path | None = None,
+) -> list[tuple[str, list[tuple[str, str, int]]]]:
     sections = []
     sto = system_test_ops_root
     sections.append(("system-test-ops — deterministic core (system_test_ops/)",
@@ -69,6 +99,16 @@ def build_sections(system_test_ops_root: Path, platform_root: Path) -> list[tupl
     sections.append(("system-test-ops — commands (.claude/commands/)", _rows_for_md(sto, ".claude/commands/*.md")))
     sections.append(("test-ops-platform — model/ schema", _rows_for_py(platform_root, "Platform/model/*.py")))
     sections.append(("test-ops-platform — scripts (tools/)", _rows_for_py(platform_root, "tools/*.py")))
+    # George, 2026-09-28: "the repos? how come we dont have the test sit repo there as
+    # well or all the repos related?" -- test-automation-sit (this team's own Robot
+    # Framework suites, the same repo /api/automation/tests already reads from) was a
+    # real gap here, missing entirely. NOT flowbird-group/sit or sit-mirror/ -- those stay
+    # excluded per this module's own docstring (not ours to inventory / data not scripts).
+    if automation_tests_root is not None and automation_tests_root.is_dir():
+        ats = automation_tests_root
+        sections.append(("test-automation-sit — written test suites (projects/)",
+                          _rows_for_robot(ats, "projects/**/*.robot")))
+        sections.append(("test-automation-sit — scripts (tools/)", _rows_for_py(ats, "tools/*.py")))
     return sections
 
 

@@ -32,12 +32,28 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:14.5px;line-height:1.5;}
   h1,h2,h3,.brand-font{font-family:"Poppins","Inter",sans-serif;}
-  .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh;transition:grid-template-columns .15s;}
+  /* Found live, 2026-09-28 (George: "you press the button the sidebar goes off... the
+     content inside the main area also goes left and overlaps the sidebar"): this used to
+     animate `grid-template-columns` (248px 1fr -> 0 1fr), which is notoriously unreliable
+     to animate across browsers, especially with a `position:sticky` child -- the sidebar
+     and main content's tracks could visibly desync mid-transition, producing exactly this
+     overlap. There was also a second, entirely DEAD collapse mechanism left over from an
+     earlier iteration (`.sidebar.collapsed{margin-left:-248px}`) that the real toggle code
+     never even applied (it always adds `sidebar-collapsed` to `#appShell`, never `collapsed`
+     to `.sidebar`) -- removed, it was never doing anything but sitting there confusingly.
+     Fix: an instant (non-animated) grid-column swap. Less flashy, but correct in every
+     browser, every time -- no mid-transition state to ever get out of sync. */
+  .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh;}
   .shell.sidebar-collapsed{grid-template-columns:0 1fr;}
+  /* Measured live: even with min-width:0, Chromium still rendered .sidebar at 32px (its own
+     left+right padding) when its grid track collapsed to 0 -- a flex-container-as-grid-item
+     auto-sizing quirk, not something min-width:0 alone resolves. Fully explicit beats
+     relying on the browser's auto-sizing algorithm: force width and padding to 0 outright
+     in the collapsed state, so there's no ambiguity left for it to get wrong. */
+  .shell.sidebar-collapsed .sidebar{width:0;padding:0;}
   @media (max-width:860px){.shell{grid-template-columns:1fr;} .sidebar{display:none;}}
 
-  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;transition:margin-left .15s;overflow:hidden;min-width:0;}
-  .sidebar.collapsed{margin-left:-248px;}
+  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;overflow:hidden;min-width:0;}
   /* George changed his mind back (ISSUES.md, round after centring): logo + title left-
      aligned, in line with the nav items below, not centred. Tidied sidebar generally --
      smaller/tighter type throughout (round-2 ask: "clunky, needs smaller text"). */
@@ -57,7 +73,7 @@
   .sidebar-foot{border-top:1px solid rgba(255,255,255,.12);padding-top:14px;margin-top:6px;font-size:12px;color:var(--sidebar-ink-dim);display:flex;align-items:center;gap:8px;}
   .avatar{width:26px;height:26px;border-radius:50%;background:var(--p2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none;}
 
-  main{padding:0;}
+  main{padding:0;min-width:0;}
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5;}
   .target-chip{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--accent-soft-bg);border:1px solid var(--accent-soft-border);color:var(--accent);padding:6px 12px;border-radius:99px;font-weight:600;}
   .target-chip .seg{opacity:.55;font-weight:500;margin:0 2px;}
@@ -464,6 +480,25 @@ async function fetchJSON(url) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
+// George, 2026-09-28: "truncation log summary is okay but... a way to view the full
+// truncated summary you know?" -- a native title-attribute hover tooltip is finicky
+// (delay, easy to lose, invisible on touch) -- a real click-to-expand toggle instead.
+// Delegated at document level once, since these cells live in tables that get fully
+// re-rendered on reload/poll (a per-cell listener would just be discarded each time).
+function truncatedCellHtml(fullText, maxLen) {
+  const full = fullText || '';
+  if (full.length <= maxLen) return esc(full);
+  const short = full.slice(0, maxLen - 3).trimEnd() + '…';
+  return `<span data-truncated-cell data-full="${esc(full)}" data-short="${esc(short)}" style="cursor:pointer;text-decoration:underline dotted;">${esc(short)}</span>`;
+}
+document.addEventListener('click', (e) => {
+  const cell = e.target.closest('[data-truncated-cell]');
+  if (!cell) return;
+  const expanded = cell.dataset.expanded === '1';
+  cell.textContent = expanded ? cell.dataset.short : cell.dataset.full;
+  cell.dataset.expanded = expanded ? '0' : '1';
+});
+
 // Tiny, dependency-free markdown-lite renderer for the real .claude/commands/*.md
 // walkthrough bodies (George, 2026-09-28: generic per-pipeline "how to run this" guide).
 // Escapes first, so no raw HTML from the source file ever reaches the page -- then only
@@ -472,18 +507,47 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s ?? 
 // Not a general markdown engine -- headers/links/tables aren't needed by this content and
 // aren't handled.
 function mdLite(raw) {
-  const body = String(raw ?? '').replace(/^---[\s\S]*?---\s*/, ''); // strip frontmatter
+  let body = String(raw ?? '').replace(/^---[\s\S]*?---\s*/, ''); // strip frontmatter
+  // George, 2026-09-28: "no jargan, just singular steps sentences" -- every one of these
+  // real command docs opens with the SAME formulaic Claude-Code-facing paragraph
+  // ("Arguments: `$ARGUMENTS` (`$1` = project, ...). Act as **test-lead**; governing rule
+  // `docs/...`.") -- real content for an engineer running `/slash-command` by hand, pure
+  // internal jargon for someone reading a "how do I run this" guide on a web page. Stripped
+  // as a whole paragraph (blank-line-to-blank-line), never guessed at per-doc.
+  const paragraphs = body.split(/\n\s*\n/);
+  const argParaIdx = paragraphs.findIndex(p => p.includes('$ARGUMENTS'));
+  let argMap = {};
+  if (argParaIdx !== -1) {
+    // The stripped paragraph is also the one real, grounded source for what $1/$2/$3 mean
+    // (e.g. "`$1` = project, `$2` = suite id") -- captured before removal so every later
+    // reference in the doc can be substituted with the real name, not left as raw `$N`.
+    for (const m of paragraphs[argParaIdx].matchAll(/`\$(\d+)`\s*=\s*([^,.()\n]+)/g)) {
+      argMap[m[1]] = m[2].trim();
+    }
+    paragraphs.splice(argParaIdx, 1);
+  }
+  body = paragraphs.join('\n\n');
+  for (const [n, name] of Object.entries(argMap)) {
+    body = body.replace(new RegExp('`?\\$' + n + '`?', 'g'), name);
+  }
   const lines = esc(body).split('\n');
   let html = '', inList = false, listTag = 'ol';
   const closeList = () => { if (inList) { html += `</${listTag}>`; inList = false; } };
-  for (const raw of lines) {
-    const line = raw.trim();
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
     const numbered = line.match(/^(\d+)\.\s+(.*)/);
     const bulleted = line.match(/^[-*]\s+(.*)/);
+    const isIndentedContinuation = inList && /^\s+\S/.test(rawLine) && !numbered && !bulleted;
     if (numbered || bulleted) {
       const tag = numbered ? 'ol' : 'ul';
       if (!inList || listTag !== tag) { closeList(); html += `<${tag} style="margin:4px 0 8px;padding-left:20px;">`; inList = true; listTag = tag; }
       html += `<li style="margin-bottom:4px;">${(numbered ? numbered[2] : bulleted[1])}</li>`;
+    } else if (isIndentedContinuation && line) {
+      // A wrapped continuation line of the CURRENT list item in the source markdown (e.g.
+      // "1. **Do the thing.** Some more detail\n   continuing here.") -- append to the
+      // same <li> instead of closing the list and starting a stray paragraph, which used
+      // to make numbering restart at 1 partway through a real, single sequence of steps.
+      html = html.replace(/<\/li>$/, ` ${line}</li>`);
     } else {
       closeList();
       if (line) html += `<p style="margin:0 0 8px;">${line}</p>`;
@@ -526,6 +590,7 @@ const PIPELINE_PLAIN = {
   // Automation > Screen flows (a different, device-behaviour-level flow map entirely).
   'audit-flows': "Compares a device's UX flow map (knowledge/flows/*.md, transcribed from Overflow — not an uploaded doc, and not the same as SIT's own screen-flow graphs) against the live suite, and fills in what's already covered.",
   audit: "Checks a suite's cases follow the house test-writing standard. Doesn't change anything.",
+  'generate-test-run-report': "Drafts a report from a suite's real recent run history — groundwork only until a real report template/example is supplied (no invented layout in the meantime).",
   consolidate: 'Merges near-duplicate cases that test the same thing into one clean case.',
   'export-automation': "Hands off cases marked automatable to the automation-tests repo, as a to-do list.",
   'fold-defect': 'Folds a found-and-fixed bug into the test case that should have caught it, so it stays covered.',
@@ -535,6 +600,7 @@ const PIPELINE_PLAIN = {
   'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
   'update-suite-from-docs': "Checks one or more already-ingested documents against an EXISTING suite's live cases and drafts build/add/edit updates for your review — never a full rebuild. Run Ingest Docs first.",
   'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
+  'clarify-gaps': 'Rewrites GAP/UNCONFIRMED markers into a plain-English question, no jargon — never answers them, just makes the real question legible. Use Resolve to actually answer.',
   'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
 };
 const AGENT_PLAIN = {
@@ -1340,6 +1406,8 @@ const REPO_MAP_SECTION_PLAIN = {
   'system-test-ops — commands (.claude/commands/)': 'The real /slash-command definitions (e.g. /audit, /onboard-suite) — this console\'s Processes page mirrors these, it doesn\'t reimplement them.',
   'test-ops-platform — model/ schema': 'This console\'s own data layer — devices, features, flows, pipelines, automation tests — everything the webapp reads from the real sibling repos.',
   'test-ops-platform — scripts (tools/)': 'This console\'s own standalone scripts, including the repo-map generator that builds this very page\'s data.',
+  'test-automation-sit — written test suites (projects/)': 'The real automated Robot Framework test suites — per-project, per-device — that /api/automation/tests already reads from for the Automation tab. Excludes reference/ (sit\'s own reference material, not this team\'s tests).',
+  'test-automation-sit — scripts (tools/)': 'This repo\'s own standalone scripts.',
 };
 
 // Real GitHub links -- both sibling repos are real, checked-in remotes (georgeoliver-hash/
@@ -1444,6 +1512,11 @@ function openGapModal(marker) {
     <div class="modal-head" style="padding:0 0 12px;"><h3 style="margin:0;">${esc(marker.kind)} — <code style="font-size:12px;">${esc(marker.file)}:${marker.line}</code></h3><button class="modal-close" id="gapModalClose">&times;</button></div>
     <p style="font-size:13.5px;">${esc(marker.text)}</p>
     ${marker.project ? `<p style="font-size:12px;color:var(--ink-soft);">Project: <b>${esc(marker.project)}</b>${marker.device ? ` · Device: <b>${esc(marker.device)}</b>` : ''}</p>` : ''}
+    <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
+      <button class="btn" id="gapModalClarifyBtn">Rewrite in plain English</button>
+      <span id="gapModalClarifyMsg" style="font-size:12.5px;color:var(--ink-soft);">${marker.plain_english ? '' : '(one marker, fast — not the whole scope)'}</span>
+    </div>
+    ${marker.plain_english ? `<p id="gapModalClarifyResult" style="font-size:13.5px;background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:8px 10px;">${esc(marker.plain_english)}</p>` : `<div id="gapModalClarifyResult"></div>`}
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
       <input id="gapModalQuestion" placeholder="Question (what needs confirming?)" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
       <textarea id="gapModalAnswer" placeholder="Your answer" rows="3" style="font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
@@ -1466,6 +1539,25 @@ function openGapModal(marker) {
   document.getElementById('gapModalClose').addEventListener('click', close);
   document.getElementById('gapModalCancel').addEventListener('click', close);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); }, {once: true});
+  document.getElementById('gapModalClarifyBtn').addEventListener('click', async (e) => {
+    const btn = e.target; btn.disabled = true;
+    const msg = document.getElementById('gapModalClarifyMsg');
+    const resultEl = document.getElementById('gapModalClarifyResult');
+    msg.textContent = 'Rewriting…';
+    try {
+      const res = await fetch('/api/gap-register/clarify-one', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({project: marker.project || target.project, file: marker.file, line: marker.line, text: marker.text}),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+      const {plain_english} = await res.json();
+      msg.textContent = '';
+      resultEl.outerHTML = `<p id="gapModalClarifyResult" style="font-size:13.5px;background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:8px 10px;">${esc(plain_english)}</p>`;
+      marker.plain_english = plain_english;  // so the underlying gaps table refreshes with it too
+      if (typeof renderGaps === 'function') renderGaps();
+    } catch (err) { msg.textContent = 'Could not rewrite: ' + err.message; }
+    finally { btn.disabled = false; }
+  });
   document.getElementById('gapModalSave').addEventListener('click', async () => {
     const question = document.getElementById('gapModalQuestion').value.trim();
     const answer = document.getElementById('gapModalAnswer').value.trim();
@@ -1508,7 +1600,10 @@ async function renderGaps() {
         ? fetchJSON(`/api/pipelines/resolve-gaps/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => null)
         : Promise.resolve(null),
     ]);
-    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td>${esc(g.text.slice(0, 100))}</td><td>${g.project ? `<span class="pill gate">${esc(g.project)}${g.device ? '/' + esc(g.device) : ''}</span>` : `<span class="pill human">common</span>`}</td></tr>`).join('');
+    // George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers into plain English -- a
+    // real cached rewrite (clarify-gaps) shows instead of the raw jargon-heavy marker text
+    // when one exists for this exact marker; the raw text stays available via title tooltip.
+    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${g.plain_english ? `${esc(g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td>${g.project ? `<span class="pill gate">${esc(g.project)}${g.device ? '/' + esc(g.device) : ''}</span>` : `<span class="pill human">common</span>`}</td></tr>`).join('');
     const pageStart = d.total ? d.offset + 1 : 0;
     const pageEnd = Math.min(d.offset + d.shown.length, d.total);
     const scopeNote = {
@@ -1522,6 +1617,11 @@ async function renderGaps() {
       <div class="tab-bar">${GAP_SCOPE_TABS.map(t => `<button class="tab-btn gap-scope-btn ${t.key === gapScope ? 'active' : ''}" data-scope="${t.key}">${esc(t.label)}</button>`).join('')}</div>
       <p style="color:var(--ink-soft);font-size:12.5px;margin:8px 0 12px;">${scopeNote}, showing ${pageStart}-${pageEnd}. Click a row to answer it.</p>
       ${d.is_fixture ? `<div class="fixture-note">⚠ Fixture data from a real gap-register run, 2026-09-07 — not live.</div>` : ''}
+      ${target.project ? `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">Rewords every marker in this scope into plain English (never answers them — that's still Resolve). Grounded in each marker's own existing text only.</p>
+        <button class="btn" id="clarifyGapsBtn">Rewrite in plain English</button>
+      </div>
+      <div id="clarifyGapsResult"></div>` : ''}
       <div class="card">
         <table><tr><th>Kind</th><th>Location</th><th>Text</th><th>Scope</th></tr>${rows || `<tr><td colspan="4" style="color:var(--ink-soft);">No markers in this scope.</td></tr>`}</table>
         <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
@@ -1585,6 +1685,27 @@ async function renderGaps() {
       row.addEventListener('click', () => openGapModal(d.shown[Number(row.dataset.gapIdx)]));
     });
     document.getElementById('gapPrevBtn')?.addEventListener('click', () => { gapOffset = Math.max(0, gapOffset - GAP_PAGE_SIZE); renderGaps(); });
+    document.getElementById('clarifyGapsBtn')?.addEventListener('click', async (e) => {
+      const btn = e.target; btn.disabled = true;
+      const resultEl = document.getElementById('clarifyGapsResult');
+      resultEl.innerHTML = `<div class="card"><div class="loading">Rewriting this scope's markers into plain English…${WORKING_DOTS_HTML}</div></div>`;
+      try {
+        const res = await fetch('/api/pipelines/clarify-gaps/run', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({project: target.project, device: target.device || '', extra_inputs: {device: target.device || '', scope: gapScope}}),
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        const {run_id} = await res.json();
+        const poll = async () => {
+          const run = await fetchJSON(`/api/pipelines/runs/${run_id}`);
+          if (run.status === 'running') { setTimeout(poll, 2000); return; }
+          btn.disabled = false;
+          if (run.status === 'succeeded') { resultEl.innerHTML = ''; renderGaps(); }
+          else resultEl.innerHTML = `<div class="errbox">${esc(run.error || 'Could not rewrite this scope.')}</div>`;
+        };
+        poll();
+      } catch (err) { resultEl.innerHTML = `<div class="errbox">${esc(err.message)}</div>`; btn.disabled = false; }
+    });
     document.getElementById('gapNextBtn')?.addEventListener('click', () => { gapOffset += GAP_PAGE_SIZE; renderGaps(); });
     content.querySelectorAll('[data-del-answer]').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -2085,7 +2206,59 @@ async function renderSettings() {
         ${mappings.length ? `<table><tr><th>Project</th><th>Device</th><th>Old suite</th><th>New suite</th><th></th></tr>${mapRows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No suite mappings configured yet.</p>'}
       </div>`;
 
-    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${importCard}${credCard}${connectionsCard}${mapCard}`);
+    // George, 2026-09-28: "Functional docs, and then a Design docs area... design doc can
+    // be anything from figma, overflow, json files, anything for UI/UX visuals" -- Design
+    // docs is a real, separate upload bucket from Functional docs (the existing Docs page),
+    // scoped to whatever project/device is currently targeted. Any file type is accepted --
+    // this is a storage bucket, not a format-specific tool; onboard-suite's flow_data_path
+    // auto-picks the first .json in here if one exists, everything else just sits here for
+    // reference/future consumers.
+    const currentTarget = window.CURRENT_TARGET || {};
+    let designDocs = null;
+    if (currentTarget.project && currentTarget.device) {
+      try { designDocs = await fetchJSON(`/api/docs?project=${encodeURIComponent(currentTarget.project)}&device=${encodeURIComponent(currentTarget.device)}&kind=design`); }
+      catch (e) { /* best-effort only */ }
+    }
+    const designDocsCard = `
+      <div class="card">
+        <h2>Design docs${currentTarget.project ? ` — ${esc(currentTarget.project)}/${esc(currentTarget.device)}` : ''}</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 12px;">Anything UI/UX-visual — a Figma export, an Overflow flow-data JSON, screenshots, anything. Separate from Functional docs (the Docs page), which are requirement/spec documents. onboard-suite auto-picks the first real <code>.json</code> file here for UX flow mining — nothing to type manually any more.</p>
+        ${!currentTarget.project ? `<p style="color:var(--ink-soft);font-size:13px;">Set a project/device target (Change target) to manage this.</p>` : `
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input type="file" id="designDocFile" style="flex:1;font-size:13px;">
+          <button class="btn primary" id="designDocUploadBtn">Upload</button>
+        </div>
+        <div id="designDocMsg" style="font-size:12.5px;margin-bottom:8px;"></div>
+        ${designDocs && designDocs.length
+          ? `<table><tr><th>File</th><th>Uploaded</th><th></th></tr>${designDocs.map(d => `<tr><td>${esc(d.filename)}</td><td style="color:var(--ink-soft);font-size:12px;">${new Date(d.uploaded_at * 1000).toLocaleString()}</td><td><button class="btn" data-del-design-doc="${esc(d.filename)}" style="font-size:11px;padding:3px 8px;">Remove</button></td></tr>`).join('')}</table>`
+          : `<p style="color:var(--ink-soft);font-size:13px;">No Design docs uploaded for this target yet.</p>`}`}
+      </div>`;
+
+    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${importCard}${credCard}${connectionsCard}${mapCard}${designDocsCard}`);
+
+    document.getElementById('designDocUploadBtn')?.addEventListener('click', async () => {
+      const fileInput = document.getElementById('designDocFile');
+      const msg = document.getElementById('designDocMsg');
+      const file = fileInput.files[0];
+      if (!file) { msg.textContent = 'Choose a file first.'; return; }
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch(`/api/docs?project=${encodeURIComponent(currentTarget.project)}&device=${encodeURIComponent(currentTarget.device)}&kind=design`, {method: 'POST', body: formData});
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        renderSettings();
+      } catch (e) { msg.textContent = 'Could not upload: ' + e.message; }
+    });
+    content.querySelectorAll('[data-del-design-doc]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(`Remove ${btn.dataset.delDesignDoc}?`)) return;
+        try {
+          const res = await fetch(`/api/docs/${encodeURIComponent(currentTarget.project)}/${encodeURIComponent(currentTarget.device)}/${encodeURIComponent(btn.dataset.delDesignDoc)}?kind=design`, {method: 'DELETE'});
+          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+          renderSettings();
+        } catch (e) { alert('Could not remove: ' + e.message); }
+      });
+    });
 
     document.getElementById('credImportBtn')?.addEventListener('click', async () => {
       try {
@@ -2149,11 +2322,22 @@ async function renderPipelineDetail(id) {
     // (top-level target fields, or derived from the suite mapping) — only inputs outside
     // that system-derived set (e.g. ingest-docs' docs_path) need a real text field here.
     const SYSTEM_DERIVED_INPUTS = ['project', 'device', 'old_suite_id', 'new_suite_id', 'suite_id'];
-    const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name));
-    let docsFolder = null;
-    let docsSource = null;
-    let docsOptions = [];
-    const isIngestDocs = extraInputs.some(i => i.name === 'docs_path');
+    const isIngestDocs = (detail.inputs || []).some(i => i.name === 'docs_path');
+    // George, 2026-09-28: "docs path why is it still editable? we just wanna see visually
+    // where the path is... take away the field, just move this in a highlighted text area
+    // near the title" -- docs_path is fully system-resolved (never typed), so it doesn't
+    // belong in the editable-inputs list at all any more; it's shown as a real pill near
+    // the page title instead (see pipelineDetailHeadHtml below). The hidden field that
+    // actually submits its value moves there too.
+    // flow_data_path (2026-09-28): system-resolved from the target's Design docs upload
+    // folder now (see runner.py's _build_params), same "not hand-typed" treatment as
+    // docs_path -- no editable field for it any more either.
+    const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name) && i.name !== 'docs_path' && i.name !== 'flow_data_path');
+    let designDocsForOnboarding = null;
+    if (id === 'onboard-suite' && target.project && target.device) {
+      try { designDocsForOnboarding = await fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}&kind=design`); }
+      catch (e) { /* best-effort only */ }
+    }
     if (isIngestDocs && target.project && target.device) {
       try {
         const r = await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
@@ -2167,6 +2351,14 @@ async function renderPipelineDetail(id) {
     let currentDocs = null;
     if (isIngestDocs && target.project && target.device) {
       try { currentDocs = await fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
+      catch (e) { /* best-effort only */ }
+    }
+    // George, 2026-09-28: "only file? can this not be a drop-down? of the recently
+    // uploaded files and you choose out of this?" -- real files actually present in the
+    // resolved docs folder, not a fabricated list.
+    let folderFiles = null;
+    if (isIngestDocs && target.project && target.device) {
+      try { folderFiles = await fetchJSON(`/api/docs/folder-files?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
       catch (e) { /* best-effort only */ }
     }
     // targeted-run's real section tree (George, 2026-09-22) -- fetched here, same
@@ -2237,9 +2429,13 @@ async function renderPipelineDetail(id) {
         <p style="color:var(--ink-soft);font-size:12px;margin:4px 0 0;">This is the real, Google-Drive-synced library for this project — nothing to upload here. The Docs page's upload is only for attaching a few extra one-off files.</p>
       </div>` : `
       <div class="card" style="margin-top:10px;">
-        <b style="font-size:13px;">Currently uploaded for ${esc(target.project || '?')}/${esc(target.device || '?')}</b>
+        <b style="font-size:13px;">Currently uploaded for ${esc(target.project || '?')}/${esc(target.device || '?')}</b>${currentDocs && currentDocs.length ? ` <span style="color:var(--ink-soft);font-weight:400;">(${currentDocs.length})</span>` : ''}
         ${currentDocs === null ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">Set a project/device target to see this.</p>`
-          : currentDocs.length ? `<ul style="margin:8px 0 0;padding-left:18px;font-size:12.5px;">${currentDocs.map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul>`
+          : currentDocs.length ? `
+          <div class="stage-group" id="uploadedDocsAccordion" style="margin:8px 0 0;">
+            <div class="stage-header" style="padding:6px 10px;font-size:12.5px;font-weight:500;">Show the list <span class="chevron">▸</span></div>
+            <div class="stage-body"><ul style="margin:8px 0 0;padding-left:18px;font-size:12.5px;">${currentDocs.map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul></div>
+          </div>`
           : `<p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">No docs uploaded for this target yet, and no synced requirements folder found either — add docs on the Docs page, or sync them to %USERPROFILE%\\TestOpsRequirements\\${esc((target.project||'').toLowerCase())}\\_current\\.</p>`}
       </div>`
     ) : '';
@@ -2253,6 +2449,15 @@ async function renderPipelineDetail(id) {
         <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 8px;">Converts and scores every doc against this project's real, existing vocabulary — the same gate the real run hits first, without starting a tracked run.</p>
         <button class="btn" id="relevancePreviewBtn">Check relevance</button>
         <div id="relevancePreviewResult" style="margin-top:8px;"></div>
+      </div>` : '';
+    const designDocsStatusHtml = id === 'onboard-suite' ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">UX flow data (optional)</b>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 0;">
+          ${designDocsForOnboarding && designDocsForOnboarding.length
+            ? `Found ${designDocsForOnboarding.length} Design doc(s) for this target — using <code>${esc(designDocsForOnboarding.find(d => d.filename.endsWith('.json'))?.filename || designDocsForOnboarding[0].filename)}</code> if it's a real Overflow export.`
+            : `No Design docs uploaded for this target yet — this step skips cleanly, that's a real, expected state for a from-scratch build. Upload an Overflow flow-data JSON export on <a href="#" data-goto-settings-design>Settings → Design docs</a> if you have one.`}
+        </p>
       </div>` : '';
     // docs_path is system-resolved from the target's own docs folder, not free text — a
     // typed path here can silently point ingest_docs.py somewhere wrong and break the run
@@ -2296,31 +2501,38 @@ async function renderPipelineDetail(id) {
         .map(s => s.produces)
         .filter(p => typeof p === 'string' && p.trim())
     )];
+    // George, 2026-09-28: "in an accordion to open and close with just basic steps" -- was
+    // a permanently-visible card; real ask was collapsed-by-default, same pattern as every
+    // other accordion in this app.
     const pipelineGuideHtml = `
-      <div class="card" style="margin-top:10px;">
-        <b style="font-size:13px;">How to run this</b>
-        ${(detail.preconditions || requiredInputs.length) ? `
-        <div style="margin-top:8px;">
-          <b style="font-size:12.5px;">Before you start</b>
-          ${detail.preconditions ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0;">${esc(detail.preconditions.note || JSON.stringify(detail.preconditions))}</p>` : ''}
-          ${requiredInputs.length ? `<ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${requiredInputs.map(i => `<li><code>${esc(i.name)}</code>${i.note ? ` — ${esc(i.note)}` : ''}</li>`).join('')}</ul>` : ''}
-        </div>` : ''}
-        <div style="margin-top:10px;">
-          <b style="font-size:12.5px;">Step-by-step guide</b>
-          <div style="font-size:12.5px;margin-top:4px;">
-            ${walkthrough.available ? mdLite(walkthrough.markdown) : `<p style="color:var(--ink-soft);">No step-by-step guide written for this pipeline yet.</p>`}
+      <div class="card" style="margin-top:10px;padding:0;">
+        <div class="stage-group" id="pipelineGuideAccordion">
+          <div class="stage-header" style="padding:11px 14px;">How to run this<span class="chevron">▸</span></div>
+          <div class="stage-body" style="padding:0 14px 14px;">
+            ${(detail.preconditions || requiredInputs.length) ? `
+            <div style="margin-top:8px;">
+              <b style="font-size:12.5px;">Before you start</b>
+              ${detail.preconditions ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0;">${esc(detail.preconditions.note || JSON.stringify(detail.preconditions))}</p>` : ''}
+              ${requiredInputs.length ? `<ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${requiredInputs.map(i => `<li><code>${esc(i.name)}</code>${i.note ? ` — ${esc(i.note)}` : ''}</li>`).join('')}</ul>` : ''}
+            </div>` : ''}
+            <div style="margin-top:10px;">
+              <b style="font-size:12.5px;">Step-by-step guide</b>
+              <div style="font-size:12.5px;margin-top:4px;">
+                ${walkthrough.available ? mdLite(walkthrough.markdown) : `<p style="color:var(--ink-soft);">No step-by-step guide written for this pipeline yet.</p>`}
+              </div>
+            </div>
+            ${producesList.length ? `
+            <div style="margin-top:10px;">
+              <b style="font-size:12.5px;">Where results land</b>
+              <ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${producesList.map(p => `<li><code>${esc(p)}</code></li>`).join('')}</ul>
+            </div>` : ''}
+            ${NEXT_PIPELINE[id] ? `
+            <div style="margin-top:10px;">
+              <b style="font-size:12.5px;">What's next</b>
+              <p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0 0;">${esc(NEXT_PIPELINE[id])}</p>
+            </div>` : ''}
           </div>
         </div>
-        ${producesList.length ? `
-        <div style="margin-top:10px;">
-          <b style="font-size:12.5px;">Where results land</b>
-          <ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${producesList.map(p => `<li><code>${esc(p)}</code></li>`).join('')}</ul>
-        </div>` : ''}
-        ${NEXT_PIPELINE[id] ? `
-        <div style="margin-top:10px;">
-          <b style="font-size:12.5px;">What's next</b>
-          <p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0 0;">${esc(NEXT_PIPELINE[id])}</p>
-        </div>` : ''}
       </div>`;
     const flowGuideHtml = id === 'audit-flows' ? `
       <div class="card" style="margin-top:10px;">
@@ -2330,7 +2542,7 @@ async function renderPipelineDetail(id) {
           <li>Export the flow from Overflow to PDF, drop it in <code>knowledge/flows/</code>, and ask Claude to transcribe it once into a structured <code>&lt;project&gt;-&lt;device&gt;.md</code> flow map.</li>
           <li><b>Or</b>, for large/annotated diagrams: open the flow in Overflow with the Claude Chrome extension, ask it to <i>transcribe, not summarize</i> every board (screen names, exact annotation text, decision points, what triggers each connection), and paste the result in as that same <code>.md</code> file.</li>
         </ol>
-        <p style="color:var(--ink-soft);font-size:12px;margin:0;">No flow map yet for this device? This pipeline will say so and point you back here rather than guessing — run <a href="#" data-goto-pipeline="audit-coverage">Release</a> in the meantime for JIRA-based coverage instead.</p>
+        <p style="color:var(--ink-soft);font-size:12px;margin:0;">No flow map yet for this device? This pipeline will say so and point you back here rather than guessing — run <a href="#" data-goto-pipeline="audit-coverage">Cross-Check JIRA</a> in the meantime for JIRA-based coverage instead.</p>
       </div>` : '';
     // Multiple JIRAs in one run (ISSUES.md round 4: "need a way to tell it multiple jiras
     // sometimes... fix version / release... or bugs / epics"). Real JQL already supports
@@ -2393,6 +2605,33 @@ async function renderPipelineDetail(id) {
           // George's ask (ISSUES.md round 4): review-runs' `last_n` was a plain free-text
           // number — a real dropdown of sane choices is clearer than "type a number and
           // hope," and the pipeline already accepts any of these as a real `--last N`.
+          // George, 2026-09-28: "only file? can this not be a drop-down? of the recently
+          // uploaded files... and clearly label optional" -- real files from the resolved
+          // docs folder (folderFiles above), not a fabricated list. Free text is still
+          // possible via the "Type a path…" option, for a file this listing missed.
+          // George, 2026-09-28: "bigger selector" -- a real multi-select checkbox list
+          // (same pattern as targeted-run's areas tree), select/de-select any number of
+          // real files, not a single-choice dropdown. Backend (tools/ingest_docs.py
+          // --only) now accepts a comma-separated list of files, same day.
+          if (i.name === 'only_file') {
+            const files = (folderFiles && folderFiles.available) ? folderFiles.files : [];
+            return `
+          <label style="display:block;font-size:13px;margin-bottom:6px;">
+            Which document(s) changed? <span style="color:var(--ink-soft);">(optional — leave everything unticked for a full re-sweep of the whole folder)</span>
+            ${help ? `<div style="color:var(--ink-soft);font-size:12px;margin:2px 0 4px;">${esc(help)}</div>` : ''}
+          </label>
+          <div id="onlyFileTree" style="max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px;">
+            ${files.length
+              ? files.map(f => `<label style="font-size:12.5px;display:flex;align-items:center;gap:6px;padding:2px 0;"><input type="checkbox" data-only-file-checkbox value="${esc(f)}"> ${esc(f)}</label>`).join('')
+              : `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No files found in the resolved docs folder yet.</p>`}
+          </div>
+          ${folderFiles && folderFiles.truncated ? `<div style="color:var(--ink-soft);font-size:12px;margin-top:2px;">Showing the first 300 files in the folder — use "Add a path manually" below if yours isn't listed.</div>` : ''}
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <input type="text" class="input" id="onlyFileManualAdd" placeholder="Add a path manually (relative to the docs folder above)" style="flex:1;" />
+            <button type="button" class="btn" id="onlyFileManualAddBtn">Add</button>
+          </div>
+          <input type="hidden" data-extra-input="only_file" value="" />`;
+          }
           if (i.name === 'last_n') {
             const opts = [5, 10, 15, 25, 50];
             const current = Number(i.default) || 10;
@@ -2450,6 +2689,12 @@ async function renderPipelineDetail(id) {
           <h1 style="font-size:20px;margin:0;">${esc(PIPELINE_DISPLAY_NAME[id] || id)} ${meta.slash_command ? `<code style="font-size:12px;color:var(--ink-soft);font-weight:400;">${esc(meta.slash_command)}</code>` : ''} ${PIPELINE_DISPLAY_NAME[id] ? `<span style="color:var(--ink-soft);font-weight:400;font-size:12px;">(${esc(id)})</span>` : ''}</h1>
           ${PIPELINE_PLAIN[id] ? `<p style="font-size:14px;font-weight:500;margin:6px 0 2px;">${esc(PIPELINE_PLAIN[id])}</p>` : ''}
           <p>${esc(detail.description)}</p>
+          ${isIngestDocs ? `
+          <div class="chip" style="margin-top:8px;display:inline-flex;">
+            <span class="sw" style="background:${docsFolder ? 'var(--ok)' : 'var(--warn)'}"></span>
+            ${docsFolder ? esc(docsFolder) : 'No docs folder resolved yet — set project/device via Change target first'}
+          </div>
+          <input type="hidden" data-extra-input="docs_path" value="${esc(docsFolder || '')}" />` : ''}
         </div>
         ${runButton}
       </div>
@@ -2469,6 +2714,7 @@ async function renderPipelineDetail(id) {
         ${docsSourcePickerHtml}
         ${currentDocsHtml}
         ${relevancePreviewHtml}
+        ${designDocsStatusHtml}
         <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
           <div class="card" style="flex:1 1 320px;"><div class="flow" style="display:block;">${steps}</div></div>
           <div id="pipelineStepList" class="card" style="flex:1 1 320px;display:none;"></div>
@@ -2481,6 +2727,38 @@ async function renderPipelineDetail(id) {
     document.getElementById('docsSourcePicker')?.addEventListener('change', (e) => {
       const el = content.querySelector('[data-extra-input="docs_path"]');
       if (el) el.value = e.target.value;
+      const pillText = content.querySelector('.pipeline-detail-head .chip');
+      if (pillText) pillText.lastChild.textContent = ' ' + e.target.value;
+    });
+    // only_file multi-select checkbox tree (George, 2026-09-28: "bigger selector... select,
+    // de-select documents"): the hidden field submits every ticked file, comma-joined --
+    // ingest-docs' --only now accepts that same format server-side.
+    const onlyFileTree = document.getElementById('onlyFileTree');
+    const onlyFileHidden = content.querySelector('[data-extra-input="only_file"]');
+    const onlyFileManualAdd = document.getElementById('onlyFileManualAdd');
+    const onlyFileManualAddBtn = document.getElementById('onlyFileManualAddBtn');
+    function syncOnlyFileHidden() {
+      if (!onlyFileTree) return;
+      const checked = Array.from(onlyFileTree.querySelectorAll('[data-only-file-checkbox]:checked')).map(c => c.value);
+      onlyFileHidden.value = checked.join(',');
+    }
+    onlyFileTree?.addEventListener('change', syncOnlyFileHidden);
+    onlyFileManualAddBtn?.addEventListener('click', () => {
+      const path = onlyFileManualAdd.value.trim();
+      if (!path || !onlyFileTree) return;
+      if (onlyFileTree.querySelector('p')) onlyFileTree.innerHTML = '';  // clear "no files found"
+      const label = document.createElement('label');
+      label.style.cssText = 'font-size:12.5px;display:flex;align-items:center;gap:6px;padding:2px 0;';
+      label.innerHTML = `<input type="checkbox" data-only-file-checkbox value="${esc(path)}" checked> ${esc(path)}`;
+      onlyFileTree.appendChild(label);
+      onlyFileManualAdd.value = '';
+      syncOnlyFileHidden();
+    });
+    document.getElementById('uploadedDocsAccordion')?.querySelector('.stage-header')?.addEventListener('click', (e) => {
+      e.currentTarget.closest('.stage-group').classList.toggle('open');
+    });
+    document.getElementById('pipelineGuideAccordion')?.querySelector('.stage-header')?.addEventListener('click', (e) => {
+      e.currentTarget.closest('.stage-group').classList.toggle('open');
     });
     document.getElementById('relevancePreviewBtn')?.addEventListener('click', async () => {
       const resultEl = document.getElementById('relevancePreviewResult');
@@ -2635,14 +2913,12 @@ async function renderPipelineLog(id, target, container) {
       // step's is already short (see _extract_plain_summary). Truncate the CELL to a
       // couple of sentences, full text still available via the native title tooltip on
       // hover -- never truncates the underlying data, just this table's display of it.
-      const fullSummary = r.summary || '';
-      const shortSummary = fullSummary.length > 180 ? fullSummary.slice(0, 177).trimEnd() + '…' : fullSummary;
       return `<tr>
         <td style="white-space:nowrap;">${esc(when)}</td>
         <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
         <td style="font-size:12.5px;">${given}</td>
         <td style="font-size:12.5px;white-space:nowrap;">${costCell}</td>
-        <td style="font-size:12.5px;color:var(--ink-soft);max-width:320px;" title="${esc(fullSummary)}">${esc(shortSummary)}</td>
+        <td style="font-size:12.5px;color:var(--ink-soft);max-width:320px;">${truncatedCellHtml(r.summary, 180)}</td>
       </tr>`;
     }).join('');
     container.innerHTML = `
@@ -2876,8 +3152,8 @@ const GROUPS = {
   // you click approve the same number of times either way. The pipeline file stays as
   // plumbing; it just isn't offered as a button.
   Build: ['onboard-suite', 'add-feature', 'update-suite-from-docs', 'consolidate', 'targeted-run'],
-  Audit: ['audit-coverage', 'audit-flows', 'audit'],
-  Maintain: ['fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps'],
+  Audit: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report'],
+  Maintain: ['fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps'],
 };
 // Display-only renames (round 2, ISSUES.md) -- never the real pipeline `id` or group DOM
 // id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
@@ -2897,7 +3173,7 @@ const NEXT_PIPELINE = {
   'ingest-docs': "No existing suite yet for this device? Run Onboarding next. Suite already exists? Run Feature (a JIRA/description-scoped change) or Update from docs (this ingested document scoped to an existing suite).",
   'audit-coverage': "This pipeline only drafts case-drafts.md -- it never pushes to TestRail itself. Review the draft, then run Feature to actually author/push it.",
   'audit-flows': "Also drafts only, and its own author_and_push step hands off to a human to run the real push --commit -- nothing in the console does that hand-off for you yet.",
-  'review-runs': "If a case is traced to a real, fixed bug, run Defect (fold-defect) to pin it into the case that should have caught it. If it recommends new coverage, that's a Draft here too, same manual-push caveat as Release/Design above.",
+  'review-runs': "If a case is traced to a real, fixed bug, run Defect (fold-defect) to pin it into the case that should have caught it. If it recommends new coverage, that's a Draft here too, same manual-push caveat as Cross-Check JIRA/Design above.",
   'onboard-suite': "Its own definition_of_done gate already runs Standard (audit) for you -- nothing further needed unless it flags something.",
   'add-feature': "Same as Onboarding -- its own definition_of_done gate already runs Standard (audit) for you.",
   'update-suite-from-docs': "Same as Onboarding -- its own definition_of_done gate already runs Standard (audit) for you.",
@@ -2915,15 +3191,17 @@ const PIPELINE_DISPLAY_NAME = {
   'write-automation': 'Write',
   'draft-automation': 'Draft',
   'targeted-run': 'Targeted run',
-  'audit-coverage': 'Release',
+  'audit-coverage': 'Cross-Check JIRA',
   'audit-flows': 'Design',
   audit: 'Standard',
+  'generate-test-run-report': 'Run report',
   'fold-defect': 'Defect',
   'review-runs': 'History',
   'consolidation-check': 'Merge check',
   'traceability-check': 'Trace check',
   maintain: 'Checkup',
   'resolve-gaps': 'Resolve',
+  'clarify-gaps': 'Clarify',
 };
 // "Proper English" rule (ISSUES.md round 2): a label the TOOL generates (this fallback,
 // when a pipeline has no explicit display name above) must read as a normal sentence/
@@ -3066,16 +3344,56 @@ async function renderAutomationDashboard(project, device_type) {
 }
 
 /* ---------------- Automation tests written: searchable list ---------------- */
+// George, 2026-09-28: "a repo type structured view of able to click on the tests
+// written, no need to actually show like the tests written in bulk detail just a way to
+// click on them and view them" -- was: every suite's full case list dumped inline,
+// always. Now: a real project -> device -> suite-file tree (same visual pattern as the
+// Repo Map's own file tree), collapsed by default; a suite's case list only renders once
+// you click into it. Built now (not deferred) per George's direct "build now" answer.
+function renderAutomationSuiteTree(suites) {
+  const byProject = {};
+  suites.forEach(s => {
+    const proj = s.project || '(no project)';
+    const devs = s.device_types.length ? s.device_types : ['(no device)'];
+    devs.forEach(dev => {
+      ((byProject[proj] = byProject[proj] || {})[dev] = byProject[proj][dev] || []).push(s);
+    });
+  });
+  if (!Object.keys(byProject).length) return `<div class="card"><p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p></div>`;
+  return `<div class="card">` + Object.entries(byProject).map(([proj, byDevice], pi) => `
+    <div class="stage-group" data-tree-node>
+      <div class="stage-header" style="padding:8px 10px;">${esc(proj)} <span style="color:var(--ink-soft);font-weight:400;font-size:12.5px;">(${Object.values(byDevice).reduce((n, arr) => n + arr.length, 0)} suite file(s))</span><span class="chevron">▸</span></div>
+      <div class="stage-body" style="padding-left:14px;">
+        ${Object.entries(byDevice).map(([dev, fileSuites], di) => `
+        <div class="stage-group" data-tree-node>
+          <div class="stage-header" style="padding:6px 10px;font-size:13px;">${esc(dev)} <span style="color:var(--ink-soft);font-weight:400;font-size:12px;">(${fileSuites.length})</span><span class="chevron">▸</span></div>
+          <div class="stage-body" style="padding-left:14px;">
+            ${fileSuites.map((s, si) => `
+            <div class="stage-group" data-tree-node data-suite-idx="${esc(String(s._idx))}">
+              <div class="stage-header" style="padding:5px 10px;font-size:12.5px;font-weight:400;">
+                <code style="font-size:11.5px;">${esc(s.source_file)}</code>
+                ${s.feature ? `<span style="color:var(--ink-soft);"> — ${esc(s.feature)}</span>` : ''}
+                <span style="color:var(--ink-soft);font-weight:400;">(${s.cases.length} test${s.cases.length === 1 ? '' : 's'})</span>
+                <span class="chevron">▸</span>
+              </div>
+              <div class="stage-body" style="padding-left:14px;">
+                <ul class="activity">${s.cases.map(c => `<li>${esc(c.name)} ${c.tags.length ? c.tags.map(t=>`<span class="pill warn" style="margin-left:4px;">${esc(t)}</span>`).join('') : ''}</li>`).join('')}</ul>
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('') + `</div>`;
+}
+
 async function renderAutomationTestsWritten() {
   loading();
   try {
     const d = await fetchJSON('/api/automation/tests');
-    const renderSuites = (suites) => suites.map(s => `
-      <div class="card">
-        <h2 style="font-size:14px;">${esc(s.project || '?')} ${s.device_types.length ? '/ ' + s.device_types.map(esc).join(', ') : ''} <code style="font-size:11px;color:var(--ink-soft);">${esc(s.feature || '')}</code></h2>
-        <p style="color:var(--ink-soft);font-size:11px;margin:0 0 8px;">${esc(s.source_file)}</p>
-        <ul class="activity">${s.cases.map(c => `<li>${esc(c.name)} ${c.tags.length ? c.tags.map(t=>`<span class="pill warn" style="margin-left:4px;">${esc(t)}</span>`).join('') : ''}</li>`).join('')}</ul>
-      </div>`).join('');
+    const renderSuites = (suites) => {
+      suites.forEach((s, i) => { s._idx = i; });
+      return renderAutomationSuiteTree(suites);
+    };
     setContent(`
       <div class="page-head"><h1>Automation tests written</h1><p>${d.summary.total_tests} real tests across ${d.summary.total_suites} suites.</p></div>
       <div class="card">
@@ -3092,6 +3410,13 @@ async function renderAutomationTestsWritten() {
         </div>
       </div>
       <div id="atResults">${renderSuites(d.suites)}</div>`);
+    // Delegated (not per-node) since #atResults' innerHTML is fully replaced on every
+    // filter/search reload -- a per-node listener would just be discarded each time.
+    document.getElementById('atResults').addEventListener('click', (e) => {
+      const header = e.target.closest('.stage-header');
+      if (!header) return;
+      header.closest('.stage-group').classList.toggle('open');
+    });
 
     async function reload() {
       const project = document.getElementById('atProjectFilter').value;
@@ -3111,13 +3436,29 @@ async function renderAutomationTestsWritten() {
   } catch (e) { errbox('Could not load automation tests: ' + e.message); }
 }
 
+// George, 2026-09-28: "is it not really up to date... or is it purely based on the sit
+// clone/pull we do?" -- confirmed yes, `sit-mirror/` is a one-way, point-in-time copy.
+// Shown honestly here rather than letting these two views look as live as everything else.
+async function sitMirrorStalenessHtml() {
+  try {
+    const s = await fetchJSON('/api/sit-mirror/status');
+    if (!s.available) return '';
+    const when = new Date(s.last_synced).toLocaleDateString();
+    const stale = s.days_stale >= 7;
+    return `<div style="background:${stale ? 'var(--warn-bg)' : 'var(--ok-bg)'};color:${stale ? 'var(--warn)' : 'var(--ok)'};border-radius:8px;padding:8px 12px;font-size:12.5px;margin-bottom:10px;">
+      ${stale ? '⚠' : '✓'} This is a point-in-time copy of SIT, last synced ${esc(when)} (${s.days_stale} day${s.days_stale === 1 ? '' : 's'} ago) — not a live connection.
+    </div>`;
+  } catch (e) { return ''; }
+}
+
 async function renderKeywords() {
   loading();
   try {
-    const d = await fetchJSON('/api/automation/keywords');
+    const [d, stalenessHtml] = await Promise.all([fetchJSON('/api/automation/keywords'), sitMirrorStalenessHtml()]);
     const rows = d.keywords.map(k => `<tr><td><span class="pill code">${esc(k.device_family)}</span></td><td>${esc(k.phrase)}</td><td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.source_file)}</code></td></tr>`).join('');
     setContent(`
       <div class="page-head"><h1>SIT function keywords</h1><p>${d.total} real Given/When/Then keywords, parsed live from SIT's Bindings/*.robot files — view only, nothing here is editable.</p></div>
+      ${stalenessHtml}
       <div class="card">
         <div style="display:flex;gap:10px;margin-bottom:12px;">
           <select id="kwFamilyFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
@@ -3146,13 +3487,23 @@ async function renderKeywords() {
 
 async function renderFlows() {
   loading();
+  const stalenessHtml = await sitMirrorStalenessHtml();
   setContent(`
     <div class="page-head"><h1>SIT screen flows</h1><p>Real screen-transition graphs, straight from SIT's own screenflow_map.jsonc discovery output — view only.</p></div>
+    ${stalenessHtml}
     <div id="flowsBodyStandalone"></div>`);
   await renderFlowsBody(document.getElementById('flowsBodyStandalone'));
 }
 
 const VIEWS = {health: renderHealth, pipelines: renderPipelines, features: renderFeatures, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
+// Delegated, document-wide: onboard-suite's UX-flow-data status card links straight to
+// Settings (George, 2026-09-28's Functional/Design docs split) from anywhere it renders.
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-goto-settings-design]')) {
+    e.preventDefault();
+    ACTIVE_VIEW = 'settings'; CURRENT_RERENDER = () => VIEWS['settings'](); CURRENT_RERENDER();
+  }
+});
 const AUTOMATION_VIEWS = {dashboard: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
@@ -3283,12 +3634,34 @@ async function renderReportsPage() {
   loading();
   const target = window.CURRENT_TARGET || {};
   try {
-    const [reports, liveSummary] = await Promise.all([
+    const [reports, liveSummary, recentRuns] = await Promise.all([
       fetchJSON('/api/reports'),
       target.project && target.device
         ? fetchJSON('/api/build-stats').catch(() => null)
         : Promise.resolve(null),
+      fetchJSON('/api/runs/recent?limit=30').catch(() => []),
     ]);
+    // George, 2026-09-28: "reports can be more of a link to the generated test run
+    // reports, and other tabs menu options for like the tools bug issues, reports,
+    // latest logs for the tool, uhh money spent with tool functions" -- "can we not do
+    // all of it" -- Tool activity (every real run, any pipeline/target) + AI cost
+    // (reuses the existing dashboard widget) added alongside the generated-reports list
+    // and live summary that already existed here.
+    const RUN_PILL_CLASS = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'};
+    const activityRows = recentRuns.map(r => `<tr>
+      <td style="white-space:nowrap;font-size:12px;">${r.created_at ? new Date(r.created_at + 'Z').toLocaleString() : ''}</td>
+      <td style="font-size:12.5px;">${esc(PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id)}</td>
+      <td style="font-size:12.5px;">${esc(r.project)}/${esc(r.device)}</td>
+      <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
+      <td style="font-size:12px;color:var(--ink-soft);max-width:280px;">${truncatedCellHtml(r.summary, 120)}</td>
+    </tr>`).join('');
+    const activityHtml = `
+      <div class="card">
+        <h2>Tool activity${recentRuns.length ? ` (last ${recentRuns.length})` : ''}</h2>
+        ${recentRuns.length
+          ? `<table><tr><th>When</th><th>Pipeline</th><th>Target</th><th>Status</th><th>Summary</th></tr>${activityRows}</table>`
+          : `<p style="color:var(--ink-soft);font-size:13px;">No runs recorded yet.</p>`}
+      </div>`;
     const liveHtml = liveSummary ? `
       <div class="card">
         <h2>Live — ${esc(target.project)}/${esc(target.device)}</h2>
@@ -3306,7 +3679,7 @@ async function renderReportsPage() {
       <td style="font-size:12px;color:var(--ink-soft);">${(r.size / 1024).toFixed(1)} KB</td>
     </tr>`).join('');
     setContent(`
-      <div class="page-head"><h1>Reports</h1><p>Every real report this console/system-test-ops has generated, plus a live view of the current target.</p></div>
+      <div class="page-head"><h1>Reports</h1><p>Every real report this console/system-test-ops has generated, plus a live view of the current target, tool-wide run activity, and AI cost.</p></div>
       ${liveHtml}
       <div class="card">
         <h2>Generated reports${reports.length ? ` (${reports.length})` : ''}</h2>
@@ -3314,7 +3687,10 @@ async function renderReportsPage() {
           ? `<table><tr><th>Project</th><th>Path</th><th>Generated</th><th>Size</th></tr>${rows}</table>`
           : `<p style="color:var(--ink-soft);font-size:13px;">No report files found under system-test-ops/reports/ yet.</p>`}
       </div>
-      <div id="reportPreview"></div>`);
+      <div id="reportPreview"></div>
+      ${activityHtml}
+      <div id="aiUsageCard" class="card"></div>`);
+    renderAiUsageWidget();
     content.querySelectorAll('[data-report-idx]').forEach(row => {
       row.addEventListener('click', async () => {
         const r = reports[Number(row.dataset.reportIdx)];

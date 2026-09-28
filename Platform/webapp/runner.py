@@ -396,6 +396,19 @@ def _build_params(project: str, device: str, steps: list[Step], extra_inputs: di
     new_testrail_project_id = store.get_new_testrail_project_id(project, device)
     if new_testrail_project_id is not None:
         params["new_testrail_project_id"] = new_testrail_project_id
+    # George, 2026-09-28: "docs_path why is it still editable... take away the field" logic
+    # extended to flow_data_path too, as part of the new Functional/Design docs split --
+    # onboard-suite no longer asks for a manually-typed flow_data_path; if one wasn't
+    # already supplied, auto-resolve the first real .json export sitting in this target's
+    # real Design docs upload folder (Settings > Design docs), same "system-resolved, not
+    # hand-typed" treatment docs_path already gets. None found = genuinely none uploaded
+    # yet, not an error -- mine_flows already skips cleanly with no flow_data_path.
+    if "{flow_data_path}" in all_commands and "flow_data_path" not in params:
+        design_dir = Path(store.uploads_dir_path(project, device, kind="design"))
+        if design_dir.is_dir():
+            json_files = sorted(design_dir.glob("*.json"))
+            if json_files:
+                params["flow_data_path"] = str(json_files[0])
     return params
 
 
