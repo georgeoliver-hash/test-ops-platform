@@ -39,7 +39,7 @@ import time
 import uuid
 import zipfile
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -895,8 +895,28 @@ def get_pipeline_detail(pipeline_id: str, project: str | None = None):
         "guardrails": p.guardrails,
         "steps": [s.model_dump() for s in steps],
         "inputs": [i.model_dump() for i in p.inputs],
+        "preconditions": p.preconditions,
         "runnable": runner.is_runnable(p.id),
     }
+
+
+@app.get("/api/pipelines/{pipeline_id}/walkthrough")
+def get_pipeline_walkthrough(pipeline_id: str):
+    """The real, already-authored `.claude/commands/{pipeline_id}.md` teammate walkthrough
+    for this pipeline, if one exists -- George, 2026-09-28: "can we not do the same thing
+    for every pipeline" (referring to audit-flows' step-by-step guide card). Reuses this
+    real content rather than re-authoring 22 separate prose blocks that would drift from
+    the actual slash command: `available: false` for the handful of pipelines that don't
+    have one yet (composite pipelines, or ones genuinely not written up) -- shown honestly
+    on the console rather than inventing a walkthrough for a pipeline that doesn't have one."""
+    try:
+        pipelines.load_pipeline(pipeline_id)  # 404s the same way get_pipeline_detail does
+    except (KeyError, FileNotFoundError) as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    path = pipelines.commands_root() / f"{pipeline_id}.md"
+    if not path.is_file():
+        return {"available": False, "markdown": None}
+    return {"available": True, "markdown": path.read_text(encoding="utf-8")}
 
 
 @app.post("/api/pipelines/{pipeline_id}/run")
@@ -1007,6 +1027,41 @@ def get_pipeline_runs(pipeline_id: str, project: str, device: str, limit: int = 
     key(s) a run was actually given) comes back per-run where it was recorded; older runs
     predating that column just have it as null, shown honestly, never backfilled."""
     return store.get_runs(pipeline_id, project, device, limit=limit)
+
+
+@app.get("/api/pipelines/ingest-docs/runs/{run_id}/knowledge-files")
+def get_ingest_docs_run_knowledge_files(run_id: str, project: str):
+    """Which real knowledge/{project}/specs/*.md file(s) a specific past ingest-docs run
+    actually produced -- for update-suite-from-docs' "just pick one of my recent ingests"
+    ask (George, 2026-09-28: "people will more likely know this is the recent ingest time I
+    did, and choose that to confirm what knowledge docs to be examined").
+
+    Deliberately NOT a filename guess off the source doc -- `distil` is an agent step with
+    no enforced naming contract back to its source, so pattern-matching a slug would be
+    exactly the kind of invented fact this whole app exists to avoid. Instead this is a
+    real, grounded correlation: the `distil` step's own recorded started_at/finished_at
+    window (when it actually ran) against each knowledge file's real filesystem mtime.
+    `distil` is the only step in ingest-docs that ever writes into knowledge/{project}/specs/,
+    so a file whose mtime falls inside that exact window was, in fact, written by this run."""
+    step = store.get_step(run_id, "distil")
+    if step is None or not step.get("started_at"):
+        return {"available": False, "reason": "No recorded distil step for this run yet (still running, or predates this feature).", "files": []}
+    started = datetime.fromisoformat(step["started_at"])
+    finished_raw = step.get("finished_at")
+    finished = datetime.fromisoformat(finished_raw) if finished_raw else datetime.now(timezone.utc)
+    buffer = timedelta(seconds=120)  # clock-skew/filesystem-flush margin, not a guess window
+    specs_dir = runner.SYSTEM_TEST_OPS_ROOT / "knowledge" / project.lower() / "specs"
+    if not specs_dir.is_dir():
+        return {"available": True, "files": []}
+    matches = []
+    for f in sorted(specs_dir.glob("*.md")):
+        mtime = datetime.fromtimestamp(f.stat().st_mtime, tz=timezone.utc)
+        if started - buffer <= mtime <= finished + buffer:
+            matches.append({
+                "path": f"knowledge/{project.lower()}/specs/{f.name}",
+                "modified_at": mtime.isoformat(),
+            })
+    return {"available": True, "files": matches}
 
 
 @app.get("/api/pipelines/runs/{run_id}/cost")

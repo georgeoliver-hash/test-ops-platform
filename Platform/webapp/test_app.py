@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from datetime import datetime
 
 import pytest
 import yaml
@@ -818,6 +819,79 @@ def test_ingest_docs_commit_pr_is_a_plain_human_step_not_a_push_gate(monkeypatch
     assert "Commit" in output or "commit" in output
 
 
+def _write_fake_pipeline_root(tmp_path, pipeline_id: str, preconditions=None, with_command_doc=True):
+    """A minimal, real .claude/{pipelines,commands}/ tree for testing get_pipeline_detail's
+    preconditions field and the /walkthrough endpoint without touching the live
+    system-test-ops checkout."""
+    claude_root = tmp_path / ".claude"
+    (claude_root / "pipelines").mkdir(parents=True)
+    (claude_root / "pipelines" / "_shared.yaml").write_text("shared_guardrails: []\n", encoding="utf-8")
+    (claude_root / "pipelines" / "index.yaml").write_text(
+        f"version: 1\npipelines:\n  - {{id: {pipeline_id}, file: {pipeline_id}.yaml, ui_action: fake_action, slash_command: /{pipeline_id}}}\n",
+        encoding="utf-8",
+    )
+    pipeline_yaml = {
+        "id": pipeline_id,
+        "trigger": {"ui_action": "fake_action", "slash_command": f"/{pipeline_id}"},
+        "description": "A fake pipeline for testing.",
+        "inputs": [{"name": "project", "required": True}],
+        "steps": [{"id": "only_step", "kind": "cli", "command": "echo hi"}],
+    }
+    if preconditions is not None:
+        pipeline_yaml["preconditions"] = preconditions
+    (claude_root / "pipelines" / f"{pipeline_id}.yaml").write_text(yaml.dump(pipeline_yaml), encoding="utf-8")
+    if with_command_doc:
+        (claude_root / "commands").mkdir(parents=True)
+        (claude_root / "commands" / f"{pipeline_id}.md").write_text(
+            "---\ndescription: test\n---\n\n1. Do the first real thing.\n2. Do the second real thing.\n",
+            encoding="utf-8",
+        )
+    return claude_root
+
+
+def test_pipeline_detail_exposes_real_preconditions(monkeypatch, tmp_path):
+    """George, 2026-09-28: "pre-condition of what this pipeline needs" -- the Pipeline
+    model already has a real `preconditions` field (onboard-suite declares one), it just
+    wasn't in the API response yet."""
+    claude_root = _write_fake_pipeline_root(
+        tmp_path, "fake-precond-pipeline",
+        preconditions={"kind": "human", "note": "Confirm the real thing first."},
+    )
+    monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(claude_root))
+    res = client.get("/api/pipelines/fake-precond-pipeline")
+    assert res.status_code == 200
+    assert res.json()["preconditions"] == {"kind": "human", "note": "Confirm the real thing first."}
+
+
+def test_pipeline_walkthrough_returns_the_real_command_doc(monkeypatch, tmp_path):
+    """The console's "how to run this" guide reuses the REAL, already-authored
+    .claude/commands/{id}.md rather than a second, drift-prone copy."""
+    claude_root = _write_fake_pipeline_root(tmp_path, "fake-walkthrough-pipeline")
+    monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(claude_root))
+    res = client.get("/api/pipelines/fake-walkthrough-pipeline/walkthrough")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    assert "Do the first real thing." in body["markdown"]
+
+
+def test_pipeline_walkthrough_honest_when_no_command_doc_exists(monkeypatch, tmp_path):
+    claude_root = _write_fake_pipeline_root(tmp_path, "fake-no-doc-pipeline", with_command_doc=False)
+    monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(claude_root))
+    res = client.get("/api/pipelines/fake-no-doc-pipeline/walkthrough")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is False
+    assert body["markdown"] is None
+
+
+def test_pipeline_walkthrough_404s_for_unknown_pipeline(monkeypatch, tmp_path):
+    claude_root = _write_fake_pipeline_root(tmp_path, "fake-precond-pipeline")
+    monkeypatch.setenv("TESTOPS_CLAUDE_ROOT", str(claude_root))
+    res = client.get("/api/pipelines/does-not-exist/walkthrough")
+    assert res.status_code == 404
+
+
 def test_audit_runs_through_generic_engine_same_externally_observable_behavior(monkeypatch, tmp_path):
     """The explicit regression gate: audit must behave identically now that it runs
     through the generic step-executor as it did with the old hardcoded runner — same
@@ -938,6 +1012,73 @@ def test_retry_resumes_from_the_failed_step_not_step_one(monkeypatch):
     assert by_id["step_three"]["status"] == "succeeded"
     # Only flaky_step and step_three re-ran -- slow_step_one was NOT re-executed a second time.
     assert len(calls) == 4
+
+
+def test_cancel_marks_a_waiting_human_run_failed_instead_of_doing_nothing(monkeypatch):
+    """George, 2026-09-28: "not sure if cancelling runs actually works either" -- a run
+    paused at a human step has no live thread and no in-flight subprocess (the pipeline job
+    already returned after writing `waiting_human`), so the old cancel_run only set an
+    in-memory flag nothing would ever read again. The run just sat as `waiting_human`
+    forever -- the Cancel button returned 200 OK and visibly changed nothing, which is
+    exactly what "not sure if it works" describes. Fixed: a non-`running` run is marked
+    cancelled directly."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-cancel-waiting", trigger=Trigger(ui_action="fake_cancel_waiting"), description="test pipeline",
+        steps=[
+            Step(id="step_one", kind=StepKind.human, note="approve me"),
+            Step(id="step_two", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    run_id = runner_module.start_run("fake-cancel-waiting", "Translink", "POS")
+    assert store.get_run(run_id)["status"] == "waiting_human"
+
+    runner_module.cancel_run(run_id)
+
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert run["error"] == "Run cancelled."
+
+
+def test_cancel_mid_step_reports_run_cancelled_not_a_generic_step_failure(monkeypatch):
+    """A cancel mid-step terminates the in-flight subprocess, which makes that step return
+    "failed" the same way a real error would -- without the fix, the run was reported as
+    "Step 'step_two' failed", indistinguishable from a genuine failure, hiding that this
+    was actually a deliberate cancel."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-cancel-midstep", trigger=Trigger(ui_action="fake_cancel_midstep"), description="test pipeline",
+        steps=[
+            Step(id="step_one", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+            Step(id="step_two", kind=StepKind.cli, command="python -m system_test_ops audit --suite 2"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    captured_run_id = {}
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        captured_run_id["id"] = run_id
+        if "2" in cmd:
+            # Simulate a real cancel arriving WHILE step_two's subprocess is in flight --
+            # its own terminate() then makes the process exit non-zero, same as here.
+            runner_module.cancel_run(run_id)
+            return 1, "", "terminated"
+        return 0, "ok\n", ""
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-cancel-midstep", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert run["error"] == "Run cancelled."
 
 
 def test_retry_404s_for_unknown_step(monkeypatch):
@@ -1524,6 +1665,60 @@ def test_run_intent_persisted_and_visible_on_run_record(monkeypatch):
     # get_run returns the raw TEXT column (unlike list_runs, which JSON-decodes it) --
     # match that real, existing behavior rather than changing it as part of this feature.
     assert json.loads(run["extra_inputs"])["intent"] == "Focus on EMV only."
+
+
+def test_ingest_docs_run_knowledge_files_resolves_via_distil_step_mtime_window(monkeypatch, tmp_path):
+    """George, 2026-09-28: "people will more likely know this is the recent ingest time I
+    did, and choose that to confirm what knowledge docs to be examined" -- the picker's "Use
+    this run" button must resolve REAL knowledge/{project}/specs/*.md file(s) a specific past
+    run produced, never a filename guess off the source doc (distil has no enforced naming
+    contract back to it). Grounded instead in a real, checkable fact: the distil step's own
+    recorded started_at/finished_at window against each file's real filesystem mtime --
+    distil is the only ingest-docs step that ever writes into knowledge/{project}/specs/."""
+    import time
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    specs_dir = tmp_path / "knowledge" / "translink" / "specs"
+    specs_dir.mkdir(parents=True)
+
+    run_id = "fake-run-1"
+    store.create_run(run_id, "ingest-docs", "Translink", "POS")
+    store.create_step_rows(run_id, [("convert", "cli"), ("distil", "agent")])
+    store.update_step(run_id, "distil", status="succeeded",
+                       started_at="2026-09-28T10:00:00+00:00", finished_at="2026-09-28T10:05:00+00:00")
+
+    in_window = specs_dir / "FBD-100999-in-window.md"
+    in_window.write_text("real note written during this run", encoding="utf-8")
+    in_window_mtime = datetime.fromisoformat("2026-09-28T10:02:00+00:00").timestamp()
+    os.utime(in_window, (in_window_mtime, in_window_mtime))
+
+    stale = specs_dir / "FBD-100111-from-an-earlier-run.md"
+    stale.write_text("an older note, untouched by this run", encoding="utf-8")
+    stale_mtime = datetime.fromisoformat("2026-09-01T09:00:00+00:00").timestamp()
+    os.utime(stale, (stale_mtime, stale_mtime))
+
+    res = client.get(f"/api/pipelines/ingest-docs/runs/{run_id}/knowledge-files?project=Translink")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is True
+    paths = {f["path"] for f in body["files"]}
+    assert paths == {"knowledge/translink/specs/FBD-100999-in-window.md"}
+
+
+def test_ingest_docs_run_knowledge_files_honest_when_distil_never_ran(monkeypatch, tmp_path):
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    run_id = "fake-run-no-distil"
+    store.create_run(run_id, "ingest-docs", "Translink", "POS")
+    store.create_step_rows(run_id, [("convert", "cli")])  # no distil step recorded at all
+
+    res = client.get(f"/api/pipelines/ingest-docs/runs/{run_id}/knowledge-files?project=Translink")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["available"] is False
+    assert body["files"] == []
 
 
 def test_intent_never_reaches_a_cli_command_template():

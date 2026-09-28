@@ -816,7 +816,16 @@ def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, 
             store.update_run(run_id, status="waiting_human")
             return
         if outcome == "failed":
-            store.update_run(run_id, status="failed", error=f"Step '{step.id}' failed.")
+            # A cancel mid-step terminates the in-flight subprocess (see cancel_run), which
+            # makes that step return "failed" like any other error -- so without this check
+            # a genuinely cancelled run was reported as "Step 'X' failed", indistinguishable
+            # from a real failure. Checked here, not inside the step runners themselves,
+            # since any step kind (cli/gate/agent) can be the one mid-flight when cancel
+            # fires, and this is the one place all of them funnel through.
+            if cancel_event.is_set():
+                store.update_run(run_id, status="failed", error="Run cancelled.")
+            else:
+                store.update_run(run_id, status="failed", error=f"Step '{step.id}' failed.")
             return
         # succeeded / skipped -> keep going
 
@@ -991,13 +1000,28 @@ def retry_failed_step(run_id: str, step_id: str) -> None:
 
 
 def cancel_run(run_id: str) -> None:
-    """Best-effort: sets a flag the run loop checks between steps, and terminates an
-    in-flight subprocess if one is running right now. In-memory only (`_cancel_events`/
-    `_run_procs`) — doesn't survive a process restart, which is fine for a single-user
-    local app; a run left `running` across a restart just won't ever cancel cleanly, it'll
-    sit there until manually marked failed (a real gap, acceptable for now)."""
+    """Sets a flag the run loop checks between steps, and terminates an in-flight
+    subprocess if one is running right now. In-memory only (`_cancel_events`/`_run_procs`)
+    — doesn't survive a process restart, which is fine for a single-user local app; a run
+    left `running` across a restart just won't ever cancel cleanly, it'll sit there until
+    manually marked failed (a real gap, acceptable for now).
+
+    Found live (George, 2026-09-28: "not sure if cancelling runs actually works either"):
+    a run paused at `waiting_human` has no live thread and no in-flight subprocess at all
+    — the pipeline job already returned after writing that status. Setting the event alone
+    did nothing observable; the run just sat as `waiting_human` forever, cancel button and
+    all, looking exactly like cancel was broken. `waiting_human` (and any other non-running
+    status — defensively, in case a future status is added) has nothing left to terminate,
+    so mark it cancelled directly instead of only flagging for a loop that will never run
+    again. A genuinely `running` run still goes through the flag+terminate path below,
+    which the loop's own cancel_event check (between steps) and the newly-added
+    mid-step-termination check (see _run_pipeline_job) both handle."""
     event = _cancel_events.setdefault(run_id, threading.Event())
     event.set()
+    run = store.get_run(run_id)
+    if run is not None and run.get("status") != "running":
+        store.update_run(run_id, status="failed", error="Run cancelled.")
+        return
     with _procs_lock:
         proc = _run_procs.get(run_id)
     if proc is not None and proc.poll() is None:

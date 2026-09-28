@@ -77,4 +77,40 @@ up properly myself (with a real Status line) when I pick the file up.
 - can we re-organise our side bar menu options can stuff be moved around better structured, less accordions? maybe dont know have a think and suggest
 - the repos? how come we dont have the test sit repo there as well or all the repos related/
 - gaps on the knowledge can be a bit more info? bullet pointed? give more info on what you think is missing in the specs? whats maybe hasnt been gien like a doc or something etc?
-- 
+- do you want to check out the logs history bit on like all the pipelines and just ground down the summary? it should be that long? i like the small couple sentenced lines of what happened, if it needs to be more sentences fine but make it more summarised right? none of the stuff that takes up a hole ass page
+- new pipeline in the future, generate test summary report (we have old ones, and template to use for it and you can scan a test run and write it out> generate it? make sense - let me know what you need
+- i wanna change the names of everything again and broaden the names to match the pipeline. like release this is actually a JIRA pipleine right anything you put in there from JIRA will work doesnt have to just be a release, so its more of a Audit againt JIRA but cross examining it, with the suite maybe come up with a coll name for this and ensure this pipeline is this purpose.
+- maybe get rid of start entirely, and just have setup and ingest docs in the same pipeline accordion menu option? as its all pipelines right
+- docs path why is it still editable? we just wanna see visually where the path is but thats it, take away the field, just move this in a highlighted text area near the title of the page you know like dashboards have the pills. 
+- only file? can this not be a drop-down? of the recently uploaded files and you choose out of this? and clearly lable optional
+- can we make the long list of currently uploaded docs, an accordion so you can open and close view
+- can we put the waiting on you of for you bit on each pipeline under the steps on the left of the two columns for what each step does and the steps? 
+- Is pipelines the right word for the accordion in menu? like what are these, tools? functions? abilities? what is it actually really doing in these pipelines? change it to what you think best
+- is there a better way to pass in the flow data path, or UX documnets? can we have a whole seperate like section in the settings george oliver menu, like Functional docs, and then a Design docs area? so people can upload purely that doc and we remove the data path field from onboarding entirely?
+- Need a way to ensure that our updated from docs, and onboarding dont get confused, like if someone wants to onboard every doc again, they can but shall this be called like re-examine whole suite? or something similar? Examine all docs? let me know haha 
+- As we basically need these functionalitys below
+- chekcing setup of laptop
+- a way to ingest docs, but to give zips of loads of folders, give one doc, examine docs for a bran new suite, examine docs against existing suite, examine one document against existing suite get me? do we need multiple pipelines or one with ability to select, de-select documents?
+- onboarding, a newly uploaded documents, for a new suite or an existing suite
+- feature (jira, so anything from jira url, or id, that we can examine against and check existing functionality and current suite knowledge, and automation knowledge maybe to ensure bugs, epics, stories, releases, changes anything can be examined against JIRA
+- update from docs so this is now the new way to examine existing against a newly uploaded doc, one or multiple? - we need a clear way to select which doc or multiple docs we want
+- merge is basically after you have maybe edit existing, or resolved gaps, or done more work on the suite, this will help consolidate dupes, or test cases that could be merged to one, this is a way to review basically the health of the structure and suite.
+- targeted run, this is so we can choose a targeted run and get it created by the tool
+- we need a way to generate a test run report, so examine the latest run and generate a report based on the templates and existing ones we have to use for knowledge and how it should look
+- we need a way to answer questions, gaps, and resolve these gaps on the tool so we can help understand things, update cases afterwards. 
+- each needs a short breif step by step guide, no jargan, just singular steps sentences, in an accordion to open and close with just basic steps
+- we need a way to check coverage again the design docs.
+- need a way to upload functional and design docs seperately
+- we need a way to ensure our testrail has kept up with standards, gherkin syntax, english, and understanding or basic readable best practices. 
+- health is a weird word for the menu option, maybe merge audit and health together
+- we need a way to review test runs, and comments, and new defects, and fails, passed, retest, invalids all statuses, to ensure it may answer gaps, it may help understand changes to the test case, it may create new cases off it.
+- checking run history
+- checking changes to cases manually 
+- we need a way to have automation cases shown in a dashboard for automation tab
+- a way to view the keywords, flows
+- a repo type structured view of able to click on the tests written, no need to actually show like the tests written in bulk detail just a way to click on them and view them
+- pull cases from test rail, write them for automation
+- a way to use docs, and jiras to write automation without the whole pre step for testrail and manual cases beforehand
+- a way to view project info, like small details like each projects test cases updated, audits, automation tests written, gaps to resolve, like project data in the project tab right
+- reports can be more of a link to the generated test run reports, and other tabs menu options for like the tools bug issues, reports, latest logs for the tool, uhh money spent with tool functions anything liek that useful.
+- please review every pieploe or option in the menus, and make sure with the above scope that we are naming these options correctly to justfiy the exact scope, coverage nad stuff we do

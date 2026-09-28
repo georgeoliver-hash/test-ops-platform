@@ -36,7 +36,7 @@
   .shell.sidebar-collapsed{grid-template-columns:0 1fr;}
   @media (max-width:860px){.shell{grid-template-columns:1fr;} .sidebar{display:none;}}
 
-  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;transition:margin-left .15s;overflow:hidden;}
+  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-ink);display:flex;flex-direction:column;padding:22px 16px 18px;position:sticky;top:0;height:100vh;transition:margin-left .15s;overflow:hidden;min-width:0;}
   .sidebar.collapsed{margin-left:-248px;}
   /* George changed his mind back (ISSUES.md, round after centring): logo + title left-
      aligned, in line with the nav items below, not centred. Tidied sidebar generally --
@@ -135,6 +135,8 @@
   .stage-header:hover{background:var(--bg);}
   .stage-header .chevron{margin-left:8px;}
   .stage-group.open .stage-header .chevron{transform:rotate(90deg);}
+  .stage-group.open .stage-header{background:var(--p1);color:#fff;}
+  .stage-group.open .stage-header .chevron{color:#fff;}
   .stage-body{display:none;padding-top:10px;}
   .stage-group.open .stage-body{display:block;}
 
@@ -462,6 +464,37 @@ async function fetchJSON(url) {
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
+// Tiny, dependency-free markdown-lite renderer for the real .claude/commands/*.md
+// walkthrough bodies (George, 2026-09-28: generic per-pipeline "how to run this" guide).
+// Escapes first, so no raw HTML from the source file ever reaches the page -- then only
+// ever adds back a handful of safe, known tags for the small set of markdown constructs
+// these command docs actually use (numbered/bulleted lists, **bold**, `code`, paragraphs).
+// Not a general markdown engine -- headers/links/tables aren't needed by this content and
+// aren't handled.
+function mdLite(raw) {
+  const body = String(raw ?? '').replace(/^---[\s\S]*?---\s*/, ''); // strip frontmatter
+  const lines = esc(body).split('\n');
+  let html = '', inList = false, listTag = 'ol';
+  const closeList = () => { if (inList) { html += `</${listTag}>`; inList = false; } };
+  for (const raw of lines) {
+    const line = raw.trim();
+    const numbered = line.match(/^(\d+)\.\s+(.*)/);
+    const bulleted = line.match(/^[-*]\s+(.*)/);
+    if (numbered || bulleted) {
+      const tag = numbered ? 'ol' : 'ul';
+      if (!inList || listTag !== tag) { closeList(); html += `<${tag} style="margin:4px 0 8px;padding-left:20px;">`; inList = true; listTag = tag; }
+      html += `<li style="margin-bottom:4px;">${(numbered ? numbered[2] : bulleted[1])}</li>`;
+    } else {
+      closeList();
+      if (line) html += `<p style="margin:0 0 8px;">${line}</p>`;
+    }
+  }
+  closeList();
+  return html
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+    .replace(/`([^`]+?)`/g, '<code>$1</code>');
+}
+
 /* Plain-language glosses -- every entry here is sourced from a real doc, simplified, never
    invented. CLI subcommands come verbatim from system-test-ops CLAUDE.md's "CLI quick
    reference"; agent roles from the same file's "The team" table (also each agent's own
@@ -500,6 +533,7 @@ const PIPELINE_PLAIN = {
   maintain: 'Periodic health check — run history, standards compliance, and duplicate cases.',
   'new-suite-from-docs': "Chains Ingest + Onboarding in one run. Real, but not offered as a button -- for a project the size of Translink it expands to 136 steps, 65 AI calls and 59 approval gates; run the two separately instead.",
   'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
+  'update-suite-from-docs': "Checks one or more already-ingested documents against an EXISTING suite's live cases and drafts build/add/edit updates for your review — never a full rebuild. Run Ingest Docs first.",
   'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
   'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
 };
@@ -2100,9 +2134,10 @@ async function renderPipelineDetail(id) {
   CURRENT_RERENDER = () => renderPipelineDetail(id);
   loading();
   try {
-    const [list, detail] = await Promise.all([
+    const [list, detail, walkthrough] = await Promise.all([
       fetchJSON('/api/pipelines'),
       fetchJSON(`/api/pipelines/${id}`),
+      fetchJSON(`/api/pipelines/${id}/walkthrough`).catch(() => ({available: false, markdown: null})),
     ]);
     const meta = list.find(p => p.id === id) || {};
     const steps = detail.steps.map(s => renderStep(s, id)).join('');
@@ -2144,6 +2179,40 @@ async function renderPipelineDetail(id) {
         if (res.available) suiteSections = res.sections;
       } catch (e) { /* best-effort only */ }
     }
+    // update-suite-from-docs' `knowledge_files` needs "which ingest-docs run produced the
+    // file I want to act on" -- real run history already exists (the Log tab, per-run
+    // timestamp + extra_inputs.only_file/docs_path), so surface it here as a picker instead
+    // of inventing a new batch-tracking mechanism (George, 2026-09-28: "reuse existing
+    // ingest-docs run history"). George's follow-up ask (same day): "people will more likely
+    // know this is the recent ingest time I did, and choose that to confirm what knowledge
+    // docs to be examined" -- so a run row's "Use this run" button now really resolves the
+    // knowledge file(s) it produced (via /knowledge-files, a real mtime-window correlation
+    // against the distil step's own recorded start/finish -- never a filename guess) and
+    // fills the field below directly. A run with none resolved (predates this feature, or
+    // its distil step didn't actually touch knowledge/) says so honestly instead of guessing.
+    let ingestRunsForPicker = null;
+    if (id === 'update-suite-from-docs' && target.project && target.device) {
+      try { ingestRunsForPicker = await fetchJSON(`/api/pipelines/ingest-docs/runs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
+      catch (e) { /* best-effort only */ }
+    }
+    const ingestRunsPickerHtml = id === 'update-suite-from-docs' ? `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">Past Ingest Docs runs for this target</b>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 8px;">Pick the run whose document(s) you're scoping this update to — "Use this run" resolves the real knowledge file(s) it produced and fills "knowledge_files" below.</p>
+        ${ingestRunsForPicker === null ? `<p style="color:var(--ink-soft);font-size:12.5px;">Set a project/device target to see this.</p>`
+          : ingestRunsForPicker.length === 0 ? `<p style="color:var(--ink-soft);font-size:12.5px;">No Ingest Docs runs recorded yet for this target — run <a href="#" data-goto-pipeline="ingest-docs">Ingest Docs</a> first.</p>`
+          : `<table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+              <thead><tr style="text-align:left;color:var(--ink-soft);"><th style="padding:4px 8px 4px 0;">When</th><th style="padding:4px 8px;">Status</th><th style="padding:4px 8px;">Document(s)</th><th style="padding:4px 8px;"></th></tr></thead>
+              <tbody>${ingestRunsForPicker.map(r => `
+                <tr style="border-top:1px solid var(--line);">
+                  <td style="padding:4px 8px 4px 0;white-space:nowrap;">${esc(new Date(r.created_at).toLocaleString())}</td>
+                  <td style="padding:4px 8px;">${esc(r.status)}</td>
+                  <td style="padding:4px 8px;">${esc((r.extra_inputs && r.extra_inputs.only_file) || 'full folder sweep')}</td>
+                  <td style="padding:4px 8px;"><button type="button" class="btn" data-use-ingest-run="${esc(r.id)}" style="font-size:11.5px;padding:2px 8px;">Use this run</button></td>
+                </tr>`).join('')}</tbody>
+            </table>
+            <div id="ingestRunKnowledgeFilesResult" style="margin-top:8px;font-size:12.5px;color:var(--ink-soft);"></div>`}
+      </div>` : '';
     // Fixed 2026-09-22: this used to always show the console's small per-target upload
     // list, even when docsFolder had actually resolved to the real synced requirements
     // library instead -- said "no docs uploaded" for Translink/POS while 352 real docs
@@ -2200,6 +2269,7 @@ async function renderPipelineDetail(id) {
       fix_version: 'One or more fix versions/releases, epic keys, or single ticket keys (bare key or a pasted browser URL) — add several with the field below to review them together in one run.',
       flow_data_path: 'Optional. Only if you have an Overflow UX flow-data JSON export for this device — leave blank otherwise (a from-scratch build genuinely may not have one; it’s skipped cleanly, not an error).',
       only_file: 'Optional. Got just one new or changed document since the last ingest? Type its path (relative to the docs folder above) here and only that file gets converted — leave blank to re-scan the whole folder as usual.',
+      knowledge_files: 'One or more knowledge/{project}/specs/*.md paths, comma-separated — the distilled notes an Ingest Docs run already produced. Use the picker below to find which run/document you mean, then confirm the real resulting file name on the Knowledge page.',
       areas: 'Tick every real section this run should cover — e.g. tick EMV, leave Sign On unticked to run just EMV. A case counts if its section matches any ticked area.',
       run_name: 'What this run will be called in TestRail — e.g. "EMV regression sweep".',
     };
@@ -2208,6 +2278,50 @@ async function renderPipelineDetail(id) {
     // to get a file type that matters to put here"). Sourced directly from the real
     // knowledge/flows/README.md process (Overflow is genuinely the only documented source
     // today) — not inventing a broader set of accepted formats than actually exists.
+    // Generic "how to run this" guide, every pipeline (George, 2026-09-28: "can we not do
+    // the same thing for every pipeline" -- referring to audit-flows' step-by-step guide
+    // just below). Four real, grounded sections, never invented ones:
+    //  - Before you start: the pipeline's own declared `preconditions:` block if it has
+    //    one, plus its real REQUIRED inputs (name + note) -- both already-existing fields
+    //    on the Pipeline model, just not surfaced together like this before.
+    //  - Step-by-step guide: the real, already-authored .claude/commands/{id}.md body
+    //    (fetched above) -- reused as-is, not a second copy that would drift from it. A
+    //    pipeline without one yet says so honestly rather than fabricating steps.
+    //  - Where results land: every real `produces:` value declared across this pipeline's
+    //    own steps (already in detail.steps), deduped, in step order.
+    //  - What's next: NEXT_PIPELINE above, only for the pipelines it's populated for.
+    const requiredInputs = (detail.inputs || []).filter(i => i.required && !SYSTEM_DERIVED_INPUTS.includes(i.name));
+    const producesList = [...new Set(
+      (detail.steps || [])
+        .map(s => s.produces)
+        .filter(p => typeof p === 'string' && p.trim())
+    )];
+    const pipelineGuideHtml = `
+      <div class="card" style="margin-top:10px;">
+        <b style="font-size:13px;">How to run this</b>
+        ${(detail.preconditions || requiredInputs.length) ? `
+        <div style="margin-top:8px;">
+          <b style="font-size:12.5px;">Before you start</b>
+          ${detail.preconditions ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0;">${esc(detail.preconditions.note || JSON.stringify(detail.preconditions))}</p>` : ''}
+          ${requiredInputs.length ? `<ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${requiredInputs.map(i => `<li><code>${esc(i.name)}</code>${i.note ? ` — ${esc(i.note)}` : ''}</li>`).join('')}</ul>` : ''}
+        </div>` : ''}
+        <div style="margin-top:10px;">
+          <b style="font-size:12.5px;">Step-by-step guide</b>
+          <div style="font-size:12.5px;margin-top:4px;">
+            ${walkthrough.available ? mdLite(walkthrough.markdown) : `<p style="color:var(--ink-soft);">No step-by-step guide written for this pipeline yet.</p>`}
+          </div>
+        </div>
+        ${producesList.length ? `
+        <div style="margin-top:10px;">
+          <b style="font-size:12.5px;">Where results land</b>
+          <ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);">${producesList.map(p => `<li><code>${esc(p)}</code></li>`).join('')}</ul>
+        </div>` : ''}
+        ${NEXT_PIPELINE[id] ? `
+        <div style="margin-top:10px;">
+          <b style="font-size:12.5px;">What's next</b>
+          <p style="color:var(--ink-soft);font-size:12.5px;margin:4px 0 0;">${esc(NEXT_PIPELINE[id])}</p>
+        </div>` : ''}
+      </div>`;
     const flowGuideHtml = id === 'audit-flows' ? `
       <div class="card" style="margin-top:10px;">
         <b style="font-size:13px;">How to get a flow map this pipeline can use</b>
@@ -2348,7 +2462,9 @@ async function renderPipelineDetail(id) {
         <button class="tab-btn" id="pipelineTabLog" data-ptab="log">Log</button>
       </div>
       <div id="pipelineDetailsBody">
+        ${pipelineGuideHtml}
         ${flowGuideHtml}
+        ${ingestRunsPickerHtml}
         ${inputsAndIntentRowHtml}
         ${docsSourcePickerHtml}
         ${currentDocsHtml}
@@ -2387,6 +2503,30 @@ async function renderPipelineDetail(id) {
           ? `<p style="font-size:13px;"><span class="pill ok">Clean</span> Every doc looks relevant — safe to Run.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:200px;overflow:auto;">${esc(body.output)}</pre>`
           : `<p style="font-size:13px;"><span class="pill bad">${esc(body.stage)}</span> Fix this before running — the real run would stop here too.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:240px;overflow:auto;">${esc(body.output)}</pre>`;
       } catch (e) { resultEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    });
+    // "Use this run" (George, 2026-09-28: "people will more likely know this is the recent
+    // ingest time I did, and choose that to confirm what knowledge docs to be examined") --
+    // resolves the real knowledge file(s) that specific run produced (mtime-window
+    // correlation against distil's own recorded start/finish, never a filename guess) and
+    // fills knowledge_files directly, so nothing needs typing by hand in the common case.
+    content.querySelectorAll('[data-use-ingest-run]')?.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const resultEl = document.getElementById('ingestRunKnowledgeFilesResult');
+        const runId = btn.dataset.useIngestRun;
+        resultEl.textContent = 'Resolving knowledge file(s) for this run…';
+        try {
+          const res = await fetchJSON(`/api/pipelines/ingest-docs/runs/${encodeURIComponent(runId)}/knowledge-files?project=${encodeURIComponent(target.project)}`);
+          const field = content.querySelector('[data-extra-input="knowledge_files"]');
+          if (!res.available) {
+            resultEl.innerHTML = `<span style="color:var(--warn);">${esc(res.reason)}</span>`;
+          } else if (res.files.length === 0) {
+            resultEl.textContent = "This run's distil step didn't touch any knowledge file — nothing to fill in.";
+          } else {
+            if (field) field.value = res.files.map(f => f.path).join(', ');
+            resultEl.innerHTML = `Filled in from this run: ${res.files.map(f => `<code>${esc(f.path)}</code>`).join(', ')}`;
+          }
+        } catch (e) { resultEl.innerHTML = `<span style="color:var(--warn);">Could not resolve: ${esc(e.message)}</span>`; }
+      });
     });
     document.getElementById('pipelineTabDetails')?.addEventListener('click', (e) => {
       e.currentTarget.classList.add('active');
@@ -2489,12 +2629,20 @@ async function renderPipelineLog(id, target, container) {
       const costCell = c.available
         ? `$${c.cost_usd.toFixed(3)} <span style="color:var(--ink-soft);">(${(c.input_tokens + c.output_tokens).toLocaleString()} tok)</span>`
         : `<span style="color:var(--ink-soft);">—</span>`;
+      // George, 2026-09-28: "ground down the summary... small couple sentenced lines...
+      // none of the stuff that takes up a whole ass page" -- an agent step's `summary`
+      // is its full free-text output (can genuinely run to paragraphs); a plain-CLI
+      // step's is already short (see _extract_plain_summary). Truncate the CELL to a
+      // couple of sentences, full text still available via the native title tooltip on
+      // hover -- never truncates the underlying data, just this table's display of it.
+      const fullSummary = r.summary || '';
+      const shortSummary = fullSummary.length > 180 ? fullSummary.slice(0, 177).trimEnd() + '…' : fullSummary;
       return `<tr>
         <td style="white-space:nowrap;">${esc(when)}</td>
         <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
         <td style="font-size:12.5px;">${given}</td>
         <td style="font-size:12.5px;white-space:nowrap;">${costCell}</td>
-        <td style="font-size:12.5px;color:var(--ink-soft);">${esc(r.summary || '')}</td>
+        <td style="font-size:12.5px;color:var(--ink-soft);max-width:320px;" title="${esc(fullSummary)}">${esc(shortSummary)}</td>
       </tr>`;
     }).join('');
     container.innerHTML = `
@@ -2727,7 +2875,7 @@ const GROUPS = {
   // the relevance gate and what distilled, THEN onboarding is both cheaper and safer, and
   // you click approve the same number of times either way. The pipeline file stays as
   // plumbing; it just isn't offered as a button.
-  Build: ['onboard-suite', 'add-feature', 'consolidate', 'targeted-run'],
+  Build: ['onboard-suite', 'add-feature', 'update-suite-from-docs', 'consolidate', 'targeted-run'],
   Audit: ['audit-coverage', 'audit-flows', 'audit'],
   Maintain: ['fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps'],
 };
@@ -2738,10 +2886,30 @@ const GROUPS = {
 const GROUP_DISPLAY_NAME = {
   Start: 'Start', Build: 'Pipelines', Audit: 'Audit', Maintain: 'Health',
 };
+// What a pipeline typically feeds into next -- deliberately populated only where a real,
+// checkable fact justifies it (does this pipeline's own last step actually push --commit,
+// or does it stop at a draft?), never a blanket guess across all 22 pipelines. Read
+// straight off each pipeline's own real .claude/pipelines/*.yaml (George, 2026-09-28: "then
+// what it does, step by step... and where the results land and potentially next pipeline
+// to run"). A pipeline missing from this map just doesn't show a "what's next" line --
+// honest absence, not a fabricated one.
+const NEXT_PIPELINE = {
+  'ingest-docs': "No existing suite yet for this device? Run Onboarding next. Suite already exists? Run Feature (a JIRA/description-scoped change) or Update from docs (this ingested document scoped to an existing suite).",
+  'audit-coverage': "This pipeline only drafts case-drafts.md -- it never pushes to TestRail itself. Review the draft, then run Feature to actually author/push it.",
+  'audit-flows': "Also drafts only, and its own author_and_push step hands off to a human to run the real push --commit -- nothing in the console does that hand-off for you yet.",
+  'review-runs': "If a case is traced to a real, fixed bug, run Defect (fold-defect) to pin it into the case that should have caught it. If it recommends new coverage, that's a Draft here too, same manual-push caveat as Release/Design above.",
+  'onboard-suite': "Its own definition_of_done gate already runs Standard (audit) for you -- nothing further needed unless it flags something.",
+  'add-feature': "Same as Onboarding -- its own definition_of_done gate already runs Standard (audit) for you.",
+  'update-suite-from-docs': "Same as Onboarding -- its own definition_of_done gate already runs Standard (audit) for you.",
+  consolidate: "Its own definition_of_done gate already runs Standard (audit) for you.",
+  'fold-defect': "Its own definition_of_done gate already runs Standard (audit) for you.",
+  'resolve-gaps': "Its own definition_of_done gate already runs Standard (audit) for you.",
+};
 const PIPELINE_DISPLAY_NAME = {
   start: 'Setup',
   'onboard-suite': 'Onboarding',
   'add-feature': 'Feature',
+  'update-suite-from-docs': 'Update from docs',
   consolidate: 'Merge',
   'export-automation': 'Pull cases',
   'write-automation': 'Write',

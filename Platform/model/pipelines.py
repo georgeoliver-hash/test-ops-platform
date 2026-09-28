@@ -52,6 +52,14 @@ def _pipelines_root() -> Path:
     return _default_root() / "pipelines"
 
 
+def commands_root() -> Path:
+    """Sibling of `_pipelines_root()` -- `.claude/commands/<pipeline-id>.md`, the real,
+    already-authored teammate-facing slash-command walkthrough for a pipeline (arguments,
+    numbered steps, when to stop and ask). Reused as-is by the console's pipeline-detail
+    "how to run this" guide rather than re-authoring a second copy that would drift from it."""
+    return _default_root() / "commands"
+
+
 class StepKind(str, Enum):
     cli = "cli"
     agent = "agent"

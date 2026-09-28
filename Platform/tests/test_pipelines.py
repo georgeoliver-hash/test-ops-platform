@@ -61,7 +61,29 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # testing real, which needed the 2026-09-17 blanket "OBV -> No" cap narrowed -- and the ~97
     # already-enriched OBV cases needed exactly this kind of scoped refresh to pick it up.
     assert "refresh-automation-tier" in ids
-    assert len(ids) == 21
+    # 2026-09-28: doc-scoped companion to add-feature (which is JIRA/feature-scoped) --
+    # cross-examine already-ingested document(s) against an EXISTING suite's live cases and
+    # draft build/add/edit updates for review, without a full onboard-suite rebuild. George:
+    # "ingest one doc (or multiple) then build, add, edit, resolve... to existing test suite."
+    assert "update-suite-from-docs" in ids
+    assert len(ids) == 22
+
+
+def test_update_suite_from_docs_is_doc_scoped_and_stops_for_human_review_before_push(pipelines):
+    p = pipelines.load_pipeline("update-suite-from-docs")
+    kinds = {s.id: s.kind.value for s in p.steps}
+    assert kinds["cross_examine"] == "agent"
+    assert kinds["human_review"] == "human"
+    assert kinds["author_and_push"] == "cli"
+    assert kinds["definition_of_done"] == "gate"
+    # human_review must come before the push, not after -- this pipeline drafts + stops for
+    # review, it never auto-pushes (unlike onboard-suite's per-area loop).
+    step_ids = [s.id for s in p.steps]
+    assert step_ids.index("human_review") < step_ids.index("author_and_push")
+    input_names = {i.name for i in p.inputs}
+    assert {"project", "device", "suite_id", "knowledge_files"} <= input_names
+    cross_examine = next(s for s in p.steps if s.id == "cross_examine")
+    assert "{knowledge_files}" in cross_examine.reads
 
 
 def test_route_by_ui_action_matches_slash_command(pipelines):
