@@ -144,6 +144,20 @@ _OPTIONAL_FLAG_RE = re.compile(r"\[(--[\w-]+)(?:\s+([^\]]+))?\]")
 _UNRESOLVED_PLACEHOLDER_RE = re.compile(r"\{[\w.]+\}")
 
 
+def _command_params(params: dict) -> dict:
+    """`params` minus `intent` -- for rendering a CLI step's `command:` template only.
+
+    `intent` (George 2026-09-24's free-text "what are you trying to achieve" field) must be
+    PURELY informational: read by an agent step as context to weigh, never a source of real
+    argv. No pipeline YAML declares `{intent}` in a `command:` template today, but nothing
+    stopped one from doing so tomorrow -- `_render` is a blind `str.format_map`, so a future
+    `push --commit [--suite {intent}]`-style typo (or a deliberate one) would let arbitrary
+    user prose become real subprocess arguments to a write-capable CLI call. Strip it here,
+    at the one place CLI commands are rendered, so that channel is closed structurally
+    rather than by convention/code-review vigilance alone."""
+    return {k: v for k, v in params.items() if k != "intent"}
+
+
 def _resolve_optional_flags(command: str, params: dict) -> str:
     """A YAML command uses `[--flag]` as documentation shorthand for "pass this only if the
     matching run input is truthy" (e.g. export-automation's `[--include-manual]`), and
@@ -181,15 +195,58 @@ def _slugify_area(spec_stem: str) -> str:
     return _AREA_PREFIX_RE.sub("", spec_stem)
 
 
-def _functional_areas(project: str) -> list[str]:
-    """One functional area per ingested spec file for this project — generic, not
+def _functional_areas(project: str, device: str) -> list[str]:
+    """One functional area per DEVICE-RELEVANT ingested spec file -- generic, not
     NJT-hardcoded: any project with knowledge/{project}/specs/*.md (via ingest-docs) gets
-    this fan-out. Empty if that folder doesn't exist yet (ingest-docs hasn't run) —
-    callers must fail loudly on empty, never silently produce zero sub-steps."""
+    this fan-out. Empty if that folder doesn't exist yet (ingest-docs hasn't run) --
+    callers must fail loudly on empty, never silently produce zero sub-steps.
+
+    Found live, 2026-09-24 (George: "if im not on POS and uploaded docs for it, it should
+    onboard those docs for POS, not everything for translink"): this used to list EVERY
+    spec file in the project's shared knowledge/{project}/specs/ folder regardless of
+    device -- onboarding POS would fan out author_area/push_area steps for TVM-only,
+    Gate-only, Bus-Validator-only specs too. Reuses the sibling `tools/archive_knowledge.py
+    --dry-run`'s device classification (same engine, same knowledge/projects/
+    <project>-doc-classifier.yaml config already built and grounded for this) to filter to
+    just this device's matches -- its 'archived' list (its own name for 'things that would
+    be archived FROM this device's view', i.e. exactly the specs classified as relevant to
+    it) is the device-relevant subset we want here, not a second scoping mechanism.
+
+    Falls back to the OLD project-wide behaviour if the classifier tool/config isn't
+    available for this project yet (e.g. a project with no
+    knowledge/projects/<project>-doc-classifier.yaml) -- never silently produces zero
+    areas just because classification isn't set up, since that would look identical to
+    "no specs ingested yet" to every caller."""
     specs_dir = SYSTEM_TEST_OPS_ROOT / "knowledge" / project.lower() / "specs"
     if not specs_dir.is_dir():
         return []
-    return [_slugify_area(f.stem) for f in sorted(specs_dir.glob("*.md"))]
+    all_specs = sorted(specs_dir.glob("*.md"))
+    try:
+        # Via _run_subprocess (this module's one mockable subprocess wrapper), not a raw
+        # subprocess.run call -- every test that fans out a loop step mocks this exact
+        # function; a second, un-mocked subprocess path here broke them (real Popen
+        # internals vs. these tests' synchronous-Thread test double for _run_pipeline_job).
+        returncode, stdout, stderr = _run_subprocess(
+            [str(_VENV_PYTHON), "tools/archive_knowledge.py", "--project", project, "--device", device, "--dry-run"],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=60,
+        )
+        if returncode != 0:
+            raise RuntimeError(stderr.strip() or stdout.strip())
+        payload = json.loads(stdout)
+        matched = {m["file"] for m in payload["archived"]}
+        if matched:
+            return [_slugify_area(Path(f).stem) for f in sorted(matched)]
+        # Classifier ran fine but found zero matches for this device -- a project-wide
+        # fallback here would silently rebuild the "onboard everything" bug this exists to
+        # fix, so an empty, genuinely-classified result stays empty (the "no areas" path
+        # above already fails loudly rather than running zero sub-steps).
+        return []
+    except (subprocess.TimeoutExpired, OSError, RuntimeError, json.JSONDecodeError, KeyError):
+        # No classifier config for this project yet, or the tool itself errored -- fall
+        # back to the full, unfiltered list rather than a hard failure; this is strictly
+        # the pre-2026-09-24 behaviour, not a new regression, for a project that hasn't
+        # been set up for device-classification at all.
+        return [_slugify_area(f.stem) for f in all_specs]
 
 
 def step_area(step_id: str) -> str | None:
@@ -200,7 +257,7 @@ def step_area(step_id: str) -> str | None:
     return None
 
 
-def _flatten_steps(pipeline: Pipeline, project: str, _seen: frozenset[str] = frozenset()) -> list[Step]:
+def _flatten_steps(pipeline: Pipeline, project: str, device: str, _seen: frozenset[str] = frozenset()) -> list[Step]:
     """Real, ordered step list with composite `{id, ref: <pipeline-id>}` steps inlined —
     so e.g. new-suite-from-docs shows ingest-docs' and onboard-suite's real steps, not two
     opaque "run this whole other pipeline" boxes. Nested step ids are qualified
@@ -224,12 +281,12 @@ def _flatten_steps(pipeline: Pipeline, project: str, _seen: frozenset[str] = fro
         step = steps[i]
         if step.is_composite_ref:
             nested_pipeline = load_pipeline(step.ref)
-            for nested in _flatten_steps(nested_pipeline, project, seen):
+            for nested in _flatten_steps(nested_pipeline, project, device, seen):
                 out.append(nested.model_copy(update={"id": f"{step.id}.{nested.id}"}))
             i += 1
             continue
         if getattr(step, "loop", None):
-            areas = _functional_areas(project)
+            areas = _functional_areas(project, device)
             if not areas:
                 out.append(step)  # loop stays set -> _dispatch_step fails it with a clear message
                 i += 1
@@ -506,7 +563,17 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
                 f"No preamble, no markdown headers, 3-6 sentences."
             )
         else:
-            prompt = step.note or f"Carry out the '{step.id}' step of this pipeline."
+            # Found live, 2026-09-24: onboard-suite's `cross_tab` step has no `reads`/
+            # `area`/prior report_path, so it fell all the way to `step.note` alone as the
+            # WHOLE prompt -- "Proves shared vs device-specific dimension — never guessed."
+            # with no project or device named anywhere. Reproduced directly: the agent (not
+            # unreasonably) responded "I don't have a step called cross_tab -- which
+            # project/device?" instead of doing real work. Every other branch above already
+            # threads project/device into its prompt; this fallback is the one path that
+            # didn't. A step with genuinely nothing else to go on should still at least say
+            # what it's working on.
+            target_line = f"Project: {params.get('project', '?')}, device: {params.get('device', '?')}. "
+            prompt = target_line + (step.note or f"Carry out the '{step.id}' step of this pipeline.")
 
     # Optional, universal free-text field ("What are you trying to achieve with this run?",
     # George 2026-09-24: "sometimes we need prompt fields on pipelines so users can also give
@@ -566,6 +633,12 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
     except (json.JSONDecodeError, AttributeError):
         pass
     ok = returncode == 0
+    if not ok and stderr and stderr.strip():
+        # Found live, 2026-09-24: a failed agent step recorded only stdout-derived output
+        # ("(the agent returned no output)" when stdout was empty), discarding stderr
+        # entirely -- the one place that would actually explain a nonzero exit (crash,
+        # auth error, bad --allowedTools value, etc.). Real error text beats a guess.
+        output = f"{output}\n\n--- stderr (exit {returncode}) ---\n{stderr.strip()}"
     store.update_step(
         run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now(),
         cost_usd=cost_usd, input_tokens=input_tokens, output_tokens=output_tokens,
@@ -616,11 +689,12 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
         return "failed"
 
     area = step_area(step.id)
-    command = _render(step.command, params) if step.command else None
+    command_params = _command_params(params)
+    command = _render(step.command, command_params) if step.command else None
     if command and area:
         command = command.replace("<area>", area)  # e.g. push --file <area>.cases.yaml --commit
     if command:
-        command = _resolve_optional_flags(command, params)  # e.g. [--include-manual]
+        command = _resolve_optional_flags(command, command_params)  # e.g. [--include-manual]
     forced_human = _is_forced_human_command(command)
 
     if forced_human or step.kind is StepKind.human:
@@ -666,7 +740,7 @@ def _dispatch_step(run_id: str, step: Step, params: dict, context: dict) -> str:
 
 def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, start_index: int) -> None:
     pipeline = load_pipeline(pipeline_id)
-    steps = _flatten_steps(pipeline, project)
+    steps = _flatten_steps(pipeline, project, device)
     extra_inputs = _run_extra_inputs.get(run_id, {})
     try:
         params = _build_params(project, device, steps, extra_inputs)
@@ -708,7 +782,7 @@ def start_run(pipeline_id: str, project: str, device: str, extra_inputs: dict[st
     Raises KeyError for an unknown pipeline id, ValueError if a required suite id isn't
     configured for this target — both map to HTTP 404/400 in app.py."""
     pipeline = load_pipeline(pipeline_id)
-    steps = _flatten_steps(pipeline, project)
+    steps = _flatten_steps(pipeline, project, device)
     extra_inputs = extra_inputs or {}
     _build_params(project, device, steps, extra_inputs)  # validate up front — don't create a run row if this will fail immediately
 
@@ -753,7 +827,7 @@ def _resolved_step(run_id: str, run: dict, step_id: str) -> tuple[Step | None, s
     pipeline_run_steps only stores the step's *output* summary, not its original templated
     command or Step object."""
     pipeline = load_pipeline(run["pipeline_id"])
-    steps = _flatten_steps(pipeline, run["project"])
+    steps = _flatten_steps(pipeline, run["project"], run["device"])
     step = next((s for s in steps if s.id == step_id), None)
     if step is not None:
         area = step_area(step_id)
@@ -762,7 +836,7 @@ def _resolved_step(run_id: str, run: dict, step_id: str) -> tuple[Step | None, s
     if step is None or not step.command:
         return step, None
     extra_inputs = _run_extra_inputs.get(run_id, {})
-    params = _build_params(run["project"], run["device"], steps, extra_inputs)
+    params = _command_params(_build_params(run["project"], run["device"], steps, extra_inputs))
     return step, _resolve_optional_flags(_render(step.command, params), params)
 
 

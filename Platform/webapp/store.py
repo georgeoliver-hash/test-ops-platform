@@ -378,6 +378,21 @@ def init_db() -> None:
                 reviewed_at TEXT NOT NULL
             )"""
         )
+        # Was an in-memory dict (app.py's _ARCHIVE_PREVIEW) -- found live, 2026-09-24: George
+        # runs the server with `uvicorn --reload`, which restarts the worker process on any
+        # watched file change, silently dropping every in-flight preview token between the
+        # preview call and the human clicking "Archive selected" (a real gap, minutes wide,
+        # not a rare race). Persisted here so a reload mid-review doesn't lose the human's
+        # in-progress selection.
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS archive_previews (
+                token TEXT PRIMARY KEY,
+                project TEXT NOT NULL,
+                device TEXT NOT NULL,
+                payload_json TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )"""
+        )
         conn.execute(
             "INSERT OR IGNORE INTO users (id, display_name) VALUES (?, ?)",
             (DEFAULT_USER_ID, "George Oliver"),
@@ -790,6 +805,28 @@ def mark_scheduled_scan_suggestion_reviewed(run_id: str) -> None:
         )
 
 
+def save_archive_preview(token: str, project: str, device: str, payload: dict) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "INSERT INTO archive_previews (token, project, device, payload_json, created_at) "
+            "VALUES (?, ?, ?, ?, datetime('now'))",
+            (token, project, device, json.dumps(payload)),
+        )
+
+
+def pop_archive_preview(token: str) -> dict | None:
+    """Fetch-then-delete, same one-time-use semantics the in-memory dict had -- a token
+    is only ever valid for a single commit attempt."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT project, device, payload_json FROM archive_previews WHERE token = ?", (token,)
+        ).fetchone()
+        if row is None:
+            return None
+        conn.execute("DELETE FROM archive_previews WHERE token = ?", (token,))
+        return {"project": row["project"], "device": row["device"], **json.loads(row["payload_json"])}
+
+
 def get_latest_run(pipeline_id: str, project: str, device: str) -> dict | None:
     """Most recent real run for this pipeline+target — a genuine 'last audited' timestamp,
     not a guess, now that runs are actually tracked (see runner.py). Was flagged in
@@ -966,11 +1003,21 @@ def resolve_ingest_docs_source(project: str) -> dict:
     except UnsafeNameError:
         return {"path": None, "source": "no_requirements_folder"}
     root = Path.home() / "TestOpsRequirements" / safe_project.lower()
+    # Real content only -- Google Drive for Desktop ("Files On-Demand") leaves an unsynced
+    # file as a real directory entry with 0 bytes on disk, so a plain existence/rglob check
+    # (the original bug here) reports "found it" even when almost nothing is actually
+    # downloaded. Found live, 2026-09-24: `_current` had 352 entries but only 102 were real
+    # (250 placeholders), and this still "won" over a genuinely complete 131-file console
+    # upload every time -- silently ingesting the wrong, mostly-empty source. `any(...)`
+    # over a `.stat().st_size > 0` filter instead of a bare existence check.
     try:
         current = root / "_current"
-        if current.is_dir() and any(current.rglob("*")):
+        if current.is_dir() and any(p.stat().st_size > 0 for p in current.rglob("*") if p.is_file()):
             return {"path": str(current), "source": "requirements_folder"}
-        if root.is_dir() and any(p for p in root.iterdir() if not p.name.startswith(("_", "."))):
+        if root.is_dir() and any(
+            p.stat().st_size > 0 for p in root.iterdir()
+            if p.is_file() and not p.name.startswith(("_", "."))
+        ):
             return {"path": str(root), "source": "requirements_folder"}
     except OSError:
         # An unreadable/bogus path (permissions, a name Windows accepts then chokes on)

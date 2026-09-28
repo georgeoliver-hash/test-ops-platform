@@ -532,6 +532,24 @@ def test_resolve_ingest_docs_source_prefers_current_subfolder(tmp_path, monkeypa
     assert result["path"] == str(current)
 
 
+def test_resolve_ingest_docs_source_ignores_google_drive_placeholder_stubs(tmp_path, monkeypatch):
+    """Found live, 2026-09-24: Google Drive for Desktop ('Files On-Demand') leaves an
+    unsynced file as a real 0-byte directory entry -- a bare existence/rglob check reports
+    "found it" even when almost nothing is actually downloaded, so this silently won over
+    a genuinely complete console upload every time. Only real (non-empty) files should
+    count as 'a synced library exists here'."""
+    import Platform.webapp.store as store_module
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    current = tmp_path / "TestOpsRequirements" / "translink" / "_current"
+    current.mkdir(parents=True)
+    for i in range(250):
+        (current / f"placeholder-{i}.docx").write_bytes(b"")  # 0 bytes -- unsynced stub
+
+    result = store_module.resolve_ingest_docs_source("translink")
+    assert result["source"] == "no_requirements_folder"
+    assert result["path"] is None
+
+
 def test_resolve_ingest_docs_source_falls_back_to_project_folder_without_current(tmp_path, monkeypatch):
     import Platform.webapp.store as store_module
     monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))

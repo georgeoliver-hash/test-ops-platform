@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -333,22 +334,27 @@ def _validated_target(project: str, device: str) -> tuple[str, str]:
 
 @app.get("/api/docs/folder")
 def get_docs_folder(project: str, device: str):
-    """Real docs_path for the Ingest run form -- prefers the actual synced requirements
-    library (TestOpsRequirements/<project>/_current/) over the console's own small
-    upload folder, which was silently winning even when it was empty and the real docs
-    sat untouched elsewhere (George, 2026-09-22: "the platform says there is no docs
-    uploaded for translink pos"). `source` tells the frontend which one it got, so it can
-    say so honestly instead of implying "uploaded" when it's really the synced folder.
+    """Real docs_path for the Ingest run form. `source` tells the frontend which one it
+    got, so it can say so honestly instead of implying "uploaded" when it's really the
+    synced folder.
 
     Returns `options` too: when BOTH a synced library and uploaded files exist, the user
-    picks. Preferring the synced folder silently meant uploads were ignored with no hint
-    (George, 2026-09-23: he'd have uploaded 660MB and Ingest would have read the other
-    folder anyway) -- the preference is still the default, it's just no longer a secret."""
+    picks (George, 2026-09-23: he'd have uploaded 660MB and Ingest would have read the
+    other folder anyway if it silently won with no hint).
+
+    The DEFAULT `chosen` option is whichever has more real (non-placeholder) files, not
+    "synced folder always wins" -- found live, 2026-09-24: George's console upload (131
+    real files) lost to a `_current` synced folder that reported "found it" off Google
+    Drive placeholder stubs alone (see resolve_ingest_docs_source's fix, same date) and
+    even after that fix only had 102 real files -- a static preference order would have
+    kept silently choosing the smaller/wrong one. `file_count` below only counts real,
+    non-empty files for the same reason -- a placeholder-inflated number here would make
+    the wrong option look bigger and win by this same "most files" rule."""
     project, device = _validated_target(project, device)
 
     def _count(path: Path) -> int:
         try:
-            return sum(1 for f in path.rglob("*") if f.is_file())
+            return sum(1 for f in path.rglob("*") if f.is_file() and f.stat().st_size > 0)
         except OSError:
             return 0
 
@@ -363,8 +369,98 @@ def get_docs_folder(project: str, device: str):
         options.append({"path": str(uploads), "source": "uploads_folder",
                         "label": "Docs uploaded in this console", "file_count": upload_count})
 
-    chosen = options[0]
+    chosen = max(options, key=lambda o: o["file_count"])
     return {"path": chosen["path"], "source": chosen["source"], "options": options}
+
+
+_FBD_RE = re.compile(r"FBD-\d+", re.IGNORECASE)
+
+
+@app.get("/api/docs/ingest-map")
+def get_ingest_map(project: str, device: str):
+    """Traces every raw doc at this target's resolved docs_path through to what it
+    actually became -- built so a person can SEE the real pipeline (raw -> converted ->
+    distilled spec note -> device-relevant), not just be told it's correct.
+
+    George, 2026-09-25, after getting confused tracing why onboard-suite's 23 POS areas
+    looked wrong next to 131+ raw uploaded files: "we need an easy way... some way of
+    seeing all the docs uploads on one side, then like an arrow pointing... to the
+    ingested docs now... people can visually see ah okay onboarding is right".
+
+    Join key is the FBD-id embedded in both a raw filename ("...(FBD-100318) V5.00.docx")
+    and its distilled note's own filename ("FBD-100318-barcode-product-configuration.md")
+    -- NOT the prose `**Source:**` citation text, which isn't a stable string to match
+    against (e.g. FBD-100183's note cites "POS Hardware Specification V6.00 (FBD-100183,
+    ...)" -- title and FBD-id in different clauses, format not consistent note-to-note).
+    The FBD-id itself is present and consistent in both places, so that's the real join.
+    A raw doc with no FBD-id in its filename (CONOPS decks, crib sheets, ABT nutshell
+    pptx, ...) can never be claimed as "became note X" without guessing -- it's reported
+    as reference-only if converted, same as a doc whose FBD-id has no current note."""
+    project, device = _validated_target(project, device)
+    docs = get_docs_folder(project, device)
+    docs_path = Path(docs["path"])
+    text_dir = runner.SYSTEM_TEST_OPS_ROOT / "dev" / f"{project}-requirements" / "_text"
+    specs_dir = SYSTEM_TEST_OPS_KNOWLEDGE / project.lower() / "specs"
+
+    note_by_fbd: dict[str, str] = {}
+    if specs_dir.is_dir():
+        for note in specs_dir.glob("*.md"):
+            m = _FBD_RE.search(note.stem)
+            if m:
+                note_by_fbd[m.group(0).upper()] = note.name
+    total_notes = len(note_by_fbd)
+
+    relevant_reason: dict[str, dict] = {}
+    classifier_available = True
+    try:
+        knowledge = _archive_knowledge_dry_run(project, device)
+        relevant_reason = {m["file"]: m for m in knowledge["archived"]}
+    except HTTPException:
+        # No classifier config for this project yet, or the tool errored -- report the
+        # trace anyway (raw -> converted -> distilled still stands on its own), just
+        # without the device-relevance layer on top. Never silently 500 the whole view
+        # over a secondary layer.
+        classifier_available = False
+
+    rows = []
+    try:
+        raw_files = sorted(f for f in docs_path.rglob("*") if f.is_file() and f.stat().st_size > 0)
+    except OSError:
+        raw_files = []
+
+    for f in raw_files:
+        text_file = text_dir / f"{f.name}.txt"
+        converted = text_file.is_file()
+        m = _FBD_RE.search(f.name)
+        fbd = m.group(0).upper() if m else None
+        note_file = note_by_fbd.get(fbd) if fbd else None
+
+        if note_file:
+            if not classifier_available:
+                rows.append({"file": f.name, "category": "distilled_unclassified", "note": note_file, "reason": None})
+            elif note_file in relevant_reason:
+                match = relevant_reason[note_file]
+                rows.append({"file": f.name, "category": "distilled_relevant", "note": note_file,
+                             "reason": match["reason"], "confidence": match["confidence"]})
+            else:
+                rows.append({"file": f.name, "category": "distilled_not_relevant", "note": note_file, "reason": None})
+        elif converted:
+            rows.append({"file": f.name, "category": "reference_only", "note": None, "reason": None})
+        else:
+            rows.append({"file": f.name, "category": "not_converted", "note": None, "reason": None})
+
+    counts = {
+        "total_raw": len(rows),
+        "distilled_relevant": sum(1 for r in rows if r["category"] == "distilled_relevant"),
+        "distilled_not_relevant": sum(1 for r in rows if r["category"] == "distilled_not_relevant"),
+        "distilled_unclassified": sum(1 for r in rows if r["category"] == "distilled_unclassified"),
+        "reference_only": sum(1 for r in rows if r["category"] == "reference_only"),
+        "not_converted": sum(1 for r in rows if r["category"] == "not_converted"),
+        "total_distilled_notes": total_notes,
+        "relevant_notes": len(relevant_reason) if classifier_available else None,
+    }
+    return {"docs_path": str(docs_path), "docs_source": docs["source"],
+            "classifier_available": classifier_available, "counts": counts, "rows": rows}
 
 
 @app.post("/api/docs")
@@ -568,6 +664,130 @@ def remove_doc(project: str, device: str, filename: str):
     if not store.delete_doc(project, device, filename):
         raise HTTPException(status_code=404, detail="No such file")
     return {"ok": True}
+
+
+# --- Archive existing docs & knowledge (George, 2026-09-24: re-uploading a fresh device
+# library shouldn't leave old derived knowledge notes silently mixed in with what gets
+# freshly distilled this time) --------------------------------------------------------
+# `tools/archive_knowledge.py` (sibling repo) classifies knowledge notes device-by-device
+# and reports a confidence tier per match, but it's all-or-nothing per invocation -- no
+# way to ask it to move only some of the matches. Real dry-run data (2026-09-24, Translink
+# POS): most matches are medium/low-confidence cross-device mentions, not POS-specific --
+# archiving everything the tool reports would sweep away genuinely shared knowledge. So the
+# webapp does the actual (partial) move itself: preview calls the tool in --dry-run to get
+# reasons/confidence, the human picks a subset, commit moves only that subset -- same
+# never-delete, always-move-to-a-timestamped-folder contract the tool itself uses, just
+# with the human's selection applied before anything happens.
+#
+# The preview token used to be an in-memory dict here -- found live, 2026-09-24: George runs
+# this server with `uvicorn --reload`, which restarts the worker on any watched file change,
+# silently dropping an in-flight token between preview and the human clicking "Archive
+# selected" (a real gap of minutes, not a rare race). Persisted via store.py's
+# archive_previews table instead, so a reload mid-review no longer loses the selection.
+
+
+def _archive_knowledge_dry_run(project: str, device: str) -> dict:
+    parts = [str(runner._VENV_PYTHON), "tools/archive_knowledge.py",
+              "--project", project, "--device", device, "--dry-run"]
+    result = subprocess.run(parts, cwd=str(runner.SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60)
+    if result.returncode != 0:
+        raise HTTPException(status_code=502, detail=f"archive_knowledge.py --dry-run failed: {result.stderr.strip() or result.stdout.strip()}")
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=502, detail=f"archive_knowledge.py returned non-JSON output: {result.stdout[:500]!r}") from exc
+
+
+@app.post("/api/docs/{project}/{device}/archive/preview")
+def preview_archive(project: str, device: str):
+    """Both layers in one response: uploaded raw files sitting in this console's own
+    upload folder, and derived knowledge/<project>/specs/*.md notes classified against
+    this device (with a match reason + confidence tier each, direct from the CLI tool --
+    nothing here re-derives or second-guesses that classification, only the SELECTION of
+    what to actually archive is this webapp's job, not the classifier's)."""
+    project, device = _validated_target(project, device)
+    knowledge = _archive_knowledge_dry_run(project, device)
+    uploads = store.list_docs(project, device)
+    token = uuid.uuid4().hex
+    store.save_archive_preview(token, project, device, {
+        "archived": knowledge["archived"],  # [{file, reason, confidence}]
+        "uploads": [u["filename"] for u in uploads],
+    })
+    return {"token": token, "knowledge_matches": knowledge["archived"],
+            "knowledge_kept_count": len(knowledge["kept"]), "uploads": uploads}
+
+
+class CommitArchiveIn(BaseModel):
+    token: str
+    knowledge_files: list[str] = []  # subset of preview's knowledge_matches[].file to actually archive
+    upload_files: list[str] = []     # subset of preview's uploads[].filename to actually archive
+
+
+@app.post("/api/docs/{project}/{device}/archive/commit")
+def commit_archive(project: str, device: str, body: CommitArchiveIn):
+    project, device = _validated_target(project, device)
+    preview = store.pop_archive_preview(body.token)
+    if preview is None:
+        raise HTTPException(status_code=404, detail="Nothing previewed under that token (already committed, expired, or the server restarted). Run preview again.")
+    if preview["project"] != project or preview["device"] != device:
+        raise HTTPException(status_code=400, detail="Token was previewed for a different project/device.")
+
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+    archived_knowledge: list[str] = []
+    knowledge_errors: list[str] = []
+    knowledge_archive_dir: Path | None = None
+    reasons_by_file = {m["file"]: m for m in preview["archived"]}
+    selected_knowledge = [f for f in body.knowledge_files if f in reasons_by_file]
+    if selected_knowledge:
+        specs_dir = SYSTEM_TEST_OPS_KNOWLEDGE / project.lower() / "specs"
+        archive_dir = specs_dir / "_archive" / stamp
+        n = 1
+        while archive_dir.exists():
+            n += 1
+            archive_dir = specs_dir / "_archive" / f"{stamp}-{n}"
+        for filename in selected_knowledge:
+            src = specs_dir / filename
+            if not src.is_file():
+                knowledge_errors.append(f"{filename}: not found in {specs_dir} (already archived by another run?)")
+                continue
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            src.rename(archive_dir / filename)
+            archived_knowledge.append(filename)
+        if archived_knowledge:
+            knowledge_archive_dir = archive_dir
+            manifest = archive_dir / "ARCHIVE-MANIFEST.md"
+            lines = [f"# Archived knowledge notes — {project}/{device} — {stamp}", "",
+                     "Selected via the Test-Ops Console's Archive review step (a human-chosen subset of",
+                     "what `tools/archive_knowledge.py --dry-run` reported, not the full match list).", ""]
+            for filename in archived_knowledge:
+                m = reasons_by_file[filename]
+                lines.append(f"- `{filename}` — {m['reason']} (confidence: {m['confidence']})")
+            manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    archived_uploads: list[str] = []
+    upload_errors: list[str] = []
+    selected_uploads = [f for f in body.upload_files if f in set(preview["uploads"])]
+    if selected_uploads:
+        uploads_dir = Path(store.uploads_dir_path(project, device))
+        upload_archive_dir = uploads_dir / "_archive" / stamp
+        for filename in selected_uploads:
+            safe_name = Path(filename).name
+            src = uploads_dir / safe_name
+            if not src.is_file():
+                upload_errors.append(f"{filename}: not found (already archived or removed?)")
+                continue
+            upload_archive_dir.mkdir(parents=True, exist_ok=True)
+            src.rename(upload_archive_dir / safe_name)
+            archived_uploads.append(safe_name)
+
+    return {
+        "ok": True,
+        "archived_knowledge": archived_knowledge,
+        "knowledge_errors": knowledge_errors,
+        "archived_uploads": archived_uploads,
+        "upload_errors": upload_errors,
+        "archive_dir": str(knowledge_archive_dir) if knowledge_archive_dir else None,
+    }
 
 
 @app.post("/api/docs/{project}/refresh-check")

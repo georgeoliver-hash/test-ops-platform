@@ -54,7 +54,14 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # @feature's own mapping in docs/gherkin-standard.md) and create a TestRail run
     # scoped to just those cases -- George: "select EMV, no sign on stuff, run just that."
     assert "targeted-run" in ids
-    assert len(ids) == 20
+    # 2026-09-25: scoped re-judge of automation tier when the judging RULES change (new
+    # automation capability, fresh doc, SIT config update) rather than when new cases simply
+    # appear (--missing-only, already covered by the enrich step inside export-automation).
+    # Built the same day ObvMessageInjector.py (test-automation-sit) made OBV message-injection
+    # testing real, which needed the 2026-09-17 blanket "OBV -> No" cap narrowed -- and the ~97
+    # already-enriched OBV cases needed exactly this kind of scoped refresh to pick it up.
+    assert "refresh-automation-tier" in ids
+    assert len(ids) == 21
 
 
 def test_route_by_ui_action_matches_slash_command(pipelines):

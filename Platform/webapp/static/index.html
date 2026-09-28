@@ -441,6 +441,10 @@
   <div class="gap-modal" id="uploadReviewBody"></div>
 </div>
 
+<div class="gap-modal-overlay" id="archiveReviewOverlay">
+  <div class="gap-modal" id="archiveReviewBody"></div>
+</div>
+
 <script>
 const KIND_META = {
   cli:   {label: 'CODE',  cls: 'code'},
@@ -1604,6 +1608,106 @@ function openUploadReview(staged) {
   });
 }
 
+/* ---------------- Archive existing docs & knowledge (2026-09-24) -- confidence-tiered
+   selection, not an "archive everything" button: real dry-run data showed most keyword
+   matches are medium/low-confidence cross-device mentions, not device-specific, so
+   defaulting those OFF (only high-confidence title matches pre-checked) avoids sweeping
+   away genuinely shared knowledge by accident. Nothing moves until Archive selected is
+   clicked, and even then only the ticked rows. ------------------------------------- */
+function openArchiveReview(preview, project, device) {
+  const overlay = document.getElementById('archiveReviewOverlay');
+  const body = document.getElementById('archiveReviewBody');
+  const tierOrder = {high: 0, medium: 1, low: 2};
+  const matches = [...preview.knowledge_matches].sort((a, b) => (tierOrder[a.confidence] ?? 3) - (tierOrder[b.confidence] ?? 3));
+  const knowledgeRow = m => `
+    <label style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.5px;border-bottom:1px solid var(--line);">
+      <input type="checkbox" data-archive-knowledge="${esc(m.file)}" ${m.confidence === 'high' ? 'checked' : ''} style="margin-top:3px;">
+      <span><span style="overflow-wrap:anywhere;">${esc(m.file)}</span>
+        <span class="pill ${m.confidence === 'high' ? 'ok' : m.confidence === 'medium' ? 'warn' : 'bad'}" style="margin-left:6px;font-size:10.5px;">${esc(m.confidence)}</span>
+        <br><span style="color:var(--ink-soft);font-size:11.5px;">${esc(m.reason)}</span></span>
+    </label>`;
+  const uploadRow = u => `
+    <label style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.5px;border-bottom:1px solid var(--line);">
+      <input type="checkbox" data-archive-upload="${esc(u.filename)}" style="margin-top:3px;">
+      <span>${esc(u.filename)}</span>
+    </label>`;
+  body.innerHTML = `
+    <h2 style="margin-top:0;">Archive existing docs &amp; knowledge — ${esc(project)} / ${esc(device)}</h2>
+    <p style="color:var(--ink-soft);font-size:12.5px;">Nothing is deleted — ticked items are <b>moved</b> to a timestamped archive folder, recoverable by hand at any time. High-confidence device-specific notes are pre-ticked; medium/low (often shared cross-device mentions) are left for you to judge from the reason shown.</p>
+    <h3 style="margin:14px 0 4px;font-size:13px;">Derived knowledge notes (${matches.length} matched, ${preview.knowledge_kept_count} not matched / left alone)</h3>
+    <div style="max-height:220px;overflow:auto;margin:0 0 10px;">
+      ${matches.length ? matches.map(knowledgeRow).join('') : '<p style="color:var(--ink-soft);font-size:12.5px;">No knowledge notes matched this device.</p>'}
+    </div>
+    <h3 style="margin:14px 0 4px;font-size:13px;">Uploaded raw files (${preview.uploads.length})</h3>
+    <div style="max-height:160px;overflow:auto;margin:0 0 10px;">
+      ${preview.uploads.length ? preview.uploads.map(uploadRow).join('') : '<p style="color:var(--ink-soft);font-size:12.5px;">No files uploaded for this project/device yet.</p>'}
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn" id="archiveReviewCancel">Cancel</button>
+      <button class="btn primary" id="archiveReviewConfirm">Archive selected</button>
+    </div>
+    <div id="archiveReviewResult" style="margin-top:10px;font-size:12.5px;"></div>`;
+  overlay.classList.add('open');
+  document.getElementById('archiveReviewCancel').addEventListener('click', () => overlay.classList.remove('open'));
+  document.getElementById('archiveReviewConfirm').addEventListener('click', async () => {
+    const knowledge_files = Array.from(body.querySelectorAll('[data-archive-knowledge]:checked')).map(el => el.dataset.archiveKnowledge);
+    const upload_files = Array.from(body.querySelectorAll('[data-archive-upload]:checked')).map(el => el.dataset.archiveUpload);
+    const resultEl = document.getElementById('archiveReviewResult');
+    if (!knowledge_files.length && !upload_files.length) { resultEl.textContent = 'Nothing selected — tick at least one item, or Cancel.'; return; }
+    resultEl.textContent = 'Archiving…';
+    try {
+      const res = await fetch(`/api/docs/${encodeURIComponent(project)}/${encodeURIComponent(device)}/archive/commit`, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({token: preview.token, knowledge_files, upload_files}),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+      const result = await res.json();
+      const problems = [...result.knowledge_errors, ...result.upload_errors];
+      resultEl.innerHTML = `Archived ${result.archived_knowledge.length} knowledge note(s), ${result.archived_uploads.length} upload(s)`
+        + (result.archive_dir ? ` to <code>${esc(result.archive_dir)}</code>` : '') + '.'
+        + (problems.length ? `<br>${problems.length} problem(s): ${esc(problems.join('; '))}` : '');
+      renderDocs();
+    } catch (e) { resultEl.textContent = 'Could not archive: ' + e.message; }
+  });
+}
+
+const INGEST_MAP_CATEGORY_META = {
+  distilled_relevant: {label: 'Became a spec — relevant', cls: 'ok', arrow: '✓'},
+  distilled_not_relevant: {label: 'Became a spec — not relevant', cls: 'warn', arrow: '✗'},
+  distilled_unclassified: {label: 'Became a spec (relevance unavailable)', cls: 'muted', arrow: '?'},
+  reference_only: {label: 'Reference/data file, not a spec', cls: 'muted', arrow: '·'},
+  not_converted: {label: 'Not converted yet', cls: 'muted', arrow: '·'},
+};
+const INGEST_MAP_CATEGORY_ORDER = ['distilled_relevant', 'distilled_not_relevant', 'distilled_unclassified', 'reference_only', 'not_converted'];
+
+// George, 2026-09-25: "all the docs uploads on one side, then like an arrow pointing
+// left to the ingested docs now... people can visually see ah okay onboarding is right".
+// Grouped by outcome (not one flat list) so the headline -- which docs actually matter
+// for THIS device's build -- is visible without reading every row.
+function renderIngestMap(body, device) {
+  const c = body.counts;
+  const headline = body.classifier_available
+    ? `<b>${c.relevant_notes} of ${c.total_distilled_notes}</b> distilled spec notes are relevant to <b>${esc(device)}</b> — ${c.reference_only} of your ${c.total_raw} raw docs are reference/data files (not specs), not something onboarding builds an area around.`
+    : `${c.total_distilled_notes} distilled spec notes found, but device-relevance couldn't be checked for this project yet — showing the raw→converted→distilled trace only.`;
+  const groups = INGEST_MAP_CATEGORY_ORDER.map(cat => {
+    const rows = body.rows.filter(r => r.category === cat);
+    if (!rows.length) return '';
+    const meta = INGEST_MAP_CATEGORY_META[cat];
+    const items = rows.map(r => `
+      <div style="display:flex;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border);font-size:12.5px;">
+        <span style="flex:1 1 45%;">${esc(r.file)}</span>
+        <span style="color:var(--ink-soft);">${meta.arrow}</span>
+        <span style="flex:1 1 45%;">${r.note ? esc(r.note) : '<span style="color:var(--ink-soft);">—</span>'}${r.reason ? ` <span style="color:var(--ink-soft);">(${esc(r.reason)})</span>` : ''}</span>
+      </div>`).join('');
+    return `
+      <details style="margin-top:8px;" ${cat === 'distilled_relevant' ? 'open' : ''}>
+        <summary style="cursor:pointer;font-size:13px;"><span class="pill ${meta.cls}">${rows.length}</span> ${esc(meta.label)}</summary>
+        <div style="margin-top:6px;">${items}</div>
+      </details>`;
+  }).join('');
+  return `<p style="font-size:13.5px;margin:0 0 4px;">${headline}</p>${groups}`;
+}
+
 async function renderDocs() {
   loading();
   const {project, device} = window.CURRENT_TARGET || {};
@@ -1629,16 +1733,11 @@ async function renderDocs() {
     setContent(`
       <div class="page-head"><h1>Docs — ${esc(project)} / ${esc(device)}</h1><p>Where Ingest reads this project's requirement docs from, and somewhere to attach the odd extra file.</p></div>
       ${source === 'requirements_folder' ? `
-      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);">
-        ✓ Ingest reads <b>${esc(project)}</b> straight from your synced requirements folder — <code>${esc(sourcePath)}</code>.
-        Nothing to upload: keep that folder up to date (Google Drive for Desktop) and Ingest picks it up.
-        The upload below is only for the odd extra file that isn't in there.
+      <div class="fixture-note" style="background:var(--accent-soft-bg);color:var(--accent);" title="Ingest reads ${esc(project)} straight from this synced folder — nothing to upload, just keep it up to date in Google Drive for Desktop. Upload below is only for the odd extra file that isn't already in there.">
+        ✓ Reading <b>${esc(project)}</b> from synced folder <code>${esc(sourcePath)}</code> — upload below is only for extras.
       </div>` : `
-      <div class="fixture-note">
-        ⚠ No synced requirements folder found for <b>${esc(project)}</b>, so Ingest will fall back to the uploads below
-        (<code>${esc(sourcePath || '')}</code>). For a full project library, sync it to
-        <code>%USERPROFILE%\TestOpsRequirements\${esc(project.toLowerCase())}\_current\</code> instead of uploading it —
-        far quicker than pushing it through the browser.
+      <div class="fixture-note" title="No synced requirements folder found, so Ingest falls back to the uploads below. For a full library, sync it to %USERPROFILE%\\TestOpsRequirements\\${esc(project.toLowerCase())}\\_current\\ instead of uploading through the browser — far quicker.">
+        ⚠ No synced folder for <b>${esc(project)}</b> — falling back to uploads. Sync one for a full library instead.
       </div>`}
       <div class="card">
         <h2>Upload docs</h2>
@@ -1655,6 +1754,18 @@ async function renderDocs() {
       <div class="card">
         <h2>Docs on file for this target</h2>
         ${docs.length ? `<table><tr><th>File</th><th>Size</th><th>Uploaded</th><th></th></tr>${rows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this project/device yet.</p>'}
+      </div>
+      <div class="card">
+        <h2>Archive existing docs &amp; knowledge</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Before re-uploading a fresh library and re-running Ingest end-to-end, archive (never delete) old uploaded files and derived knowledge notes for this device so they don't sit mixed in with what gets freshly distilled this time. You pick exactly what moves — nothing is archived automatically.</p>
+        <button class="btn" id="archiveReviewBtn">Review what can be archived</button>
+        <div id="archiveReviewMsg" style="margin-top:8px;font-size:12.5px;"></div>
+      </div>
+      <div class="card">
+        <h2>Where did my docs go?</h2>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Traces every raw doc through to what it actually became — converted text, a distilled spec note, and whether that note is relevant to ${esc(device)}. George, 2026-09-25: "people can visually see ah okay onboarding is right, it is doing the correct docs."</p>
+        <button class="btn" id="ingestMapBtn">Show the trace</button>
+        <div id="ingestMapResult" style="margin-top:10px;"></div>
       </div>
       <div class="card">
         <h2>Requirement docs — check for changes</h2>
@@ -1701,6 +1812,26 @@ async function renderDocs() {
         if (staged.superseded.length + staged.excluded.length) { openUploadReview(staged); return; }
         await commitStagedUpload(staged.token, []);
       } catch (e) { msg.textContent = 'Upload failed: ' + e.message; }
+    });
+
+    document.getElementById('archiveReviewBtn').addEventListener('click', async () => {
+      const msg = document.getElementById('archiveReviewMsg');
+      msg.textContent = 'Checking what’s there…';
+      try {
+        const res = await fetch(`/api/docs/${encodeURIComponent(project)}/${encodeURIComponent(device)}/archive/preview`, {method: 'POST'});
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        const preview = await res.json();
+        msg.textContent = '';
+        openArchiveReview(preview, project, device);
+      } catch (e) { msg.textContent = 'Could not check: ' + e.message; }
+    });
+    document.getElementById('ingestMapBtn').addEventListener('click', async () => {
+      const resultEl = document.getElementById('ingestMapResult');
+      resultEl.innerHTML = '<div class="loading">Tracing…</div>';
+      try {
+        const body = await fetchJSON(`/api/docs/ingest-map?project=${encodeURIComponent(project)}&device=${encodeURIComponent(device)}`);
+        resultEl.innerHTML = renderIngestMap(body, device);
+      } catch (e) { resultEl.innerHTML = `<div class="errbox">Could not trace: ${esc(e.message)}</div>`; }
     });
     content.querySelectorAll('[data-del-doc]').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -2025,7 +2156,7 @@ async function renderPipelineDetail(id) {
       <div class="card" style="margin-top:10px;">
         <b style="font-size:13px;">Which docs should this run read?</b>
         <select class="input" id="docsSourcePicker" style="display:block;margin-top:6px;">
-          ${docsOptions.map((o, idx) => `<option value="${esc(o.path)}" ${idx === 0 ? 'selected' : ''}>${esc(o.label)} — ${o.file_count} file(s)</option>`).join('')}
+          ${docsOptions.map((o) => `<option value="${esc(o.path)}" ${o.path === docsFolder ? 'selected' : ''}>${esc(o.label)} — ${o.file_count} file(s)</option>`).join('')}
         </select>
         <p style="color:var(--ink-soft);font-size:12px;margin:6px 0 0;">Both exist for this target, so pick one. The docs path below updates to match.</p>
       </div>` : '';
@@ -2096,7 +2227,7 @@ async function renderPipelineDetail(id) {
     // single file path, adding multiples there wouldn't mean anything.
     const JIRA_CHIP_FIELDS = new Set(['fix_version', 'feature_or_jira_key']);
     const extraInputsHtml = extraInputs.length ? `
-      <div class="card" id="pipelineExtraInputs" style="margin-top:10px;">
+      <div class="card" id="pipelineExtraInputs" style="flex:1 1 320px;">
         ${extraInputs.map(i => {
           const isDocsPath = i.name === 'docs_path';
           const locked = isDocsPath && docsFolder;
@@ -2178,12 +2309,23 @@ async function renderPipelineDetail(id) {
     // element on the page into extra_inputs, and run history already renders whatever lands
     // in extra_inputs (see loadRunHistory), so `intent` just rides both of those for free.
     const intentHtml = `
-      <div class="card" style="margin-top:10px;">
+      <div class="card" style="flex:1 1 320px;">
         <label style="display:block;font-size:13px;margin-bottom:6px;">
           What are you trying to achieve with this run? <span style="color:var(--ink-soft);">(optional)</span>
           <div style="color:var(--ink-soft);font-size:12px;margin:2px 0 4px;">Extra context for the agent steps in this run -- e.g. "I need this grounded for back-office comms testing, not just device navigation." Doesn't override the pipeline's own steps, just helps it make better judgment calls.</div>
         </label>
         <textarea class="input" data-extra-input="intent" rows="3" style="display:block;width:100%;margin-top:2px;resize:vertical;"></textarea>
+      </div>`;
+    // George's ask (2026-09-24): the docs_path/other run-input card and this prompt card
+    // used to stack full-width, one above the other -- side by side reads as one glance
+    // instead of a scroll, same two-dashboard-containers idea as the steps/live-progress
+    // row above. extraInputsHtml keeps its own id/card styling; this row just lays the two
+    // cards out together when both exist (a pipeline with no declared inputs still gets the
+    // intent card, just alone, not forced into a half-width column).
+    const inputsAndIntentRowHtml = `
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
+        ${extraInputsHtml}
+        ${intentHtml}
       </div>`;
     const runButton = detail.runnable
       ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
@@ -2207,13 +2349,14 @@ async function renderPipelineDetail(id) {
       </div>
       <div id="pipelineDetailsBody">
         ${flowGuideHtml}
-        ${extraInputsHtml}
-        ${intentHtml}
+        ${inputsAndIntentRowHtml}
         ${docsSourcePickerHtml}
         ${currentDocsHtml}
         ${relevancePreviewHtml}
-        <div class="card"><div class="flow" style="display:block;">${steps}</div></div>
-        <div id="pipelineStepList" class="card" style="margin-top:10px;display:none;"></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
+          <div class="card" style="flex:1 1 320px;"><div class="flow" style="display:block;">${steps}</div></div>
+          <div id="pipelineStepList" class="card" style="flex:1 1 320px;display:none;"></div>
+        </div>
         <div id="pipelineRunResult"></div>
       </div>
       <div id="pipelineLogBody" style="display:none;"></div>`);
@@ -2367,6 +2510,22 @@ async function renderPipelineLog(id, target, container) {
 /* ---------------- Real pipeline execution (2026-09-14: every pipeline runs through the
    generic step-executor; a step that would push --commit always pauses as a human
    approval gate first — see runner.py) ---------------- */
+// George's ask (2026-09-24): "once a successful run happens then the last chosen
+// actions, prompt should be removed" -- a completed run's own inputs stay exactly as they
+// were, forever, in that run's history/log entry (this only clears the LIVE FORM on this
+// page, ready for a fresh next run, so last time's ticks/prompt don't silently carry over
+// and get resubmitted by accident). docs_path is deliberately left alone -- it's
+// system-resolved from the target, not something the human chose, so clearing it would
+// just leave the field blank until the page is reloaded.
+function resetRunFormAfterSuccess() {
+  for (const el of document.querySelectorAll('[data-extra-input]')) {
+    if (el.dataset.extraInput === 'docs_path') continue;
+    el.value = '';
+  }
+  for (const cb of document.querySelectorAll('[data-area-checkbox]')) cb.checked = false;
+  for (const list of document.querySelectorAll('[data-chip-list]')) list.innerHTML = '';
+}
+
 async function runPipeline(id, target) {
   const resultEl = document.getElementById('pipelineRunResult');
   const stepListEl = document.getElementById('pipelineStepList');
@@ -2501,15 +2660,27 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
       resultEl.innerHTML = `<div class="card"><h2>Run failed</h2><div class="errbox">${esc(run.error || 'Unknown error')}</div>${run.cli_output ? `<pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:10px;">${esc(run.cli_output)}</pre>` : ''}</div>`;
       return;
     }
+    // George, 2026-09-25: "we need to show the result of ingest-docs once its done...
+    // people can visually see ah okay onboarding is right, it is doing the correct docs."
+    // -- link straight to the same raw->converted->distilled trace from the Docs page,
+    // right where a person just watched ingest-docs finish, not buried in settings.
+    const ingestMapLinkHtml = run.pipeline_id === 'ingest-docs'
+      ? `<p style="margin-top:10px;"><a href="#" id="ingestMapResultLink" style="font-size:12.5px;">See which docs became what →</a></p>` : '';
     resultEl.innerHTML = `
       <div class="card">
         <h2>Result</h2>
         ${run.summary ? `<p style="font-size:14px;">${esc(run.summary)}</p>` : ''}
         ${run.report_path ? `<p style="color:var(--ink-soft);font-size:12.5px;">Full report: <code>${esc(run.report_path)}</code></p>` : ''}
+        ${ingestMapLinkHtml}
         <details style="margin-top:10px;"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft);">Raw CLI output</summary>
           <pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:8px;">${esc(run.cli_output || '')}</pre>
         </details>
       </div>`;
+    document.getElementById('ingestMapResultLink')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderDocs();
+    });
+    resetRunFormAfterSuccess();
   } catch (e) {
     resultEl.innerHTML = `<div class="errbox">Lost track of this run: ${esc(e.message)}</div>`;
     if (btn) btn.disabled = false;

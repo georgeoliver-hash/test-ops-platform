@@ -432,6 +432,168 @@ def test_bulk_upload_rejects_bad_zip():
     assert "not a valid zip" in body["errors"][0]
 
 
+def _fake_archive_dry_run(archived):
+    """A fake `subprocess.run` for archive_knowledge.py --dry-run, matching its real JSON
+    contract (see system-test-ops/tools/archive_knowledge.py's own docstring)."""
+    class FakeResult:
+        returncode = 0
+        stdout = json.dumps({
+            "dry_run": True, "project": "Translink", "device": "POS",
+            "archived": archived, "kept": ["unrelated.md"], "archive_dir": None,
+        })
+        stderr = ""
+    return lambda *a, **k: FakeResult()
+
+
+def test_archive_preview_combines_knowledge_and_uploads(monkeypatch):
+    """Preview must cover BOTH layers (uploaded raw files + derived knowledge notes) in one
+    response, and must not move or archive anything itself -- it's read-only."""
+    from Platform.webapp import app as app_module
+
+    archived = [
+        {"file": "FBD-100183-pos-hardware.md", "reason": "title: POS Hardware Specification", "confidence": "high"},
+        {"file": "FBD-100341-revenue-apportionment.md", "reason": "body: mentions POS among TVM/POS", "confidence": "medium"},
+    ]
+    monkeypatch.setattr(app_module.subprocess, "run", _fake_archive_dry_run(archived))
+    client.post("/api/docs", params={"project": "ArchivePreviewProj", "device": "POS"},
+                files={"file": ("raw.md", b"content", "text/markdown")})
+
+    res = client.post("/api/docs/ArchivePreviewProj/POS/archive/preview")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["knowledge_matches"] == archived
+    assert body["knowledge_kept_count"] == 1
+    assert [u["filename"] for u in body["uploads"]] == ["raw.md"]
+    assert "token" in body
+    # confidence tiers reach the response untouched -- the UI depends on this to decide
+    # what's pre-checked vs left for a human to judge.
+    confidences = {m["confidence"] for m in body["knowledge_matches"]}
+    assert confidences == {"high", "medium"}
+
+
+def test_archive_commit_moves_only_the_selected_subset(monkeypatch, tmp_path):
+    """The CLI tool is all-or-nothing per invocation; the webapp must apply the human's
+    partial selection itself -- confirm a real move happens for a chosen file, and that an
+    unselected match is left completely alone (not just unlisted, genuinely untouched)."""
+    from Platform.webapp import app as app_module
+
+    specs_dir = tmp_path / "archivecommitproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "FBD-100183-pos-hardware.md").write_text("POS content", encoding="utf-8")
+    (specs_dir / "FBD-100341-revenue-apportionment.md").write_text("shared content", encoding="utf-8")
+    monkeypatch.setattr(app_module, "SYSTEM_TEST_OPS_KNOWLEDGE", tmp_path)
+
+    archived = [
+        {"file": "FBD-100183-pos-hardware.md", "reason": "title: POS Hardware Specification", "confidence": "high"},
+        {"file": "FBD-100341-revenue-apportionment.md", "reason": "body: mentions POS among TVM/POS", "confidence": "medium"},
+    ]
+    monkeypatch.setattr(app_module.subprocess, "run", _fake_archive_dry_run(archived))
+    client.post("/api/docs", params={"project": "ArchiveCommitProj", "device": "POS"},
+                files={"file": ("raw.md", b"content", "text/markdown")})
+
+    preview = client.post("/api/docs/ArchiveCommitProj/POS/archive/preview").json()
+    token = preview["token"]
+
+    res = client.post(
+        "/api/docs/ArchiveCommitProj/POS/archive/commit",
+        json={"token": token, "knowledge_files": ["FBD-100183-pos-hardware.md"], "upload_files": ["raw.md"]},
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["archived_knowledge"] == ["FBD-100183-pos-hardware.md"]
+    assert body["archived_uploads"] == ["raw.md"]
+    assert body["knowledge_errors"] == []
+    assert body["upload_errors"] == []
+    assert body["archive_dir"]
+
+    # the selected note moved into the archive dir, never deleted
+    archive_dir = os.path.normpath(body["archive_dir"])
+    assert os.path.isfile(os.path.join(archive_dir, "FBD-100183-pos-hardware.md"))
+    assert os.path.isfile(os.path.join(archive_dir, "ARCHIVE-MANIFEST.md"))
+    manifest = open(os.path.join(archive_dir, "ARCHIVE-MANIFEST.md"), encoding="utf-8").read()
+    assert "FBD-100183-pos-hardware.md" in manifest
+    assert "title: POS Hardware Specification" in manifest
+
+    # the UNSELECTED match is completely untouched, still in the original specs dir
+    assert (specs_dir / "FBD-100341-revenue-apportionment.md").is_file()
+    assert "FBD-100341-revenue-apportionment.md" not in manifest
+
+    # the uploaded file no longer shows up as "on file" (it moved, not vanished silently)
+    remaining = client.get("/api/docs", params={"project": "ArchiveCommitProj", "device": "POS"}).json()
+    assert remaining == []
+
+    # the token is single-use -- re-using it is a clean 404, not a silent double-archive
+    res2 = client.post(
+        "/api/docs/ArchiveCommitProj/POS/archive/commit",
+        json={"token": token, "knowledge_files": [], "upload_files": []},
+    )
+    assert res2.status_code == 404
+
+
+def test_archive_commit_with_nothing_selected_is_a_safe_noop(monkeypatch, tmp_path):
+    from Platform.webapp import app as app_module
+
+    specs_dir = tmp_path / "archivenoopproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "FBD-100183-pos-hardware.md").write_text("POS content", encoding="utf-8")
+    monkeypatch.setattr(app_module, "SYSTEM_TEST_OPS_KNOWLEDGE", tmp_path)
+
+    archived = [{"file": "FBD-100183-pos-hardware.md", "reason": "title match", "confidence": "high"}]
+    monkeypatch.setattr(app_module.subprocess, "run", _fake_archive_dry_run(archived))
+
+    preview = client.post("/api/docs/ArchiveNoopProj/POS/archive/preview").json()
+    res = client.post(
+        "/api/docs/ArchiveNoopProj/POS/archive/commit",
+        json={"token": preview["token"], "knowledge_files": [], "upload_files": []},
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body == {
+        "ok": True, "archived_knowledge": [], "knowledge_errors": [],
+        "archived_uploads": [], "upload_errors": [], "archive_dir": None,
+    }
+    # nothing moved -- the note is still exactly where it was
+    assert (specs_dir / "FBD-100183-pos-hardware.md").is_file()
+
+
+def test_archive_commit_unknown_token_is_404():
+    res = client.post(
+        "/api/docs/SomeProj/POS/archive/commit",
+        json={"token": "not-a-real-token", "knowledge_files": [], "upload_files": []},
+    )
+    assert res.status_code == 404
+
+
+def test_archive_preview_token_survives_a_fresh_process(monkeypatch):
+    """The bug found live, 2026-09-24: George runs the server with `uvicorn --reload`,
+    which restarts the worker on any watched file change -- an in-memory token dict loses
+    every in-flight preview between the preview call and the human clicking 'Archive
+    selected', which can be minutes apart. Persisted to store.py's sqlite db instead;
+    prove it by popping the token via a fresh call to store.pop_archive_preview directly
+    (simulating a brand-new process reading the same on-disk db), not just the same
+    request/response cycle a dict would also survive."""
+    from Platform.webapp import app as app_module
+
+    class FakeResult:
+        returncode = 0
+        stdout = json.dumps({"dry_run": True, "archived": [], "kept": []})
+        stderr = ""
+
+    monkeypatch.setattr(app_module.subprocess, "run", lambda *a, **kw: FakeResult())
+
+    res = client.post("/api/docs/SomeProj/POS/archive/preview")
+    assert res.status_code == 200
+    token = res.json()["token"]
+
+    # A fresh lookup against the persisted table, not the process's own in-memory state.
+    popped = store.pop_archive_preview(token)
+    assert popped is not None
+    assert popped["project"] == "SomeProj"
+    assert popped["device"] == "POS"
+    # one-time use: gone after the pop, same as before
+    assert store.pop_archive_preview(token) is None
+
+
 def test_relevance_preview_reports_convert_failure(monkeypatch, tmp_path):
     from Platform.webapp import runner as runner_module
 
@@ -536,6 +698,10 @@ def test_run_route_now_works_for_previously_blocked_pipelines(monkeypatch):
     level test, not a real subprocess/CLI integration test."""
     monkeypatch.setattr(app_module.runner, "_run_pipeline_job", lambda *a, **kw: None)
     monkeypatch.setattr(app_module.runner.threading, "Thread", _SyncThread)
+    # onboard-suite's loop-step expansion (_functional_areas) now shells out to
+    # archive_knowledge.py to scope areas to the target device -- mock that too, per this
+    # test's own stated goal of staying route-level, not a real subprocess/CLI test.
+    monkeypatch.setattr(app_module.runner, "_run_subprocess", lambda *a, **kw: (1, "", "no classifier config in this test"))
 
     res = client.post("/api/pipelines/onboard-suite/run", json={"project": "Translink", "device": "POS"})
     assert res.status_code == 200
@@ -992,6 +1158,42 @@ def test_loop_step_fans_out_one_per_ingested_spec(tmp_path, monkeypatch):
     assert all(s["status"] == "succeeded" for s in steps)
 
 
+def test_loop_step_scopes_areas_to_the_target_device(tmp_path, monkeypatch):
+    """Found live, 2026-09-24 (George: "if im not on POS and uploaded docs for it, it
+    should onboard those docs for POS, not everything for translink"): functional areas
+    used to be every spec file in the project's shared knowledge/ folder, regardless of
+    device -- onboarding POS would also fan out steps for TVM/Gate/BV-only specs. Now
+    scoped via archive_knowledge.py's device classification -- only the specs it reports
+    as relevant to the target device become areas."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "fs002-pos-hardware.md").write_text("x")
+    (specs_dir / "fs003-tvm-only-thing.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-loop", trigger=Trigger(ui_action="fake_loop"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if any("archive_knowledge.py" in part for part in cmd):
+            return 0, json.dumps({"archived": [{"file": "fs002-pos-hardware.md", "reason": "title", "confidence": "high"}], "kept": ["fs003-tvm-only-thing.md"]}), ""
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-loop", "FakeProj", "POS")
+    steps = store.get_steps(run_id)
+    ids = sorted(s["step_id"] for s in steps)
+    assert ids == ["author_area[pos-hardware]"]  # tvm-only spec excluded
+
+
 def test_consecutive_loop_steps_interleave_per_area_not_run_fully_then_fully(tmp_path, monkeypatch):
     """onboard-suite's real shape: author_area then push_area, both 'one per functional
     area'. Must produce author[A1], push[A1], author[A2], push[A2] -- one area reviewed
@@ -1276,6 +1478,38 @@ def test_run_intent_persisted_and_visible_on_run_record(monkeypatch):
     # get_run returns the raw TEXT column (unlike list_runs, which JSON-decodes it) --
     # match that real, existing behavior rather than changing it as part of this feature.
     assert json.loads(run["extra_inputs"])["intent"] == "Focus on EMV only."
+
+
+def test_intent_never_reaches_a_cli_command_template():
+    """Structural gate (George, 2026-09-24: 'we need a gate explicitly ... purely
+    informational, don't make any edits or changes'): `intent` must be usable ONLY as
+    context appended to an agent's free-text prompt, never substituted into a CLI step's
+    `command:` template -- if it were, free-text user prose could become real subprocess
+    argv (e.g. injecting flags into a `push --commit` call). No real pipeline YAML declares
+    `{intent}` in a command today, but nothing should stop a future pipeline author's typo
+    or a deliberate attempt from doing so -- so prove the substitution is structurally
+    impossible, not just absent by convention. `_render` leaves an unresolved `{placeholder}`
+    untouched (`_SafeFormatDict`), so a stripped `intent` shows up as a literal, harmless
+    `{intent}` in the output rather than the attacker/typo-supplied text."""
+    from Platform.webapp import runner as runner_module
+    from Platform.model.pipelines import Step
+
+    params = runner_module._build_params(
+        "Translink", "TVM", [],
+        extra_inputs={"intent": "--commit --allow-active-runs; rm -rf /", "testrail_project_id": "42"},
+    )
+    step = Step(id="probe", kind="cli", command="mytool --project {testrail_project_id} [--note {intent}]")
+
+    command_params = runner_module._command_params(params)
+    assert "intent" not in command_params
+    rendered = runner_module._resolve_optional_flags(
+        runner_module._render(step.command, command_params), command_params
+    )
+    assert "--commit --allow-active-runs" not in rendered
+    assert "rm -rf" not in rendered
+    # the optional-flag bracket around an unresolved placeholder is dropped, not executed --
+    # either way, the raw intent text never appears in what would reach a real subprocess.
+    assert "42" in rendered  # a real, legitimate param still renders normally
 
 
 def test_write_automation_never_auto_pushes(monkeypatch):
@@ -1664,6 +1898,57 @@ def test_scheduled_checks_endpoint_rejects_bad_interval():
     assert res.status_code == 400
 
 
+def test_agent_step_fallback_prompt_names_project_and_device(monkeypatch):
+    """Found live, 2026-09-24: onboard-suite's `cross_tab` step has no `reads`/`area`/prior
+    report_path, so it fell to `step.note` alone as the WHOLE prompt -- no project or
+    device named anywhere. Reproduced directly against the real `claude` CLI: it responded
+    "I don't have a step called cross_tab -- which project/device?" instead of doing real
+    work. This is the one prompt-construction branch that didn't thread project/device in;
+    every other branch already does."""
+    from Platform.webapp import runner as runner_module
+    from Platform.model.pipelines import Step
+
+    captured = {}
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        captured["prompt"] = cmd[cmd.index("-p") + 1]
+        return 0, '{"result": "ok"}', ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+    monkeypatch.setattr(runner_module.store, "get_run", lambda run_id: {})
+
+    step = Step(id="cross_tab", kind="agent", agent="test-lead",
+                note="Proves shared vs device-specific dimension — never guessed.")
+    runner_module._run_agent_step("fake-run", step, {"project": "Translink", "device": "POS"})
+
+    assert "Translink" in captured["prompt"]
+    assert "POS" in captured["prompt"]
+    assert "Proves shared vs device-specific dimension" in captured["prompt"]
+
+
+def test_agent_step_failure_surfaces_stderr(monkeypatch):
+    """A failed agent step used to record only stdout-derived output ('(the agent
+    returned no output)' when stdout was empty) -- the one place that would actually
+    explain a nonzero exit (crash, auth error, bad --allowedTools value) was discarded.
+    Found live, 2026-09-24: a real onboard-suite run failed with no usable explanation."""
+    from Platform.webapp import runner as runner_module
+    from Platform.model.pipelines import Step
+
+    monkeypatch.setattr(runner_module, "_run_subprocess",
+                         lambda *a, **kw: (1, "", "Error: something crashed inside the agent"))
+    monkeypatch.setattr(runner_module.store, "get_run", lambda run_id: {})
+    captured = {}
+    monkeypatch.setattr(runner_module.store, "update_step",
+                         lambda run_id, step_id, **fields: captured.update(fields))
+    monkeypatch.setattr(runner_module.store, "update_run", lambda *a, **kw: None)
+
+    step = Step(id="cross_tab", kind="agent", agent="test-lead", note="Do the thing.")
+    result = runner_module._run_agent_step("fake-run", step, {"project": "Translink", "device": "POS"})
+
+    assert result == "failed"
+    assert "something crashed inside the agent" in captured["output"]
+
+
 def test_scheduled_checks_run_now_starts_a_real_run_and_marks_last_run(monkeypatch):
     from Platform.webapp import runner as runner_module
     monkeypatch.setattr(runner_module, "start_scheduled_scan", lambda project, device: "fake-run-id")
@@ -1787,6 +2072,131 @@ def test_docs_folder_refuses_blank_project_instead_of_all_projects_root():
     for project in ("", "   ", "../.."):
         res = client.get("/api/docs/folder", params={"project": project, "device": "POS"})
         assert res.status_code == 400, f"project={project!r} was not rejected"
+
+
+def test_docs_folder_defaults_to_whichever_source_has_more_real_files(monkeypatch, tmp_path):
+    """Found live, 2026-09-24: a static 'synced folder always wins' default silently chose
+    a mostly-placeholder 102-real-file _current over George's genuinely complete 131-file
+    console upload. The default `chosen` option must track real file counts, not a fixed
+    preference order -- and the count itself must ignore 0-byte placeholder stubs, or an
+    inflated count on the wrong option would make it win by this same rule anyway."""
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    current = tmp_path / "TestOpsRequirements" / "docsfoldertest" / "_current"
+    current.mkdir(parents=True)
+    for i in range(5):
+        (current / f"real-{i}.docx").write_bytes(b"x")
+    for i in range(250):
+        (current / f"placeholder-{i}.docx").write_bytes(b"")  # unsynced Google Drive stub
+
+    uploads = store_module._uploads_dir("DocsFolderTest", "POS")
+    uploads.mkdir(parents=True, exist_ok=True)
+    for i in range(20):
+        (uploads / f"upload-{i}.docx").write_bytes(b"x")
+
+    res = client.get("/api/docs/folder", params={"project": "DocsFolderTest", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["source"] == "uploads_folder"
+    assert body["path"] == str(uploads)
+    by_source = {o["source"]: o["file_count"] for o in body["options"]}
+    assert by_source["requirements_folder"] == 5  # placeholders excluded
+    assert by_source["uploads_folder"] == 20
+
+
+def test_ingest_map_traces_raw_docs_to_what_they_became(monkeypatch, tmp_path):
+    """George, 2026-09-25: "we need an easy way... some way of seeing all the docs
+    uploads on one side, then like an arrow pointing... to the ingested docs now."
+    Four real outcomes for a raw doc: became a device-relevant spec note, became a spec
+    note but NOT relevant to this device, converted but never distilled (reference/data
+    file -- the normal case for something like a ticket-mapping spreadsheet), or never
+    converted at all. Join key is the FBD-id in both the raw filename and the note's own
+    filename, not prose-matching the Source: citation line."""
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    monkeypatch.setattr(app_module.runner, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    uploads = store_module._uploads_dir("IngestMapTest", "POS")
+    uploads.mkdir(parents=True, exist_ok=True)
+    (uploads / "POS Hardware Specification (FBD-100183) V6.00.docx").write_bytes(b"x")
+    (uploads / "Grouped Stops on TVM (FBD-100515) V1.00.docx").write_bytes(b"x")
+    (uploads / "Ticket Mapping TVM V1.00.xlsx").write_bytes(b"x")
+    (uploads / "Not Converted Yet.docx").write_bytes(b"x")
+
+    text_dir = tmp_path / "dev" / "IngestMapTest-requirements" / "_text"
+    text_dir.mkdir(parents=True)
+    (text_dir / "POS Hardware Specification (FBD-100183) V6.00.docx.txt").write_text("x")
+    (text_dir / "Grouped Stops on TVM (FBD-100515) V1.00.docx.txt").write_text("x")
+    (text_dir / "Ticket Mapping TVM V1.00.xlsx.txt").write_text("x")
+    # "Not Converted Yet.docx" deliberately has no _text/ counterpart.
+
+    specs_dir = tmp_path / "knowledge" / "ingestmaptest" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "FBD-100183-pos-hardware.md").write_text("x")
+    (specs_dir / "FBD-100515-grouped-stops-tvm.md").write_text("x")
+    monkeypatch.setattr(app_module, "SYSTEM_TEST_OPS_KNOWLEDGE", tmp_path / "knowledge")
+
+    monkeypatch.setattr(app_module, "_archive_knowledge_dry_run", lambda project, device: {
+        "archived": [{"file": "FBD-100183-pos-hardware.md", "reason": "title: path contains 'POS'", "confidence": "high"}],
+        "kept": ["FBD-100515-grouped-stops-tvm.md"],
+    })
+
+    res = client.get("/api/docs/ingest-map", params={"project": "IngestMapTest", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    by_file = {r["file"]: r for r in body["rows"]}
+
+    assert by_file["POS Hardware Specification (FBD-100183) V6.00.docx"]["category"] == "distilled_relevant"
+    assert by_file["POS Hardware Specification (FBD-100183) V6.00.docx"]["note"] == "FBD-100183-pos-hardware.md"
+    assert by_file["Grouped Stops on TVM (FBD-100515) V1.00.docx"]["category"] == "distilled_not_relevant"
+    assert by_file["Ticket Mapping TVM V1.00.xlsx"]["category"] == "reference_only"
+    assert by_file["Not Converted Yet.docx"]["category"] == "not_converted"
+
+    counts = body["counts"]
+    assert counts["total_raw"] == 4
+    assert counts["distilled_relevant"] == 1
+    assert counts["distilled_not_relevant"] == 1
+    assert counts["reference_only"] == 1
+    assert counts["not_converted"] == 1
+    assert counts["total_distilled_notes"] == 2
+    assert counts["relevant_notes"] == 1
+
+
+def test_ingest_map_survives_missing_classifier_config(monkeypatch, tmp_path):
+    """A project with no knowledge/projects/<project>-doc-classifier.yaml yet must still
+    show the raw->converted->distilled trace -- only the device-relevance layer on top
+    is unavailable, never a 500 over a secondary layer."""
+    from Platform.webapp import store as store_module
+    from fastapi import HTTPException
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    monkeypatch.setattr(app_module.runner, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    uploads = store_module._uploads_dir("NoClassifierTest", "POS")
+    uploads.mkdir(parents=True, exist_ok=True)
+    (uploads / "Some Spec (FBD-999999) V1.00.docx").write_bytes(b"x")
+
+    text_dir = tmp_path / "dev" / "NoClassifierTest-requirements" / "_text"
+    text_dir.mkdir(parents=True)
+    (text_dir / "Some Spec (FBD-999999) V1.00.docx.txt").write_text("x")
+
+    specs_dir = tmp_path / "knowledge" / "noclassifiertest" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "FBD-999999-some-spec.md").write_text("x")
+    monkeypatch.setattr(app_module, "SYSTEM_TEST_OPS_KNOWLEDGE", tmp_path / "knowledge")
+
+    def raise_no_config(project, device):
+        raise HTTPException(status_code=502, detail="no classifier config")
+    monkeypatch.setattr(app_module, "_archive_knowledge_dry_run", raise_no_config)
+
+    res = client.get("/api/docs/ingest-map", params={"project": "NoClassifierTest", "device": "POS"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["classifier_available"] is False
+    assert body["rows"][0]["category"] == "distilled_unclassified"
+    assert body["counts"]["relevant_notes"] is None
 
 
 def test_scheduled_checks_refuse_blank_target():
