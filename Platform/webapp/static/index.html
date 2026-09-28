@@ -2657,7 +2657,17 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl) {
     }
     if (btn) btn.disabled = false;
     if (run.status === 'failed') {
-      resultEl.innerHTML = `<div class="card"><h2>Run failed</h2><div class="errbox">${esc(run.error || 'Unknown error')}</div>${run.cli_output ? `<pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:10px;">${esc(run.cli_output)}</pre>` : ''}</div>`;
+      resultEl.innerHTML = `
+        <div class="card">
+          <h2>Run failed</h2>
+          <div class="errbox">${esc(run.error || 'Unknown error')}</div>
+          ${run.summary ? `<p style="font-size:14px;">${esc(run.summary)}</p>` : ''}
+          ${run.report_path ? `<p style="color:var(--ink-soft);font-size:12.5px;">Full report: <code>${esc(run.report_path)}</code></p>` : ''}
+          <p style="color:var(--ink-soft);font-size:12.5px;">See the step list above for exactly which step failed — its "Retry from here" button re-runs just that step, not the whole pipeline.</p>
+          ${run.cli_output ? `<details style="margin-top:10px;"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft);">Raw CLI output</summary>
+            <pre style="white-space:pre-wrap;font-size:12px;background:var(--bg);padding:10px;border-radius:8px;margin-top:8px;">${esc(run.cli_output)}</pre>
+          </details>` : ''}
+        </div>`;
       return;
     }
     // George, 2026-09-25: "we need to show the result of ingest-docs once its done...

@@ -1007,6 +1007,52 @@ def test_failed_run_shows_the_failing_steps_own_output_not_a_prior_steps(monkeyp
     assert "step one's real, distinctive output" not in run["cli_output"]
 
 
+def test_failed_gate_step_report_path_is_its_own_not_a_prior_steps(monkeypatch, tmp_path):
+    """Found live: a `definition_of_done` gate step (must_be: clean_of_blocking) failing on
+    real blocking findings still writes a fresh, real audit report naming exactly those
+    findings -- but `_run_gate_step` never extracted/stored that report_path (only
+    `_run_cli_step`'s success branch did). So the run's report_path stayed whatever an
+    EARLIER, unrelated successful step had set, and the next agent step (summarising the
+    prior step's report) reported "that file wasn't found to read" against the stale path
+    instead of reading the gate's own real report."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    earlier_report = "reports/Translink/30253/2026-09-01/old-unrelated-report.md"
+    (tmp_path / earlier_report).parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / earlier_report).write_text("stale, unrelated report", encoding="utf-8")
+    gate_report = "reports/Translink/30253/2026-09-28/alignment-audit.md"
+    (tmp_path / gate_report).parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / gate_report).write_text("audited 842 cases: 12 BLOCKING finding(s)", encoding="utf-8")
+
+    fake_pipeline = Pipeline(
+        id="fake-gate-report", trigger=Trigger(ui_action="fake_gate_report"), description="test pipeline",
+        steps=[
+            Step(id="earlier_cli_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+            Step(id="definition_of_done", kind=StepKind.gate, command="python -m system_test_ops audit --suite 30253", must_be="clean_of_blocking"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if "1" in cmd:
+            return 0, f"Report -> {earlier_report}\n", ""
+        return 1, f"audited 842 cases: 12 BLOCKING finding(s)\nReport -> {gate_report}\n", ""
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-gate-report", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert run["report_path"] == gate_report
+    # Real, human sentence derived from the gate's own result line -- not invented, just
+    # the part of "audited 842 cases: ... Report -> <path>" before the file path -- so the
+    # failed-run card has something better to show than raw jargon, since no agent
+    # "summarise" step ever gets a chance to run after a hard gate failure.
+    assert run["summary"] == "audited 842 cases: 12 BLOCKING finding(s)"
+
+
 def test_resolve_409s_when_step_not_waiting(monkeypatch):
     from model.pipelines import Pipeline, Step, StepKind, Trigger
     from Platform.webapp import runner as runner_module

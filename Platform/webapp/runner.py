@@ -420,6 +420,36 @@ def _run_subprocess(cmd: list[str], cwd: str, timeout: int, run_id: str | None =
                 _run_procs.pop(run_id, None)
 
 
+def _extract_report_path(stdout: str | None) -> str | None:
+    """Pull the trailing "-> <path>" line a system_test_ops CLI prints (several different
+    commands each end with their own "<did this> -> <output file>" line -- render-report,
+    gap-register, push, audit, ... -- so this stays a generic arrow match, not tied to any
+    one command's exact wording)."""
+    match = re.search(r"-> (\S.*)$", stdout or "", re.MULTILINE)
+    return match.group(1).strip() if match else None
+
+
+# Only `audit`'s own result line combines a real human sentence with its report path on one
+# line: "audited 842 cases: 12 BLOCKING finding(s) -- fix before opening a PR; 193 advisory.
+# Report -> <path>". Matched narrowly on this literal phrasing (unlike the generic arrow
+# match above) so it only ever fires for that one line, never misreads another command's
+# own "-> <path>" line as if it were a summary sentence.
+_AUDIT_SUMMARY_RE = re.compile(r"^(?P<summary>.*?)\s*Report -> \S.*$", re.MULTILINE)
+
+
+def _extract_plain_summary(stdout: str | None) -> str | None:
+    """The part of `audit`'s result line before "Report -> " is already a real, human
+    sentence the tool wrote about itself, just sharing a line with the file path. Surface it
+    as the run's plain-language summary (this repo's own words, not an invented one) so a
+    failed gate step's card has something better to show than raw jargon, in the common case
+    where no agent "summarise" step ever gets to run after a hard failure."""
+    match = _AUDIT_SUMMARY_RE.search(stdout or "")
+    if not match:
+        return None
+    summary = match.group("summary").strip()
+    return summary or None
+
+
 def _run_cli_step(run_id: str, step: Step, command: str) -> str:
     parts = _split_command(command)
     if parts and parts[0] == "python":
@@ -449,21 +479,30 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
     # now, matching _run_gate_step's existing behaviour.
     ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
+    # Extract this step's own "Report -> <path>" line regardless of exit code -- a gate-style
+    # CLI (audit, audit-coverage) still writes a real report even when it fails on blocking
+    # findings, and that freshly-written report is exactly what a following summarise step
+    # needs. Was previously only extracted on success, so a failing step left the run's
+    # report_path pointing at whatever a PRIOR successful step had last written -- see the
+    # matching cli_output fix below for the same bug class.
+    report_path = _extract_report_path(stdout)
+    plain_summary = _extract_plain_summary(stdout)
+    extra = {}
+    if report_path:
+        extra["report_path"] = report_path
+    if plain_summary:
+        extra["summary"] = plain_summary
     if not ok:
-        # Was left unset on failure -- the run's own cli_output/report_path stayed whatever
-        # a PRIOR successful step had last written, so the UI's "Run failed" card showed
-        # that earlier step's output instead of the real failure. Found live, repeatedly,
-        # across this whole project: a failed push_area's displayed "Result" was actually
-        # the previous area's successful push output, making every failure look like it
-        # was reporting the wrong step.
-        store.update_run(run_id, cli_output=output)
+        # Was left unset on failure -- the run's own cli_output stayed whatever a PRIOR
+        # successful step had last written, so the UI's "Run failed" card showed that
+        # earlier step's output instead of the real failure. Found live, repeatedly, across
+        # this whole project: a failed push_area's displayed "Result" was actually the
+        # previous area's successful push output, making every failure look like it was
+        # reporting the wrong step.
+        store.update_run(run_id, cli_output=output, **extra)
         return "failed"
 
-    match = re.search(r"-> (\S.*)$", stdout or "", re.MULTILINE)
-    if match:
-        store.update_run(run_id, report_path=match.group(1).strip(), cli_output=output)
-    else:
-        store.update_run(run_id, cli_output=output)
+    store.update_run(run_id, cli_output=output, **extra)
     return "succeeded"
 
 
@@ -484,8 +523,18 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
     output = (stdout or "") + (("\n--- stderr ---\n" + stderr) if stderr else "")
     ok = returncode == 0
     store.update_step(run_id, step.id, status="succeeded" if ok else "failed", output=output, finished_at=_now())
-    if not ok:
-        store.update_run(run_id, cli_output=output)  # see _run_cli_step for why this matters
+    # See _run_cli_step for why cli_output/report_path/summary all matter here, and why
+    # they're captured even when the gate fails (clean_of_blocking) -- the audit CLI still
+    # writes a real, fresh report (and its own plain-language result line) naming exactly
+    # which findings failed the gate.
+    report_path = _extract_report_path(stdout)
+    plain_summary = _extract_plain_summary(stdout)
+    extra = {}
+    if report_path:
+        extra["report_path"] = report_path
+    if plain_summary:
+        extra["summary"] = plain_summary
+    store.update_run(run_id, cli_output=output, **extra)
     return "succeeded" if ok else "failed"
 
 

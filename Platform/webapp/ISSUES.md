@@ -64,3 +64,17 @@ up properly myself (with a real Status line) when I pick the file up.
 
 ---
 
+- Side bar menu, when closing it, theres a wierd overlay of text\? its like the paddling left or margin left of the text content just moves outside or rally close to the left side of the screen? should flow well when opening and closing.
+- siebar menu would be cool to have icons for buttons that open up the sub menu options? when siebar is closed, compared to open does that make sense?
+- think the projects menu option on automation is broken?
+- can we deep dive the SIT view only dashboards, and content i think its not really up to do date? real reflection of what we actually have or is it purely based on the sit clone, pull we do?
+- Can we change up the dashboard status page, can we mix in like line graphs, pie charts, other cool dashboard stuff into anywhere here? like use the data we have but make it look cooler? anything better we can add to like automation tests written by the tool? data etc
+- Add a like confidence in coverage for the suite? maybe make the judgement based off gaps, and tests and specs covered etc? whatever yo uthink can be used, old runs etc or whatever
+- what does the sync do? do we need to start adding buffers like visual buffers on most of our stuff to ensure people are not mis led, or are visually understanding
+- pipeline info, still annoyingly only has one of the accordions a different colour, each open accordion should change to the purple colour, but be white background when not open
+- the piplein info btw is not the flows of the sit automation stuff, i meant we need flow diagrams here to show how our pipelines work? each part of the pipeline will be informative, do this, this happens, this next, blah blah we need one for each pipeline we have
+- I think the text and gaps right, are so vague? like no one will ever know what the question actually is, maybe you need to ensure your asking us the question better? like understand the unconfirmed, or gap and write it out in plain english what the gap and unconfirmed issue is, maybe even a button on the page to say AI summarize? and you go through each and write a description or question better for each so they can be asnwered
+- can we re-organise our side bar menu options can stuff be moved around better structured, less accordions? maybe dont know have a think and suggest
+- the repos? how come we dont have the test sit repo there as well or all the repos related/
+- gaps on the knowledge can be a bit more info? bullet pointed? give more info on what you think is missing in the specs? whats maybe hasnt been gien like a doc or something etc?
+- 
