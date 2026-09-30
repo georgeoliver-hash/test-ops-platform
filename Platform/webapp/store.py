@@ -261,6 +261,16 @@ def init_db() -> None:
         # definition_of_done). NULL means "not confirmed yet, fall back to .env".
         if "new_testrail_project_id" not in cols:
             conn.execute("ALTER TABLE suite_mappings ADD COLUMN new_testrail_project_id INTEGER")
+        # Real bug found live 2026-09-28: `fresh_build` was accepted as a parameter by
+        # upsert_suite_mapping (used for validation + written into system-test-ops' YAML)
+        # but never actually had a column here -- list_suite_mappings' SELECT couldn't even
+        # name it. Runtime pipeline logic derives fresh-build status a different, working
+        # way (old_suite_id IS NULL), so nothing was ever functionally broken there -- but
+        # the "Change target" edit form's Fresh Build checkbox always showed unchecked on
+        # reopen, regardless of what was picked before, since there was nothing to read it
+        # back from. 0/1 not a real BOOLEAN -- SQLite has no such type.
+        if "fresh_build" not in cols:
+            conn.execute("ALTER TABLE suite_mappings ADD COLUMN fresh_build INTEGER NOT NULL DEFAULT 0")
         conn.execute(
             """CREATE TABLE IF NOT EXISTS credentials (
                 user_id INTEGER PRIMARY KEY,
@@ -449,12 +459,12 @@ def get_current_user(user_id: int = DEFAULT_USER_ID) -> dict:
 def list_suite_mappings(user_id: int = DEFAULT_USER_ID) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
-            "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, "
+            "SELECT project, device, old_suite, new_suite, new_suite_id, old_suite_id, fresh_build, "
             "testrail_project_id, new_testrail_project_id, approved_by, approved_at, updated_at "
             "FROM suite_mappings WHERE user_id = ? ORDER BY project, device",
             (user_id,),
         ).fetchall()
-        return [dict(r) for r in rows]
+        return [{**dict(r), "fresh_build": bool(r["fresh_build"])} for r in rows]
 
 
 def get_testrail_project_id(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> int | None:
@@ -552,16 +562,17 @@ def upsert_suite_mapping(project: str, device: str, old_suite: str, new_suite: s
     project, device, new_suite = project.strip(), device.strip(), new_suite.strip()
     with _connect() as conn:
         conn.execute(
-            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id, new_testrail_project_id, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            """INSERT INTO suite_mappings (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, fresh_build, testrail_project_id, new_testrail_project_id, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
                ON CONFLICT(user_id, project, device)
                DO UPDATE SET old_suite = excluded.old_suite, new_suite = excluded.new_suite,
                              new_suite_id = COALESCE(excluded.new_suite_id, suite_mappings.new_suite_id),
                              old_suite_id = COALESCE(excluded.old_suite_id, suite_mappings.old_suite_id),
+                             fresh_build = excluded.fresh_build,
                              testrail_project_id = COALESCE(excluded.testrail_project_id, suite_mappings.testrail_project_id),
                              new_testrail_project_id = COALESCE(excluded.new_testrail_project_id, suite_mappings.new_testrail_project_id),
                              updated_at = excluded.updated_at""",
-            (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, testrail_project_id, new_testrail_project_id),
+            (user_id, project, device, old_suite, new_suite, new_suite_id, old_suite_id, int(fresh_build), testrail_project_id, new_testrail_project_id),
         )
         row = conn.execute(
             "SELECT new_suite_id, old_suite_id, testrail_project_id, new_testrail_project_id FROM suite_mappings WHERE user_id = ? AND project = ? AND device = ?",

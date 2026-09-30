@@ -77,7 +77,7 @@ if "TESTOPS_CLAUDE_ROOT" not in os.environ:
 SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
-from model import automation_tests, devices, features, flows, functions, pipelines  # noqa: E402
+from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
 from Platform.webapp import runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
@@ -262,6 +262,14 @@ def get_credentials_status():
     return store.get_credentials_status()
 
 
+@app.post("/api/credentials/check-connection")
+def check_connection():
+    """Real, live TestRail connectivity check -- 'Configured' above only ever meant a row
+    was saved; this actually calls TestRail (via the same system_test_ops CLI check every
+    real pipeline step relies on) and reports what really happened, right now."""
+    return runner.check_testrail_connection()
+
+
 @app.get("/api/setup-status")
 def get_setup_status(project: str, device: str):
     """Real readiness signal for the sidebar's fade-until-set-up gate (George, 2026-09-08).
@@ -348,14 +356,16 @@ def get_docs_folder(project: str, device: str):
     picks (George, 2026-09-23: he'd have uploaded 660MB and Ingest would have read the
     other folder anyway if it silently won with no hint).
 
-    The DEFAULT `chosen` option is whichever has more real (non-placeholder) files, not
-    "synced folder always wins" -- found live, 2026-09-24: George's console upload (131
-    real files) lost to a `_current` synced folder that reported "found it" off Google
-    Drive placeholder stubs alone (see resolve_ingest_docs_source's fix, same date) and
-    even after that fix only had 102 real files -- a static preference order would have
-    kept silently choosing the smaller/wrong one. `file_count` below only counts real,
-    non-empty files for the same reason -- a placeholder-inflated number here would make
-    the wrong option look bigger and win by this same "most files" rule."""
+    CHANGED 2026-09-30 (George, real live confusion + a genuine architecture mistake):
+    the default used to be "whichever has more real files" -- which silently prefers a
+    huge, possibly-stale synced folder over a small, deliberately curated set of uploads
+    that are actually the current true source (Translink POS: 3 real uploaded docs vs.
+    75 old synced-folder files that had already been superseded). File count is not a
+    signal of which one is *current* -- it's just a signal of which is *bigger*. Uploads
+    now win whenever any real upload exists; the synced folder becomes an explicit,
+    clearly-labelled secondary choice (still useful for bulk-importing a big local
+    library George hasn't hand-picked from yet -- the reason it was built in the first
+    place, per the 2026-09-23 note above) rather than a silent, count-based default."""
     project, device = _validated_target(project, device)
 
     def _count(path: Path) -> int:
@@ -365,17 +375,22 @@ def get_docs_folder(project: str, device: str):
             return 0
 
     options = []
+    uploads = Path(store.uploads_dir_path(project, device))
+    upload_count = _count(uploads)
+    options.append({"path": str(uploads), "source": "uploads_folder",
+                    "label": "Docs uploaded in this console", "file_count": upload_count})
     real = store.resolve_ingest_docs_source(project)
     if real["path"]:
         options.append({"path": real["path"], "source": "requirements_folder",
                         "label": "Synced requirements folder", "file_count": _count(Path(real["path"]))})
-    uploads = Path(store.uploads_dir_path(project, device))
-    upload_count = _count(uploads)
-    if upload_count or not options:
-        options.append({"path": str(uploads), "source": "uploads_folder",
-                        "label": "Docs uploaded in this console", "file_count": upload_count})
 
-    chosen = max(options, key=lambda o: o["file_count"])
+    by_source = {o["source"]: o for o in options}
+    if by_source["uploads_folder"]["file_count"] > 0:
+        chosen = by_source["uploads_folder"]
+    elif "requirements_folder" in by_source:
+        chosen = by_source["requirements_folder"]
+    else:
+        chosen = by_source["uploads_folder"]
     return {"path": chosen["path"], "source": chosen["source"], "options": options}
 
 
@@ -383,17 +398,28 @@ _CONVERTIBLE_EXTS = {".docx", ".xlsx", ".pdf", ".csv", ".txt"}
 
 
 @app.get("/api/docs/folder-files")
-def get_docs_folder_files(project: str, device: str):
-    """Real, actually-present convertible files under this target's resolved docs folder
-    (whichever `/api/docs/folder` would resolve to) -- George, 2026-09-28: "only_file? can
-    this not be a drop-down? of the recently uploaded files". Capped at 300 entries
-    (`truncated: true` past that) so a large synced library (e.g. Translink's real 650MB
-    folder) can't make this call pathologically slow or the response pathologically huge --
-    the field still accepts free text too, this is a convenience list, not the only path in."""
+def get_docs_folder_files(project: str, device: str, path: str | None = None):
+    """Real, actually-present convertible files under this target's docs folder --
+    George, 2026-09-28: "only_file? can this not be a drop-down? of the recently
+    uploaded files". Capped at 300 entries (`truncated: true` past that) so a large
+    synced library (e.g. Translink's real 650MB folder) can't make this call
+    pathologically slow or the response pathologically huge -- the field still accepts
+    free text too, this is a convenience list, not the only path in.
+
+    `path` (added 2026-09-30, George: switching the docs-source toggle "literally never
+    changes" what this list shows) -- lets the caller ask for a SPECIFIC option's files
+    (uploads vs. synced folder) instead of always getting whichever `/api/docs/folder`
+    would resolve to by default. Must exactly match one of that same endpoint's real
+    `options[].path` values for this project/device -- never an arbitrary client-supplied
+    path, to keep this read strictly to the two real, already-validated candidates."""
     project, device = _validated_target(project, device)
-    real = store.resolve_ingest_docs_source(project)
-    uploads = Path(store.uploads_dir_path(project, device))
-    folder = Path(real["path"]) if real["path"] else uploads
+    resolved = get_docs_folder(project, device)
+    if path is not None:
+        if path not in {o["path"] for o in resolved["options"]}:
+            raise HTTPException(status_code=400, detail="path must match a real docs-source option for this target.")
+        folder = Path(path)
+    else:
+        folder = Path(resolved["path"]) if resolved["path"] else Path(store.uploads_dir_path(project, device))
     if not folder.is_dir():
         return {"available": False, "files": [], "truncated": False}
     files = []
@@ -829,20 +855,6 @@ def commit_archive(project: str, device: str, body: CommitArchiveIn):
     }
 
 
-@app.post("/api/docs/{project}/refresh-check")
-def refresh_docs_check(project: str):
-    """Real change-detection against the project's local requirements folder
-    (%USERPROFILE%\\TestOpsRequirements\\<project>\\_current\\, see .env.example's
-    documented convention) -- what's new/changed/removed since the last check. Fixed
-    2026-09-22: was pointing at the project folder's TOP level, which also holds
-    ingest_docs.py's own reconciliation logs (_dropped_versions.txt etc.) -- those were
-    being reported as doc "changes" too. Uses the same real resolution as
-    /api/docs/folder, so both agree on where the real docs actually are."""
-    real = store.resolve_ingest_docs_source(project)
-    req_dir = Path(real["path"]) if real["path"] else (Path.home() / "TestOpsRequirements" / project.lower())
-    return store.check_docs_for_changes(project, req_dir)
-
-
 # Confirmed non-client (George, 2026-09-22: "remove sit1 not a project") -- SIT1 is real,
 # mirrored data (Resources/Common/ConfigSets/SIT1 in the real `sit` repo), but it sits
 # there alongside that repo's own Generic/Product/Universal scaffolding, not the real
@@ -868,21 +880,6 @@ def get_taxonomy():
             if et.device_type in KEEP_DEVICE_TYPES
         }
     return out
-
-
-@app.get("/api/features")
-def get_features():
-    """Common features vs. cited bespoke project variants (model/features.py) — the
-    functionality-axis layer, including the ITSO/DESFire correction as real seed data."""
-    reg = features.load_feature_registry()
-    return {
-        "features": [f.model_dump() for f in reg.features],
-        "variants": [v.model_dump() for v in reg.variants],
-        "gaps": {
-            project: [f.key for f in reg.features_missing_variants(project)]
-            for project in {v.project for v in reg.variants}
-        },
-    }
 
 
 @app.get("/api/pipelines")
@@ -1052,6 +1049,34 @@ def cancel_pipeline_run(run_id: str):
     return {"ok": True}
 
 
+@app.get("/api/pipelines/runs/{run_id}/steps/{step_id}/artifact")
+def get_pipeline_step_artifact(run_id: str, step_id: str):
+    """Real file a loop-fanned area step (author_area[<area>] / push_area[<area>]) actually
+    produced -- George: "what happened to giving a link to where the test cases are for the
+    area to push? so we can actually check it". The push gate's own warning said "check what
+    was drafted... above", but "above" was only the agent's raw reply text -- never an
+    actual link to the real proposals/<project>-<device>-suite-restructure/<area>.cases.yaml
+    gherkin-author wrote. Read-only; the path is built server-side from the RUN's own
+    project/device (never client-supplied) plus the area parsed from the step id, and
+    checked to still resolve inside proposals/ -- the only place this step ever writes."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    area = runner.step_area(step_id)
+    if area is None:
+        raise HTTPException(status_code=400, detail=f"'{step_id}' isn't a per-area step.")
+    rel_path = Path("proposals") / f"{run['project']}-{run['device']}-suite-restructure" / f"{area}.cases.yaml"
+    root = runner.SYSTEM_TEST_OPS_ROOT.resolve()
+    full_path = (root / rel_path).resolve()
+    if root != full_path and root not in full_path.parents:
+        raise HTTPException(status_code=400, detail="Resolved path escapes the repo.")
+    if not full_path.is_file():
+        return {"available": False, "path": str(rel_path)}
+    text = full_path.read_text(encoding="utf-8", errors="replace")
+    truncated = len(text) > 200_000
+    return {"available": True, "path": str(rel_path), "content": text[:200_000], "truncated": truncated}
+
+
 @app.get("/api/pipelines/{pipeline_id}/last-run")
 def get_last_pipeline_run(pipeline_id: str, project: str, device: str):
     """A real 'last run' timestamp for this pipeline+target, or null if never run.
@@ -1159,8 +1184,28 @@ def set_scheduled_check(body: ScheduledCheckIn):
 def get_scheduled_scan_suggestions():
     """The actionable feed itself (George, 2026-09-22: "a good report to get going with
     actionables") -- every completed scheduled-scan run not yet marked reviewed, across
-    every target, newest first."""
-    return store.get_unreviewed_scheduled_scan_suggestions()
+    every target, newest first.
+
+    CHANGED 2026-09-30 (George, real bug found live): this used to count every completed
+    run as a "suggestion" -- including one where the agent explicitly declined to
+    recommend anything ("I won't invent findings... not recommending a pipeline"),
+    which showed as a notification implying something needed attention when it didn't.
+    `suggest_next` now replies with a strict JSON envelope (has_recommendation/summary/
+    recommendation) -- only runs where has_recommendation is genuinely true are
+    surfaced here. A run whose summary doesn't parse as that JSON (a legacy run from
+    before this change, or a genuine agent failure) is treated the same conservative
+    way -- not shown as an actionable suggestion, since we can't confirm it has one."""
+    runs = store.get_unreviewed_scheduled_scan_suggestions()
+    out = []
+    for run in runs:
+        try:
+            parsed = json.loads(run.get("summary") or "")
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(parsed, dict) or not parsed.get("has_recommendation"):
+            continue
+        out.append({**run, "summary": parsed.get("summary") or "", "recommendation": parsed.get("recommendation") or ""})
+    return out
 
 
 @app.post("/api/scheduled-checks/suggestions/{run_id}/review")
@@ -1224,11 +1269,36 @@ def get_suite_sections(project: str, device: str):
     return runner.get_suite_sections(project, device)
 
 
+class AskIn(BaseModel):
+    project: str
+    device: str | None = None
+    question: str
+
+
+@app.post("/api/ask")
+def post_ask(body: AskIn):
+    """The 'ask' box next to the target picker -- a real, synchronous one-shot agent call
+    (not a background pipeline run), scoped to the current project/device. See
+    runner.ask_question for the grounding rules and the 5-state honest-non-answer taxonomy."""
+    question = body.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question must not be empty.")
+    return runner.ask_question(body.project, body.device, question)
+
+
 @app.get("/api/suite-comparison")
 def get_suite_comparison(project: str, device: str):
     """Real, live old-vs-new case counts (two read-only TestRail pulls) -- one of the
     'suggestions' from ISSUES.md, now buildable with old_suite_id stored."""
     return runner.compare_suite_case_counts(project, device)
+
+
+@app.get("/api/suite-name-drift")
+def get_suite_name_drift(project: str, device: str):
+    """Real, live check: does the display name stored for this target's old/new suite
+    still match what TestRail actually calls it right now (George: 'do we need to ensure
+    the naming is correct for the ID or refresh if been changed')."""
+    return runner.check_suite_name_drift(project, device)
 
 
 @app.get("/api/build-stats")
@@ -1269,6 +1339,22 @@ def get_run_health(limit: int = 15):
     }
 
 
+@app.get("/api/confidence-score")
+def get_confidence_score():
+    """Coverage confidence score — the 3 real inputs you picked (spec citation %, gap-free %,
+    automation-reference %), equally weighted, POS/Translink only (the one target with real
+    captured data). Same fixture convention as build-stats/run-health: real numbers from a
+    real snapshot, not a live TestRail call. Never shown as a bare number — the breakdown of
+    all 3 inputs travels with it so it's never opaque."""
+    path = FIXTURES / "pos-confidence-score.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="No confidence-score fixture found")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["is_fixture"] = True
+    data["fixture_note"] = "Real citation/automation/gap numbers, POS suite 30253, 2026-09-28 — not a live TestRail call."
+    return data
+
+
 _GAP_PROJECT_PATH_HINTS = {
     "translink": ("tfts-system-test", "reports\\translink", "reports/translink",
                   "etm-suite-restructure", "gv-suite-restructure", "hhd-suite-restructure",
@@ -1297,15 +1383,34 @@ def _infer_gap_project(file_path: str) -> str | None:
 # guess. Checked against the real gaps.json fixture's actual paths, 2026-09-18 (ISSUES.md:
 # "if I change target to Translink POS and Translink ETM then device GAPs will differ").
 # A marker with no matching hint gets device=None -- an honest "not inferable", not a guess.
+#
+# FOUND LIVE 2026-09-30 (George: "i have 10 markers for gaps and unconfirmed after doing a
+# refresh against new docs?" -- real total was 171 for POS alone): the fresh distil run for
+# Translink/POS wrote knowledge/translink/specs/POS-FS-*.md and POS-Topology-*.md -- a
+# device-CODE-PREFIXED filename inside specs/, a naming convention this hint list had never
+# seen (it only knew directory-name conventions like pos-suite-restructure/, fixes/pos/).
+# None of the existing "pos" hints match "specs/pos-fs-operator.md" (no surrounding dashes),
+# so all 22 new notes silently inferred device=None and vanished from the Translink/POS
+# Gaps page -- leaving only the handful of older FBD-*-pos-*.md markers that happened to
+# contain literal "-pos-". Added a `specs/<device>-` / `specs\<device>-` prefix hint for
+# every device so this naming convention (now the real one standards-keeper produces) is
+# recognised for all of them, not just POS.
 _GAP_DEVICE_PATH_HINTS = {
     "etm": ("etm-suite-restructure", "njt-fr-suite-restructure", "-etm-", "fixes\\etm",
-            "fixes/etm", "fixes\\etm-deep-audit", "knowledge\\njt\\specs", "knowledge/njt/specs"),
-    "pos": ("pos-suite-restructure", "-pos-", "fixes\\pos", "fixes/pos"),
-    "gv": ("gv-suite-restructure", "-gv-", "fixes\\gv", "fixes/gv"),
-    "hhd": ("hhd-suite-restructure", "-hhd-", "fixes\\hhd", "fixes/hhd"),
-    "pv": ("pv-suite-restructure", "-pv-", "fixes\\pv", "fixes/pv"),
-    "tvm": ("tvm-suite-restructure", "-tvm-", "fixes\\tvm", "fixes/tvm"),
-    "bos": ("bos-abt-suite-restructure", "abt-", "fixes\\abt", "fixes/abt", "spec-grounded\\abt", "spec-grounded/abt"),
+            "fixes/etm", "fixes\\etm-deep-audit", "knowledge\\njt\\specs", "knowledge/njt/specs",
+            "specs\\etm-", "specs/etm-"),
+    "pos": ("pos-suite-restructure", "-pos-", "fixes\\pos", "fixes/pos",
+            "specs\\pos-", "specs/pos-"),
+    "gv": ("gv-suite-restructure", "-gv-", "fixes\\gv", "fixes/gv",
+           "specs\\gv-", "specs/gv-"),
+    "hhd": ("hhd-suite-restructure", "-hhd-", "fixes\\hhd", "fixes/hhd",
+            "specs\\hhd-", "specs/hhd-"),
+    "pv": ("pv-suite-restructure", "-pv-", "fixes\\pv", "fixes/pv",
+           "specs\\pv-", "specs/pv-"),
+    "tvm": ("tvm-suite-restructure", "-tvm-", "fixes\\tvm", "fixes/tvm",
+            "specs\\tvm-", "specs/tvm-"),
+    "bos": ("bos-abt-suite-restructure", "abt-", "fixes\\abt", "fixes/abt", "spec-grounded\\abt", "spec-grounded/abt",
+            "specs\\bos-", "specs/bos-"),
 }
 
 
@@ -1317,64 +1422,91 @@ def _infer_gap_device(file_path: str) -> str | None:
     return None
 
 
-_GAP_SCOPES = ("project", "device", "common", "bespoke")
+def _load_knowledge_device_map(project: str) -> dict:
+    """Real, cited device classification for knowledge/{project}/specs/*.md, produced by
+    `tools/classify_knowledge_notes.py` (ingest-docs' classify_knowledge_devices step). Empty
+    dict (not an error) when no map exists yet for this project -- older projects/notes fall
+    back to the path-hint guesser below rather than blocking on a one-time backfill."""
+    path = runner.SYSTEM_TEST_OPS_ROOT / "knowledge" / project.lower() / "specs" / "_device-map.json"
+    if not path.is_file():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("notes", {})
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _gap_devices_for(file_path: str, device_map: dict) -> list[str]:
+    """George, 2026-09-30: "we need to know it is a translink project but that shouldn't
+    determine how we store our knowledge and distill it" -- the project is a static fact of
+    the folder a marker's file lives in; the device never was, and guessing it from filename
+    substrings was fragile (Device-Endpoints-STE12-pv-and-pos-local-services.md, a note that
+    genuinely covers BOTH PV and POS, matched "-pos-" as a substring of "...pv-and-pos-local..."
+    and got silently POS-only, leaking PV-specific markers into a POS-scoped view). Prefers the
+    real, cited, possibly-multi-device classification from classify_knowledge_notes.py when
+    this exact file was covered by it; falls back to the old single-device path-hint guess only
+    for files it hasn't classified (older notes, non-knowledge paths like reports/proposals)."""
+    basename = file_path.replace("\\", "/").rsplit("/", 1)[-1]
+    if basename in device_map:
+        return device_map[basename].get("devices", [])
+    single = _infer_gap_device(file_path)
+    return [single] if single else []
 
 
 @app.get("/api/gap-register")
 def get_gap_register(
     limit: int = 25, offset: int = 0, project: str | None = None,
-    device: str | None = None, scope: str | None = None,
+    device: str | None = None,
 ):
-    """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo
-    (re-run 2026-09-08, 972 found repo-wide). Supports real offset/limit pagination and an
-    optional best-effort project filter (see _infer_gap_project) -- George's ask
-    (2026-09-11): scope this to the current target, and let people page through all of it
-    rather than only ever seeing the first N.
+    """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo.
+    Supports real offset/limit pagination.
 
-    `scope` (added 2026-09-18, ISSUES.md's "Project GAPs / Device GAPs / Common GAPs /
-    Bespoke GAPs" split) narrows further:
-      - "project": markers tagged with the given `project` (device ignored -- stays stable
-        across a device switch within the same project, per George's ask).
-      - "device": markers tagged with BOTH the given `project` AND `device`.
-      - "common": markers with no inferred project at all -- genuinely shared/cross-cutting
-        content (e.g. proposals/coherence-audit), not any one project's.
-      - "bespoke": markers WITH an inferred project. CHANGED (ISSUES.md round 2, real ask,
-        overriding the original 2026-09-18 design call noted below): now ALSO narrowed to
-        the current `project` when one is given -- George found NJT/ETM questions showing
-        under Bespoke while targeting Translink/POS and asked for it scoped like the other
-        three. Only falls back to repo-wide (every bespoke marker, any project) when no
-        `project` is supplied at all, so the tab still shows something with no target set.
+    SIMPLIFIED 2026-09-29 (ISSUES.md, real ask + a real bug this fixes): the old
+    project/device/common/bespoke 4-way scope split defaulted to "project" -- which mixes
+    every device's markers together, so a marker tagged Translink/ETM could show while
+    targeting Translink/POS ("Im pretty sure the gaps related to all things translink...
+    even though im targeted POS"). Confirmed live: that was a real default-scope bug, not a
+    misread. Now: `project` alone filters to that project (any device); `project` + `device`
+    both given filters to exactly that pair -- there is no other mode. The Gaps page always
+    passes both now. Charts that want the repo-wide picture (e.g. Health's "Gaps by device")
+    still work by passing neither.
+
+    UPDATED 2026-09-30: a marker's device(s) now prefer the real classify_knowledge_notes.py
+    map over the old path-hint guess -- see `_gap_devices_for`. A marker can genuinely belong
+    to more than one device; `device["device"]` stays a single value for backward-compat display
+    (repo-wide chart, the gap-answer modal's pre-filled field) but the project+device FILTER
+    below checks the full `devices` list, so a multi-device note now correctly shows under
+    every device it actually covers instead of exactly one.
     """
     # Validated 2026-09-23 (end-to-end sweep): limit=-1 previously ignored the limit and
     # dumped all 972 markers (~219KB), offset=-1 silently returned an empty page beside a
-    # non-zero total, and an unknown scope ("banana", "BESPOKE", "") was silently treated
-    # as no-scope -- while the sibling /api/run-comments already 400s on a bad `which`.
-    # Ceiling is generous on purpose -- "fetch them all" is a real, legitimate call
-    # (there are ~972 markers repo-wide, and the Gaps page's partition views rely on it).
-    # The actual bug was a NEGATIVE limit silently returning everything.
+    # non-zero total -- while the sibling /api/run-comments already 400s on a bad `which`.
+    # Ceiling is generous on purpose -- "fetch them all" is a real, legitimate call (there
+    # are ~972 markers repo-wide, and the Health dashboard chart relies on it).
     if limit < 1 or limit > 2000:
         raise HTTPException(status_code=400, detail="limit must be between 1 and 2000.")
     if offset < 0:
         raise HTTPException(status_code=400, detail="offset must be 0 or greater.")
-    if scope is not None and scope not in _GAP_SCOPES:
-        raise HTTPException(status_code=400, detail=f"scope must be one of {_GAP_SCOPES}.")
     path = FIXTURES / "gaps.json"
     if not path.is_file():
         raise HTTPException(status_code=404, detail="No gap-register fixture found")
     markers = json.loads(path.read_text(encoding="utf-8"))
+    device_maps: dict[str, dict] = {}
     for m in markers:
         m["project"] = _infer_gap_project(m["file"])
-        m["device"] = _infer_gap_device(m["file"])
-    if scope == "project" and project:
-        markers = [m for m in markers if m["project"] == project.lower()]
-    elif scope == "device" and project and device:
-        markers = [m for m in markers if m["project"] == project.lower() and m["device"] == device.upper()]
-    elif scope == "common":
-        markers = [m for m in markers if m["project"] is None]
-    elif scope == "bespoke" and project:
-        markers = [m for m in markers if m["project"] == project.lower()]
-    elif scope == "bespoke":
-        markers = [m for m in markers if m["project"] is not None]
+        if m["project"] and m["project"] not in device_maps:
+            device_maps[m["project"]] = _load_knowledge_device_map(m["project"])
+        devices = _gap_devices_for(m["file"], device_maps.get(m["project"], {}))
+        m["devices"] = devices
+        # For a multi-device marker, showing an arbitrary "first" device would contradict
+        # the very filter that surfaced it (e.g. a POS+PV note appearing under device=POS
+        # but reporting "device": "PV") -- when a specific device was asked for, that's the
+        # one relevant to this view and is guaranteed to already be in `devices`. Only the
+        # repo-wide/project-only case (no device asked for) falls back to an arbitrary pick,
+        # purely for the "Gaps by device" chart's bucketing.
+        m["device"] = (device.upper() if device and device.upper() in devices else (devices[0] if devices else None))
+    if project and device:
+        markers = [m for m in markers if m["project"] == project.lower() and device.upper() in m["devices"]]
     elif project:
         markers = [m for m in markers if m["project"] == project.lower()]
     # George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers in plain English -- merged
@@ -1395,68 +1527,17 @@ def get_gap_register(
                     m["plain_english"] = pe
     return {
         "total": len(markers), "shown": markers[offset:offset + limit],
-        "offset": offset, "limit": limit, "is_fixture": True, "scope": scope,
+        "offset": offset, "limit": limit, "is_fixture": True,
     }
 
 
-class ClarifyOneIn(BaseModel):
-    project: str
-    file: str
-    line: int
-    text: str
-
-
-@app.post("/api/gap-register/clarify-one")
-def clarify_one_gap_marker(body: ClarifyOneIn):
-    """Rewrite exactly ONE marker into plain English -- George, 2026-09-28: "maybe we need
-    to re-write in plain english in each seperate gap, as it looks like the rewriting is
-    taking a long time" -- the full clarify-gaps pipeline re-greps the whole repo and runs
-    one big agent pass over every marker in scope, genuinely slow for a large scope. This
-    is the fast path: one marker, one short targeted agent call, no repo-wide re-grep.
-    Persists into the SAME cache file clarify-gaps writes, keyed by (file, line), so a
-    marker rewritten this way shows up in the table too and survives reloads -- and a
-    later full clarify-gaps run for that scope won't lose it (merges by key, doesn't wipe)."""
-    try:
-        # Lowercase to match the exact convention get_gap_register's merge-in already uses
-        # (its `project` query param is lowercased client-side before the request) -- a
-        # casing mismatch here would write to a cache path the merge-in never looks under.
-        project = store.safe_path_segment(body.project, "project").lower()
-    except store.UnsafeNameError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    prompt = (
-        f"Rewrite this GAP/UNCONFIRMED test-suite marker as a real, plain-English question "
-        f"a non-engineer could understand -- 1-2 sentences, grounded strictly in its own "
-        f"text below, never inventing a new fact or answering it. No preamble, no markdown, "
-        f"just the rewritten question:\n\n{body.text}"
-    )
-    try:
-        returncode, stdout, stderr = runner._run_subprocess(
-            ["claude", "-p", prompt, "--allowedTools", "", "--permission-prompts", "none", "--output-format", "json"],
-            cwd=str(runner.SYSTEM_TEST_OPS_ROOT), timeout=120,
-        )
-    except (subprocess.TimeoutExpired, OSError) as exc:
-        raise HTTPException(status_code=504, detail=f"Rewrite timed out or failed to start: {exc}") from exc
-    if returncode != 0:
-        raise HTTPException(status_code=502, detail=(stderr or stdout or "Rewrite failed").strip()[:500])
-    try:
-        plain_english = (json.loads(stdout).get("result") or "").strip()
-    except json.JSONDecodeError:
-        plain_english = (stdout or "").strip()
-    if not plain_english:
-        raise HTTPException(status_code=502, detail="Agent returned no rewrite.")
-
-    clarify_path = runner.SYSTEM_TEST_OPS_ROOT / "reports" / project / "clarify-gaps" / "plain-english.json"
-    clarify_path.parent.mkdir(parents=True, exist_ok=True)
-    existing = []
-    if clarify_path.is_file():
-        try:
-            existing = json.loads(clarify_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            existing = []
-    existing = [r for r in existing if not (r.get("file") == body.file and r.get("line") == body.line)]
-    existing.append({"file": body.file, "line": body.line, "plain_english": plain_english})
-    clarify_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
-    return {"plain_english": plain_english}
+@app.post("/api/gap-register/refresh")
+def refresh_gap_register():
+    """Real 're-check against newly ingested docs' action (George, 2026-09-29) -- runs the
+    actual gap-register CLI live (a cheap, read-only grep over knowledge/proposals/reports,
+    no AI), replacing the static fixture. Not a fabricated re-scan -- the exact same command
+    that produced the fixture originally, just run again, now."""
+    return runner.refresh_gap_register()
 
 
 @app.get("/api/gap-answers")

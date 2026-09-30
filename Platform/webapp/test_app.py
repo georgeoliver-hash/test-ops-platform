@@ -92,16 +92,6 @@ def test_taxonomy_excludes_sit1_non_client_scaffolding():
     assert "SIT1" not in res.json()
 
 
-def test_features_returns_real_gap_for_njt():
-    res = client.get("/api/features")
-    assert res.status_code == 200
-    data = res.json()
-    # card_reading.tap used to be this gap; filled in 2026-09-08 with a real cEMV-tap
-    # variant from knowledge/njt/specs/fs002-obv-barcode-emv.md — transaction.annulment
-    # is the current real, unfilled gap for njt.
-    assert "transaction.annulment" in data["gaps"].get("njt", [])
-
-
 def test_pipelines_list_has_real_descriptions():
     res = client.get("/api/pipelines")
     assert res.status_code == 200
@@ -151,6 +141,20 @@ def test_run_health_limit_respected():
     assert len(res.json()["shown"]) == 3
 
 
+def test_confidence_score_fixture_real_inputs():
+    res = client.get("/api/confidence-score")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["is_fixture"] is True
+    inputs = data["inputs"]
+    assert inputs["citation"]["pct"] == 41.4
+    assert inputs["automation"]["pct"] == 2.9
+    assert inputs["gaps"]["pct"] == 99.4
+    # never a bare number -- the breakdown always travels with it
+    assert set(inputs.keys()) == {"citation", "automation", "gaps"}
+    assert data["confidence_pct"] == 48
+
+
 def test_gap_register_fixture_capped_but_total_shown():
     res = client.get("/api/gap-register?limit=5")
     assert res.status_code == 200
@@ -169,26 +173,78 @@ def test_gap_register_every_marker_gets_a_device_field():
     assert any(m["device"] == "ETM" for m in markers)
 
 
-def test_gap_register_scope_project_ignores_device_and_stays_stable():
-    # George's ask: switching device within the same project must not change Project GAPs.
-    res_pos = client.get("/api/gap-register?scope=project&project=translink&device=POS&limit=1000")
-    res_etm = client.get("/api/gap-register?scope=project&project=translink&device=ETM&limit=1000")
-    assert res_pos.json()["total"] == res_etm.json()["total"] > 0
+def test_gap_register_infers_device_from_new_specs_prefix_naming():
+    """George, 2026-09-30 (real bug, confirmed): "i have 10 markers for gaps and unconfirmed
+    after doing a refresh against new docs?" -- the real total for Translink/POS was 171, not
+    10. The fresh distil run wrote knowledge/translink/specs/POS-FS-*.md/POS-Topology-*.md --
+    a device-code-PREFIXED filename inside specs/, a naming convention the device hint list
+    had never seen (it only knew directory-name conventions like pos-suite-restructure/,
+    fixes/pos/). None of the old hints matched "specs/pos-fs-operator.md" (no surrounding
+    dashes), so all 22 new notes silently got device=None and vanished from the POS-scoped
+    Gaps page. Every device needs its own specs/<device>- prefix hint, not just POS."""
+    from Platform.webapp.app import _infer_gap_device
+
+    assert _infer_gap_device("knowledge/translink/specs/POS-FS-operator.md") == "POS"
+    assert _infer_gap_device("knowledge/translink/specs/POS-Topology-Metro.md") == "POS"
+    assert _infer_gap_device("knowledge\\translink\\specs\\POS-FS-operator.md") == "POS"
+    assert _infer_gap_device("knowledge/njt/specs/ETM-signon-states.md") == "ETM"
+    assert _infer_gap_device("knowledge/translink/specs/FBD-100183-pos-hardware.md") == "POS"
 
 
-def test_gap_register_scope_device_narrower_than_scope_project():
-    project_total = client.get("/api/gap-register?scope=project&project=translink&limit=1000").json()["total"]
-    device_total = client.get("/api/gap-register?scope=device&project=translink&device=ETM&limit=1000").json()["total"]
-    assert 0 < device_total <= project_total
+def test_gap_register_prefers_real_device_map_over_path_hint_guess(monkeypatch, tmp_path):
+    """George, 2026-09-30: "i think we need to know it is a translink project but that
+    shouldn't determine how we store our knowledge and distill it" -- confirmed real bug:
+    Device-Endpoints-STE12-pv-and-pos-local-services.md genuinely covers BOTH PV and POS, but
+    the old filename-substring guesser matched "-pos-" (a coincidental substring of
+    "...pv-and-pos-local...") and silently tagged it POS-only, so its PV-specific
+    GAP/UNCONFIRMED markers never showed under a PV-scoped Gaps view. classify_knowledge_notes.py
+    now produces a real, cited, possibly-multi-device map that must win over the guess."""
+    from Platform.webapp.app import runner as app_runner
+
+    monkeypatch.setattr(app_runner, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    specs = tmp_path / "knowledge" / "translink" / "specs"
+    specs.mkdir(parents=True)
+    (specs / "_device-map.json").write_text(json.dumps({
+        "project": "translink",
+        "notes": {
+            "Device-Endpoints-back-office-records-and-events.md": {
+                "devices": ["POS", "PV"],
+                "evidence": {"POS": "title: path contains 'POS'", "PV": "body-alias: [line 3] Platform Validator"},
+            },
+        },
+    }), encoding="utf-8")
+    target_file = "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md"
+
+    pos = client.get("/api/gap-register?project=translink&device=POS&limit=2000").json()
+    pv = client.get("/api/gap-register?project=translink&device=PV&limit=2000").json()
+    etm = client.get("/api/gap-register?project=translink&device=ETM&limit=2000").json()
+    assert any(m["file"] == target_file for m in pos["shown"])
+    assert any(m["file"] == target_file for m in pv["shown"])  # the real fix: also shows for PV, not just POS
+    assert not any(m["file"] == target_file for m in etm["shown"])  # not fabricated onto a device it doesn't cover
 
 
-def test_gap_register_scope_common_and_bespoke_are_a_real_partition():
-    common = client.get("/api/gap-register?scope=common&limit=1000").json()
-    bespoke = client.get("/api/gap-register?scope=bespoke&limit=1000").json()
+def test_gap_register_project_and_device_both_given_filters_to_exact_pair():
+    # George, 2026-09-29 (real bug, confirmed): the old default scope mixed every device's
+    # markers together, so an ETM marker could show while targeting POS. Now project+device
+    # together must filter to exactly that pair -- never a wider project-only set.
+    pos = client.get("/api/gap-register?project=translink&device=POS&limit=1000").json()
+    etm = client.get("/api/gap-register?project=translink&device=ETM&limit=1000").json()
+    assert pos["total"] > 0 and etm["total"] > 0
+    assert all(m["device"] == "POS" for m in pos["shown"])
+    assert all(m["device"] == "ETM" for m in etm["shown"])
+    assert pos["total"] != etm["total"]
+
+
+def test_gap_register_project_alone_is_wider_than_project_plus_device():
+    project_total = client.get("/api/gap-register?project=translink&limit=1000").json()["total"]
+    device_total = client.get("/api/gap-register?project=translink&device=ETM&limit=1000").json()["total"]
+    assert 0 < device_total < project_total
+
+
+def test_gap_register_no_filters_returns_repo_wide_for_charts():
     everything = client.get("/api/gap-register?limit=1000").json()
-    assert common["total"] + bespoke["total"] == everything["total"]
-    assert all(m["project"] is None for m in common["shown"])
-    assert all(m["project"] is not None for m in bespoke["shown"])
+    project_only = client.get("/api/gap-register?project=translink&limit=1000").json()
+    assert everything["total"] > project_only["total"]
 
 
 def test_gap_register_merges_in_real_plain_english_rewrite_when_cached(monkeypatch, tmp_path):
@@ -198,7 +254,7 @@ def test_gap_register_merges_in_real_plain_english_rewrite_when_cached(monkeypat
     no cache exists for a given project."""
     from Platform.webapp import runner as runner_module
 
-    everything = client.get("/api/gap-register?scope=project&project=translink&limit=1").json()
+    everything = client.get("/api/gap-register?project=translink&limit=1").json()
     marker = everything["shown"][0]
 
     monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
@@ -208,89 +264,54 @@ def test_gap_register_merges_in_real_plain_english_rewrite_when_cached(monkeypat
         {"file": marker["file"], "line": marker["line"], "plain_english": "A real, plain-English rewrite of this exact marker."},
     ]), encoding="utf-8")
 
-    res = client.get(f"/api/gap-register?scope=project&project=translink&limit=1")
+    res = client.get(f"/api/gap-register?project=translink&limit=1")
     rewritten = res.json()["shown"][0]
     assert rewritten["plain_english"] == "A real, plain-English rewrite of this exact marker."
-
-
-def test_clarify_one_gap_marker_is_fast_and_persists_into_the_shared_cache(monkeypatch, tmp_path):
-    """George, 2026-09-28: "maybe we need to re-write in plain english in each seperate
-    gap, as it looks like the rewriting is taking a long time" -- the full clarify-gaps
-    pipeline re-greps the whole repo and runs one big pass over every marker in scope; this
-    is the fast path, one marker, one short targeted agent call. Must write into the SAME
-    cache file the full pipeline and gap-register's merge-in both use, keyed by
-    (file, line), so it shows up in the table for free and survives reloads."""
-    from Platform.webapp import runner as runner_module
-
-    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
-    monkeypatch.setattr(
-        runner_module, "_run_subprocess",
-        lambda cmd, cwd, timeout: (0, json.dumps({"result": "A real, plain-English rewrite."}), ""),
-    )
-
-    res = client.post("/api/gap-register/clarify-one", json={
-        "project": "ClarifyOneTest", "file": "knowledge/clarifyonetest/specs/foo.md", "line": 42,
-        "text": "**GAP** -- some raw jargon-heavy marker text.",
-    })
-    assert res.status_code == 200
-    assert res.json()["plain_english"] == "A real, plain-English rewrite."
-
-    cache_path = tmp_path / "reports" / "clarifyonetest" / "clarify-gaps" / "plain-english.json"
-    assert cache_path.is_file()
-    cached = json.loads(cache_path.read_text(encoding="utf-8"))
-    assert cached == [{"file": "knowledge/clarifyonetest/specs/foo.md", "line": 42, "plain_english": "A real, plain-English rewrite."}]
-
-
-def test_clarify_one_gap_marker_updates_in_place_not_duplicated(monkeypatch, tmp_path):
-    from Platform.webapp import runner as runner_module
-
-    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
-    monkeypatch.setattr(
-        runner_module, "_run_subprocess",
-        lambda cmd, cwd, timeout: (0, json.dumps({"result": "First rewrite."}), ""),
-    )
-    client.post("/api/gap-register/clarify-one", json={
-        "project": "ClarifyOneTest2", "file": "f.md", "line": 1, "text": "raw text",
-    })
-    monkeypatch.setattr(
-        runner_module, "_run_subprocess",
-        lambda cmd, cwd, timeout: (0, json.dumps({"result": "Updated rewrite."}), ""),
-    )
-    client.post("/api/gap-register/clarify-one", json={
-        "project": "ClarifyOneTest2", "file": "f.md", "line": 1, "text": "raw text",
-    })
-    cache_path = tmp_path / "reports" / "clarifyonetest2" / "clarify-gaps" / "plain-english.json"
-    cached = json.loads(cache_path.read_text(encoding="utf-8"))
-    assert cached == [{"file": "f.md", "line": 1, "plain_english": "Updated rewrite."}]
-
-
-def test_clarify_one_gap_marker_502s_on_agent_failure(monkeypatch, tmp_path):
-    from Platform.webapp import runner as runner_module
-
-    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
-    monkeypatch.setattr(runner_module, "_run_subprocess", lambda cmd, cwd, timeout: (1, "", "boom"))
-    res = client.post("/api/gap-register/clarify-one", json={
-        "project": "ClarifyOneTest3", "file": "f.md", "line": 1, "text": "raw text",
-    })
-    assert res.status_code == 502
 
 
 def test_gap_register_plain_english_absent_when_no_cache_exists(monkeypatch, tmp_path):
     from Platform.webapp import runner as runner_module
 
     monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
-    res = client.get("/api/gap-register?scope=project&project=translink&limit=5")
+    res = client.get("/api/gap-register?project=translink&limit=5")
     assert all("plain_english" not in m for m in res.json()["shown"])
 
 
-def test_gap_register_scope_bespoke_narrows_to_project_when_one_is_given():
-    # ISSUES.md round 2, real bug George found: targeting Translink/POS but Bespoke still
-    # showed other projects' (e.g. NJT/ETM) markers. scope=bespoke must now also respect a
-    # given `project`, same as project/device scopes -- only repo-wide with NO project at all.
-    repo_wide = client.get("/api/gap-register?scope=bespoke&limit=1000").json()
-    scoped = client.get("/api/gap-register?scope=bespoke&project=translink&limit=1000").json()
-    assert 0 < scoped["total"] <= repo_wide["total"]
-    assert all(m["project"] == "translink" for m in scoped["shown"])
+def test_gap_register_refresh_runs_real_cli_and_reports_new_total(monkeypatch, tmp_path):
+    """George, 2026-09-29: "we need to be able to re-check these gaps against new specs
+    uploaded, so a refresh button" -- runs the real gap-register CLI (cheap, read-only)."""
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    fake_fixture = tmp_path / "gaps.json"
+
+    def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+        assert "gap-register" in cmd
+        fake_fixture.write_text(json.dumps([
+            {"file": "knowledge/x.md", "line": 1, "kind": "GAP", "text": "a fresh marker"},
+        ]), encoding="utf-8")
+        return subprocess_module.CompletedProcess(cmd, 0, stdout="Collected 1 gap marker(s)\n", stderr="")
+
+    monkeypatch.setattr(runner_module, "_GAPS_FIXTURE", fake_fixture)
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/gap-register/refresh")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["ok"] is True
+    assert body["total"] == 1
+
+
+def test_gap_register_refresh_surfaces_real_failure(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+        return subprocess_module.CompletedProcess(cmd, 1, stdout="", stderr="grep failed\n")
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/gap-register/refresh")
+    body = res.json()
+    assert body["ok"] is False
+    assert "grep failed" in body["detail"]
 
 
 def test_index_html_served():
@@ -1238,6 +1259,97 @@ def test_retry_409s_when_run_is_not_failed(monkeypatch):
     assert res.status_code == 409
 
 
+def test_step_artifact_returns_real_file_content_when_it_exists(tmp_path, monkeypatch):
+    """George, 2026-09-30: "what happened to giving a link to where the test cases are for
+    the area to push? so we can actually check it" -- the push gate's warning used to just
+    say "check what was drafted above" (the agent's raw reply text), never an actual link to
+    the real proposals/<project>-<device>-suite-restructure/<area>.cases.yaml file
+    gherkin-author wrote. This endpoint serves that real file's content, read-only."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "operator-menu.md").write_text("x")
+    proposals_dir = tmp_path / "proposals" / "FakeProj-POS-suite-restructure"
+    proposals_dir.mkdir(parents=True)
+    (proposals_dir / "operator-menu.cases.yaml").write_text("suite_id: 1\nsections: []\n", encoding="utf-8")
+
+    fake_pipeline = Pipeline(
+        id="fake-artifact", trigger=Trigger(ui_action="fake_artifact"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if any("archive_knowledge.py" in part for part in cmd):
+            return 0, json.dumps({"archived": [{"file": "operator-menu.md", "reason": "title", "confidence": "high"}], "kept": []}), ""
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-artifact", "FakeProj", "POS")
+    res = client.get(f"/api/pipelines/runs/{run_id}/steps/author_area[operator-menu]/artifact")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["available"] is True
+    assert "suite_id: 1" in data["content"]
+    assert data["path"].replace("\\", "/") == "proposals/FakeProj-POS-suite-restructure/operator-menu.cases.yaml"
+
+
+def test_step_artifact_reports_not_available_when_not_written_yet(tmp_path, monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "operator-menu.md").write_text("x")
+
+    fake_pipeline = Pipeline(
+        id="fake-artifact2", trigger=Trigger(ui_action="fake_artifact2"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if any("archive_knowledge.py" in part for part in cmd):
+            return 0, json.dumps({"archived": [{"file": "operator-menu.md", "reason": "title", "confidence": "high"}], "kept": []}), ""
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-artifact2", "FakeProj", "POS")
+    res = client.get(f"/api/pipelines/runs/{run_id}/steps/author_area[operator-menu]/artifact")
+    assert res.status_code == 200
+    assert res.json()["available"] is False
+
+
+def test_step_artifact_404s_for_unknown_run():
+    res = client.get("/api/pipelines/runs/no-such-run/steps/author_area[x]/artifact")
+    assert res.status_code == 404
+
+
+def test_step_artifact_400s_for_a_non_area_step(monkeypatch):
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-artifact3", trigger=Trigger(ui_action="fake_artifact3"), description="test pipeline",
+        steps=[Step(id="only_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok\n", ""))
+
+    run_id = runner_module.start_run("fake-artifact3", "Translink", "POS")
+    res = client.get(f"/api/pipelines/runs/{run_id}/steps/only_step/artifact")
+    assert res.status_code == 400
+
+
 def test_failed_run_shows_the_failing_steps_own_output_not_a_prior_steps(monkeypatch):
     """Found live, repeatedly: a failed step's "Run failed" card showed a PRIOR successful
     step's output instead of the real failure, because store.update_run(cli_output=...)
@@ -1501,6 +1613,48 @@ def test_loop_step_scopes_areas_to_the_target_device(tmp_path, monkeypatch):
     steps = store.get_steps(run_id)
     ids = sorted(s["step_id"] for s in steps)
     assert ids == ["author_area[pos-hardware]"]  # tvm-only spec excluded
+
+
+def test_loop_step_excludes_medium_confidence_cross_reference_matches(tmp_path, monkeypatch):
+    """George, 2026-09-30, found live on a real Translink/POS onboard-suite run: "still see
+    the ETM device endpoints and stuff... when i push them there gonna push test cases for
+    it to the POS SUITE?" -- confirmed real. archive_knowledge.py --device POS flagged every
+    Device-Endpoints-STE12-*.md file as POS-relevant at "medium" confidence, because they all
+    share a boilerplate "...companion to the POS Functional Specification" cross-reference
+    line -- mentioning POS to point at another document, not being about POS. Every genuine
+    POS note matches at "high" confidence (a clean title hit) instead. Only "high" should be
+    trusted for this decision; a "medium" body-code mention must not turn into an authored,
+    pushed area for a device it doesn't actually belong to."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "pos-operator.md").write_text("x")
+    (specs_dir / "device-endpoints-etm-hhd.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-loop2", trigger=Trigger(ui_action="fake_loop2"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if any("archive_knowledge.py" in part for part in cmd):
+            return 0, json.dumps({"archived": [
+                {"file": "pos-operator.md", "reason": "title: path contains 'POS'", "confidence": "high"},
+                {"file": "device-endpoints-etm-hhd.md", "reason": "body-code: companion to the POS Functional Specification", "confidence": "medium"},
+            ], "kept": []}), ""
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-loop2", "FakeProj", "POS")
+    steps = store.get_steps(run_id)
+    ids = sorted(s["step_id"] for s in steps)
+    assert ids == ["author_area[pos-operator]"]  # the medium-confidence ETM/HHD cross-reference is excluded
 
 
 def test_consecutive_loop_steps_interleave_per_area_not_run_fully_then_fully(tmp_path, monkeypatch):
@@ -2046,34 +2200,6 @@ def test_setup_status_not_ready_for_an_unconfigured_target():
     assert body["ready"] is False
 
 
-def test_refresh_check_reports_no_folder_for_unknown_project():
-    res = client.post("/api/docs/NoSuchProject/refresh-check")
-    assert res.status_code == 200
-    assert res.json()["exists"] is False
-
-
-def test_refresh_check_detects_new_then_unchanged_then_modified(tmp_path, monkeypatch):
-    home_dir = tmp_path / "fake-home"
-    req_dir = home_dir / "TestOpsRequirements" / "testproj"
-    req_dir.mkdir(parents=True)
-    (req_dir / "spec.txt").write_text("v1", encoding="utf-8")
-    monkeypatch.setattr(app_module.Path, "home", classmethod(lambda cls: home_dir))
-
-    res = client.post("/api/docs/testproj/refresh-check")
-    body = res.json()
-    assert body["exists"] is True
-    assert body["new"] == ["spec.txt"]
-
-    res = client.post("/api/docs/testproj/refresh-check")
-    body = res.json()
-    assert body["new"] == [] and body["changed"] == [] and body["unchanged_count"] == 1
-
-    (home_dir / "TestOpsRequirements" / "testproj" / "spec.txt").write_text("v2 - longer content now", encoding="utf-8")
-    res = client.post("/api/docs/testproj/refresh-check")
-    body = res.json()
-    assert body["changed"] == ["spec.txt"]
-
-
 def test_last_run_null_when_never_run():
     res = client.get("/api/pipelines/audit/last-run", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
     assert res.status_code == 200
@@ -2431,11 +2557,15 @@ def test_scheduled_scan_never_pauses_for_human_approval(monkeypatch, tmp_path):
 
 def test_scheduled_scan_suggestions_endpoint_and_review():
     store.create_run("sugg-run-1", "scheduled-scan", "SchedProj", "TVM")
-    store.update_run("sugg-run-1", status="succeeded", summary="Found a stale case, recommend Resolve.")
+    store.update_run("sugg-run-1", status="succeeded", summary=json.dumps({
+        "has_recommendation": True, "summary": "Found a stale case.", "recommendation": "Run Resolve.",
+    }))
     res = client.get("/api/scheduled-checks/suggestions")
     assert res.status_code == 200
-    ids = {r["id"] for r in res.json()}
+    body = res.json()
+    ids = {r["id"] for r in body}
     assert "sugg-run-1" in ids
+    assert next(r for r in body if r["id"] == "sugg-run-1")["recommendation"] == "Run Resolve."
 
     res2 = client.post("/api/scheduled-checks/suggestions/sugg-run-1/review")
     assert res2.status_code == 200
@@ -2446,6 +2576,29 @@ def test_scheduled_scan_suggestions_endpoint_and_review():
 def test_review_scheduled_scan_suggestion_404_for_unknown_run():
     res = client.post("/api/scheduled-checks/suggestions/no-such-run/review")
     assert res.status_code == 404
+
+
+def test_scheduled_scan_suggestion_excluded_when_agent_declined_to_recommend():
+    """George, 2026-09-30 (real bug, found live): a run whose agent explicitly said "I
+    won't invent findings... not recommending a pipeline" still showed as a pending
+    notification. has_recommendation: false (the real, honest JSON contract) must not
+    surface as an actionable suggestion."""
+    store.create_run("sugg-run-declined", "scheduled-scan", "SchedProj", "TVM")
+    store.update_run("sugg-run-declined", status="succeeded", summary=json.dumps({
+        "has_recommendation": False, "summary": "Nothing to report.", "recommendation": "",
+    }))
+    ids = {r["id"] for r in client.get("/api/scheduled-checks/suggestions").json()}
+    assert "sugg-run-declined" not in ids
+
+
+def test_scheduled_scan_suggestion_excluded_when_summary_is_not_json():
+    """A legacy free-text summary (from before this JSON contract existed) or a genuine
+    agent malfunction can't be confirmed as a real recommendation -- excluded, the same
+    conservative way, rather than guessing it's worth showing."""
+    store.create_run("sugg-run-legacy", "scheduled-scan", "SchedProj", "TVM")
+    store.update_run("sugg-run-legacy", status="succeeded", summary="Found a stale case, recommend Resolve.")
+    ids = {r["id"] for r in client.get("/api/scheduled-checks/suggestions").json()}
+    assert "sugg-run-legacy" not in ids
 
 
 def test_docs_upload_refuses_path_traversal_in_project_or_device():
@@ -2479,26 +2632,26 @@ def test_docs_folder_refuses_blank_project_instead_of_all_projects_root():
         assert res.status_code == 400, f"project={project!r} was not rejected"
 
 
-def test_docs_folder_defaults_to_whichever_source_has_more_real_files(monkeypatch, tmp_path):
-    """Found live, 2026-09-24: a static 'synced folder always wins' default silently chose
-    a mostly-placeholder 102-real-file _current over George's genuinely complete 131-file
-    console upload. The default `chosen` option must track real file counts, not a fixed
-    preference order -- and the count itself must ignore 0-byte placeholder stubs, or an
-    inflated count on the wrong option would make it win by this same rule anyway."""
+def test_docs_folder_prefers_uploads_even_with_fewer_real_files(monkeypatch, tmp_path):
+    """CHANGED 2026-09-30 (George, real live confusion): the old default was "whichever
+    has more real files" -- which found live is the WRONG signal: a small, deliberately
+    curated set of uploads (Translink POS: 3 real docs) is the actual current true source,
+    while a much bigger synced folder (75 old files) had already been superseded. Uploads
+    must win whenever ANY real upload exists, even when heavily outnumbered by synced-
+    folder files -- count is not a proxy for "current"."""
     from Platform.webapp import store as store_module
 
     monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
     current = tmp_path / "TestOpsRequirements" / "docsfoldertest" / "_current"
     current.mkdir(parents=True)
-    for i in range(5):
+    for i in range(75):
         (current / f"real-{i}.docx").write_bytes(b"x")
-    for i in range(250):
-        (current / f"placeholder-{i}.docx").write_bytes(b"")  # unsynced Google Drive stub
 
     uploads = store_module._uploads_dir("DocsFolderTest", "POS")
     uploads.mkdir(parents=True, exist_ok=True)
-    for i in range(20):
-        (uploads / f"upload-{i}.docx").write_bytes(b"x")
+    (uploads / "upload-0.docx").write_bytes(b"x")
+    (uploads / "upload-1.docx").write_bytes(b"x")
+    (uploads / "upload-2.docx").write_bytes(b"x")
 
     res = client.get("/api/docs/folder", params={"project": "DocsFolderTest", "device": "POS"})
     assert res.status_code == 200
@@ -2506,8 +2659,21 @@ def test_docs_folder_defaults_to_whichever_source_has_more_real_files(monkeypatc
     assert body["source"] == "uploads_folder"
     assert body["path"] == str(uploads)
     by_source = {o["source"]: o["file_count"] for o in body["options"]}
-    assert by_source["requirements_folder"] == 5  # placeholders excluded
-    assert by_source["uploads_folder"] == 20
+    assert by_source["requirements_folder"] == 75
+    assert by_source["uploads_folder"] == 3
+
+
+def test_docs_folder_falls_back_to_synced_when_no_uploads_exist(monkeypatch, tmp_path):
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    current = tmp_path / "TestOpsRequirements" / "nouploadstest" / "_current"
+    current.mkdir(parents=True)
+    (current / "real.docx").write_bytes(b"x")
+
+    res = client.get("/api/docs/folder", params={"project": "NoUploadsTest", "device": "POS"})
+    body = res.json()
+    assert body["source"] == "requirements_folder"
 
 
 def test_docs_folder_files_lists_real_convertible_files_only(monkeypatch, tmp_path):
@@ -2537,6 +2703,39 @@ def test_docs_folder_files_honest_when_folder_missing():
     body = res.json()
     assert body["available"] is False
     assert body["files"] == []
+
+
+def test_docs_folder_files_path_param_lets_caller_pick_which_option(monkeypatch, tmp_path):
+    """George, 2026-09-30: switching the docs-source toggle "literally never changes"
+    this list -- real bug, this endpoint always re-resolved its own default and ignored
+    whichever source the user had actually picked. `path` fixes that."""
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    current = tmp_path / "TestOpsRequirements" / "pathswitchtest" / "_current"
+    current.mkdir(parents=True)
+    (current / "synced-doc.docx").write_bytes(b"x")
+    uploads = store_module._uploads_dir("PathSwitchTest", "POS")
+    uploads.mkdir(parents=True, exist_ok=True)
+    (uploads / "uploaded-doc.docx").write_bytes(b"x")
+
+    default_res = client.get("/api/docs/folder-files", params={"project": "PathSwitchTest", "device": "POS"})
+    assert default_res.json()["files"] == ["uploaded-doc.docx"]  # uploads-first default
+
+    synced_res = client.get("/api/docs/folder-files", params={
+        "project": "PathSwitchTest", "device": "POS", "path": str(current),
+    })
+    assert synced_res.json()["files"] == ["synced-doc.docx"]
+
+
+def test_docs_folder_files_rejects_a_path_not_in_the_real_options(monkeypatch, tmp_path):
+    from Platform.webapp import store as store_module
+
+    monkeypatch.setattr(store_module.Path, "home", staticmethod(lambda: tmp_path))
+    res = client.get("/api/docs/folder-files", params={
+        "project": "PathRejectTest", "device": "POS", "path": "C:/some/unrelated/path",
+    })
+    assert res.status_code == 400
 
 
 def test_sit_mirror_status_reports_real_staleness(monkeypatch, tmp_path):
@@ -2712,11 +2911,10 @@ def test_scheduled_checks_refuse_blank_target():
     assert res.status_code == 400
 
 
-def test_gap_register_rejects_nonsense_paging_and_scope():
+def test_gap_register_rejects_nonsense_paging():
     assert client.get("/api/gap-register?limit=-1").status_code == 400
     assert client.get("/api/gap-register?limit=0").status_code == 400
     assert client.get("/api/gap-register?offset=-1").status_code == 400
-    assert client.get("/api/gap-register?scope=banana").status_code == 400
     # a real "give me everything" call still works
     assert client.get("/api/gap-register?limit=1000").status_code == 200
 
@@ -2729,3 +2927,148 @@ def test_reports_does_not_invent_projects_from_loose_files(tmp_path, monkeypatch
     (tmp_path / "translink" / "coverage.md").write_text("real", encoding="utf-8")
     projects = {r["project"] for r in client.get("/api/reports").json()}
     assert projects == {"", "translink"}  # loose file has no project, never its own one
+
+
+def test_ask_rejects_blank_question():
+    res = client.post("/api/ask", json={"project": "translink", "device": "POS", "question": "   "})
+    assert res.status_code == 400
+
+
+def test_ask_returns_grounded_answer(monkeypatch):
+    from Platform.webapp import runner as runner_module
+
+    envelope = json.dumps({
+        "result": json.dumps({
+            "mode": "tool_usage", "kind": "answer",
+            "answer": "Run ingest-docs, then onboard-suite, then checks.",
+            "citations": [".claude/pipelines/onboard-suite.yaml"],
+            "next_step": "ingest-docs",
+        })
+    })
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, envelope, ""))
+    res = client.post("/api/ask", json={"project": "translink", "device": "POS", "question": "what do I run for a new doc?"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["kind"] == "answer"
+    assert body["mode"] == "tool_usage"
+    assert body["next_step"] == "ingest-docs"
+
+
+def test_ask_self_classifies_as_gap_never_a_bare_dont_know(monkeypatch):
+    from Platform.webapp import runner as runner_module
+
+    envelope = json.dumps({
+        "result": json.dumps({
+            "mode": "data", "kind": "gap",
+            "answer": "Nothing in knowledge/translink/specs mentions this.",
+            "citations": [], "next_step": "",
+        })
+    })
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, envelope, ""))
+    res = client.post("/api/ask", json={"project": "translink", "device": "POS", "question": "does POS support X?"})
+    body = res.json()
+    assert body["kind"] == "gap"
+
+
+def test_ask_invalid_kind_from_agent_becomes_error(monkeypatch):
+    """The agent didn't follow the 5-state contract -- surfaced honestly as an error state,
+    never silently coerced into a real answer/gap."""
+    from Platform.webapp import runner as runner_module
+
+    envelope = json.dumps({"result": json.dumps({"mode": "data", "kind": "maybe", "answer": "dunno"})})
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, envelope, ""))
+    res = client.post("/api/ask", json={"project": "translink", "device": "POS", "question": "x"})
+    assert res.json()["kind"] == "error"
+
+
+def test_ask_agent_timeout_reported_not_swallowed(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    def fake_timeout(*a, **kw):
+        raise subprocess_module.TimeoutExpired(cmd="claude", timeout=90)
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_timeout)
+    res = client.post("/api/ask", json={"project": "translink", "device": "POS", "question": "x"})
+    assert res.json()["kind"] == "error"
+    assert "Timed out" in res.json()["answer"]
+
+
+def test_check_connection_real_success(monkeypatch):
+    """Real gap this button fixes: 'configured' only ever meant a row was saved, never a
+    working connection -- this actually runs the real `system_test_ops check` command."""
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+        assert cmd[-1] == "check"
+        return subprocess_module.CompletedProcess(cmd, 0, stdout="OK — connected to TestRail. 4 project(s) visible:\n  [1] Foo\n", stderr="")
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/credentials/check-connection")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["connected"] is True
+    assert body["project_count"] == 4
+
+
+def test_check_connection_real_failure_surfaces_real_error(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+        return subprocess_module.CompletedProcess(cmd, 1, stdout="", stderr="TestRail API error: 401 Unauthorized\n")
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/credentials/check-connection")
+    body = res.json()
+    assert body["connected"] is False
+    assert "401" in body["detail"]
+
+
+def test_check_connection_timeout_reported_not_swallowed(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    import subprocess as subprocess_module
+
+    def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+        raise subprocess_module.TimeoutExpired(cmd="check", timeout=30)
+    monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+    res = client.post("/api/credentials/check-connection")
+    body = res.json()
+    assert body["connected"] is False
+    assert "Timed out" in body["detail"]
+
+
+def test_suite_name_drift_unavailable_for_unconfigured_target():
+    res = client.get("/api/suite-name-drift", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200
+    assert res.json()["available"] is False
+
+
+def test_suite_name_drift_detects_a_real_mismatch(monkeypatch):
+    """George, 2026-09-30: "POS TL suite name new one, is GG - POS - Claude Suite but on
+    testrail it is something else? do we need to ensure the naming is correct" -- real
+    live check against TestRail's own list-suites, not just trusting the stored name."""
+    from Platform.webapp import runner as runner_module
+
+    client.post("/api/suite-mappings", json={
+        "project": "DriftTest", "device": "POS", "old_suite": "Old Drift Suite",
+        "new_suite": "Stored New Name", "new_suite_id": 50002, "old_suite_id": 50001,
+        "testrail_project_id": 99,
+    })
+    try:
+        def fake_run(cmd, cwd, capture_output, text, timeout, encoding=None, errors=None):
+            assert "list-suites" in cmd
+            suites = [{"id": 50001, "name": "Old Drift Suite"}, {"id": 50002, "name": "Renamed In TestRail"}]
+            import subprocess as subprocess_module
+            return subprocess_module.CompletedProcess(cmd, 0, stdout=json.dumps(suites), stderr="")
+        monkeypatch.setattr(runner_module.subprocess, "run", fake_run)
+
+        res = client.get("/api/suite-name-drift", params={"project": "DriftTest", "device": "POS"})
+        assert res.status_code == 200
+        body = res.json()
+        assert body["available"] is True
+        by_which = {c["which"]: c for c in body["checks"]}
+        assert by_which["old"]["drifted"] is False
+        assert by_which["new"]["drifted"] is True
+        assert by_which["new"]["real_name"] == "Renamed In TestRail"
+        assert by_which["new"]["stored_name"] == "Stored New Name"
+    finally:
+        client.delete("/api/suite-mappings/DriftTest/POS")

@@ -179,6 +179,22 @@ def test_fresh_build_with_explicit_flag_succeeds(store):
     assert mappings["PERTH|POS"]["new_suite"] == "New PERTH Suite"
 
 
+def test_fresh_build_flag_actually_persists_as_its_own_column(store):
+    """Found live, 2026-09-28: `fresh_build` was accepted as a parameter and used for
+    validation + written into system-test-ops' YAML, but there was no real SQL column for
+    it at all -- list_suite_mappings' own SELECT couldn't even name it. The console's edit
+    form happened to already derive the same fact a different, equally-reliable way
+    (`!old_suite`, since old_suite is only ever empty when fresh_build was true -- the
+    validation above enforces that), so this was never an observable user-facing bug, just
+    a real gap in the data model. Fixed properly: a real, explicit column, true and false
+    round-trip distinctly."""
+    store.upsert_suite_mapping("FreshBuildColTest", "POS", "", "New Suite", fresh_build=True)
+    store.upsert_suite_mapping("FreshBuildColTest", "TVM", "Old Suite", "New Suite", fresh_build=False)
+    mappings = {m["project"] + "|" + m["device"]: m for m in store.list_suite_mappings()}
+    assert mappings["FreshBuildColTest|POS"]["fresh_build"] is True
+    assert mappings["FreshBuildColTest|TVM"]["fresh_build"] is False
+
+
 def test_get_suite_ids_for_bos(store):
     ids = store.get_suite_ids("Translink", "BOS")
     assert ids == {"old_suite_id": 14441, "new_suite_id": 30279}

@@ -233,7 +233,20 @@ def _functional_areas(project: str, device: str) -> list[str]:
         if returncode != 0:
             raise RuntimeError(stderr.strip() or stdout.strip())
         payload = json.loads(stdout)
-        matched = {m["file"] for m in payload["archived"]}
+        # George, 2026-09-30, found live (real onboard-suite run for Translink/POS): "still
+        # see the ETM device endpoints and stuff... when i push them there gonna push test
+        # cases for it to the POS SUITE?" -- confirmed real. archive_knowledge.py's "medium"
+        # confidence tier (a bare device-code MENTION anywhere in the body) is too loose for
+        # this decision: every Device-Endpoints-STE12-*.md file opens with the same
+        # boilerplate "...companion to the POS Functional Specification" cross-reference
+        # line, and Device-Endpoints-ETM-HHD.md/PV-GV.md only mention POS in a "differences
+        # from POS" comparison heading -- neither means the file IS about POS. Every genuine
+        # POS note matches at "high" confidence (a clean title hit); only "high" is trusted
+        # here. Checked directly against the real Translink knowledge (2026-09-30): "high"
+        # keeps exactly the 22 real POS-*.md notes + the one note that genuinely covers POS
+        # (Device-Endpoints-STE12-pv-and-pos-local-services.md, itself a clean title hit),
+        # and correctly drops all 13 "medium" Device-Endpoints false positives.
+        matched = {m["file"] for m in payload["archived"] if m["confidence"] == "high"}
         if matched:
             return [_slugify_area(Path(f).stem) for f in sorted(matched)]
         # Classifier ran fine but found zero matches for this device -- a project-wide
@@ -1044,6 +1057,82 @@ def cancel_run(run_id: str) -> None:
             pass
 
 
+# George, 2026-09-29: "how come we can't ensure a sync button to re-check ... if yes
+# connected or not" -- real gap found while building this: Settings' "TestRail credentials"
+# card only ever showed whether a row was SAVED in this app's own encrypted store
+# (store.get_credentials_status), never whether that's a WORKING connection -- and, dug
+# further, that saved row isn't even what any real TestRail call in this app actually uses.
+# Every real call (this file's _case_count/get_run_comments, every CLI pipeline step) goes
+# through system-test-ops/.env on disk via the `system_test_ops` CLI's own config loading --
+# store.decrypt_api_key exists but nothing calls it. So a real "check connection" button has
+# to test THAT real path, not the console's separately-stored, currently-unused row.
+def check_testrail_connection() -> dict:
+    """Real, live TestRail connectivity check -- runs `system_test_ops check`, the exact
+    same command docs/CLAUDE.md's quick reference lists for this ("validate creds, list
+    projects"). Real exit-code contract (system_test_ops/cli.py's main()): 0 = connected,
+    2 = config error (missing/malformed env), 1 = TestRail API error (bad key, network).
+    Never guesses -- reports the real stdout/stderr either way."""
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-m", "system_test_ops", "check"],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30,
+            encoding="utf-8", errors="replace",
+        )
+    except subprocess.TimeoutExpired:
+        return {"connected": False, "detail": "Timed out after 30s — check network/TestRail availability."}
+    except OSError as exc:
+        return {"connected": False, "detail": f"Could not run the check: {exc}"}
+
+    if result.returncode == 0:
+        # Matches only on the digit count, never surfaces the CLI's own decorative
+        # "OK — connected..." line verbatim -- found live: that raw text comes back with a
+        # mangled em-dash when the check runs under the long-running uvicorn process
+        # specifically (a one-off script call decodes it fine; something about that
+        # specific parent process's inherited console codepage doesn't) even with
+        # encoding="utf-8" set here. Real, not just cosmetic-ignorable, so side-stepped
+        # entirely -- build the message ourselves instead of trusting the child's raw text.
+        match = re.search(r"(\d+) project\(s\) visible", result.stdout)
+        count = int(match.group(1)) if match else None
+        detail = f"Connected - {count} project(s) visible." if count is not None else "Connected."
+        return {"connected": True, "detail": detail, "project_count": count}
+    raw = (result.stderr or result.stdout or "").strip()
+    first_line = raw.splitlines()[0] if raw else "Unknown failure."
+    # Same mangled-non-ascii risk on the failure path (a real TestRail error message could
+    # contain anything) -- strip to ascii rather than risk showing garbled bytes.
+    detail = first_line.encode("ascii", errors="replace").decode("ascii")
+    return {"connected": False, "detail": detail}
+
+
+# George, 2026-09-29: "we need to be able to re-check these gaps against new specs
+# uploaded, so a refresh button" -- the gap-register CLI is a cheap, read-only grep (no AI,
+# no TestRail), so this can genuinely refresh the fixture live rather than staying frozen at
+# whatever the last committed snapshot was.
+_GAPS_FIXTURE = _PLATFORM_ROOT / "webapp" / "fixtures" / "gaps.json"
+
+
+def refresh_gap_register() -> dict:
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-m", "system_test_ops", "gap-register", "--json-out", str(_GAPS_FIXTURE)],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
+        )
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "detail": "Timed out after 60s."}
+    except OSError as exc:
+        return {"ok": False, "detail": f"Could not run the refresh: {exc}"}
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "Unknown failure.").strip().splitlines()[0] if (result.stderr or result.stdout) else "Unknown failure."
+        return {"ok": False, "detail": detail}
+    total = None
+    if _GAPS_FIXTURE.is_file():
+        try:
+            total = len(json.loads(_GAPS_FIXTURE.read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {"ok": True, "total": total, "refreshed_at": _now()}
+
+
 def _case_count(suite_id: int) -> int | None:
     """Real, live case count for one suite via `system_test_ops cases` (read-only — that
     command only ever reads TestRail and writes local report files). Parses the CLI's own
@@ -1117,6 +1206,58 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
     except (json.JSONDecodeError, IndexError):
         return {"available": False, "reason": "Could not parse TestRail response."}
     return {"available": True, "suite_id": suite_id, **payload}
+
+
+# George, 2026-09-30: "POS TL suite name new one, is GG - POS - Claude Suite but on
+# testrail it is something else? do we need to ensure the naming is correct for the ID or
+# refresh if been changed" -- real, live check: does the display name stored in
+# suite_targets.yaml still match what TestRail actually calls that suite id right now.
+# Uses `list-suites` (one cheap API call, id+name for every suite in a project), not
+# `cases` (which would download every case in the suite just to read its name).
+def _real_suite_names(testrail_project_id: int) -> dict[int, str] | None:
+    result = subprocess.run(
+        [str(_VENV_PYTHON), "-m", "system_test_ops", "list-suites", "--project", str(testrail_project_id)],
+        cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30,
+        encoding="utf-8", errors="replace",
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        suites = json.loads(result.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        return None
+    return {s["id"]: s.get("name") for s in suites}
+
+
+def check_suite_name_drift(project: str, device: str) -> dict:
+    mapping = next(
+        (m for m in store.list_suite_mappings() if m["project"] == project and m["device"] == device),
+        None,
+    )
+    if mapping is None:
+        return {"available": False, "reason": "No suite mapping configured for this target."}
+    checks = []
+    by_tr_project: dict[int, dict[int, str] | None] = {}
+    for label, suite_id, stored_name, tr_project in (
+        ("old", mapping.get("old_suite_id"), mapping.get("old_suite"), mapping.get("testrail_project_id")),
+        ("new", mapping.get("new_suite_id"), mapping.get("new_suite"),
+         mapping.get("new_testrail_project_id") or mapping.get("testrail_project_id")),
+    ):
+        if suite_id is None or tr_project is None or not stored_name:
+            continue
+        if tr_project not in by_tr_project:
+            by_tr_project[tr_project] = _real_suite_names(tr_project)
+        real_names = by_tr_project[tr_project]
+        if real_names is None:
+            checks.append({"which": label, "suite_id": suite_id, "stored_name": stored_name,
+                           "real_name": None, "drifted": None, "reason": "Could not reach TestRail."})
+            continue
+        real_name = real_names.get(suite_id)
+        checks.append({
+            "which": label, "suite_id": suite_id, "stored_name": stored_name, "real_name": real_name,
+            "drifted": real_name is not None and real_name != stored_name,
+        })
+    return {"available": True, "checks": checks}
 
 
 def preview_docs_relevance(project: str, docs_path: str) -> dict:
@@ -1202,4 +1343,105 @@ def compare_suite_case_counts(project: str, device: str) -> dict:
         "old_suite_id": ids["old_suite_id"], "new_suite_id": ids["new_suite_id"],
         "old_case_count": old_count, "new_case_count": new_count,
         "diff": new_count - old_count,
+    }
+
+
+# George, 2026-09-29: the "ask" box next to the target picker -- a single one-shot,
+# read-only agent call (same claude -p / --output-format json mechanism _run_agent_step
+# uses, but no run_id/pipeline scaffolding -- this is a synchronous question/answer, not a
+# background job). Two grounding modes, agent picks which one(s) a question needs:
+#   - "tool_usage": grounds ONLY on this repo's own real pipeline definitions
+#     (.claude/pipelines/*.yaml) -- "what do I run for a new POS doc?" answers from the same
+#     data the console's own pipeline pages render from, so it can't drift from what's true.
+#   - "data": grounds ONLY on the current project/device's real knowledge pool
+#     (knowledge/<project>/specs/, excluding _archive/, filtered to files matching the
+#     device) plus that project/device's gap-register markers -- never the raw confidential
+#     requirement library (that stays local-only, per CLAUDE.md).
+# Never a bare "I don't know" -- every non-answer is one of the 5 honest states George asked
+# for, verbatim: gap (not documented anywhere), unconfirmed (specified but unverified on the
+# real system), out_of_scope (wrong device/project for this pool), partial (some of it is
+# grounded, some isn't -- say which), not_ingested (the raw docs may cover it, but nothing's
+# been ingested into knowledge/ yet -- a tool-coverage gap, not a real documentation gap).
+_ASK_TIMEOUT = 90
+_ASK_ALLOWED_TOOLS = "Read,Glob,Grep"
+_ASK_VALID_KINDS = {"answer", "gap", "unconfirmed", "out_of_scope", "partial", "not_ingested"}
+
+
+def _ask_prompt(project: str, device: str | None, question: str) -> str:
+    target_line = f"Project: {project}, device: {device or '(none — project-wide)'}."
+    return f"""{target_line} Question: {question}
+
+You are answering ONE question for a test-ops engineer, read-only (Read/Glob/Grep only, no
+writes, no shell). Decide which grounding pool the question needs:
+
+- "tool_usage" -- questions about how to use THIS console/repo itself (which pipeline to run,
+  what order, what a pipeline needs as input). Ground ONLY on the real pipeline definitions
+  under .claude/pipelines/*.yaml (index.yaml lists them all) and docs/using-claude.md. Never
+  guess at a pipeline's real inputs/steps -- read the actual YAML.
+- "data" -- questions about what the project/device's real test suite/specs actually say.
+  Ground ONLY on knowledge/{project.lower()}/specs/*.md (skip any _archive/ subfolder --
+  archived, superseded) filtered to files genuinely about device={device or '(any)'}, plus
+  that project/device's markers in proposals/**/gap-register.md if present. Do NOT read any
+  raw confidential requirement library outside knowledge/ -- if the answer isn't in
+  knowledge/, it counts as not there, not as "go check the raw docs yourself".
+
+Never invent an answer. If you cannot ground a data question fully in what you actually read,
+classify it as one of these 5 honest states (never a bare "I don't know"):
+  - "gap": genuinely not documented anywhere you can see -- not in knowledge/, not implied.
+  - "unconfirmed": a spec mentions/specifies it, but nothing confirms it's verified true on
+    the real system -- state what's specified and that it's unconfirmed.
+  - "out_of_scope": this is a real, answerable fact, but for a different device/project than
+    the one asked about -- say which pool it would belong to instead, if you can tell.
+  - "partial": some of the question is grounded, some isn't -- answer the grounded part and
+    say exactly what's missing.
+  - "not_ingested": you have a specific reason to believe the raw requirement library covers
+    this (e.g. a knowledge note cites a spec section that sounds adjacent but the actual
+    named fact isn't in the note) but nothing in knowledge/ actually contains it -- so this
+    tool cannot see it yet, distinct from a real gap in the documentation itself.
+A "tool_usage" question that's genuinely answerable from the pipeline definitions is always
+kind "answer" -- the 5-state taxonomy above is for "data" questions only.
+
+Reply with ONLY this JSON object, no other text, no markdown fences:
+{{"mode": "tool_usage" or "data", "kind": "answer" or one of the 5 states above, "answer": "<the answer, or a plain-English explanation of the non-answer state>", "citations": ["<real file path you actually read>", ...], "next_step": "<optional -- e.g. which pipeline to run next, or what doc to go find/upload -- omit or empty string if not applicable>"}}"""
+
+
+def ask_question(project: str, device: str | None, question: str) -> dict:
+    prompt = _ask_prompt(project, device, question)
+    try:
+        returncode, stdout, stderr = _run_subprocess(
+            ["claude", "-p", prompt, "--allowedTools", _ASK_ALLOWED_TOOLS,
+             "--permission-prompts", "none", "--output-format", "json"],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), timeout=_ASK_TIMEOUT,
+        )
+    except subprocess.TimeoutExpired:
+        return {"mode": None, "kind": "error", "answer": f"Timed out after {_ASK_TIMEOUT}s -- try a narrower question.", "citations": [], "next_step": ""}
+    except OSError as exc:
+        return {"mode": None, "kind": "error", "answer": f"Could not run agent: {exc}", "citations": [], "next_step": ""}
+
+    if returncode != 0:
+        detail = (stderr or "").strip() or "(no stderr)"
+        return {"mode": None, "kind": "error", "answer": f"Agent call failed (exit {returncode}): {detail}", "citations": [], "next_step": ""}
+
+    try:
+        envelope = json.loads(stdout)
+        result_text = (envelope.get("result") or "").strip()
+    except (json.JSONDecodeError, AttributeError):
+        return {"mode": None, "kind": "error", "answer": "Agent returned no usable output.", "citations": [], "next_step": ""}
+
+    try:
+        parsed = json.loads(result_text)
+    except json.JSONDecodeError:
+        # The agent answered in free text instead of the strict JSON contract -- show the
+        # real text rather than discarding it, but flag that the reply wasn't self-classified.
+        return {"mode": None, "kind": "error", "answer": result_text or "(the agent returned no output)", "citations": [], "next_step": ""}
+
+    kind = parsed.get("kind")
+    if kind not in _ASK_VALID_KINDS:
+        kind = "error"
+    return {
+        "mode": parsed.get("mode"),
+        "kind": kind,
+        "answer": parsed.get("answer") or "(no answer text)",
+        "citations": parsed.get("citations") or [],
+        "next_step": parsed.get("next_step") or "",
     }

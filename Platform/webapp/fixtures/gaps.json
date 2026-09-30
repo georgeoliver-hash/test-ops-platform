@@ -72,478 +72,2062 @@
     "text": ": `Valid Smartcard?` shows two different \"Yes\" targets (`2.6.1 Discount - Sales mode - Rail`"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 12,
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 14,
     "kind": "GAP",
-    "text": "retry"
+    "text": "BOS protocol not in scope of this document). Do not conflate"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 41,
-    "kind": "GAP",
-    "text": "this excerpt does not state what the device does if the 10s delivery fails (e.g. local"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 64,
-    "kind": "GAP",
-    "text": "no detail here on reboot timing safeguards (e.g. mid-transaction), or on what state the device resumes to after reboot; confirm before asserting behaviour. |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 69,
-    "kind": "GAP",
-    "text": "the spec does not describe what, if anything,"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 90,
-    "kind": "GAP",
-    "text": "any"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-cloudfare-communication.md",
-    "line": 107,
-    "kind": "GAP",
-    "text": "items above (10s-failure fallback behaviour; Reboot mid-transaction/resume"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-driver-signon-display-paper.md",
-    "line": 42,
-    "kind": "GAP",
-    "text": "this note only distils Sign on,"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-driver-signon-display-paper.md",
-    "line": 54,
-    "kind": "GAP",
-    "text": "no stated limit on re-entry attempts (lockout/retry count not specified in this section);"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-driver-signon-display-paper.md",
-    "line": 83,
-    "kind": "GAP",
-    "text": "GR-3/FRT-1/GR-10/FM-1 are cross-references to other"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-driver-signon-display-paper.md",
-    "line": 149,
-    "kind": "GAP",
-    "text": "\"certain circumstances\" is not enumerated in this"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-fare-structure.md",
-    "line": 13,
-    "kind": "GAP",
-    "text": "exact page number for this intro paragraph is not confirmed: the extracted range starts"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
-    "line": 17,
-    "kind": "GAP",
-    "text": "the exact mapping between the three Operational States and the functional states"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
     "line": 26,
     "kind": "GAP",
-    "text": "the target state when initialisation fails or a blocking condition IS active is not"
+    "text": "BOS message format,"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 45,
+    "kind": "GAP",
+    "text": ": no defined line turnaround delay is stated as a general rule (\"There is no"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 168,
+    "kind": "GAP",
+    "text": ", per-deployment ETM config not detailed here."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 213,
+    "kind": "GAP",
+    "text": "."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 241,
+    "kind": "GAP",
+    "text": "exact resulting approval status shown only diagrammatically,"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 248,
+    "kind": "UNCONFIRMED",
+    "text": "legacy behaviour."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 259,
+    "kind": "GAP",
+    "text": "no explicit list of which fields are"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 288,
+    "kind": "UNCONFIRMED",
+    "text": ": worth"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 298,
+    "kind": "GAP",
+    "text": ": the slide"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 310,
+    "kind": "GAP",
+    "text": ": the index labelling on slide"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\EIS1327-H-EN-tgx-obv-interface.md",
+    "line": 354,
+    "kind": "GAP",
+    "text": "no case 2.6 found in the document, may have been retired in an"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT-parkeon-clever-devices-single-point-of-sign-on.md",
+    "line": 35,
+    "kind": "GAP",
+    "text": "the exact configurable time-period value(s) for the irregular-poll / retry interval are"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT-parkeon-clever-devices-single-point-of-sign-on.md",
+    "line": 93,
+    "kind": "UNCONFIRMED",
+    "text": ": verify on the"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT-parkeon-clever-devices-single-point-of-sign-on.md",
+    "line": 164,
+    "kind": "GAP",
+    "text": "the document's own message-format table literally marks the **SADDR/MTYPE** and"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT-parkeon-clever-devices-single-point-of-sign-on.md",
+    "line": 197,
+    "kind": "GAP",
+    "text": "` until confirmed"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 22,
+    "kind": "GAP",
+    "text": ")."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 79,
+    "kind": "UNCONFIRMED",
+    "text": "no interface behaviour can be asserted from"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 93,
+    "kind": "GAP",
+    "text": "no"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 102,
+    "kind": "GAP",
+    "text": ", cannot state what is excluded beyond the section number)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 114,
+    "kind": "GAP",
+    "text": "do not assert specific staff"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 130,
+    "kind": "GAP",
+    "text": ", no ticket layout/content can be asserted); \u00a716 Rules (**source notes:"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS001-cloudfare-overview.md",
+    "line": 152,
+    "kind": "GAP",
+    "text": "`/`**UNCONFIRMED**` in this"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-driver-functionality.md",
+    "line": 266,
+    "kind": "GAP",
+    "text": "the exact wording/behaviour of the warning screen and what follows it (auto sign-off"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-fare-structure.md",
+    "line": 63,
+    "kind": "GAP",
+    "text": "the \"Family\" and \"Employee\" class columns show no checkmarks in any row captured in the"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-functional-states.md",
+    "line": 10,
+    "kind": "GAP",
+    "text": "the state diagrams themselves are graphics not captured in the extracted text; exact"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-obv-barcode.md",
+    "line": 27,
+    "kind": "GAP",
+    "text": "the full mapping table is large reference/configuration data (100+ rows) rather than a"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-obv-emv.md",
+    "line": 99,
+    "kind": "GAP",
+    "text": "this rule appears to contradict/refine \u00a76.2.2.1's statement that the \"Waiting for"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-obv-farepay-card.md",
+    "line": 57,
+    "kind": "GAP",
+    "text": "note the EMV section (\u00a76.2.2.1) uses **\"not 029899\"** as its unknown-ticket-type"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-obv-general.md",
     "line": 38,
     "kind": "GAP",
-    "text": "\"special user\" is referenced (here and in \u00a73.1.5) but not defined in this section: what"
+    "text": "the exact bit-table (bits 0-7 per Part 1/Part 2) is dense tabular data that did not"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
-    "line": 49,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_FS002-warnings-errors.md",
+    "line": 51,
     "kind": "GAP",
-    "text": "no numeric default/range given for the Low Power inactivity timeout (unlike Comms Lock's"
+    "text": "two distinct NAK thresholds are stated (10 consecutive NAKs trigger standby; an event is"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
-    "line": 56,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-driver-menu.md",
+    "line": 119,
     "kind": "GAP",
-    "text": "no numeric default/range given for the Screen Saver inactivity timeout \u2014 confirm before"
+    "text": "confirm whether the Driver-Menu-reached"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
-    "line": 80,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-driver-menu.md",
+    "line": 205,
     "kind": "GAP",
-    "text": "the list is explicitly non-exhaustive (\"examples of this are\") \u2014 other fault classes that"
+    "text": "route to the"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-functional-states.md",
-    "line": 82,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-error-warning-supervisor-admin.md",
+    "line": 88,
     "kind": "GAP",
-    "text": "mechanism/command by which CloudFare pushes \"In Service\" to recover a device is not"
+    "text": "about whether"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-emergency-status-timeout.md",
-    "line": 18,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-error-warning-supervisor-admin.md",
+    "line": 121,
     "kind": "GAP",
-    "text": "the spec does not state in this section whether a *second, later* Emergency Mode entry"
+    "text": "do not assert Administrator Menu vs Supervisor"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-emergency-status-timeout.md",
-    "line": 49,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-paygo-farepay-transactions.md",
+    "line": 138,
     "kind": "GAP",
-    "text": "the per-scenario bit patterns (which of Bit 7\u2026Bit 0 of Part 1, and Bit 7 / Bits 6-0 of"
+    "text": "if writing a case that specifically asserts on-screen \"offline\" text"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-emergency-status-timeout.md",
-    "line": 56,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-physical-ui-and-status.md",
+    "line": 12,
     "kind": "GAP",
-    "text": "it is not clear from the legible text whether \"status bar shows N/A\" for every listed"
+    "text": "` rather than guessed."
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-emergency-status-timeout.md",
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-physical-ui-and-status.md",
     "line": 90,
     "kind": "GAP",
-    "text": "the spec (in this excerpt) does not state the timeout behaviour for an SV (stored value)"
+    "text": "the exact colour-to-abbreviation legend is not present in the extracted"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-farepay-card.md",
-    "line": 79,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-physical-ui-and-status.md",
+    "line": 129,
     "kind": "GAP",
-    "text": ": the actual valid-combination matrix is not reproduced here)."
+    "text": "above) \u2014 do not invent a mapping."
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-obv-farepay-card.md",
-    "line": 106,
-    "kind": "GAP",
-    "text": ": no outgoing OBV code is listed for these two FR"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-obv-farepay-card.md",
-    "line": 176,
-    "kind": "GAP",
-    "text": ": the actual product-code lookup table (what a Ticket"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-obv-farepay-card.md",
-    "line": 184,
-    "kind": "GAP",
-    "text": ": no rule in this range states how FR distinguishes \"magnetic\" vs"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 16,
-    "kind": "GAP",
-    "text": ": not"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 38,
-    "kind": "GAP",
-    "text": "exact"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 46,
-    "kind": "GAP",
-    "text": "the spec gives no"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 93,
-    "kind": "GAP",
-    "text": ": external doc, not in this excerpt.)"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 108,
-    "kind": "GAP",
-    "text": "no explicit \"cancel\" path described for Relief, unlike End of Trip/End"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 119,
-    "kind": "GAP",
-    "text": "no explicit \"restore default\" option listed for Farebox brightness/volume, only for FR;"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 136,
-    "kind": "GAP",
-    "text": "spec doesn't state who can invoke force-sign-off"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 147,
-    "kind": "GAP",
-    "text": "no detail on error content/audit event for a failed ID"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-operator-menu.md",
-    "line": 162,
-    "kind": "GAP",
-    "text": "no audit/event"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 24,
-    "kind": "GAP",
-    "text": "exact spec of \"class\" 3-character codes (beyond `SEN` example) not given in this range;"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 37,
-    "kind": "GAP",
-    "text": "behaviour if the driver attempts an 11th sum entry (reject / error message / silently"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 44,
-    "kind": "GAP",
-    "text": "behaviour if the test print itself fails (e.g. still jams/mis-feeds) is not covered in"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 56,
-    "kind": "GAP",
-    "text": "no stated behaviour for a non-numeric / empty submission distinct from \">6 digits\"; and"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 66,
-    "kind": "GAP",
-    "text": "the actual colour/day mapping table and the 3-character code values are not in this"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 77,
-    "kind": "GAP",
-    "text": "no detail here on how/where the attribute is configured or on operator-visible indication"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 84,
-    "kind": "GAP",
-    "text": "no stated behaviour for GPS unavailable/no-fix (blank field? last-known? error flag?);"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 93,
-    "kind": "GAP",
-    "text": "exact wording of the warning screen, and confirmation of what actually happens if the"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 115,
-    "kind": "GAP",
-    "text": "default/typical threshold value not stated in this range."
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-sign-on.md",
     "line": 122,
     "kind": "GAP",
-    "text": "\"special users\" is not defined in this range (role/permission level); confirm against"
+    "text": "route to the engineer via the gap-register before"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 146,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-ticket-formats.md",
+    "line": 38,
     "kind": "GAP",
-    "text": "exact wording/format of the driver-facing \"mode changed\" message, and the precise"
+    "text": "the extracted part-2 example for Round Trip Issue does not show an explicit Issue Time"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-other-functions-warnings-errors.md",
-    "line": 162,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-ticket-formats.md",
+    "line": 92,
     "kind": "GAP",
-    "text": "no stated recovery path back from Farebox Fault to Exact mode (contrast with"
+    "text": "confirm whether this is a genuine shared label (i.e. the run report is always printed at"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 17,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_HMI01-ticket-formats.md",
+    "line": 152,
     "kind": "GAP",
-    "text": "PIN length/format, lockout-on-repeated-failure behaviour, and the on-screen wording for"
+    "text": "s (field-label wording, missing time field) should be logged to"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 31,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS001-fare-register-farebox-messaging.md",
+    "line": 26,
     "kind": "GAP",
-    "text": "which components/subsystems appear in the version list (Fare Register app, OBV, Farebox"
+    "text": ": exact ACK/NAK byte format and NAK reason codes are not in"
   },
   {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 39,
-    "kind": "GAP",
-    "text": "no on-screen feedback/result states (success/failure, in-progress indicator) are"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS001-fare-register-farebox-messaging.md",
     "line": 48,
-    "kind": "GAP",
-    "text": "the fields shown on a waybill's detail view, and how many waybills are retained on"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 56,
-    "kind": "GAP",
-    "text": "confirm this screen is read-only with no supervisor"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 67,
-    "kind": "GAP",
-    "text": "numeric range/step size for backlight and volume levels, and whether there's a"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 84,
-    "kind": "GAP",
-    "text": "background-colour semantics are only specified for the Farebox status row; confirm no"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 94,
-    "kind": "GAP",
-    "text": "exact OBV indicator appearance (icon/colour/text) before vs after the status bit is set"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 105,
-    "kind": "GAP",
-    "text": "confirm behaviour if maintenance mode was enabled AND separately disabled again within"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 113,
-    "kind": "GAP",
-    "text": "the staff-list role name(s) that map to Administrator Mode (vs Supervisor Mode) are not"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 120,
-    "kind": "GAP",
-    "text": "no on-screen confirmation/feedback to the user is described (e.g. does the screen show"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 133,
-    "kind": "GAP",
-    "text": "behaviour on an invalid entry (non-numeric, >6 digits) \u2014 error message text/whether the"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\fs002-special-user-functionality.md",
-    "line": 140,
     "kind": "UNCONFIRMED",
-    "text": "until the engineer answers."
+    "text": ": whether the"
   },
   {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 42,
-    "kind": "GAP",
-    "text": "exact icon glyphs for each status-indicator state are images, not described in text"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 68,
-    "kind": "GAP",
-    "text": ": the doc's ISSUE bullet under 7.8 literally repeats \"If Zone ID is not on selected Line...\" rather than describing a class-specific validation; likely a spec authoring error/typo, not a device behaviour \u2014 flag to engineer); `C` \u2192 Enter Alighting Zone; `\u22c0/\u22c1` cycle rider classifications; 120s inactivity \u2192 Idle | Rider classification list scroll | p.29 |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 81,
-    "kind": "GAP",
-    "text": ", cross-reference that spec for the exhaustive transaction-type list per rider class)."
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 113,
-    "kind": "GAP",
-    "text": "text says returns to \"Supervisor Menu\" even though entered from the Driver Menu; possible spec inconsistency, confirm actual behaviour); 60s timeout \u2192 Supervisor Menu | `L1/L2` increment/decrement Farebox brightness, `L4/L5` increment/decrement Farebox volume, `R1/R2` increment/decrement Fare Register brightness, `R4/R5` increment/decrement Fare Register volume, `R6` reset Fare Register to defaults | p.71\u201373 |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 135,
-    "kind": "GAP",
-    "text": ", not detailed further in this doc | p.84\u201385 |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 141,
-    "kind": "GAP",
-    "text": ": confirm with engineer whether this is literally the same screen/case as \u00a79.6 or a distinct one requiring its own test case | p.90\u201391 |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 148,
-    "kind": "GAP",
-    "text": "text literally says \"Returns to Supervisor Menu\" though entered from Administrator Menu; likely spec typo, confirm with engineer); 60s timeout \u2192 Administrator Menu | Numeric entry | p.93\u201394 |"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 173,
-    "kind": "GAP",
-    "text": "Enter Class Screen (\u00a77.8, p.29): the `ISSUE` row's validation bullets are verbatim"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 178,
-    "kind": "GAP",
-    "text": "Device Settings and Program Farebox Number screens both describe a `C`/cancel target"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 182,
-    "kind": "GAP",
-    "text": "several screens (Paper Status, Serial Numbers, Driver Totals) have no described on-screen"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\hmi01-fare-register-hmi.md",
-    "line": 186,
-    "kind": "GAP",
-    "text": "exact list of rider classifications and transaction types **allowed per Line** is deferred"
-  },
-  {
-    "file": "knowledge\\njt\\specs\\is001-fr-farebox-messaging.md",
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS001-fare-register-farebox-messaging.md",
     "line": 107,
     "kind": "GAP",
-    "text": "no defined behaviour for **sustained non-response from the Farebox to a Poll** (no"
+    "text": "not explained in text, likely just illustrative)."
   },
   {
-    "file": "knowledge\\njt\\specs\\is001-fr-farebox-messaging.md",
-    "line": 112,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS001-fare-register-farebox-messaging.md",
+    "line": 117,
+    "kind": "UNCONFIRMED",
+    "text": "which nibble order is authoritative for this"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "` \u2014 WHOLE-DOCUMENT CAVEAT:** this source is explicitly a draft (watermarked"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 10,
+    "kind": "UNCONFIRMED",
+    "text": "` in addition to its normal"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 17,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 18,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 21,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 23,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 27,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 30,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 36,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 38,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 41,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 42,
     "kind": "GAP",
-    "text": "CRC algorithm/width is referenced (`XX XX CRC` on every message) but never specified in"
+    "text": "` \u2014 which of the two tracking mechanisms (PK vs timestamp) applies to which of the four"
   },
   {
-    "file": "knowledge\\njt\\specs\\is001-fr-farebox-messaging.md",
-    "line": 119,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 44,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 48,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 53,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 56,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 58,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 62,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 65,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 69,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 77,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 78,
     "kind": "GAP",
-    "text": "no message type exists for the Farebox to proactively report \"I am not responding\" (by"
+    "text": "` \u2014 the doc's own filename examples in \u00a73.1\u2013\u00a73.4 (e.g."
   },
   {
-    "file": "knowledge\\njt\\specs\\is001-fr-farebox-messaging.md",
-    "line": 153,
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 83,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 87,
+    "kind": "UNCONFIRMED",
+    "text": "every field/column list below is explicitly marked in-document as"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 93,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 95,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 123,
     "kind": "GAP",
-    "text": "if no case currently covers it)."
+    "text": "` \u2014 data type listed as String but"
   },
   {
-    "file": "knowledge\\njt\\specs\\ss003-fare-register-nfrs.md",
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 125,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 135,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 139,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 141,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 162,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 163,
+    "kind": "GAP",
+    "text": "` \u2014 \"revenue totals segmented by cash and card\" is asserted in the \u00a73.2 prose, but no"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 166,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 169,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 171,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 177,
+    "kind": "GAP",
+    "text": "` \u2014 typed Integer here vs String"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 179,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 189,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 193,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 195,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 198,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 207,
+    "kind": "UNCONFIRMED",
+    "text": ""
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_IS002-cloudfare-csv-export.md",
+    "line": 212,
+    "kind": "UNCONFIRMED",
+    "text": "` scaffolding only until a non-draft version of this doc is issued."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 13,
+    "kind": "UNCONFIRMED",
+    "text": "`"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 82,
+    "kind": "UNCONFIRMED",
+    "text": "` \u2014 exact special-user roles: \"will be defined during the FDR process\" (\u00a74.3.1.1.2, p.12)"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 88,
+    "kind": "UNCONFIRMED",
+    "text": "` \u2014 exact UI: \"will be finalised during the FDR process\" (\u00a74.3.1.1.3, p.13). The doc only"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 120,
+    "kind": "UNCONFIRMED",
+    "text": "` \u2014 exact Farebox HMI screens: \"will be defined during the FDR process\" (\u00a74.3.1.2.3, p.15)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 144,
+    "kind": "GAP",
+    "text": "` \u2014 integration \"will be discussed during the FDR process to agree the interface\" (\u00a74.7.2.6, p.30). Not yet specified \u2014 do not assume an interface exists or its shape. |"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 145,
+    "kind": "GAP",
+    "text": "` \u2014 same as above (\u00a74.7.2.7, p.30). |"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 178,
+    "kind": "GAP",
+    "text": "` \u2014 TBD at FDR, \u00a74.7.1.1, p.28); Driver Pay-in"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 213,
+    "kind": "GAP",
+    "text": "` \u2014 TBD at FDR, \u00a74.7.1.2, p.29); SSO with CloudFare"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 231,
+    "kind": "UNCONFIRMED",
+    "text": "` Special-user role list for Infigo 4 \u2014 deferred to FDR process (\u00a74.3.1.1.2, p.12)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 232,
+    "kind": "UNCONFIRMED",
+    "text": "` Exact Fare Register HMI/UI \u2014 deferred to FDR process (\u00a74.3.1.1.3, p.13)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 233,
+    "kind": "UNCONFIRMED",
+    "text": "` Exact Farebox HMI/screens \u2014 deferred to FDR process (\u00a74.3.1.2.3, p.15)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 234,
+    "kind": "GAP",
+    "text": "` CloudFare \u2014 RMS integration interface \u2014 not yet defined, TBD at FDR (\u00a74.7.1.1 p.28; \u00a74.7.2.6 p.30)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS001-solution-overview.md",
+    "line": 235,
+    "kind": "GAP",
+    "text": "` Genfare Link \u2014 RMS integration interface \u2014 not yet defined, TBD at FDR (\u00a74.7.1.2 p.29; \u00a74.7.2.7 p.30)."
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS003-non-functional-requirements.md",
+    "line": 22,
+    "kind": "GAP",
+    "text": "if that"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS003-non-functional-requirements.md",
+    "line": 61,
+    "kind": "UNCONFIRMED",
+    "text": "\"CloudFare\" is used verbatim in the source as the name of the cloud sync"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS003-non-functional-requirements.md",
+    "line": 81,
+    "kind": "GAP",
+    "text": "\"2nd parts\" (as in \"not including 2nd parts\") is not defined anywhere in this document \u2014"
+  },
+  {
+    "file": "knowledge\\NJT\\specs\\NJT_FRFRP_SS003-non-functional-requirements.md",
+    "line": 86,
+    "kind": "GAP",
+    "text": "the distinction between \"Start of Run\" vs \"Start of trip\" (and \"End of Run\" vs \"End of"
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md",
+    "line": 39,
+    "kind": "GAP",
+    "text": "for PV/GV/ETM/HHD the source says record production/content per type (shift, driver break, operator event, transaction content, version-report trigger, peripheral trigger) is \"not established/not traced\" (application code not in repo) \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md",
+    "line": 40,
+    "kind": "GAP",
+    "text": "ETM `HttpRequestTimeout` 30000 is a property of the shipped agent only; \"use not traced\" \u2014 not in requirements; confirm on the live system before running (\u00a719.3)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md",
+    "line": 44,
+    "kind": "GAP",
+    "text": "PV/ETM `DeviceSSN` configured (`PV1-29031993`, `ETM1-2903199`) but \"the value actually sent was not traced\" \u2014 not in requirements; confirm on the live system before running (\u00a717.2, \u00a719.3)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md",
+    "line": 54,
+    "kind": "GAP",
+    "text": "exact bounds of the aggressive phase (\"MessageOfTheDayAggressiveCheckPeriodSeconds = 300 bounds the aggressive phase by its name (not traced)\") \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-back-office-records-and-events.md",
+    "line": 56,
+    "kind": "GAP",
+    "text": "not traced; confirm on the live system before running (EP-BOS-16/17 HHD rows)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-config-lists-commands.md",
+    "line": 20,
+    "kind": "UNCONFIRMED",
+    "text": "the manifest format \"is expected to be the same, or very similar\" on POS, GV, ETM, HHD; \"only a PV manifest has been seen so far; the other device types should be checked\" (\u00a76.5)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-config-lists-commands.md",
+    "line": 21,
+    "kind": "GAP",
+    "text": "the PV \"had not downloaded the application and operating-system artefacts listed in this manifest at the time it was read\" \u2014 whether they subsequently download is not stated; confirm on the live system before running (\u00a76.5)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-config-lists-commands.md",
+    "line": 58,
+    "kind": "GAP",
+    "text": "the source itself states HTTP-error handling is subtly different from the code's WebException path (\"the Android HttpClient returns HTTP error statuses as responses, which take the no-delay path\") \u2014 practical effect of 401/502 on polling delay not confirmed on a live system; confirm before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-config-lists-commands.md",
+    "line": 74,
+    "kind": "UNCONFIRMED",
+    "text": "whether this defect-like behaviour is intended \u2014 source describes it as observed from code."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 32,
+    "kind": "GAP",
+    "text": "meaning of the four comma-separated fields not established; **GAP** \u2014 `DiscoveryTimeoutSeconds` not configured, code default value not established; **GAP** \u2014 connect timeout value not configured; request body format \"not established (binary only)\"; server-certificate checking not established \u2014 confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 33,
+    "kind": "UNCONFIRMED",
+    "text": "behaviour on the shipped build."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 36,
+    "kind": "GAP",
+    "text": "MQTT `qosLevel`/`retain` values not configured; which topics the device subscribes to on the comms connection not established \u2014 confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 41,
+    "kind": "GAP",
+    "text": "route-monitoring response handling \"Not established (binary only)\"; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 58,
+    "kind": "GAP",
+    "text": "\"exact matching code was not traced\" (HHD rules not in repo); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 59,
+    "kind": "GAP",
+    "text": "source of the ChipDNA `PASSWORD` parameter \"was not traced\"; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 60,
+    "kind": "GAP",
+    "text": "`OfflineRedemptionSendInterval` 15 \"unit not traced\"; **GAP** \u2014 config key `CorethreeOfflineStoragePath` has a trailing space so it does not bind and the code default applies (default location not stated); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 62,
+    "kind": "GAP",
+    "text": "inspection record content, and any penalty-fare network traffic (\"made by the Patroller app, which is not in this build\") \u2014 not in requirements; confirm on the live system before running (EP-HHD-05)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-ETM-HHD.md",
+    "line": 63,
+    "kind": "GAP",
+    "text": "trigger for applying the profile \"not traced\" (EP-HHD-06)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-event-codes.md",
+    "line": 113,
+    "kind": "GAP",
+    "text": "6001 registry ShortName holds unrelated text (\"mitigations and compensating controls ...\") instead of a name; description is \"The gate has failed its self test\"; \"the registry entry should be corrected\" \u2014 the display name CloudFare shows for 6001 is unconfirmed; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-event-codes.md",
+    "line": 114,
+    "kind": "GAP",
+    "text": "406 is registered under component `ETM` but enabled on POS, PV and GV too; \"the component type the other devices actually send was not established\" (CloudFare rules match on `eventComponentType`) \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-event-codes.md",
+    "line": 115,
+    "kind": "GAP",
+    "text": "930 and 40126 descriptions refer to another scheme's smartcards (Hotlist, \"SmartRider\"); enabled on POS and ETM; \"the Translink conditions that raise them were not established\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-event-codes.md",
+    "line": 117,
+    "kind": "GAP",
+    "text": "the `eventComponentType` value each device actually sends \"was not checked against the registry column for every code\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-event-codes.md",
+    "line": 118,
+    "kind": "GAP",
+    "text": "codes with description \"\u2014\" or empty in the registry (113, 809, 941, 1011, 1012, 1412, 1415, 1416, 1603, 6009, 6010): raise-conditions not specified \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-hosts-and-auth.md",
+    "line": 61,
+    "kind": "GAP",
+    "text": "PV and ETM (Windows CE) manifest and Feig-manifest requests: source says \"Authorization / Token were not found on the CE request path (confirm on a trace)\" \u2014 not in requirements; confirm on the live system before running (EP-CFG-01 PV/ETM rows, EP-PV-03)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-hosts-and-auth.md",
+    "line": 69,
+    "kind": "GAP",
+    "text": "the source states \"No response payload or application error code for any back-office endpoint was found in the builds, the repository or the registry\"; back office answers uploads with HTTP status only \u2014 no error-code/message catalogue exists for CloudFare replies \u2014 not in requirements; confirm on the live system before running (\u00a75.3)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-hosts-and-auth.md",
+    "line": 70,
+    "kind": "GAP",
+    "text": "Keycloak server certificate checking: not established for DAIP; for PV route checks server certificates are explicitly NOT validated (EP-PV-05) \u2014 TLS validation behaviour for the other devices not stated; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 33,
+    "kind": "GAP",
+    "text": "value taken \"from the PV DLL strings only; not in the source or history\" \u2014 not in requirements; confirm on the live system before running (EP-PV-05)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 40,
+    "kind": "GAP",
+    "text": "barcode validation service URL (`ServiceUri`) is empty on the PV and the API key is present-not-reproduced; how PV barcode validation reaches a service is not stated \u2014 not in requirements; confirm on the live system before running (\u00a717.4)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 47,
+    "kind": "GAP",
+    "text": "behaviour of the gate-command rules \"is not documented here\" (business rules not in repo); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 56,
+    "kind": "UNCONFIRMED",
+    "text": "source says \"If the ad-hoc client is built through the same ManifestProcessor ... the effective delays are 60 s\"; not verified on device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 58,
+    "kind": "GAP",
+    "text": "protocol/response handling \"Not established from code\" \u2014 confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 59,
+    "kind": "GAP",
+    "text": "\"The GV configuration gives no address for the validator side of the 192.168.42.0/24 reader link\" (\u00a718.6)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 60,
+    "kind": "UNCONFIRMED",
+    "text": "XML-RPC assumption; **GAP** \u2014 request/response format not in requirements."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 61,
+    "kind": "GAP",
+    "text": "not established; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-PV-GV.md",
+    "line": 67,
+    "kind": "GAP",
+    "text": "`artifacts/manifest.json` lists `backup.json` (category BACKUP_FILES) which \"is not in the package\" (\u00a718.1 packaging) \u2014 confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-config-manifest-and-artefacts.md",
+    "line": 50,
+    "kind": "UNCONFIRMED",
+    "text": "other device types' manifests should be checked against a manifest taken from each device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-config-manifest-and-artefacts.md",
+    "line": 61,
+    "kind": "UNCONFIRMED",
+    "text": "confirm on a live trace (EP-PV-03, EP-ETM-10, V1.46)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-config-manifest-and-artefacts.md",
+    "line": 68,
+    "kind": "GAP",
+    "text": "404 \"not available\" handling on PV/ETM Windows downloader (configured 180 s/absent vs actual failure delay) \u2014 not in requirements beyond the source's code reading; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-device-event-codes.md",
+    "line": 59,
+    "kind": "GAP",
+    "text": "trigger condition/description for codes whose registry description is \"\u2014\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-etm-ticket-machine.md",
+    "line": 24,
+    "kind": "GAP",
+    "text": "discovery timeout value (`DiscoveryTimeoutSeconds` not configured; default value not established), connect timeout, exact DiscoveryRequest format (binary only), meaning of the four credential fields, server-certificate checking \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-etm-ticket-machine.md",
+    "line": 25,
+    "kind": "UNCONFIRMED",
+    "text": "(EP-ETM-01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-etm-ticket-machine.md",
+    "line": 36,
+    "kind": "GAP",
+    "text": "MQTT qosLevel/retain values, which topics the device subscribes to \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-etm-ticket-machine.md",
+    "line": 41,
+    "kind": "UNCONFIRMED",
+    "text": "aggressive-phase details (from DLL strings)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-etm-ticket-machine.md",
+    "line": 46,
+    "kind": "GAP",
+    "text": "route response handling \u2014 not in requirements (binary only); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-gv-gate-validator.md",
+    "line": 34,
+    "kind": "GAP",
+    "text": "GV route-check protocol and response handling \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-gv-gate-validator.md",
+    "line": 35,
+    "kind": "GAP",
+    "text": "validator-side address on the reader link \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-gv-gate-validator.md",
+    "line": 36,
+    "kind": "UNCONFIRMED",
+    "text": "XML-RPC protocol; **GAP** \u2014 gate API request/response \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-gv-gate-validator.md",
+    "line": 37,
+    "kind": "GAP",
+    "text": "admin interface trigger/authentication \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 22,
+    "kind": "GAP",
+    "text": "exact RID matching logic \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 31,
+    "kind": "GAP",
+    "text": "ChipDNA PASSWORD parameter source (\"Password attempts remaining\", \"Reached password attempt limit\") \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 39,
+    "kind": "GAP",
+    "text": "unit of OfflineRedemptionSendInterval \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 47,
+    "kind": "GAP",
+    "text": "JourneyStart/JourneyEnd/StageStopEvent triggers and payloads \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 51,
+    "kind": "UNCONFIRMED",
+    "text": "(`POST /shift/inspection` exists in the path map but is not named in any HHD rule assembly) (EP-HHD-05, V1.46). Rules log \"Inspection audit will not be sent\" when an inspection fails."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-hhd-hand-held-device.md",
+    "line": 60,
+    "kind": "GAP",
+    "text": "trigger for applying the APN profile \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-identity-and-bos-records.md",
+    "line": 54,
+    "kind": "GAP",
+    "text": "DeviceSSN actually sent by PV and ETM at registration \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-identity-and-bos-records.md",
+    "line": 80,
+    "kind": "GAP",
+    "text": "back-office response payloads/application error codes \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-identity-and-bos-records.md",
+    "line": 88,
+    "kind": "GAP",
+    "text": "which record types each non-POS device produces and their content \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-identity-and-bos-records.md",
+    "line": 114,
+    "kind": "GAP",
+    "text": "HHD message/word-of-the-day trigger and interval \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-identity-and-bos-records.md",
+    "line": 125,
+    "kind": "UNCONFIRMED",
+    "text": "on the live system until exercised on a device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-pv-and-pos-local-services.md",
+    "line": 37,
+    "kind": "UNCONFIRMED",
+    "text": "(EP-PV-05, V1.46)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-pv-and-pos-local-services.md",
+    "line": 64,
+    "kind": "GAP",
+    "text": "PV application behaviour for shift/transaction/tap record content \u2014 not in requirements (application code not in source repo); confirm on the live system before running; PV CE request auth headers for manifest (UNCONFIRMED)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-staff-lists-commands-logging-time.md",
+    "line": 55,
+    "kind": "GAP",
+    "text": "GV gate command behaviour \u2014 not in requirements (rules are in the GV application, not documented here); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-staff-lists-commands-logging-time.md",
+    "line": 94,
+    "kind": "UNCONFIRMED",
+    "text": "on a live device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\Device-Endpoints-STE12-staff-lists-commands-logging-time.md",
+    "line": 103,
+    "kind": "GAP",
+    "text": "exact ChipDNA PASSWORD parameter source on HHD \u2014 not in requirements (source: \"where that password comes from was not traced\"); confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 13,
+    "kind": "UNCONFIRMED",
+    "text": "if the rule does not answer within 60 s the service polls again and the unacknowledged command is re-sent, so a command held behind a long-running rule **can run twice** (\u00a723.1.4, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 15,
+    "kind": "UNCONFIRMED",
+    "text": "known issue: when an operator is signed on the base force-sign-off ends by moving to Idle after the outer transition set ForcedOutOfService, so **the Forced Out of Service page can be shown while the device state is Idle** (\u00a723.3.1, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 16,
+    "kind": "UNCONFIRMED",
+    "text": "the `NotInOperationalState` reason added for an idle device is not removed (\u00a723.3.2)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 19,
+    "kind": "UNCONFIRMED",
+    "text": "the rule tries to show \"Restarting\" in fields that don't exist on the layout, so that text never appears (\u00a723.4.1)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 20,
+    "kind": "UNCONFIRMED",
+    "text": "strings \"The device has been remotely put out of service. Please contact Translink Ticketing Systems Department on 028 9035 4040\" exist but the page does not use them; the page shows \"Translink System Department\" (\u00a719.5.2, \u00a723.4.2)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 27,
+    "kind": "UNCONFIRMED",
+    "text": "(\u00a724.1.2)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 29,
+    "kind": "UNCONFIRMED",
+    "text": "whether this is intended."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 30,
+    "kind": "GAP",
+    "text": "\u00a724.4.1 says the shift starts when the operator leaves the Message of the Day, whereas \u00a75.1 says it starts after the Word and Colour of the Day; the exact trigger is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 31,
+    "kind": "UNCONFIRMED",
+    "text": "which totals the back office actually receives (\u00a724.4.3\u2013\u00a724.4.4, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 34,
+    "kind": "UNCONFIRMED",
+    "text": "`routeReferenceId` is a non-nullable integer, so **Metro and Ulsterbus sales send 0 or a stale value from an earlier Rail sale**; `GetAlightingId` does not check for a null alighting location (open/preset products); Day Tours and decommission still use raw location ids; transport mode \"BRT\" hard-coded for all modes (\u00a724.4.3, \u00a724.5.3\u2013\u00a724.5.4, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 46,
+    "kind": "UNCONFIRMED",
+    "text": "install mechanism."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 48,
+    "kind": "UNCONFIRMED",
+    "text": "**as built, distribution delivers no parameters to any service** (wrong file name `servicetovalue.params.json` vs shipped `servicetovalueparams.config.json`, and no `Source` field); the update still ends in a reboot. **The one working path is the Pages service: only `automaticLogOff` (3600 s; MainMenu, MetroPresentCard, AdministratorMenu, SupervisorMenu, TechnicianMenu, DriverBreak), `powerSaveTimeout` (300 s; Suspend, UnCommissionedSuspend) and `ScreenSaverTimeout` (300 s; Idle) can be changed**, and the code reads `ScreenSaverTimeout` with a capital S vs `screenSaverTimeout` in the mapping (\u00a725.6.2, V3.01). Name mismatches: `maxRevenueWarning` (code reads `maximumRevenueWarning`), `maxInvalidLoginAttempts` (code reads `maximumInvalidLoginAttempts`), `suspendedDuration` (SRS reads `suspendDuration`); `audioLevelDefault`/`brightness*` unused; `conversionValue` \u00d7 0.1^`decimalPrecision` sets the EUR rate (default 1.15); `lowPaperLengthMetres`, `slipsPaperJam`, `powerInterrupt` consumed by their services (\u00a725.6.3, V3.01). **RM.Params is on the ignore list and never downloaded** (\u00a725.6.4)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-backoffice-remote-audit-config.md",
+    "line": 49,
+    "kind": "UNCONFIRMED",
+    "text": "neither `MaxRevenueLocked` nor `MaxRevenueWarning` exists in `pages.layouts.json`; the cash-lock DeviceLocked flag is never cleared by any code found (\u00a725.7)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-card-payment.md",
+    "line": 27,
+    "kind": "UNCONFIRMED",
+    "text": "passenger-LCD note in `POS-FS-controls-audio-display.md`."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-card-payment.md",
+    "line": 36,
+    "kind": "UNCONFIRMED",
+    "text": "`WARRANT (not offered on Metro)` and the basket-confirmation Warrant-hiding branch is **bypassed on the normal path** (Warrant is shown) (\u00a720.7 row 13, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-card-payment.md",
+    "line": 55,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4/\u00a727.7 (as-built, static analysis): **the bank-card payment pages `PresentBankCard`, `CardPaymentInProgress`, `ConfirmationBankCard`, `CardPaymentError`, `CardPayment` are \"excluded (\u00a726) \u2014 not reachable in any variant\"**; \"Bank-card payment has no entry point\"; and `sales.config.json` has **`EMVPaymentsAllowed: false`** (\u00a725.15, \u00a726.4, \u00a727.7, V3.01). This contradicts \u00a78/\u00a79 where Bank Card is an offered tender. **GAP** \u2014 the reason text after \"Bank-card payment has no entry point:\" is truncated in the text extract and whether Bank Card is selectable on a live device is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-card-payment.md",
+    "line": 56,
+    "kind": "UNCONFIRMED",
+    "text": "bank-card receipts: template `CardPaymentReceipt.ini` **does not exist on the POS**, so **no customer/merchant receipt prints** (\u00a722.5.1) and **the signature receipt does not print and the flow appears not to continue to the payment confirmation** (\"needs confirming on a device\") (\u00a722.5.2, \u00a722.5 table, V3.01). Only the first receipt in the terminal's list is sent. Texts \"Customer Copy\"/\"Merchant Copy\" are defined but unused."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-card-payment.md",
+    "line": 57,
+    "kind": "UNCONFIRMED",
+    "text": "an equipment record for the payment terminal hard-codes type `Miura_M010` and is sent every time the device connects, with no de-duplication (\u00a724.7, V3.01); the payment-device status trigger for the status bar is commented out (\u00a724.9)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-cardpay.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "no document/FBD number in the extracted text \u2014 not in requirements; confirm before citing elsewhere."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-cardpay.md",
+    "line": 29,
+    "kind": "GAP",
+    "text": "whether a Metro-mode device can ever reach the basket Payment page is not stated beyond the cross-variant paths in \u00a726.8 \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-basket-payment-cardpay.md",
+    "line": 48,
+    "kind": "GAP",
+    "text": "\u00a722.5.2: the signature receipt does not print (missing template) and \"the flow appears not to continue to the payment confirmation\" \u2014 not in requirements; confirm on device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
+    "line": 16,
+    "kind": "GAP",
+    "text": "whether the letters screen signs off (as in \u00a76.1) or merely returns to an idle page is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
     "line": 18,
     "kind": "GAP",
-    "text": "those NFR categories are not covered"
+    "text": "\u00a76.4.3 shows Go Back on L6 but its key table says \"L6 'Go Back' \u2014 No function\" and Enter returns to Bus Route Selection; which key dismisses the page is not reconciled \u2014 not in requirements; confirm on the live system before running."
   },
   {
-    "file": "knowledge\\njt\\specs\\ss003-fare-register-nfrs.md",
-    "line": 89,
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
+    "line": 30,
     "kind": "GAP",
-    "text": ": if the TestRail suite's 14 \"Non Functional Requirements\" cases"
+    "text": "which key toggles \u00a3/\u20ac on the bus FLU is not stated \u2014 not in requirements; confirm on the live system before running)."
   },
   {
-    "file": "knowledge\\njt\\specs\\ss003-fare-register-nfrs.md",
-    "line": 91,
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
+    "line": 34,
     "kind": "UNCONFIRMED",
-    "text": "pending the engineer's input via"
+    "text": "the source says the bus FLU layout (`FLULayout`, pages `FLU`, `FLUSmartcard`) declares a status-bar fragment class removed from the repository (commit 31a0657d, 13 Nov 2025), so these pages \"may not render\"; \"treated as reachable pending device confirmation\" (\u00a721.5, \u00a726.5, V3.01). Same for `PassengerChange` (LayoutName with no layout class)."
   },
   {
-    "file": "knowledge\\translink\\specs\\FBD-100662-ulsterbus-tap-on-only.md",
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
+    "line": 42,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4/\u00a727.5 (as-built) list **all Day Tours pages (DayTours, DayToursLetters, DayToursProduct, PaymentTour, SeatNumber, TourDate) as \"no entry \u2014 excluded in every variant\"**: nothing runs `BRShowDayTours`. The design screens in \u00a76.8 exist in the spec but the flow is not reachable in this build. **Also** the example prices differ (fare-class menu Adult \u00a320.00 vs payment example Adult \u00a38.00) \u2014 **GAP** \u2014 which are real tour prices is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
+    "line": 48,
+    "kind": "UNCONFIRMED",
+    "text": "as-built \u00a726.5/\u00a725.7: `CashLimitApproaching` is drawn by a call with no display rule and its Enter/Timeout call the unregistered rule `BRBackCashLimit`; `CashLimitReached` is moved to only by the unregistered `BRSaveLockDeviceState`; \"No code was found that clears the cash-lock DeviceLocked flag\". Do not assert the cash-limit banner/lock until verified on a device. Also the Rail \"Max Revenue Reached\" (3_2_3) key table says any key does not dismiss (\u00a77.10.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-bus-rail-fare-lookup.md",
     "line": 80,
     "kind": "UNCONFIRMED",
-    "text": "` and cite this until George confirms it is actually implemented in the test environment."
+    "text": "\u00a722.x/\u00a78 as-built: \"When a change-receipt product is configured, a change receipt is printed\" (\u00a710.1) vs `BRGatherChangeReceiptProducts` is a no-op \"isn't required on POS\"; **no cash/change receipt on the POS** (\u00a722.5 table, V3.01). Customer-display Change text is \"hidden by the clock\" per \u00a722.7.2 table."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 6,
+    "kind": "UNCONFIRMED",
+    "text": "(static analysis of code, which the source itself says must be \"confirmed on a device\")."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 25,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a721.7 (as-built) says the C key sends KEYCODE_DEL \u2192 Cancel, a page's **Clear action is not reachable from the keypad**, and \"40 pages define Clear but not Cancel\" (e.g. Rail Main Menu, Basket View, Supervisor/Technician/Administrator menus, sign-off confirmations) so **C does nothing there**; Sign On pages are the exception (Del on an empty field raises Clear). The source itself ends \"Confirm on a device.\" (\u00a721.7, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 33,
+    "kind": "GAP",
+    "text": "\u00a72.4 lists Technician Menu warning at 60 s and Driver Break at 7200 s, but \u00a715.3.1 gives Technician Menu timeout 3600 s and \u00a713.8.2 gives On Break 3600 s; which value is the live timeout for each page is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 44,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: sound calls via `SetSoundFileProperty(\"SoundPlayer\", ...)` and `PlaySoundOnTimeout` produce no sound; a remote/TMS volume change does not beep (no `AudioFilePath` in `ui.config.json`) (\u00a721.4, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 52,
+    "kind": "UNCONFIRMED",
+    "text": "as-built (\u00a722.7.1, V3.01) contradicts parts of the design: when `Clock` is on (131 pages) the bottom line is replaced by the date/time, so configured bottom-line text is never seen; 13 pages' `TextDisplayLcdBottomLine` are not read, so **Idle \"Out of Service\", ConfirmationBankCard \"Transaction Complete\" and CardPaymentError \"Transaction Declined\" are never shown**; the clock is not refreshed (shows the time the page was entered); text is centred/padded to 16 chars but **not truncated**; Basket/confirmation pages use unresolved literal keys `@PassengerDisplay.Basket.Top/Bottom`."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 53,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a722.7.1/\u00a75.2.1 say Idle sets no passenger display page so the LCD keeps the previous page's state, whereas \u00a73.2.1/\u00a75.2.1 say Idle shows \"Out of Service\"; which is seen after sign-off is not proven."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 63,
+    "kind": "UNCONFIRMED",
+    "text": "as-built (\u00a721.2, V3.01): connection icons are \"always the grey 'no signal' network and contactless icons with a red badge; nothing in the code ever updates them\" \u2014 contradicts \u00a74.2/\u00a74.3 (icons reflect signal/reader state) and \u00a724.9 (StatusPublisher drives the icons). Do not assert icon state changes until verified on a device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 64,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: any colour a business rule sends for the title label (e.g. green background from `BRShowSuccess`) is ignored by the white status bar; error/success wording appears in the ordinary title style (\u00a721.2, \u00a721.3, V3.01). The 5-state title manager (title, confirmation, boarding, warning, error) and a 3-second warning override are described; Boarding/Error message layouts are \"wired in the renderer\" but no rule creates them."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 65,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: the orange \"Printer Paper Low\" status bar (#FFA500) is defined but **never triggered in this build** (\u00a721.2, \u00a721.3, \u00a722.6.4, V3.01), contradicting \u00a717.3.1 (screen 10_4_4 non-blocking banner)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-audio-display.md",
+    "line": 66,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: Driver Break device label literally shows \"BusNo {BusNo}\" (placeholder unreplaced) (\u00a721.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "the extracted text carries no document/FBD number, only title + Version 3.01 \u2014 not in requirements; confirm the controlled ID before citing it elsewhere. Cites below use \"POS-FS V3.01 \u00a7<n>\"."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 19,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a721.7 itself ends \"Confirm on a device\"; C behaviour on Clear-only pages is a static-analysis finding."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 21,
+    "kind": "GAP",
+    "text": "\u00a72.4's audio table cites \"Technician Menu 60 s\" and the page inventory lists SupervisorMenu/TechnicianMenu/AdministratorMenu Timeout 60, while \u00a714.3.1/\u00a715.3.1/\u00a716.3.1 state 3600 s; \u00a719.9 says the automatic log-off replaces the page timeout on these pages \u2014 not in requirements which figure is observed; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 30,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a721.4: SetSoundFileProperty(\"@SuccessSound\"/\"@ErrorSound\") calls target controls no layout declares (ignored); the success tone on ValidationSuccessLayout pages \"depends on timing\"; a remote/TMS volume change has no confirming beep. Whether every success screen sounds the success tone is not settled \u2014 confirm on device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 43,
+    "kind": "GAP",
+    "text": "\u00a721.3 says the connection icons are \"always the grey 'no signal' network and contactless icons with a red badge. Nothing in the code ever updates them\"; \u00a724.9 says StatusPublisher drives them from network/card-reader changes \u2014 contradiction; not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 45,
+    "kind": "UNCONFIRMED",
+    "text": "see POS-FS-printing-printer-errors.md (\u00a717.3 vs \u00a722.6.4)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 57,
+    "kind": "GAP",
+    "text": "\u00a725.8 says validation requires ID **4\u20138** characters and PIN **4\u20136**, else the request is rejected; \u00a75.2 limits the on-screen entry to a 6-digit ID and a 4-digit PIN. A 5- or 6-digit PIN cannot be typed per \u00a75.2.5 \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 63,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a725.6.3 says the back-office key name does not match the code (`maxInvalidLoginAttempts` vs `maximumInvalidLoginAttempts`) so only the local value **3** applies; changing it from the back office is not verified."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 66,
+    "kind": "GAP",
+    "text": "\u00a75.4.3 and \u00a714.1 / \u00a719.4 say only a **Supervisor** card unlocks; \u00a75.1 and the Device Locked key table say Supervisor **or Technician** \u2014 contradiction; not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 75,
+    "kind": "GAP",
+    "text": "\u00a725.12 says the date format is \"d MMM yyyy | H:mm\", the stored date is the time of last download (not publish time), an empty message overwrites a good one when the Back Office Agent is disconnected, and with no message the operator-options page shows \"Could not retrieve message.\" (vs \"Message of the Day Unavailable\" above) \u2014 not in requirements which text appears where; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 83,
+    "kind": "GAP",
+    "text": "\u00a76.2.2 / \u00a77.2.1 (extracted key table for 2_2) list a five-tab Rail home (L1 Rail, L2 Bus, L3 Misc, L4 Day Tours, L6 Smartcard); \u00a75.7.2 says only Rail and Misc tabs. Contradiction \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-controls-display-signon.md",
+    "line": 84,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a77.1 says favourites belong to the Rail flow and \u00a720.7/\u00a726.8 describe the Ulsterbus flow reaching Rail screens only via a cancel \"leak\"; whether Ulsterbus has favourites is unverified."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "no document/FBD number in the extracted text \u2014 not in requirements; confirm before citing elsewhere."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 10,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a721.5 and \u00a726.5 state the bus FLU pages (`FLU`, `FLUSmartcard`) use FLULayout, which inflates a status-bar fragment class removed from the repo (commit `31a0657d`, 13 Nov 2025); they are \"treated as reachable pending device confirmation\". `PassengerChange` names a layout with no layout class (\"may not render\"). Everything below on the **bus** FLU and Calculate Change is specified but unverified on a real build; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 20,
+    "kind": "GAP",
+    "text": "\"signed off\" vs \"Idle page\" for the letters mode differ in \u00a76.3; not in requirements whether a waybill-less sign-off happens; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 22,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.5/\u00a726.8: `RouteConfigurationError` is reached only by reboot recovery; `IncorrectConfiguration` error branch is dead code."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 34,
+    "kind": "GAP",
+    "text": "the extracted key table only says \"Currency toggle (elsewhere in the system)\"; the trigger for euros on the bus FLU is not specified \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 42,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4: pages `DayTours`, `DayToursLetters`, `DayToursProduct`, `SeatNumber`, `TourDate`, `PaymentTour` are \"excluded \u2014 no entry\" (nothing runs BRShowDayTours) although \u00a76.8 and the Rail/Bus home tabs describe Day Tours (L4). Confirm on the live system before running any Day Tours case."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 68,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a725.6.2: DM parameters cannot currently arrive on the POS, so the back-office-driven rate is unverified; the shipped default 1.15 applies."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-fare-lookup.md",
+    "line": 81,
+    "kind": "GAP",
+    "text": "\u00a710.1 says a change receipt is printed \"when a change-receipt product is configured\"; \u00a722.5 table says BRGatherChangeReceiptProducts is a no-op (\"isn't required on POS\") and there is no cash/change receipt on the POS \u2014 contradiction; not in requirements; confirm on the live system before running. Also \u00a722.7.1 says the \"Change: {Change}\" bottom line is hidden by the clock."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 23,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4/\u00a727.9 (as-built): `AnnulmentSearchTicket` has **no entry point and is excluded in every variant** (\"display rule only\"), so the L3 \"Annul Rail/Misc Tickets\" path may not be reachable; `AnnulmentStack` also excluded."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 25,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.5 lists `WrongCardPresented` Cancel as wired \"to page and rule names used the wrong way round\"."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 33,
+    "kind": "UNCONFIRMED",
+    "text": "as-built receipt: the **paper-ticket annulment receipt template `PaperTicketAnnulment_POS_UB.ini` is missing (\"only ..._POS_NIR.ini exists\"), so no receipt prints when a paper ticket is annulled**; period/multi-journey annulment receipts print (\u00a722.2.2, \u00a722.5 table, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 42,
+    "kind": "GAP",
+    "text": "the maximum shown (\u00a3286) is an example of a per-product limit; the real per-product maximums are not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 43,
+    "kind": "UNCONFIRMED",
+    "text": "as-built \u00a726.4: `OpenTicketMenu` (Excess Tickets menu) has **no entry point and is excluded in every variant**."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 50,
+    "kind": "GAP",
+    "text": "**no timeouts or customer-display text are stated** for the Issue Refund screens; **UNCONFIRMED** \u2014 \u00a713.7 cites only the UX Master Reference (no application page name is given, unlike other \u00a713 screens) and the \u00a727 page inventory lists no Issue Refund page, so whether Issue Refund works in the build is not shown; not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 61,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: `InvalidLoginCardBreak` entry not confirmed; the Driver Break header prints a literal \"BusNo {BusNo}\" (\u00a721.2, \u00a727.10)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 74,
+    "kind": "GAP",
+    "text": "key positions and availability are inconsistent across the source: \u00a722.6.3 says Paper Status is triggered by **R2** on the operator options page (vs R3 in \u00a713.10.1); \u00a726.2 says Report Faulty Payment Device is **NirOperatorOptions L4 and [Ulsterbus][Rail] only** (vs L5, all variants, in \u00a713.10.1/\u00a713.11); not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 76,
+    "kind": "GAP",
+    "text": "\u00a713.10.5 says 9.5.2 times out to the **operator's home page** while its key table says any key returns to **Operator Options**; which is correct is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 85,
+    "kind": "UNCONFIRMED",
+    "text": "as-built \u00a724.8: event **50001 FaultyPaymentDevice is raised by the POS but dropped by the events whitelist and never received by the back office**."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator-menu.md",
+    "line": 89,
+    "kind": "GAP",
+    "text": "which key is correct is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "no document/FBD number in the extracted text \u2014 not in requirements; confirm before citing elsewhere."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 27,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4: `AnnulmentSearchTicket` is \"excluded \u2014 no entry\" in this build although \u00a713.4.1 says it opens from Operator Menu L3; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 28,
+    "kind": "GAP",
+    "text": "receipts: the paper-ticket annulment receipt asks for template `PaperTicketAnnulment_POS_UB.ini`, which does not exist (\"No receipt prints when a paper ticket is annulled\", \u00a722.2.2, \u00a722.5 extracted table); period / multi-journey annulment receipts (`PeriodAnnulment_POS`, `MultiJourneyAnnulment_POS`) print. Not in requirements whether the paper-ticket receipt is expected; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 33,
+    "kind": "GAP",
+    "text": "\"Tickets sold\" counts every ticket, top-up and card issue (\u00a713.5.1); Supervisor Day Information says \"Tickets Issued counts paper tickets\" (\u00a714.6.1); the ShiftEnd audit `shiftTicketTotal` = TicketsIssued (\u00a724.4.4). Definitions differ \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 38,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.4: `OpenTicketMenu` is \"excluded \u2014 no entry\" although \u00a713.6.1 says it opens from Operator Menu L5; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 43,
+    "kind": "GAP",
+    "text": "the spec does not state limits on refund value versus original sale, cash vs card rules, or the back-office message sent \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 52,
+    "kind": "GAP",
+    "text": "the Driver Break page's own timeout is 7200 s in \u00a72.4 and the page inventory while automaticLogOff replaces it with 3600 s (\u00a719.9) \u2014 not in requirements which is observed; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 68,
+    "kind": "GAP",
+    "text": "\u00a713.10.1/\u00a713.11 say Operator Options \"looks the same on every variant\" / \"All variants\"; \u00a726.2 says `FaultyPaymentDevicePage` is Ulsterbus and Rail only and the page inventory says \"NirOperatorOptions L4\" while \u00a713.10/extracted key table put it on **L5** \u2014 contradictions; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-operator.md",
+    "line": 70,
+    "kind": "GAP",
+    "text": "opened from Operator Options **R3** (\u00a713.12.1, extracted key table) vs \"R2\" (\u00a722.6.3); Reverse Paper Feed on **R4** (operator extracted key table) vs **R5** (\u00a722.6.3 table) \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 6,
+    "kind": "UNCONFIRMED",
+    "text": "."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 19,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a722.6.4 (as-built): **the paper-low banner is not wired on the POS** \u2014 the `PrinterPaperLow` page is not defined, `WarningLabel` is not mapped, `BRShowPrinterPaperLowWarning` is not registered; \"The operator gets no paper-low warning. The only sign is the percentage on the Paper Status page\"; the paper-low event 103 is still raised. Contradicts \u00a717.3.1."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 20,
+    "kind": "UNCONFIRMED",
+    "text": "as-built: the L1 \"Reverse Paper Feed\" on `PrinterErrorAsync` has no control in the layout and is never visible; `UpdatePrinterErrorOnStateChange` is false so an open printer-error page is not refreshed when paper state changes (\u00a722.6.2, \u00a722.1.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 42,
+    "kind": "UNCONFIRMED",
+    "text": "as-built, parameters the code never supplies so these fields print **blank**: `CardNo` on ConcessionDay, ConcessionPeriod, DiscountDay, DiscountPeriod; `CardExpirationDate` on ConcessionDay; `<0>PaymentRef` and `<0>RefNumber` on DayTracker, DayTravel, DiscountDay, DiscountPeriod, PeriodTravel; template `DutyTotal2` never supplied (\u00a722.2.3, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 43,
+    "kind": "UNCONFIRMED",
+    "text": "as-built, templates asked for that **do not exist**: `PaperTicketAnnulment_POS_UB.ini` (no receipt prints when a paper ticket is annulled); `Day_POS_UB.ini` requested by the FareProducts DB for **4 POS products \u2014 Metro Adult Day Travel, Metro Adult Evening DTicket, Metro Child Day Travel, Metro Child Evening DTicket \u2014 \"these tickets do not print\"**; `CardPaymentReceipt.ini` (no bank-card receipt) (\u00a722.2.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 44,
+    "kind": "UNCONFIRMED",
+    "text": "`CrossBorder_POS_NIR.ini` uses fonts arial11, arial11b, arial12b that exist only as `.fon` files and are not packaged, so \"that template will probably fail to load, which would stop all 22 cross-border POS products from printing. This needs confirming on a device\" (\u00a722.2.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-printing-printer-errors.md",
+    "line": 50,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a722.4.3 (as-built): **every print rule passes `Logo = PrintLogoName` but no template uses that parameter**; each template names a **fixed** logo definition (`${Translink_v2}` on most; `${NIRailways}` on DayTracker, DayTravel, DiscountDay, DiscountPeriod, PeriodTravel, TravelReceipt, FaultySmartpass1Journey); therefore **Metro and Ulsterbus devices print the Translink or NI Railways artwork; `Metro.lgo` and `Ulsterbus.lgo` are never printed; annulment receipts carry no logo**. The default on-screen logo path `config/Logos/Translink/Translink.png` does not exist (asset is `config/Logos/Translink.png`) (\u00a722.1.2). Contradicts \u00a711.3, which says the printed mini statement contains \"the home-location logo\". Only supervisor slips state \"the same Translink logo on every operating mode\" (\u00a714.10)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 6,
+    "kind": "UNCONFIRMED",
+    "text": "where they contradict the design or are flagged by the source as \"needs confirming\")."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 15,
+    "kind": "GAP",
+    "text": "\u00a725.8 (as-built) says the staff-list validation requires ID **4\u20138 characters** and PIN **4\u20136** (otherwise rejected with 400), whereas the screens accept ID up to 6 digits and PIN at most 4 digits; whether a 5\u20136 digit PIN or a 7\u20138 char ID is ever enterable is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 23,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a75.1 says the limit of 3 \"can be changed by the back office\"; as-built \u00a725.6.2 says the DM key `maxInvalidLoginAttempts` has a **name mismatch** (code reads `maximumInvalidLoginAttempts`) so the `br.config.json` value of 3 applies and the DM value cannot take effect (\u00a725.6.3, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 26,
+    "kind": "GAP",
+    "text": "\u00a75.1 and the \u00a75.4.3 table say a **Supervisor or Technician** smartcard unlocks Device Locked, while \u00a714.1, the S-1.4.1 table and \u00a719.4 say **only a supervisor's staff card** is accepted. Which roles can unlock is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 29,
+    "kind": "UNCONFIRMED",
+    "text": "against \u00a75.1 \"a set period ... can be changed\"."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 35,
+    "kind": "UNCONFIRMED",
+    "text": "as-built \u00a725.12: the page text when no message is held is \"Could not retrieve message.\" (vs \"Message of the Day Unavailable\" above); the stored date is the **time of last download, not publish time**; **if the Back Office Agent is not connected when a poll runs, an empty message overwrites the good one**; date format \"d MMM yyyy | H:mm\"."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 38,
+    "kind": "GAP",
+    "text": "\u00a75.7.3 names \"2.2-bus Main Screen\" (Bus tab + Misc) as the Ulsterbus home, while \u00a76.1/\u00a76.3.1 and \u00a720.7 row 4 state the Ulsterbus home page is **Bus Route Selection (RouteEntry)** and its Cancel leads to the Rail Main Menu; which screen an Ulsterbus operator actually lands on is not reconciled \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 51,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a719.6.1 says it \"raises event 922\", but \u00a724.8 lists 922 as raised by the POS yet **dropped by the events whitelist, never received**."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 54,
+    "kind": "UNCONFIRMED",
+    "text": "pages `MaxRevenueLocked`/`MaxRevenueWarning` do not exist in `pages.layouts.json` (\u00a725.7, \u00a726.10)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 62,
+    "kind": "UNCONFIRMED",
+    "text": "as-built quirk: choosing a different mode then choosing the original again in the same technician session leaves the different mode stored (comparison uses the in-memory copy that is not refreshed until Idle) (\u00a720.2, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 65,
+    "kind": "UNCONFIRMED",
+    "text": "shipped home-location codes Bangor, Gt_Vic_St, Londonderry, May_Street, MetroBUS, Metro_Mobile, N_abbey, Rail, Short_Strand, TVMR have no matching operator code (\"Invalid home location\") (\u00a722.4.1, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-signon-device-states.md",
+    "line": 67,
+    "kind": "UNCONFIRMED",
+    "text": "reachability per static analysis: of 223 pages, 148 (Metro) / 150 (Ulsterbus) / 150 (Rail) reachable by operator action; 64 not reachable in any variant; 4 flagged \"unconfirmed\" (`InvalidLoginCard`, `InvalidLoginCardBreak`, `AnnulmentDiscountConfirmation`, `UnexpectedSmartcardInBasket`) (\u00a726.2, \u00a727.15, V3.01)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-smartcard-topup-validation-issue.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "no document/FBD number in the extracted text \u2014 not in requirements; confirm before citing elsewhere."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-smartcard-topup-validation-issue.md",
+    "line": 45,
+    "kind": "GAP",
+    "text": "\u00a711.1/\u00a711.7 apply time-band checks on both Ulsterbus and Rail; \u00a711.9.4 is tagged Rail only and \u00a726.4 lists `TimebandError` as reachable on all modes \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-smartcard-topup-validation-issue.md",
+    "line": 47,
+    "kind": "GAP",
+    "text": "the passback window length is not stated in the spec (\"its product's passback time\"); `transaction.config.json` has `ValidationUsageWindowMinutes 90` (\u00a725.15) but the spec does not say it is the passback time \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-smartcard-topup-validation-issue.md",
+    "line": 55,
+    "kind": "UNCONFIRMED",
+    "text": "\u00a726.5 lists `FaultySmartcardSelectCardType` Clear as wired to an unregistered rule and \u00a726.4 lists `CardReadFailed` as excluded; \u00a727 shows the FlashPass sale path (`PassMenu`) with no confirmed entry point. Confirm the faulty-card flow on a device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-supervisor-technician-admin.md",
+    "line": 16,
+    "kind": "GAP",
+    "text": "\u00a714.6.1 says each row's revenue is \"cash, card and warrant takings\" while the Totals Revenue line is \"the day's cash takings\"; how the two reconcile is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-supervisor-technician-admin.md",
+    "line": 18,
+    "kind": "UNCONFIRMED",
+    "text": "the same key table lists \"Enter \u2014 signs the supervisor off and returns to Idle; nothing is printed or zeroed\", which reads as a wiring fault; \u00a726.5 lists `SupervisorSignOffConfirmation` timeouts as wired to unregistered rules, and \u00a726.4/\u00a727.11 list `PrintCurrent/PrintAccumulated/PrintZero*` as excluded (supervisor print uses the two confirmation pages). Do not assert Enter on this dialog."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-supervisor-technician-admin.md",
+    "line": 20,
+    "kind": "UNCONFIRMED",
+    "text": "page registry lists a 10 s timeout for `SupervisorSignOffConfirmation` but \u00a726.5 says its timeout is wired to an unregistered rule (\u00a727.11)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-supervisor-technician-admin.md",
+    "line": 27,
+    "kind": "UNCONFIRMED",
+    "text": "timeout wiring as above (\u00a726.5)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-FS-supervisor-technician-admin.md",
+    "line": 44,
+    "kind": "UNCONFIRMED",
+    "text": "as-built \u00a726.4: **Technician \"Card Functions\" (Clear/Commission/Dump/Restore pre-prepared, Select Card Type, Enter PSN) are not in the POS Technician Menu** \u2014 the POS override omits the base L5 \"Card Functions\" item and the TechnicianMenu JSON has no L5 action; pages `CardFunctionsMenu`, `CardCommissionPresentCard`, `SelectCardType`, `EnterPsn`, `CommissionCardSuccess/Error/NotAllowed`, `RestorePrePrepared*` are excluded in every variant. The \u00a73.3 customer-display texts for technician card functions therefore have no reachable trigger here. `MountingPoint`/`TrayIdLetters` pages are also excluded (the flow uses `MountingPointLetters`/`TrayId`); `NetworkRoutes` and `NetworkIPEditor` have no entry (\u00a726.4, \u00a727.12\u2013\u00a727.13)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 6,
+    "kind": "UNCONFIRMED",
+    "text": "until seen on a real POS."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 32,
+    "kind": "UNCONFIRMED",
+    "text": "Ulsterbus routes carry ETM product groups in route property 19 and the POS does **not** check the group DeviceType, so a Ulsterbus POS loads ETM menus (e.g. \"Default School UB\"). Doc: \"inferred from code and data, **not tested on a device**\". (L379)"
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 33,
+    "kind": "GAP",
+    "text": ".)"
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 49,
+    "kind": "UNCONFIRMED",
+    "text": "on device)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 52,
+    "kind": "GAP",
+    "text": "document has no spec id, version or author \u2014 not in requirements; confirm with the owner before citing formally."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 53,
+    "kind": "GAP",
+    "text": "how many products actually lack a printer file: Data observations says 41, per-variant sections say 18 (Metro) / 2 (NIR) / 44 (Ulsterbus) \u2014 not reconciled in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 54,
+    "kind": "GAP",
+    "text": "behaviour when mode and Home Location disagree (nothing cross-checks them; resulting behaviour not stated) \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-conventions-variants-zones.md",
+    "line": 55,
+    "kind": "GAP",
+    "text": "the source's \"Sources\" and \"Variants covered\" prose is missing from the text extract except as tables; no explicit list of excluded operator variants (e.g. TVM, ETM) \u2014 not in requirements."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Fare-Rules-Zones.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "none stated in the extracted text \u2014 not in requirements; confirm on the live system / original docx before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Fare-Rules-Zones.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "everything below is a code/DB-derived expectation."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Fare-Rules-Zones.md",
+    "line": 31,
+    "kind": "GAP",
+    "text": "how the missing zone ids (1068-1070) affect on-device zone-based validation, and whether they are a data defect to be fixed \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Fare-Rules-Zones.md",
+    "line": 34,
+    "kind": "UNCONFIRMED",
+    "text": "."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Fare-Rules-Zones.md",
+    "line": 84,
+    "kind": "UNCONFIRMED",
+    "text": "until the device DB label matches 'UBTS Update POS 110826'."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "none stated in the extracted text \u2014 not in requirements; confirm on the live system / original docx before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "every fare, availability and template below is a code/DB-derived prediction (device code `translinkpos` develop, commit 4fd0df01, 2026-06-25; Topology/Product DB label 'UBTS Update POS 110826', label id 3978, snapshot 238), not a device observation."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 26,
+    "kind": "GAP",
+    "text": "no expected fare exists for R1 (fare pair has no override and the route is \"for browsing only\"); whether any fare is shown on the device for R1 is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 29,
+    "kind": "UNCONFIRMED",
+    "text": "per the source note above."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 49,
+    "kind": "UNCONFIRMED",
+    "text": "predictions. Recharge amount / max recharge / \"listed if balance <=\" are as stated in the table."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 52,
+    "kind": "UNCONFIRMED",
+    "text": "see the smartcard note (reference 20 -> 10 Jny 2000, 40 Jny 8000 for an ETM/TVM-issued card)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 61,
+    "kind": "GAP",
+    "text": "behaviour for other card types / whether any other ParkeonCardType group exists on Metro \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 65,
+    "kind": "GAP",
+    "text": "); Travelcard 2 Week / Day top-up (not offered)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro-Variant.md",
+    "line": 66,
+    "kind": "UNCONFIRMED",
+    "text": "); which of 79 products actually appear on the Metro menu (the doc lists 'menu / category' only for products that resolve)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro.md",
+    "line": 62,
+    "kind": "GAP",
+    "text": "exact on-screen labels and key positions for the Metro SmartcardMenu / issue menu beyond \"L2-L5/R2-R5\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro.md",
+    "line": 63,
+    "kind": "GAP",
+    "text": "Metro iLink Zone 1 issue card type number (Adult/Child Zone 1 groups) not stated in the extracted tables \u2014 not in requirements."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro.md",
+    "line": 64,
+    "kind": "GAP",
+    "text": "the two-stop SMRT route has only \"0 of 1\" override fares; expected fare between its two stops is not stated \u2014 not in requirements."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro.md",
+    "line": 65,
+    "kind": "GAP",
+    "text": "behaviour of the 18 products without a ticket template beyond \"POS skips printing\"; which 18 are not listed in the extract \u2014 confirm on the live system."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Metro.md",
+    "line": 66,
+    "kind": "UNCONFIRMED",
+    "text": "all fares and classifications (computed from DB/code, never checked on a live device)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "none stated in the extracted text \u2014 not in requirements; confirm on the live system / original docx before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "all NIR fares/availability below are code/DB-derived predictions (Topology/Product DB label 'UBTS Update POS 110826'; device code commit 4fd0df01, 2026-06-25), not device observations. Evaluation time: Tuesday 29 September 2026 10:30 unless stated; time-dependent products also at Mon 07:30, Tue 19:30, Sat 10:30, Sun 10:30 (POSTR \u00a7Sources)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 19,
+    "kind": "GAP",
+    "text": "whether the DISABLED-assignment products print (the table names a file but marks the assignment disabled) and how that reconciles with \"2 products\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 40,
+    "kind": "GAP",
+    "text": "stated reason for F&F unavailability at Mon 07:30 \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 76,
+    "kind": "GAP",
+    "text": "J1 and J3 use identical boarding and alighting stations (same stop both ends); whether the POS permits boarding = alighting is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 79,
+    "kind": "UNCONFIRMED",
+    "text": "predictions."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 96,
+    "kind": "GAP",
+    "text": "fare-area rule mapping is not in this source \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 101,
+    "kind": "GAP",
+    "text": "the doc's prose gives half-fare charge example \"690/345\" (Day Return / half-fare single) while the table gives \u00a36.90 for the Day Return; the half-fare single (345p) is not tabulated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR-Variant.md",
+    "line": 104,
+    "kind": "UNCONFIRMED",
+    "text": "until observed on a device with the same DB label 'UBTS Update POS 110826'."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR.md",
+    "line": 41,
+    "kind": "GAP",
+    "text": "reason not stated in requirements. (L2766-2768, L2788, L2874, L2960)"
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR.md",
+    "line": 54,
+    "kind": "GAP",
+    "text": "fares for the other 70+ products on journeys J5-J20 and the lookups behind them (the matrix at L2786-3215 and Appendix A/B) were not individually distilled; consult the local source/ re-derive from the DB before writing fare-specific cases."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR.md",
+    "line": 55,
+    "kind": "GAP",
+    "text": "\"Sellable Yes / Time-restricted\" for products whose Tue 10:30 range is shown only as a range; per-journey values for non-anchor journeys not captured here."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR.md",
+    "line": 56,
+    "kind": "GAP",
+    "text": "what the POS displays for hidden products is \"not shown\" by design; no on-screen text for an empty sub-group is stated \u2014 confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-NIR.md",
+    "line": 57,
+    "kind": "UNCONFIRMED",
+    "text": "all values (calculated from code/DB, never checked on a live device); Rail smartcard use blocked on develop."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "the extracted text states no document ID, no version number and no author \u2014 not in requirements; confirm on the live system / original docx before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "every expectation below is a code/DB-derived prediction from `translinkpos` branch develop commit 4fd0df01 (2026-06-25), not a verified device result."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 48,
+    "kind": "UNCONFIRMED",
+    "text": "planned feature, not live."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 51,
+    "kind": "GAP",
+    "text": "actual device behaviour (POSTR says \"ambiguous, likely receipt failure\") \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 64,
+    "kind": "GAP",
+    "text": "behaviour \"ambiguous, treated as not usable\" \u2014 not in requirements; confirm on the live system before running (POSTR CARD ON RAIL FLU)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 65,
+    "kind": "UNCONFIRMED",
+    "text": "on a live device; code-review finding at commit 4fd0df01."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 66,
+    "kind": "UNCONFIRMED",
+    "text": "depends on the unmerged branch."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 67,
+    "kind": "GAP",
+    "text": "reset behaviour not stated."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Smartcard-Usage-TopUp-Issue.md",
+    "line": 86,
+    "kind": "UNCONFIRMED",
+    "text": "until observed on a device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 4,
+    "kind": "GAP",
+    "text": "none stated in the extracted text \u2014 not in requirements; confirm on the live system / original docx before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 7,
+    "kind": "UNCONFIRMED",
+    "text": "every fare below is a code/DB-derived prediction (DB label 'UBTS Update POS 110826'; device code commit 4fd0df01; evaluation Tue 29 Sep 2026 10:30 unless stated), not a device observation."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 15,
+    "kind": "UNCONFIRMED",
+    "text": "on device."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 27,
+    "kind": "GAP",
+    "text": "what the on-device menu shows for a given route group (which of AT / Cway / AE / XB / MR groups appear per route) \u2014 the doc lists categories per product but does not tabulate per-route menus beyond \"Product group used\" \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 57,
+    "kind": "GAP",
+    "text": "intended scenario coverage for R6 \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 59,
+    "kind": "GAP",
+    "text": "whether each ETM group is really loaded on a live Ulsterbus POS (the doc says this was \"inferred from code and data, not tested on a device\") \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 62,
+    "kind": "UNCONFIRMED",
+    "text": "; \"INVALID\" = -1)"
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 76,
+    "kind": "GAP",
+    "text": "the route's property 7 group is 3349 but \"Product group used\" is 3270 ('property 7' not consulted) \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus-Variant.md",
+    "line": 85,
+    "kind": "UNCONFIRMED",
+    "text": "predictions and only on the DB label 'UBTS Update POS 110826'; -1 products shown as 'InvalidFare' and disabled; fares independent of fare areas; Staff fares constant; rail-substitution / no-fare routes yield no sellable fares."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 11,
+    "kind": "UNCONFIRMED",
+    "text": "inferred from code and data, not tested on a device (Data observations L379)."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 51,
+    "kind": "GAP",
+    "text": "the source still lists 25 \"Fare area:\" routes (R17-R42) as test scenarios while stating the POS never sends Filter.RouteId (fare area always 1); the expected fare-area behaviour on a real POS is not stated \u2014 not in requirements; confirm on the live system before running."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 52,
+    "kind": "GAP",
+    "text": "per-route fare tables for R5, R7, R10-R42 and the R9 flat-fare case were not distilled here (source text L4715-~10000); consult the local source."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 53,
+    "kind": "GAP",
+    "text": "R6 is labelled \"within a Town Service zone\" and R4 \"no fare table at all\" in the scenario list, yet the R6 data is the Londonderry-Dublin cross-border route and R4 shows refs with a fare area; label/data mismatch not explained \u2014 confirm."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 54,
+    "kind": "GAP",
+    "text": "behaviour when the loaded product group is an ETM group (e.g. Default School UB) on a POS is \"inferred, not tested\"."
+  },
+  {
+    "file": "knowledge\\translink\\specs\\POS-Topology-Ulsterbus.md",
+    "line": 55,
+    "kind": "UNCONFIRMED",
+    "text": "all fares (calculated), ETM-group menu loading, and Ulsterbus card use/issue classifications."
   },
   {
     "file": "proposals\\coherence-audit\\annul-rebuild-plan.md",
@@ -1344,22 +2928,226 @@
     "text": "`/`**UNCONFIRMED**` markers (886 found across the real repo on first run)."
   },
   {
-    "file": "proposals\\njt-fr-suite-restructure\\findings-obv-emergency-status-timeout.md",
-    "line": 76,
-    "kind": "UNCONFIRMED",
-    "text": "against the cited spec section. This is logged as a new gap-register question rather"
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 52,
+    "kind": "GAP",
+    "text": "marker pointing back to this question."
   },
   {
-    "file": "proposals\\njt-fr-suite-restructure\\gap-register-cloudfare-comms.md",
-    "line": 43,
-    "kind": "UNCONFIRMED",
-    "text": ". Do not treat C4087088's"
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 77,
+    "kind": "GAP",
+    "text": "marker pointing back"
   },
   {
-    "file": "proposals\\njt-fr-suite-restructure\\gap-register-obv-emergency-status-timeout.md",
-    "line": 54,
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 123,
+    "kind": "GAP",
+    "text": "and does not construct or verify a real CRC value."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 142,
+    "kind": "GAP",
+    "text": "flagging that the validator's turnaround is"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 189,
+    "kind": "GAP",
+    "text": "and do not assert the optional fields are always populated."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 214,
     "kind": "UNCONFIRMED",
-    "text": "against the cited spec section \u2014 it may be correct (SV could simply have"
+    "text": "marker) and \"NJT card \u2014 expected transfer denied\u2026\" (case 2.2d, carries"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 215,
+    "kind": "UNCONFIRMED",
+    "text": "marker on the reconciliation mechanism)."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 239,
+    "kind": "GAP",
+    "text": ") and \"EMV \u2014 invalid card shows non-acceptance\u2026\" (case 1.3, EMV"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 240,
+    "kind": "GAP",
+    "text": ") in"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 270,
+    "kind": "GAP",
+    "text": "), and the placeholder case \"OBV status \u2014 legacy Validation Process Mode"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 272,
+    "kind": "UNCONFIRMED",
+    "text": "marker), both in `EIS1327-H-EN-tgx-obv-interface.cases.yaml`. No case in the file"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 301,
+    "kind": "GAP",
+    "text": "and does not assert the"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 322,
+    "kind": "UNCONFIRMED",
+    "text": "and asserts only the no-pop-up behaviour, not the pre-fill extent."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 343,
+    "kind": "GAP",
+    "text": "and does not assert any concrete wire address/subtype value."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 393,
+    "kind": "GAP",
+    "text": "referencing this question, since this is the file where the"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 421,
+    "kind": "GAP",
+    "text": "; no case asserts a specific bit pattern for any scenario in"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 447,
+    "kind": "GAP",
+    "text": "and asserts only the options explicitly listed in \u00a77.1.5, neither asserting nor"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 473,
+    "kind": "GAP",
+    "text": "and does not assert a specific NAK count"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 499,
+    "kind": "GAP",
+    "text": "and"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 525,
+    "kind": "GAP",
+    "text": "and asserts only the issued/not-issued outcome, not the"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 550,
+    "kind": "GAP",
+    "text": "flagging the ambiguity."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 573,
+    "kind": "GAP",
+    "text": "that does not assert"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 598,
+    "kind": "GAP",
+    "text": "and asserts only that \"offline\" is shown, not which"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 624,
+    "kind": "GAP",
+    "text": ""
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 651,
+    "kind": "GAP",
+    "text": "; the case \"Enter Class Screen \u2014 unmapped keys have"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 652,
+    "kind": "GAP",
+    "text": "on that point."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 676,
+    "kind": "GAP",
+    "text": "and"
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 702,
+    "kind": "GAP",
+    "text": "and does not assert the exact printed label wording for Issue Time/Issue Date."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 725,
+    "kind": "GAP",
+    "text": "pointing back to this question."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 750,
+    "kind": "GAP",
+    "text": "at the file's top-level note."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 773,
+    "kind": "UNCONFIRMED",
+    "text": "pointing back to this question."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 797,
+    "kind": "GAP",
+    "text": "."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 823,
+    "kind": "GAP",
+    "text": "rather than asserting an exact filename regex."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 844,
+    "kind": "GAP",
+    "text": "."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 865,
+    "kind": "GAP",
+    "text": "."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 886,
+    "kind": "GAP",
+    "text": "."
+  },
+  {
+    "file": "proposals\\NJT-ETM-suite-restructure\\gap-register.md",
+    "line": 946,
+    "kind": "GAP",
+    "text": "and does not assert the interface exists or has any particular shape."
   },
   {
     "file": "proposals\\pv-suite-restructure\\correctness-audit-2026-08-06.md",
@@ -1504,6 +3292,12 @@
     "line": 11,
     "kind": "UNCONFIRMED",
     "text": "` rather than asserting the exact screen name |"
+  },
+  {
+    "file": "reports\\system-test-demo-project\\njt-dryrun\\2026-09-16\\alignment-audit.md",
+    "line": 741,
+    "kind": "GAP",
+    "text": "the title page (17 Jun 2026, Draft) and the revision history"
   },
   {
     "file": "reports\\tfts-system-test\\new-abt-suite\\2026-07-23\\alignment-audit.md",
@@ -5736,6 +7530,84 @@
     "text": ", blocked on the conflict above)"
   },
   {
+    "file": "reports\\tfts-system-test\\new-pos-acceptance-suite\\2026-09-21\\automation-backlog.md",
+    "line": 2796,
+    "kind": "GAP",
+    "text": "the specific resulting behaviour is not documented in any sourced FBD, only known as 'not a dead key' via TIBU-24026; confirm the actual on-screen effect before running"
+  },
+  {
+    "file": "reports\\tfts-system-test\\new-pos-acceptance-suite\\2026-09-25\\alignment-audit.md",
+    "line": 165,
+    "kind": "GAP",
+    "text": "whether Translink has any bulk-discount lookup table actuall"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 8,
+    "kind": "GAP",
+    "text": "no build/version identifier is present in the pulled run data (`run-health.json` has no version field); confirm with the release notes before publishing."
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 24,
+    "kind": "GAP",
+    "text": "| **GAP** \u2014 approver list not available from the run data pulled; a human must complete this before circulation. |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 30,
+    "kind": "GAP",
+    "text": "| **GAP** \u2014 distribution list not available from the run data pulled; a human must complete this before circulation. |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 36,
+    "kind": "GAP",
+    "text": "TestRail base URL not available in the pulled data; cite by suite id 30253 until a human adds the live link |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 37,
+    "kind": "GAP",
+    "text": "same as above, cite by run id |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 51,
+    "kind": "GAP",
+    "text": "no component/software version data (device firmware, back-office system versions, browser) is present in the pulled run data; omitted rather than invented. A human should complete this table from the real test environment before publishing."
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 76,
+    "kind": "GAP",
+    "text": "no JIRA key citable; case not present in current suite case list (`cases.json`), so no Refs field could be checked | Flagged by run-health as `flaky` + `recently_regressed`; window history: 1 passed / 3 failed / 1 other of 5 runs. Recommendation from the tool: INVESTIGATE \u2014 \"Latest execution failed after an earlier pass in the window \u2014 treat as a likely real regression first, not a test problem.\" Exact TestRail status label behind \"Other\" is **UNCONFIRMED** \u2014 not resolvable from run-health.json; confirm in TestRail. |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 77,
+    "kind": "GAP",
+    "text": "same as above | Window history: 0 passed / 3 failed / 1 other of 4 runs. Exact status label behind \"Other\" is **UNCONFIRMED** \u2014 confirm in TestRail. |"
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 87,
+    "kind": "GAP",
+    "text": "no previously-known defect could be matched to the cases executed in this run. The citable source for a case's JIRA linkage (`Refs`, in `cases.json`) does not contain any of the 23 case ids that have execution history in this run window, so no Jira ID \u2192 re-test outcome mapping could be produced without guessing. This section is omitted rather than fabricated; route to the gap register for engineer confirmation of whether any of the \"Other\"/regressed cases above map to an existing Jira defect."
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 95,
+    "kind": "GAP",
+    "text": "not populated, for the same reason as \"Status of bugs tested in this build\" above."
+  },
+  {
+    "file": "reports\\translink\\30253\\2026-09-28\\test-run-report.md",
+    "line": 101,
+    "kind": "GAP",
+    "text": "owner not identified in the pulled data; assign per the POS suite-restructure workstream. |"
+  },
+  {
     "file": "reports\\translink\\bos-abt\\2026-07-22\\deep-audit.md",
     "line": 36,
     "kind": "UNCONFIRMED",
@@ -5758,6 +7630,36 @@
     "line": 36,
     "kind": "GAP",
     "text": "` (logged as **Q25**) rather than asserted as fact; dropped the same ungrounded"
+  },
+  {
+    "file": "reports\\translink\\etm\\2026-09-21\\tibu-travelmode-comms-coverage.md",
+    "line": 63,
+    "kind": "GAP",
+    "text": "` \u2014"
+  },
+  {
+    "file": "reports\\translink\\etm\\2026-09-21\\tibu-travelmode-comms-coverage.md",
+    "line": 84,
+    "kind": "GAP",
+    "text": "exact KPH value is"
+  },
+  {
+    "file": "reports\\translink\\etm\\2026-09-21\\tibu-travelmode-comms-coverage.md",
+    "line": 140,
+    "kind": "UNCONFIRMED",
+    "text": "CR108 specifies this; the reported"
+  },
+  {
+    "file": "reports\\translink\\etm\\2026-09-21\\tibu-travelmode-comms-coverage.md",
+    "line": 154,
+    "kind": "UNCONFIRMED",
+    "text": "per CR108; defect report says it"
+  },
+  {
+    "file": "reports\\translink\\etm\\2026-09-21\\tibu-travelmode-comms-coverage.md",
+    "line": 181,
+    "kind": "GAP",
+    "text": "confirm expected roaming"
   },
   {
     "file": "reports\\translink\\gv\\2026-07-21\\deep-audit.md",
@@ -5830,5 +7732,167 @@
     "line": 223,
     "kind": "GAP",
     "text": "` marker (the vocabulary `gap-register`'s mechanical grep actually looks for)."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 149,
+    "kind": "UNCONFIRMED",
+    "text": "the specific protocol and data schema for this interface are not defined in FS001 (\"will be defined and formally agreed upon during the Final Design Review (FDR) process\"); do not assume any message format or schema until FDR output is captured in knowledge/ (\u00a75.1, GR-11)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 180,
+    "kind": "GAP",
+    "text": "the specific replacement reports and field-level mappings from BARS are not defined in FS001 (\"The reporting solution will be defined in parallel to the FDR process\"); do not assert a specific report name or field set until this is resolved and captured in knowledge/ (\u00a75.4)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 970,
+    "kind": "GAP",
+    "text": "per-deployment ETM configuration may disable managing one or both of the Destination zone / CT flag fields (\u00a74.2.9.1 note); confirm this deployment's configuration before asserting the fields are always populated (gap-register.md Q8)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1016,
+    "kind": "GAP",
+    "text": "the CRC seed is documented (`0x11` high, `0x00` low) but no polynomial or worked example value is given; confirm the full CRC algorithm before writing or asserting a case that constructs or verifies a real CRC value \u2014 this case asserts frame structure only (gap-register.md Q5)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1127,
+    "kind": "GAP",
+    "text": "no explicit list of which fields are safe to omit/default during a mixed-version skew window is given beyond the general \"both orders supported\" statement; confirm specific field-level skew behaviour on the live system before relying on it beyond this general case (gap-register.md Q11)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1150,
+    "kind": "GAP",
+    "text": "per-deployment ETM configuration may disable managing one or both of these optional fields (\u00a74.2.11.1 note); confirm this deployment's configuration before asserting the fields are always populated (gap-register.md Q8)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1172,
+    "kind": "UNCONFIRMED",
+    "text": "the spec's narrative for this case describes a CT fare ticket still being issued despite the insufficient-balance outcome; whether that is intended behaviour or a documentation artifact is not resolved by the spec \u2014 confirm with the engineer whether a CT ticket issuing alongside a BOS-reported insufficient balance is expected, and flag if reproduced in test (gap-register.md Q9)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1201,
+    "kind": "GAP",
+    "text": "the spec's own use-case slide for this case shows no $E7 fields marked as sent (\"in bold\"), unlike other use cases; confirm the exact $F4/$E7 exchange (or lack of one) for this case on the live system before asserting no fields are ever sent (gap-register.md Q10)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1211,
+    "kind": "GAP",
+    "text": "the spec's own case index (slide 15) groups this case under a heading that reads inconsistently against its per-case \"Validation Process\" header; go by the per-case header (used above) and flag the labelling inconsistency to the engineer if it matters for a fix version (gap-register.md Q11)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1289,
+    "kind": "UNCONFIRMED",
+    "text": "whether these High-Volume-Mode-only fields are still reachable on the live NJT deployment is not stated in the spec; confirm with the engineer before writing coverage that exercises them, and treat any existing suite content built for High Volume Mode as stale/retire-candidate, not something to extend (gap-register.md Q11)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1328,
+    "kind": "GAP",
+    "text": "the spec states the $F4 auto-approve-on-timeout rule only \"if no driver-supplied information is required\"; it does not state what happens on timeout when driver info IS required \u2014 confirm the actual behaviour (e.g. remains pending vs. some other fallback) on the live system before asserting an outcome (gap-register.md Q7)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 1337,
+    "kind": "GAP",
+    "text": "the spec shows this recovery sequence only diagrammatically; it does not state in text whether the standard 1-minute auto-approve/auto-cancel timeout (by message type, see the three cases above) still applies unchanged to a transaction that was pending when comms dropped, or what the OBV's approval status is during the outage itself \u2014 confirm both points on the live system before asserting either (gap-register.md Q7)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 2493,
+    "kind": "GAP",
+    "text": "the source spec states the unknown-Ticket-Type sentinel for this SV/Ticket flow is \"not 029999\", while the sibling EMV flow's equivalent rule (FS002 \u00a76.2.2.1) uses \"not 029899\" \u2014 unresolved even across the two source sections. This case intentionally asserts the override behaviour without hardcoding either numeric sentinel value. See gap-register.md Q16; once answered, this case should be strengthened to assert the confirmed value."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 2657,
+    "kind": "GAP",
+    "text": "same unresolved sentinel-value discrepancy as the SV rejection case (029999 for this flow per FS002 \u00a76.3.2.1/\u00a76.3.1.1, vs 029899 for the sibling EMV flow) \u2014 this case intentionally does not hardcode either numeric value. See gap-register.md Q16."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 2850,
+    "kind": "UNCONFIRMED",
+    "text": "whether the ETM still pre-fills the remaining sign-on fields from a flag=0 message that otherwise carries non-zero trip data is not resolved by the spec (\u00a74.3 states both \"will not pre-fill any other fields\" and, separately at \u00a74.3.1, that the details would simply be displayed without the alert) \u2014 confirm on the live system before asserting either outcome"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 2935,
+    "kind": "GAP",
+    "text": "the source spec marks the ETM Test message's SADDR/MTYPE and MSUBTYPE wire values \"(please define)\" in its own format table (\u00a73.1.13) \u2014 do not assert specific wire address/subtype values until confirmed against the actual implemented interface"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 3305,
+    "kind": "GAP",
+    "text": "two different consecutive-NAK thresholds are stated in the source note (10 for standby entry, 6 for this CloudFare event); do not assert a specific NAK count for the CloudFare event until this is resolved. See gap-register.md Q19."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 3523,
+    "kind": "GAP",
+    "text": "the exact bit-table values for every documented OBV-status scenario (p.77-79) did not extract cleanly from the source PDF (inconsistent cell markers across rows); do not build bit-pattern-level assertions for any other scenario in this table without first verifying the exact bit assignments directly against the source PDF. See gap-register.md Q17."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 3563,
+    "kind": "GAP",
+    "text": "a diagnostic is written to the RDM at the start of the next trip; the exact diagnostic code/format is not defined in this spec (\u00a72 says it is \"described in a separate document\") \u2014 confirm the format before asserting its content"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-17\\automation-backlog.md",
+    "line": 3630,
+    "kind": "GAP",
+    "text": "the exact outcome once the window elapses (whether the FR signs the driver off immediately, or a further confirmation step exists first) is not confirmed in the source note; confirm before asserting a specific outcome. See gap-register.md Q20."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 149,
+    "kind": "UNCONFIRMED",
+    "text": "the specific protocol and data schema for this interface are not defined in FS001 (\"will be defined and formally agreed upon during the Final Design Review (FDR) process\"); do not assume any message format or schema until FDR output is captured in knowledge/ (\u00a75.1, GR-11)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 180,
+    "kind": "GAP",
+    "text": "the specific replacement reports and field-level mappings from BARS are not defined in FS001 (\"The reporting solution will be defined in parallel to the FDR process\"); do not assert a specific report name or field set until this is resolved and captured in knowledge/ (\u00a75.4)"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 1575,
+    "kind": "UNCONFIRMED",
+    "text": "whether the ETM still pre-fills the remaining sign-on fields from a flag=0 message that otherwise carries non-zero trip data is not resolved by the spec (\u00a74.3 states both \"will not pre-fill any other fields\" and, separately at \u00a74.3.1, that the details would simply be displayed without the alert) \u2014 confirm on the live system before asserting either outcome"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 1660,
+    "kind": "GAP",
+    "text": "the source spec marks the ETM Test message's SADDR/MTYPE and MSUBTYPE wire values \"(please define)\" in its own format table (\u00a73.1.13) \u2014 do not assert specific wire address/subtype values until confirmed against the actual implemented interface"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 1986,
+    "kind": "GAP",
+    "text": "two different consecutive-NAK thresholds are stated in the source note (10 for standby entry, 6 for this CloudFare event); do not assert a specific NAK count for the CloudFare event until this is resolved. See gap-register.md Q19."
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 2187,
+    "kind": "GAP",
+    "text": "a diagnostic is written to the RDM at the start of the next trip; the exact diagnostic code/format is not defined in this spec (\u00a72 says it is \"described in a separate document\") \u2014 confirm the format before asserting its content"
+  },
+  {
+    "file": "reports\\uk-bus-projects\\njt-systemtestops2\\2026-09-18\\automation-backlog.md",
+    "line": 2247,
+    "kind": "GAP",
+    "text": "the exact outcome once the window elapses (whether the FR signs the driver off immediately, or a further confirmation step exists first) is not confirmed in the source note; confirm before asserting a specific outcome. See gap-register.md Q20."
   }
 ]

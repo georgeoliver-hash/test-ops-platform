@@ -1,0 +1,31 @@
+{
+  "project": "translink",
+  "device": "POS",
+  "suite": "**NEW** POS-Acceptance Suite",
+  "suite_id": 30253,
+  "generated_at": "2026-09-28",
+  "inputs": {
+    "citation": {
+      "label": "Cases with a real spec citation",
+      "cases_total": 944,
+      "cases_with_refs": 391,
+      "pct": 41.4,
+      "source": "Real `refs` field on suite 30253's TestRail case data (reports/tfts-system-test/new-pos-acceptance-suite/2026-09-28/cases.json)."
+    },
+    "automation": {
+      "label": "Cases referenced from a .robot test",
+      "cases_total": 944,
+      "cases_referenced": 27,
+      "pct": 2.9,
+      "source": "Regex scan (C(\\d{6,7})) of test-automation-sit's real, non-reference .robot Documentation fields — 27 of 944 suite cases matched a referenced id, out of 29 unique ids referenced repo-wide across 27 of 57 .robot files."
+    },
+    "gaps": {
+      "label": "Cases NOT behind an open GAP/UNCONFIRMED marker",
+      "cases_total": 944,
+      "gaps_open": 6,
+      "pct": 99.4,
+      "source": "Real /api/gap-register count, scope=device, project=translink, device=POS (6 open markers), as a share of suite 30253's 944 cases."
+    }
+  },
+  "confidence_pct": 48
+}
