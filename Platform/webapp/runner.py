@@ -95,6 +95,15 @@ _AGENT_TIMEOUT = 900
 _cancel_events: dict[str, threading.Event] = {}
 _run_procs: dict[str, subprocess.Popen] = {}
 _procs_lock = threading.Lock()
+# George, 2026-09-30: "there should be a way to approve all... plus auto mode seems to not
+# actual work?" -- first built as a browser-side (JS Set) toggle, which only "worked" while
+# that exact browser tab stayed on that exact page; navigating away, reloading, or even just
+# the run outliving the tab silently reset it with no visible sign it had turned off. The
+# run itself lives entirely server-side (this dict, same as _cancel_events/_run_procs) --
+# auto-approve needs to too, so it survives page navigation/reload and doesn't depend on any
+# one browser tab being open. In-memory only, same as its siblings -- doesn't survive a
+# server restart, which is an accepted, pre-existing limit of this whole tracking approach.
+_auto_approve_runs: set[str] = set()
 
 # Extra, pipeline-declared run inputs beyond project/device/suite ids (e.g. ingest-docs'
 # {docs_path}) -- keyed by run_id so a resumed (post-human-step) continuation can still see
@@ -195,6 +204,26 @@ def _slugify_area(spec_stem: str) -> str:
     return _AREA_PREFIX_RE.sub("", spec_stem)
 
 
+_DOCUMENT_ROLE_RE = re.compile(r"\*\*Document role:\*\*\s*(functional|reference)", re.IGNORECASE)
+
+
+def _note_document_role(note_path: Path) -> str | None:
+    """Real content-based classification `spec-distiller` writes into a note's own header --
+    'functional' (defines testable device behaviour -> a real authored area) or 'reference'
+    (environment/config/topology/endpoint/protocol/data-setup knowledge -> grounding only,
+    never its own area). See spec-distiller.md for why this can't be a filename guess.
+
+    None (not "unknown"/"functional" by default) for a note distilled before this convention
+    existed, or if the file can't be read -- callers decide their own safe fallback rather
+    than this silently assuming either role."""
+    try:
+        head = note_path.read_text(encoding="utf-8", errors="replace")[:2000]
+    except OSError:
+        return None
+    m = _DOCUMENT_ROLE_RE.search(head)
+    return m.group(1).lower() if m else None
+
+
 def _functional_areas(project: str, device: str) -> list[str]:
     """One functional area per DEVICE-RELEVANT ingested spec file -- generic, not
     NJT-hardcoded: any project with knowledge/{project}/specs/*.md (via ingest-docs) gets
@@ -247,6 +276,40 @@ def _functional_areas(project: str, device: str) -> list[str]:
         # (Device-Endpoints-STE12-pv-and-pos-local-services.md, itself a clean title hit),
         # and correctly drops all 13 "medium" Device-Endpoints false positives.
         matched = {m["file"] for m in payload["archived"] if m["confidence"] == "high"}
+        # George, 2026-09-30, the actual root-cause fix (not just the confidence tightening
+        # above): "some documents are probably worth having ingested but are like for
+        # knowledge... the test suite we write manual cases for will mainly always be the
+        # functional and non functional tests for the device targeted... we use our
+        # knowledge from the other specifications to understand how the functional test
+        # behaves... that basically like add to the functional spec". Even at "high"
+        # confidence, Device-Endpoints-STE12-pv-and-pos-local-services.md genuinely covers
+        # BOTH PV and POS -- it's not a device-specific functional-behaviour document at
+        # all, it's a shared cross-device endpoint/protocol REFERENCE. Authoring it as its
+        # own area mixed PV-only sections into a file meant to be pushed as POS's, exactly
+        # the suite-clutter this whole filter exists to prevent -- one layer deeper than a
+        # file-level device mismatch. Reference material should ground a real functional
+        # case (gherkin-author can still read it), never generate its own pushed section.
+        #
+        # George, 2026-09-30 (the real fix, generalised): "specs might always be different
+        # for different projects... we need to ensure we are smart enough to distinct
+        # between test case writing [and] anything extra [that] is knowledge." A filename
+        # check (the "Device-Endpoints" prefix this used to test) is exactly the kind of
+        # project-specific guess that won't generalise -- a different project's reference
+        # docs won't share Translink's naming convention. `spec-distiller` now classifies
+        # each note's real **Document role** (functional/reference) from its own content, in
+        # the note's own header -- that's the real, project-agnostic signal to trust. The
+        # filename check survives ONLY as a fallback for notes distilled before this
+        # convention existed (no header field to read yet), so older knowledge isn't broken.
+        def _role(f: str) -> str:
+            role = _note_document_role(specs_dir / f)
+            if role is not None:
+                return role
+            # Legacy fallback ONLY -- every note distilled before spec-distiller existed
+            # has no real Document-role header to read. Without this, today's real
+            # Translink knowledge (still all legacy) would silently regress to the exact
+            # bug this whole fix exists to prevent, the moment a note has no tag to trust.
+            return "reference" if Path(f).stem.lower().startswith("device-endpoints") else "functional"
+        matched = {f for f in matched if _role(f) != "reference"}
         if matched:
             return [_slugify_area(Path(f).stem) for f in sorted(matched)]
         # Classifier ran fine but found zero matches for this device -- a project-wide
@@ -428,8 +491,23 @@ def _build_params(project: str, device: str, steps: list[Step], extra_inputs: di
 def _run_subprocess(cmd: list[str], cwd: str, timeout: int, run_id: str | None = None):
     """The one place an actual subprocess gets spawned — using Popen (not subprocess.run)
     so an in-flight process is reachable by `cancel_run` via `_run_procs`. Returns
-    (returncode, stdout, stderr); raises TimeoutExpired/OSError like subprocess.run would."""
-    proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    (returncode, stdout, stderr); raises TimeoutExpired/OSError like subprocess.run would.
+
+    George, 2026-09-30: "why is there these weird characters anyway always being caught
+    and causing problems" -- the real, confirmed root cause of the mojibake (Â£, â€")
+    flagged repeatedly all session (Reports tab, run summaries, onboard-suite's cli_output):
+    `text=True` alone makes Python decode the child's stdout/stderr using
+    `locale.getpreferredencoding(False)` -- cp1252 on this machine, not UTF-8. Every
+    UTF-8 multi-byte character a CLI step writes (£, —, etc.) was silently misdecoded into
+    2-3 garbled cp1252 characters, EVERY time, since every cli/agent step routes through
+    this one function. `refresh_gap_register` already used the correct fix
+    (`encoding="utf-8", errors="replace"`) for its own separate subprocess call -- this was
+    simply the one place that pattern was missed. Not "weird characters" in the content;
+    real characters in real spec text, corrupted by this one decode step every time."""
+    proc = subprocess.Popen(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, encoding="utf-8", errors="replace",
+    )
     if run_id:
         with _procs_lock:
             _run_procs[run_id] = proc
@@ -525,6 +603,15 @@ def _run_cli_step(run_id: str, step: Step, command: str) -> str:
         # this whole project: a failed push_area's displayed "Result" was actually the
         # previous area's successful push output, making every failure look like it was
         # reporting the wrong step.
+        #
+        # George, 2026-09-30, found live AGAIN: the exact same staleness bug, just in the
+        # `summary` field specifically -- `extra["summary"]` above is only ever set when
+        # `_extract_plain_summary(stdout)` finds a real line to extract, which `push` never
+        # prints, so `extra` stayed empty and this call never touched `summary` at all,
+        # leaving the run showing author_area's PRIOR successful narrative as if it
+        # explained push_area's real failure. `summary` must be explicitly cleared on
+        # failure when there's nothing real to put there -- never silently left stale.
+        extra.setdefault("summary", None)
         store.update_run(run_id, cli_output=output, **extra)
         return "failed"
 
@@ -560,6 +647,9 @@ def _run_gate_step(run_id: str, step: Step, command: str) -> str:
         extra["report_path"] = report_path
     if plain_summary:
         extra["summary"] = plain_summary
+    if not ok:
+        # Same staleness bug as _run_cli_step's failure branch, same fix -- see its comment.
+        extra.setdefault("summary", None)
     store.update_run(run_id, cli_output=output, **extra)
     return "succeeded" if ok else "failed"
 
@@ -658,6 +748,9 @@ def _run_agent_step(run_id: str, step: Step, params: dict, area: str | None = No
     # job -- found live (in conversation, not in this codebase) that an agent given a stated
     # goal without that framing can silently widen or narrow scope past what the step actually
     # asked for.
+    from Platform.webapp import reviews  # lazy: reviews imports this module
+    prompt += reviews.decisions_prompt(run_id)  # what people decided earlier in this run
+
     intent = params.get("intent")
     if intent:
         prompt += (
@@ -839,6 +932,21 @@ def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, 
         step = steps[idx]
         outcome = _dispatch_step(run_id, step, params, context)
         if outcome == "waiting_human":
+            # George, 2026-09-30: "there should be a way to approve all so you dont have to
+            # keep approving... put it into approve auto mode" -- only ever auto-acts on a
+            # genuine push --commit gate (same check the console's own UI uses to decide
+            # whether to show "Approve & Push" vs "Continue"), reading straight from the
+            # step's own just-written output rather than re-rendering the command here.
+            # Any OTHER kind of waiting_human (a real "Continue" checkpoint like
+            # confirm_scope/human_cleanup) still stops here for a real look, same as always.
+            if run_id in _auto_approve_runs:
+                fresh = store.get_steps(run_id)
+                this_step = next((s for s in fresh if s["step_id"] == step.id), None)
+                out = (this_step or {}).get("output") or ""
+                if "push" in out and "--commit" in out:
+                    resolve_step(run_id, step.id)
+                    return
+                _auto_approve_runs.discard(run_id)
             store.update_run(run_id, status="waiting_human")
             return
         if outcome == "failed":
@@ -848,6 +956,7 @@ def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, 
             # from a real failure. Checked here, not inside the step runners themselves,
             # since any step kind (cli/gate/agent) can be the one mid-flight when cancel
             # fires, and this is the one place all of them funnel through.
+            _auto_approve_runs.discard(run_id)  # any real failure needs a fresh, deliberate re-opt-in
             if cancel_event.is_set():
                 store.update_run(run_id, status="failed", error="Run cancelled.")
             else:
@@ -855,6 +964,7 @@ def _run_pipeline_job(run_id: str, pipeline_id: str, project: str, device: str, 
             return
         # succeeded / skipped -> keep going
 
+    _auto_approve_runs.discard(run_id)  # terminal -- nothing left to auto-approve
     store.update_run(run_id, status="succeeded")
 
 
@@ -899,6 +1009,11 @@ def start_scheduled_scan(project: str, device: str) -> str:
     return start_run("scheduled-scan", project, device, extra_inputs={"docs_path": docs_path})
 
 
+class CaseReviewPendingError(RuntimeError):
+    """Raised by resolve_step when a build's human_cleanup is approved while cases from the
+    repair step are still open on the Case Review screen. app.py maps this to 409."""
+
+
 class TargetNotApprovedError(RuntimeError):
     """Raised by resolve_step when a push+--commit gate is resolved for a target that has
     no persisted sign-off (store.is_target_approved) — independent of, and in addition to,
@@ -928,6 +1043,22 @@ def _step_command(run_id: str, run: dict, step_id: str) -> str | None:
     return _resolved_step(run_id, run, step_id)[1]
 
 
+def _resume_index(run: dict, step_id: str, stored_idx: int) -> int:
+    """Where `step_id` sits in the pipeline's CURRENT step list.
+
+    A run stores its own step rows when it starts, but resuming (Continue / Retry) walks the
+    pipeline's current YAML. If the YAML gained or lost a step after the run began, the stored
+    position points at the wrong step -- found live 2026-10-01: a build started before `repair`
+    was added kept restarting `human_cleanup` (one position later in the new list) instead of
+    finishing. Looking the step up by id keeps both lists in agreement; the stored position is
+    only the fallback if the step no longer exists in the YAML at all."""
+    try:
+        ids = [s.id for s in _flatten_steps(load_pipeline(run["pipeline_id"]), run["project"], run["device"])]
+    except Exception:  # noqa: BLE001 -- resuming must never be blocked by a pipeline-load problem
+        return stored_idx
+    return ids.index(step_id) if step_id in ids else stored_idx
+
+
 def resolve_step(run_id: str, step_id: str) -> None:
     """Advances a `waiting_human` step to `succeeded` and resumes the run from the next
     step — this is what the UI's "Approve & Push" / "Continue" button calls. Raises
@@ -945,6 +1076,15 @@ def resolve_step(run_id: str, step_id: str) -> None:
         raise KeyError(f"No such step '{step_id}' in run '{run_id}'")
 
     step, command = _resolved_step(run_id, run, step_id)
+    if run["pipeline_id"] == "onboard-suite" and step_id == "human_cleanup":
+        # The repair step handed these cases to a person because a machine must not guess at
+        # them. The build is not done until each is fixed or knowingly accepted.
+        from Platform.webapp import case_review
+        n_open = case_review.open_count(run["project"], run["device"])
+        if n_open:
+            raise CaseReviewPendingError(
+                f"{n_open} case(s) still need review. Open Case Review, fix or accept each one, then continue."
+            )
     # A real write TO THE CONFIGURED TARGET (push --commit, or create-run --commit --
     # added 2026-09-22 for targeted-run) requires that target's own persisted approval,
     # in addition to this per-step human gate. Deliberately narrower than
@@ -982,7 +1122,7 @@ def resolve_step(run_id: str, step_id: str) -> None:
     store.update_run(run_id, status="running")
     _cancel_events[run_id] = threading.Event()
 
-    idx = ids_in_order.index(step_id)
+    idx = _resume_index(run, step_id, ids_in_order.index(step_id))
     thread = threading.Thread(
         target=_run_pipeline_job,
         args=(run_id, run["pipeline_id"], run["project"], run["device"], idx + 1),
@@ -1016,7 +1156,7 @@ def retry_failed_step(run_id: str, step_id: str) -> None:
     store.update_run(run_id, status="running", error=None)
     _cancel_events[run_id] = threading.Event()
 
-    idx = ids_in_order.index(step_id)
+    idx = _resume_index(run, step_id, ids_in_order.index(step_id))
     thread = threading.Thread(
         target=_run_pipeline_job,
         args=(run_id, run["pipeline_id"], run["project"], run["device"], idx),
@@ -1041,7 +1181,20 @@ def cancel_run(run_id: str) -> None:
     so mark it cancelled directly instead of only flagging for a loop that will never run
     again. A genuinely `running` run still goes through the flag+terminate path below,
     which the loop's own cancel_event check (between steps) and the newly-added
-    mid-step-termination check (see _run_pipeline_job) both handle."""
+    mid-step-termination check (see _run_pipeline_job) both handle.
+
+    George, 2026-09-30, found live AGAIN (same root cause, a different trigger this time):
+    "i cancelled but nothing happened" -- a real onboard-suite author_area step's `claude`
+    subprocess had already exited on its own (confirmed: no such process left running), but
+    the background thread never noticed and the step sat at `running` in the database well
+    past its own 900s timeout, with `_run_procs` holding nothing for this run_id by the time
+    cancel ran. `status == "running"` took the "still has something to terminate" branch,
+    found `proc is None`, and did NOTHING observable -- same failure shape as the
+    `waiting_human` case above, just reached a different way. There is no meaningful
+    difference, from the caller's side, between "nothing left to terminate because it
+    already finished" (waiting_human) and "nothing left to terminate because it's already
+    gone" (this case) -- both need the same direct mark-as-cancelled fallback, not silence."""
+    _auto_approve_runs.discard(run_id)  # a deliberate cancel always needs a fresh re-opt-in too
     event = _cancel_events.setdefault(run_id, threading.Event())
     event.set()
     run = store.get_run(run_id)
@@ -1055,6 +1208,44 @@ def cancel_run(run_id: str) -> None:
             proc.terminate()
         except OSError:
             pass
+    elif run is not None:
+        # No live process to terminate (already exited/orphaned, e.g. a subprocess that
+        # finished or crashed without the tracking thread registering it) -- same real
+        # outcome as the waiting_human case above: there's nothing left to actually stop,
+        # so silently returning here just looks like cancel is broken. Mark it directly --
+        # the run AND whichever step is still stuck at "running" (never leave the step
+        # list itself showing "running" forever just because the run-level status moved on).
+        for s in store.get_steps(run_id):
+            if s["status"] == "running":
+                store.update_step(
+                    run_id, s["step_id"], status="failed",
+                    output="Cancelled: the underlying process for this step had already "
+                           "exited without being detected (no live process left to "
+                           "terminate). Retry this step fresh.",
+                    finished_at=_now(),
+                )
+        store.update_run(run_id, status="failed", error="Run cancelled.")
+
+
+def set_auto_approve(run_id: str, enabled: bool) -> None:
+    """Server-side toggle for onboard-suite's repeated push --commit gates (see
+    _auto_approve_runs' own comment for why this had to move out of the browser). Enabling
+    on a run currently sitting at a genuine push gate (waiting_human) must resume it right
+    now, not just flip the flag and wait for the next unrelated poll/action to notice."""
+    if not enabled:
+        _auto_approve_runs.discard(run_id)
+        return
+    _auto_approve_runs.add(run_id)
+    run = store.get_run(run_id)
+    if run is None or run.get("status") != "waiting_human":
+        return
+    steps_meta = store.get_steps(run_id)
+    waiting = next((s for s in steps_meta if s["status"] == "waiting_human"), None)
+    if waiting is None:
+        return
+    out = waiting.get("output") or ""
+    if "push" in out and "--commit" in out:
+        resolve_step(run_id, waiting["step_id"])
 
 
 # George, 2026-09-29: "how come we can't ensure a sync button to re-check ... if yes
@@ -1133,19 +1324,28 @@ def refresh_gap_register() -> dict:
     return {"ok": True, "total": total, "refreshed_at": _now()}
 
 
-def _case_count(suite_id: int) -> int | None:
-    """Real, live case count for one suite via `system_test_ops cases` (read-only — that
-    command only ever reads TestRail and writes local report files). Parses the CLI's own
-    "Wrote N cases ->" line rather than re-implementing the TestRail call here."""
+def _case_counts(suite_id: int) -> tuple[int | None, int]:
+    """(live case count, cases marked for delete) for one suite via `system_test_ops cases`
+    (read-only -- it only reads TestRail and writes local report files). Parses the CLI's own
+    "Wrote N cases (M more marked for delete, left out) ->" line rather than re-implementing the
+    TestRail call here. Retired cases (ZZ_DELETE prefix, or sitting in the delete folder) are
+    never part of N: every count on a dashboard is live cases only, with M reported separately."""
     try:
         result = subprocess.run(
             [str(_VENV_PYTHON), "-m", "system_test_ops", "cases", "--suite", str(suite_id)],
             cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
         )
     except (subprocess.TimeoutExpired, OSError):
-        return None
-    match = re.search(r"Wrote (\d+) cases", result.stdout)
-    return int(match.group(1)) if match else None
+        return None, 0
+    match = re.search(r"Wrote (\d+) cases(?: \((\d+) more marked for delete)?", result.stdout)
+    if not match:
+        return None, 0
+    return int(match.group(1)), int(match.group(2) or 0)
+
+
+def _case_count(suite_id: int) -> int | None:
+    """Live case count only (see _case_counts)."""
+    return _case_counts(suite_id)[0]
 
 
 def get_run_comments(project: str, device: str, which: str = "new", last_n: int = 5) -> dict:
@@ -1334,14 +1534,16 @@ def compare_suite_case_counts(project: str, device: str) -> dict:
     ids = store.get_suite_ids(project, device)
     if not ids or ids["old_suite_id"] is None or ids["new_suite_id"] is None:
         return {"available": False, "reason": "old_suite_id and/or new_suite_id not configured for this target."}
-    old_count = _case_count(ids["old_suite_id"])
-    new_count = _case_count(ids["new_suite_id"])
+    old_count, old_marked = _case_counts(ids["old_suite_id"])
+    new_count, new_marked = _case_counts(ids["new_suite_id"])
     if old_count is None or new_count is None:
         return {"available": False, "reason": "Could not pull live case counts (check TestRail credentials/connectivity)."}
     return {
         "available": True,
         "old_suite_id": ids["old_suite_id"], "new_suite_id": ids["new_suite_id"],
         "old_case_count": old_count, "new_case_count": new_count,
+        # Retired cases waiting to be binned: never counted above, shown beside them instead.
+        "old_marked_for_delete": old_marked, "new_marked_for_delete": new_marked,
         "diff": new_count - old_count,
     }
 

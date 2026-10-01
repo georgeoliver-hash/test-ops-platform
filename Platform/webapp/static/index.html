@@ -134,7 +134,21 @@
   .console-panel{position:fixed;left:248px;right:0;bottom:0;background:var(--surface);color:var(--ink);z-index:35;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.12);transition:left .15s;}
   .shell.sidebar-collapsed + .console-panel{left:62px;}
   @media (max-width:860px){.console-panel{left:0;}}
-  .console-panel-header{display:flex;align-items:center;justify-content:space-between;padding:7px 16px;background:var(--bg);cursor:pointer;font-size:12px;font-weight:600;color:var(--ink-soft);user-select:none;}
+  /* George, 2026-09-30: "a mini pop up at the bottom" -- a slow-step warning toast. Fixed
+     ABOVE the docked console panel (higher z-index, bottom offset clears its collapsed
+     header height) so it's never hidden behind it regardless of panel open/closed state. */
+  .slow-step-toast{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:12.5px;max-width:min(560px, 90vw);box-shadow:0 6px 20px rgba(0,0,0,.15);}
+  .slow-step-toast .toast-close{background:none;border:none;color:inherit;font-size:16px;cursor:pointer;line-height:1;padding:0;flex:none;}
+  /* George, 2026-09-30: "the ability to resize the console would be good? clicking it
+     should still close and open but ability to view more of the console" -- a drag handle
+     on the panel's own top edge, independent of the header's click-to-toggle below. Height
+     lives in a CSS custom property (--console-h), not a class-toggled max-height, so
+     dragging never fights the open/close animation -- closed still just means the .open
+     class (and its max-height:0 default) is absent, regardless of whatever height was
+     last dragged. */
+  .console-panel-resize-handle{position:absolute;top:-4px;left:0;right:0;height:8px;cursor:ns-resize;z-index:1;}
+  .console-panel-resize-handle:hover, .console-panel-resize-handle.dragging{background:var(--accent-soft-bg);}
+  .console-panel-header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:7px 16px;background:var(--bg);cursor:pointer;font-size:12px;font-weight:600;color:var(--ink-soft);user-select:none;}
   .console-panel-header .chevron{transition:transform .15s;}
   .console-panel.open .console-panel-header .chevron{transform:rotate(180deg);}
   .console-panel-body{max-height:0;overflow-y:auto;padding:0 18px;font-size:12.5px;line-height:1.5;transition:max-height .15s, padding .15s;}
@@ -154,7 +168,7 @@
      no way to tell WHICH run that color belonged to once you'd navigated away from its page. */
   .console-run-label-pill{display:none;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;margin-left:8px;background:var(--accent-soft-bg);color:var(--accent);border:1px solid var(--accent-soft-border);}
   .console-run-label-pill.show{display:inline-flex;}
-  .console-panel.open .console-panel-body{max-height:38vh;padding:12px 18px 16px;}
+  .console-panel.open .console-panel-body{max-height:var(--console-h, 38vh);padding:12px 18px 16px;}
   .page-head{margin-bottom:16px;}
   .page-head h1{font-size:22px;margin:0 0 4px;font-weight:600;}
   .page-head p{color:var(--ink-soft);margin:0;font-size:13.5px;}
@@ -165,6 +179,7 @@
      view, so pages keep a plain descriptive subtitle where that's genuinely what they have. */
   .page-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
   .page-head-row h1{font-size:22px;margin:0;font-weight:600;}
+  .cr-item textarea,.cr-item input{font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);box-sizing:border-box;}
   .page-head-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
   .sync-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--p1);background:var(--p1);color:#fff;cursor:pointer;}
   .sync-btn:hover{background:var(--p1-700);border-color:var(--p1-700);}
@@ -411,6 +426,7 @@
                accordion was "a bad idea on menu" -- one nav item, scope switching happens
                via the Gaps page's own tab bar, same as every other dashboard page). -->
           <button class="navitem" data-view="gaps"><span class="dot"></span>Gaps</button>
+          <button class="navitem" data-view="caseReview"><span class="dot"></span>Case review</button>
         </div>
       </div>
       <div class="navgroup collapsible" id="navBuild">
@@ -496,6 +512,7 @@
      every run/poll/cancel function already targets -- moving them here needed no changes
      to that logic at all, just relocating where they render). -->
 <div class="console-panel open" id="consolePanel">
+  <div class="console-panel-resize-handle" id="consolePanelResizeHandle" title="Drag to resize"></div>
   <div class="console-panel-header" id="consolePanelHeader">
     <span>Console — run progress &amp; results <span class="console-run-label-pill" id="consoleRunLabelPill"></span><span class="console-status-pill" id="consoleStatusPill"></span></span>
     <span class="chevron" id="consolePanelChevron">▾</span>
@@ -616,7 +633,7 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s ?? 
 // string that renders a navitem across the file.
 const NAV_ICONS = {
   // Dashboards
-  health: '📊', pipelines: '🧭', repomap: '🗂️', scheduled: '⏱️', gaps: '❓',
+  health: '📊', pipelines: '🧭', repomap: '🗂️', scheduled: '⏱️', gaps: '❓', caseReview: '📝',
   docs: '📄', settings: '⚙️',
   // Pipelines group (Start's 3 first, then Build's 5)
   start: '🚀', 'ingest-docs': '📥', 'scheduled-scan': '🔁', 'onboard-suite': '🏗️',
@@ -624,7 +641,7 @@ const NAV_ICONS = {
   // Checks group (Audit's 4 + Health's 7)
   'audit-coverage': '🔗', 'audit-flows': '🧩', audit: '✅', 'generate-test-run-report': '📝',
   'fold-defect': '🐛', 'review-runs': '📈', 'consolidation-check': '🧹',
-  'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡',
+  'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡', 'group-gaps': '🗂️',
   // Automation tab
   dashboard: '📊', tests: '🧪', keywords: '🔑', flows: '🔀',
   'export-automation': '⬇️', 'write-automation': '✍️', 'draft-automation': '📝',
@@ -781,6 +798,7 @@ const PIPELINE_PLAIN = {
   'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
   'update-suite-from-docs': "Checks one or more already-ingested documents against an EXISTING suite's live cases and drafts build/add/edit updates for your review — never a full rebuild. Run Ingest Docs first.",
   'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
+  'group-gaps': 'Sorts every open gap by what would close it (a screen comparison, a device run, a spec contradiction, an exact value, or not this device) and writes a sheet per group. The device is evidence, not proof: a mismatch is raised, never written into a case.',
   'clarify-gaps': 'Rewrites GAP/UNCONFIRMED markers into a plain-English question, no jargon — never answers them, just makes the real question legible. Use Resolve to actually answer.',
   'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
 };
@@ -1405,8 +1423,8 @@ async function renderHealth() {
         el.innerHTML = `
           <h2>Old vs. new suite — case counts <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">(live)</span></h2>
           <div class="stat-row">
-            <div class="stat"><span class="n">${cmp.old_case_count}</span><span class="l">old suite (C${cmp.old_suite_id})</span></div>
-            <div class="stat"><span class="n">${cmp.new_case_count}</span><span class="l">new suite (C${cmp.new_suite_id})</span></div>
+            <div class="stat"><span class="n">${cmp.old_case_count}</span><span class="l">old suite (C${cmp.old_suite_id})${cmp.old_marked_for_delete ? ` · ${cmp.old_marked_for_delete} in delete folder` : ''}</span></div>
+            <div class="stat"><span class="n">${cmp.new_case_count}</span><span class="l">new suite (C${cmp.new_suite_id})${cmp.new_marked_for_delete ? ` · ${cmp.new_marked_for_delete} in delete folder` : ''}</span></div>
             <div class="stat ${diffCls}"><span class="n">${cmp.diff > 0 ? '+' : ''}${cmp.diff}</span><span class="l">difference</span></div>
           </div>`;
       })
@@ -1760,6 +1778,8 @@ async function renderRepoMap() {
 // "Run" buttons elsewhere are already waiting on, not something to fake with a spinner here.
 const GAP_PAGE_SIZE = 25;
 let gapOffset = 0;
+let gapCategory = '';
+const GAP_CAT_LABEL = {screen: 'Screen', behaviour: 'Behaviour', conflict: 'Spec conflict', value: 'Value', 'other-device': 'Other device', unclear: 'Unclear', unclassified: 'Not grouped'};
 const ENTRY_TYPE_LABEL = {answer: 'Answer', clarification_request: 'Clarification requested', conflict: 'Conflicts with spec'};
 
 function openGapModal(marker) {
@@ -1850,6 +1870,7 @@ async function renderGaps() {
   if (!project || !device) { errbox('No target selected — use "Change target" first.'); return; }
   try {
     const params = new URLSearchParams({limit: GAP_PAGE_SIZE, offset: gapOffset, project, device});
+    if (gapCategory) params.set('category', gapCategory);
     const [d, answers, lastResolve] = await Promise.all([
       fetchJSON(`/api/gap-register?${params}`),
       fetchJSON(`/api/gap-answers?project=${encodeURIComponent(target.project || '')}`).catch(() => []),
@@ -1858,7 +1879,7 @@ async function renderGaps() {
     // George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers into plain English -- a
     // real cached rewrite (clarify-gaps) shows instead of the raw jargon-heavy marker text
     // when one exists for this exact marker; the raw text stays available via title tooltip.
-    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${g.plain_english ? `${esc(g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;">Open →</button></td></tr>`).join('');
+    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}${g.category ? ` <span class="pill code" style="font-size:10px;" title="${esc(g.evidence || '')}">${esc(GAP_CAT_LABEL[g.category] || g.category)}</span>` : ''}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${g.plain_english ? `${esc(g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;">Open →</button></td></tr>`).join('');
     const pageStart = d.total ? d.offset + 1 : 0;
     const pageEnd = Math.min(d.offset + d.shown.length, d.total);
 
@@ -1868,6 +1889,13 @@ async function renderGaps() {
         <button class="btn" id="gapRefreshBtn">↻ Refresh against new docs</button>
       </div>
       <div id="gapRefreshResult"></div>
+      ${d.grouped ? `<div class="card" style="margin-bottom:10px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <button class="btn gap-cat-chip ${gapCategory === '' ? 'primary' : ''}" data-cat="" style="font-size:12px;padding:4px 10px;">All (${Object.values(d.category_counts || {}).reduce((a, b) => a + b, 0)})</button>
+          ${Object.entries(d.category_counts || {}).map(([k, n]) => `<button class="btn gap-cat-chip ${gapCategory === k ? 'primary' : ''}" data-cat="${esc(k)}" style="font-size:12px;padding:4px 10px;">${esc(GAP_CAT_LABEL[k] || k)} (${n})</button>`).join('')}
+        </div>
+        <p style="font-size:12px;color:var(--ink-soft);margin:8px 0 0;">Grouped by what would close each gap. The device shows what it does today, not what is correct: a difference from the spec is raised, not accepted.${d.hidden_other_device ? ` ${d.hidden_other_device} gap(s) that only concern other devices are hidden here.` : ''}</p>
+      </div>` : `<div class="card" style="margin-bottom:10px;"><p style="font-size:12.5px;color:var(--ink-soft);margin:0;">Not grouped yet. Run <b>Group gaps</b> (under Checks) to sort these by what would close them and hide gaps about other devices.</p></div>`}
       ${d.is_fixture ? `<div class="fixture-note">⚠ Last refreshed from a real gap-register run — use Refresh above for the current state.</div>` : ''}
       <div class="card">
         <table><tr><th>Kind</th><th>Location</th><th>Text</th><th></th></tr>${rows || `<tr><td colspan="4" style="color:var(--ink-soft);">No markers for this project/device.</td></tr>`}</table>
@@ -1931,6 +1959,7 @@ async function renderGaps() {
     content.querySelectorAll('[data-gap-open-idx]').forEach(btn => {
       btn.addEventListener('click', (e) => { e.stopPropagation(); openGapModal(d.shown[Number(btn.dataset.gapOpenIdx)]); });
     });
+    content.querySelectorAll('.gap-cat-chip').forEach(b => b.addEventListener('click', () => { gapCategory = b.dataset.cat; gapOffset = 0; renderGaps(); }));
     document.getElementById('gapPrevBtn')?.addEventListener('click', () => { gapOffset = Math.max(0, gapOffset - GAP_PAGE_SIZE); renderGaps(); });
     document.getElementById('gapRefreshBtn')?.addEventListener('click', async (e) => {
       const btn = e.target; btn.disabled = true;
@@ -3335,12 +3364,239 @@ async function runPipeline(id, target) {
   }
 }
 
+// George, 2026-09-30: "there should be a way to approve all so you dont have to keep
+// approving... put it into approve auto mode or something" -- onboard-suite's area loop
+// hits a REAL push --commit gate per area (22+ times in a real build), each needing its
+// own click. Extracted so both the per-step button (renderRunStep) and the auto-mode loop
+// (pollPipelineRun's waiting_human branch) agree on exactly what counts as a push gate.
+function isPushGateStep(step) {
+  return step.status === 'waiting_human' && /push/.test(step.output || '') && /--commit/.test(step.output || '');
+}
+// George, 2026-09-30: "plus auto mode seems to not actual work?" -- this used to be a
+// browser-side (JS Set) toggle, which silently reset on any page reload/navigation with no
+// visible sign it had turned off (the run itself lives entirely server-side; this flag now
+// does too -- see runner._auto_approve_runs -- so it survives navigating away from the page,
+// and the SERVER's own pipeline loop auto-resolves a push gate the moment it's reached,
+// rather than waiting for this browser tab's next poll to notice and react to it).
+// Shared resolve/retry call -- used by both a real button click (onStepActionClick) and the
+// auto-mode loop (no click event to read data- attributes from, so it takes the ids directly).
+// ---------------------------------------------------------------------------------------
+// Review & decide (George, 2026-10-01): a human step used to show one static line and a bare
+// Continue, with the thing to review buried in an earlier step's output and no way to carry a
+// choice forward. This pop-up shows a short plain-English summary (the full proposal file stays
+// as-is for the agents and is one click away), tick boxes for the options (some need another
+// ticked first, some can't be ticked together), a note, and Approve / Stop. The ticks + note are
+// saved and handed to the next agent steps (reviews.py).
+// ---------------------------------------------------------------------------------------
+function inlineMd(t) {
+  return esc(t).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+// Small markdown renderer for the summary: headings, bullets, tables, paragraphs, bold, code.
+function renderMdLite(text) {
+  const lines = text.split('\n');
+  const out = [];
+  let list = false, table = null;
+  const closeList = () => { if (list) { out.push('</ul>'); list = false; } };
+  const closeTable = () => {
+    if (!table) return;
+    const [head, ...rows] = table;
+    out.push('<table style="width:100%;font-size:12.5px;margin:8px 0;"><thead><tr>' + head.map(c => `<th style="text-align:left;">${inlineMd(c)}</th>`).join('') + '</tr></thead><tbody>'
+      + rows.map(r => '<tr>' + r.map(c => `<td style="vertical-align:top;">${inlineMd(c)}</td>`).join('') + '</tr>').join('') + '</tbody></table>');
+    table = null;
+  };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (/^\|.*\|$/.test(line.trim())) {
+      closeList();
+      const cells = line.trim().slice(1, -1).split('|').map(c => c.trim());
+      if (cells.every(c => /^:?-{2,}:?$/.test(c))) continue;  // the |---|---| divider row
+      (table = table || []).push(cells);
+      continue;
+    }
+    closeTable();
+    if (/^#{1,4} /.test(line)) { closeList(); out.push(`<strong style="display:block;margin:12px 0 4px;font-size:${line.startsWith('# ') ? 15 : 13.5}px;">${inlineMd(line.replace(/^#+ /, ''))}</strong>`); }
+    else if (/^[-*] /.test(line)) { if (!list) { out.push('<ul style="margin:4px 0 4px 18px;padding:0;">'); list = true; } out.push(`<li style="margin:3px 0;">${inlineMd(line.slice(2))}</li>`); }
+    else if (line.trim() === '') { closeList(); }
+    else { closeList(); out.push(`<p style="margin:6px 0;">${inlineMd(line)}</p>`); }
+  }
+  closeList(); closeTable();
+  return out.join('');
+}
+
+async function openStepReview(runId, stepId) {
+  let spec;
+  try {
+    spec = await fetchJSON(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/review`);
+  } catch (err) { alert('Could not load the review: ' + err.message); return; }
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const name = (STEP_DISPLAY_NAME && STEP_DISPLAY_NAME[stepId]) || stepId;
+  const primary = spec.docs.filter(d => d.primary && !d.missing);
+  const rest = spec.docs.filter(d => !(d.primary && !d.missing));
+  const primaryHtml = primary.map(d => `<div style="font-size:13px;line-height:1.45;margin-bottom:6px;">${renderMdLite(d.content)}</div>`).join('');
+  const restHtml = rest.map(d => `
+    <details style="margin-bottom:8px;">
+      <summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft);">${primary.length ? 'Full detail — ' : ''}${esc(d.title)}${d.missing ? ' <span class="pill warn">not found / empty</span>' : ''}</summary>
+      ${d.missing ? '' : `<pre style="white-space:pre-wrap;font-size:12px;max-height:38vh;overflow:auto;margin:8px 0 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);">${esc(d.content)}${d.clipped ? '\n… (clipped — open the file for the rest)' : ''}</pre>`}
+    </details>`).join('');
+  const riskPill = (r) => r ? `<span class="pill ${r === 'low' ? 'ok' : r === 'high' ? 'bad' : 'warn'}" style="margin-left:6px;font-size:10.5px;">${esc(r)} risk</span>` : '';
+  const optHtml = (o) => `
+    <label data-opt="${esc(o.id)}" style="display:block;padding:9px 11px;border:1px solid var(--line);border-radius:8px;margin-bottom:7px;cursor:pointer;">
+      <input type="checkbox" name="reviewChoice" value="${esc(o.id)}" style="margin-right:8px;">
+      <strong style="font-size:13px;">${esc(o.label)}</strong>${riskPill(o.risk)}
+      ${o.detail ? `<span style="display:block;font-size:12px;color:var(--ink-soft);margin:3px 0 0 24px;">${esc(o.detail)}</span>` : ''}
+    </label>`;
+  const optGroups = [];
+  spec.options.forEach(o => {
+    let g = optGroups.find(x => x.name === (o.group || ''));
+    if (!g) { g = {name: o.group || '', items: []}; optGroups.push(g); }
+    g.items.push(o);
+  });
+  const options = optGroups.map(g => `
+    <div class="rv-group" style="margin-bottom:12px;">
+      ${g.name ? `<div style="display:flex;align-items:center;gap:10px;margin:10px 0 6px;"><strong style="font-size:13px;">${esc(g.name)} (${g.items.length})</strong><label style="font-size:12px;color:var(--ink-soft);cursor:pointer;"><input type="checkbox" class="rv-group-all"> tick all</label></div>` : ''}
+      ${g.items.map(optHtml).join('')}
+    </div>`).join('');
+  const link = spec.link ? `<p style="margin:0 0 12px;"><a href="#" id="reviewLink" class="btn">${esc(spec.link.label)} →</a></p>` : '';
+  overlay.innerHTML = `
+    <div class="card" style="max-width:820px;width:100%;max-height:92vh;overflow:auto;margin:0;">
+      <h2 style="margin-top:0;">${esc(name)} — your decision</h2>
+      <p style="font-size:13px;margin:0 0 12px;">${esc(spec.summary)}</p>
+      ${link}
+      ${primaryHtml}
+      ${restHtml}
+      ${spec.nothing_proposed ? '<p class="pill warn" style="margin:12px 0;">Nothing was proposed to approve. Stop the run, or re-run the step that finds the proposals.</p>' : ''}
+      ${spec.options.length ? `<h3 style="font-size:13px;margin:14px 0 8px;">Tick what you want done — anything unticked is left alone</h3>${options}` : ''}
+      <label style="font-size:12px;color:var(--ink-soft);display:block;margin-top:10px;">Note for the next steps (optional) — passed to them as context, not run as a command</label>
+      <textarea id="reviewNote" rows="3" style="display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;">
+        <input id="reviewBy" placeholder="Your name" value="${esc(crName())}" style="width:150px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+        <button class="btn primary" id="reviewApprove">${spec.options.length ? 'Approve what is ticked' : 'Approve and continue'}</button>
+        <button class="btn danger" id="reviewStop">Don't approve — stop the run</button>
+        <button class="btn" id="reviewCancel">Close</button>
+      </div>
+      <div id="reviewMsg" style="margin-top:8px;font-size:12.5px;color:var(--bad);"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  const msg = (t) => { overlay.querySelector('#reviewMsg').textContent = t; };
+  overlay.querySelector('#reviewCancel').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector('#reviewLink')?.addEventListener('click', (e) => {
+    e.preventDefault(); close();
+    const navBtn = document.querySelector(`.navitem[data-view="${spec.link.view}"]`);
+    if (navBtn) { setActiveNav(navBtn); ACTIVE_VIEW = spec.link.view; CURRENT_RERENDER = () => VIEWS[spec.link.view](); CURRENT_RERENDER(); }
+  });
+
+  // Tick rules: ticking an option also ticks what it needs; unticking something that others need
+  // unticks them; an option that clashes with a ticked one is greyed out.
+  const box = (id) => overlay.querySelector(`input[name="reviewChoice"][value="${id}"]`);
+  const byId = Object.fromEntries(spec.options.map(o => [o.id, o]));
+  const syncOptions = () => {
+    spec.options.forEach(o => {
+      const lbl = overlay.querySelector(`[data-opt="${o.id}"]`), b = box(o.id);
+      const clash = o.excludes.some(x => box(x)?.checked) || spec.options.some(p => p.excludes.includes(o.id) && box(p.id).checked);
+      b.disabled = clash && !b.checked;
+      lbl.style.opacity = b.disabled ? '.45' : '1';
+      lbl.style.borderColor = b.checked ? 'var(--p1)' : 'var(--line)';
+    });
+    const n = overlay.querySelectorAll('input[name="reviewChoice"]:checked').length;
+    if (spec.options.length) overlay.querySelector('#reviewApprove').textContent = n ? `Approve ${n} ticked` : 'Approve what is ticked';
+  };
+  overlay.querySelectorAll('input[name="reviewChoice"]').forEach(b => b.addEventListener('change', () => {
+    if (b.checked) byId[b.value].requires.forEach(r => { if (box(r)) box(r).checked = true; });
+    else spec.options.forEach(o => { if (o.requires.includes(b.value) && box(o.id)) box(o.id).checked = false; });
+    syncOptions();
+  }));
+  overlay.querySelectorAll('.rv-group-all').forEach(all => all.addEventListener('change', () => {
+    all.closest('.rv-group').querySelectorAll('input[name="reviewChoice"]:not(:disabled)').forEach(b => {
+      b.checked = all.checked; b.dispatchEvent(new Event('change'));
+    });
+  }));
+  syncOptions();
+  if (spec.nothing_proposed) overlay.querySelector('#reviewApprove').disabled = true;
+
+  const send = async (action, body) => {
+    const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/${action}`,
+      {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    close();
+    pollPipelineRun(runId, document.getElementById('pipelineRunResult'), document.getElementById('pipelineRunBtn'), document.getElementById('pipelineStepList'));
+  };
+  const who = () => {
+    const by = overlay.querySelector('#reviewBy').value.trim();
+    if (by) crRememberName(by);
+    return by;
+  };
+  overlay.querySelector('#reviewApprove').addEventListener('click', async (e) => {
+    const by = who();
+    if (!by) { msg('Add your name first.'); return; }
+    const ticked = [...overlay.querySelectorAll('input[name="reviewChoice"]:checked')].map(b => b.value);
+    if (spec.options.length && !ticked.length) { msg('Tick at least one option — or stop the run if you do not approve.'); return; }
+    e.target.disabled = true;
+    try { await send('decide', {choices: ticked, note: overlay.querySelector('#reviewNote').value, by}); }
+    catch (err) { msg(err.message); e.target.disabled = false; }
+  });
+  overlay.querySelector('#reviewStop').addEventListener('click', async (e) => {
+    const by = who();
+    if (!by) { msg('Add your name first.'); return; }
+    if (!confirm('Stop this run here? Anything already pushed to TestRail stays pushed. You can retry from this step later.')) return;
+    e.target.disabled = true;
+    try { await send('stop', {note: overlay.querySelector('#reviewNote').value, by}); }
+    catch (err) { msg(err.message); e.target.disabled = false; }
+  });
+}
+
+async function resolveStep(runId, stepId, endpoint, resultEl, btn, stepListEl) {
+  const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/${endpoint}`, {method: 'POST'});
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  pollPipelineRun(runId, resultEl, btn, stepListEl);
+}
+
+// George, 2026-09-30: "maybe in this scenario a indication of - sorry its taking longer
+// than normal type thing shows somewhere... like a mini pop up at the bottom" -- found
+// live watching a real author_area step run past 20+ minutes with no visible sign anything
+// was unusual (the hard ceiling is 900s/15min, but most areas finish in under a minute, so
+// "still running" alone doesn't tell you it's already abnormal well before that ceiling).
+// One toast per (run, step) -- never re-shown every 2s poll tick -- dismissible, and
+// positioned above the docked console panel so it's never hidden behind it.
+const SLOW_STEP_WARNED = new Set();
+const SLOW_STEP_THRESHOLD_MS = 3 * 60 * 1000;  // 3 min -- well short of the real 900s ceiling
+function maybeShowSlowStepToast(steps) {
+  const running = (steps || []).find(s => s.status === 'running');
+  if (!running || !running.started_at) return;
+  const key = running.step_id;
+  if (SLOW_STEP_WARNED.has(key)) return;
+  const elapsedMs = Date.now() - new Date(running.started_at).getTime();
+  if (elapsedMs < SLOW_STEP_THRESHOLD_MS) return;
+  SLOW_STEP_WARNED.add(key);
+  const toast = document.createElement('div');
+  toast.className = 'slow-step-toast';
+  const mins = Math.round(elapsedMs / 60000);
+  toast.innerHTML = `
+    <span>⏳ Sorry, "${esc(STEP_DISPLAY_NAME[running.step_id] || running.step_id)}" is taking longer than normal (~${mins} min so far) — it can still finish, or it'll time out cleanly at 15 min.</span>
+    <button class="toast-close" aria-label="Dismiss">&times;</button>`;
+  document.body.appendChild(toast);
+  const remove = () => toast.remove();
+  toast.querySelector('.toast-close').addEventListener('click', remove);
+  setTimeout(remove, 20000);
+}
+
 const WORKING_DOTS_HTML = '<span class="working-dots" title="Still working"><span></span><span></span><span></span></span>';
 function renderRunStep(runId, step) {
   const pillClass = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'}[step.status] || 'muted';
-  const isPushGate = step.status === 'waiting_human' && /push/.test(step.output || '') && /--commit/.test(step.output || '');
-  const actionBtn = step.status === 'waiting_human'
-    ? `<button class="btn ${isPushGate ? 'danger' : 'primary'} step-resolve-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}">${isPushGate ? 'Approve & Push' : 'Continue'}</button>`
+  const isPushGate = isPushGateStep(step);
+  const crGate = step.status === 'waiting_human' && step.step_id === 'human_cleanup'
+    ? `<a href="#" class="btn" data-goto-view="caseReview" style="margin-right:8px;">Review cases →</a><span data-cr-gate style="font-size:12px;margin-right:10px;"></span>`
+    : '';
+  const reviewBtn = step.status === 'waiting_human' && step.has_review
+    ? crGate + `<button class="btn primary step-review-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}">Review &amp; decide</button>`
+    : null;
+  const actionBtn = reviewBtn !== null ? reviewBtn
+    : step.status === 'waiting_human'
+    ? crGate + `<button class="btn ${isPushGate ? 'danger' : 'primary'} step-resolve-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}">${isPushGate ? 'Approve & Push' : 'Continue'}</button>`
     : step.status === 'failed'
     ? `<button class="btn step-retry-btn" data-run="${esc(runId)}" data-step="${esc(step.step_id)}" title="Re-run from this step, not the whole pipeline">Retry from here</button>`
     : '';
@@ -3411,6 +3667,8 @@ document.addEventListener('click', async (e) => {
 });
 
 async function onStepActionClick(e) {
+  const reviewOpen = e.target.closest('.step-review-btn');
+  if (reviewOpen) { openStepReview(reviewOpen.dataset.run, reviewOpen.dataset.step); return; }
   const resolveBtn = e.target.closest('.step-resolve-btn');
   const retryBtn = e.target.closest('.step-retry-btn');
   const btn = resolveBtn || retryBtn;
@@ -3421,12 +3679,10 @@ async function onStepActionClick(e) {
   if (resolveBtn && btn.textContent.includes('Approve') && !confirm(`This will actually push --commit to TestRail. Approve "${stepId}"?`)) return;
   btn.disabled = true;
   try {
-    const res = await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/steps/${encodeURIComponent(stepId)}/${endpoint}`, {method: 'POST'});
-    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
     const resultEl = document.getElementById('pipelineRunResult');
     const stepListEl = document.getElementById('pipelineStepList');
     const runBtn = document.getElementById('pipelineRunBtn');
-    pollPipelineRun(runId, resultEl, runBtn, stepListEl);
+    await resolveStep(runId, stepId, endpoint, resultEl, runBtn, stepListEl);
   } catch (err) {
     alert(`Could not ${endpoint} step: ` + err.message);
     btn.disabled = false;
@@ -3476,13 +3732,38 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
       setConsoleStatusPill('running');
       resultEl.innerHTML = `<div class="card"><div class="loading">Running… (${esc(run.pipeline_id)} against ${esc(run.project)}/${esc(run.device)})${WORKING_DOTS_HTML}</div>${cancelRunButtonHtml(runId)}</div>`;
       bindCancelRunButton(runId, resultEl, btn, stepListEl);
+      maybeShowSlowStepToast(steps);
       setTimeout(() => pollPipelineRun(runId, resultEl, btn, stepListEl), 2000);
       return;
     }
     if (run.status === 'waiting_human') {
       setConsoleStatusPill('waiting_human');
-      resultEl.innerHTML = `<div class="card"><h2>Waiting for you</h2><p style="font-size:14px;">This run is paused at a step that needs your confirmation — see the step list above.</p>${cancelRunButtonHtml(runId)}</div>`;
+      const waitingStep = steps.find(s => s.status === 'waiting_human');
+      // George, 2026-09-30: "plus auto mode seems to not actual work?" -- auto-approve now
+      // lives server-side (runner._auto_approve_runs), folded into this same run poll as
+      // `run.auto_approve`, so it reflects reality regardless of page reloads/navigation.
+      // The SERVER's own pipeline loop resolves a push gate the instant it's reached --
+      // this branch mostly just reflects that; briefly landing here mid-resolve (a real
+      // but narrow race) still shows an honest "Auto-approving…", not a stale button.
+      if (run.auto_approve && waitingStep && isPushGateStep(waitingStep)) {
+        resultEl.innerHTML = `<div class="card"><div class="loading">Auto-approving "${esc(STEP_DISPLAY_NAME[waitingStep.step_id] || waitingStep.step_id)}"…${WORKING_DOTS_HTML}</div><button class="btn" id="autoApproveStopBtn" style="margin-top:8px;">Stop auto mode</button></div>`;
+        document.getElementById('autoApproveStopBtn')?.addEventListener('click', async () => {
+          await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/auto-approve`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({enabled: false})});
+          pollPipelineRun(runId, resultEl, btn, stepListEl);
+        });
+        setTimeout(() => pollPipelineRun(runId, resultEl, btn, stepListEl), 2000);
+        return;
+      }
+      const autoModeBtn = (waitingStep && isPushGateStep(waitingStep))
+        ? `<button class="btn" id="autoApproveToggleBtn" style="margin-left:8px;" title="Auto-approves every remaining push --commit gate in this run -- stops immediately on a real failure or a non-push checkpoint">Auto-approve remaining pushes</button>`
+        : '';
+      resultEl.innerHTML = `<div class="card"><h2>Waiting for you</h2><p style="font-size:14px;">This run is paused at a step that needs your confirmation — see the step list above.</p>${cancelRunButtonHtml(runId)}${autoModeBtn}</div>`;
       bindCancelRunButton(runId, resultEl, btn, stepListEl);
+      document.getElementById('autoApproveToggleBtn')?.addEventListener('click', async () => {
+        if (!confirm('This will approve & push EVERY remaining area in this run without asking again -- real, permanent TestRail writes, one after another. It stops immediately on any real failure or a non-push checkpoint. Continue?')) return;
+        await fetch(`/api/pipelines/runs/${encodeURIComponent(runId)}/auto-approve`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({enabled: true})});
+        pollPipelineRun(runId, resultEl, btn, stepListEl);
+      });
       if (btn) btn.disabled = false;
       return;
     }
@@ -3596,7 +3877,7 @@ const GROUPS = {
   // you click approve the same number of times either way. The pipeline file stays as
   // plumbing; it just isn't offered as a button.
   Build: ['start', 'ingest-docs', 'scheduled-scan', 'onboard-suite', 'add-feature', 'update-suite-from-docs', 'consolidate', 'targeted-run'],
-  Checks: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report', 'fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps'],
+  Checks: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report', 'fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps', 'group-gaps'],
 };
 // Display-only renames (round 2, ISSUES.md) -- never the real pipeline `id` or group DOM
 // id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
@@ -3647,6 +3928,7 @@ const PIPELINE_DISPLAY_NAME = {
   maintain: 'Checkup',
   'resolve-gaps': 'Resolve',
   'clarify-gaps': 'Clarify',
+  'group-gaps': 'Group gaps',
 };
 // "Proper English" rule (ISSUES.md round 2): a label the TOOL generates (this fallback,
 // when a pipeline has no explicit display name above) must read as a normal sentence/
@@ -3942,7 +4224,195 @@ async function renderFlows() {
   await renderFlowsBody(document.getElementById('flowsBodyStandalone'));
 }
 
-const VIEWS = {health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
+// ---------------------------------------------------------------------------------------
+// Case review -- the human half of onboard-suite's repair step (George, 2026-10-01: "you
+// are not needed in the claude code terminal, the user should be able to use the tool to
+// fix everything and do what's needed to complete a run"). `repair` fixes what a machine
+// safely can; the rest (cases with no steps, compound THENs it can't cut cleanly) land here
+// to be fixed in place -- saved straight to TestRail, refused if the edit still breaks the
+// standard -- or knowingly accepted with a reason. The build's final human step can't be
+// continued until none are open.
+// ---------------------------------------------------------------------------------------
+const CR_RULE_TITLE = {
+  'steps-empty': 'No steps',
+  'then-compound-genuine': 'Compound THEN',
+  'preface-bad-preamble': 'Objective wording',
+  'has-tags': 'Tag written into the case',
+};
+const CR_RULE_HELP = {
+  'steps-empty': 'Write the WHEN / THEN steps from the spec. If the spec does not say, say so with a GAP line rather than guessing.',
+  'then-compound-genuine': 'One THEN holds two outcomes. Put each on its own line (THEN … / AND …) — or accept it if it is really one list.',
+};
+function crName() { try { return localStorage.getItem('testops_name') || ''; } catch (_) { return ''; } }
+function crRememberName(v) { try { localStorage.setItem('testops_name', v); } catch (_) {} }
+
+function crStepRow(r, i) {
+  return `<div class="cr-step" data-step-i="${i}" style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:6px;">
+    <textarea class="input cr-when" rows="2" placeholder="**WHEN** …" style="resize:vertical;font-size:12.5px;">${esc(r.content || '')}</textarea>
+    <textarea class="input cr-then" rows="2" placeholder="**THEN** …" style="resize:vertical;font-size:12.5px;">${esc(r.expected || '')}</textarea>
+    <button class="btn cr-del-step" title="Remove this step" style="padding:2px 8px;">✕</button>
+  </div>`;
+}
+
+function crItemHTML(it, key) {
+  const c = it.case || {};
+  const res = it.resolution;
+  const pill = res
+    ? `<span class="pill ok">${res.status === 'fixed' ? 'Fixed' : 'Accepted'}</span>`
+    : '<span class="pill warn">Open</span>';
+  const rows = Array.isArray(c.custom_steps_seperated) ? c.custom_steps_seperated : [];
+  const resNote = res
+    ? `<p style="font-size:12px;color:var(--ink-soft);margin:8px 0;">${res.status === 'fixed' ? 'Fixed' : 'Accepted as-is'} by ${esc(res.by)}, ${esc(new Date(res.at).toLocaleString())}${res.reason ? ` — “${esc(res.reason)}”` : ''}. <a href="#" class="cr-reopen">Reopen</a></p>`
+    : '';
+  return `<div class="card cr-item" data-key="${esc(key)}" data-case="${it.case_id}" data-rule="${esc(it.rule)}" style="padding:0;">
+    <div class="cr-head" style="display:flex;gap:10px;align-items:center;padding:12px 16px;cursor:pointer;">
+      <span class="pill code">C${it.case_id}</span>
+      <strong style="flex:1;font-size:13px;">${esc(it.title)}</strong>
+      ${it.detail ? `<span style="font-size:11.5px;color:var(--ink-soft);max-width:34%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(it.detail)}">${esc(it.detail)}</span>` : ''}
+      ${pill}
+    </div>
+    <div class="cr-body" style="display:none;padding:0 16px 14px;">
+      ${resNote}
+      <label style="font-size:11.5px;color:var(--ink-soft);">Objective</label>
+      <textarea class="input cr-preface" rows="2" style="display:block;width:100%;resize:vertical;margin-bottom:8px;">${esc(c.custom_preface || '')}</textarea>
+      <label style="font-size:11.5px;color:var(--ink-soft);">Preconditions</label>
+      <textarea class="input cr-preconds" rows="2" style="display:block;width:100%;resize:vertical;margin-bottom:8px;">${esc(c.custom_preconds || '')}</textarea>
+      <label style="font-size:11.5px;color:var(--ink-soft);">Steps — what you do on the left, what you should see on the right</label>
+      <div class="cr-steps">${rows.map(crStepRow).join('')}</div>
+      <button class="btn cr-add-step" style="font-size:11.5px;padding:3px 10px;margin-bottom:8px;">+ Add step</button><br>
+      <label style="font-size:11.5px;color:var(--ink-soft);">Expected result (one plain sentence)</label>
+      <textarea class="input cr-expected" rows="2" style="display:block;width:100%;resize:vertical;margin-bottom:10px;">${esc(c.custom_expected || '')}</textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input class="input cr-by" placeholder="Your name" value="${esc(crName())}" style="width:150px;">
+        <button class="btn primary cr-save">Save to TestRail</button>
+        <input class="input cr-reason" placeholder="Why this is fine as it is" style="flex:1;min-width:180px;">
+        <button class="btn cr-accept">Accept as-is</button>
+      </div>
+      <div class="cr-msg" style="margin-top:8px;font-size:12.5px;"></div>
+    </div>
+  </div>`;
+}
+
+function crCollect(card) {
+  const steps = [...card.querySelectorAll('.cr-step')].map(s => ({
+    content: s.querySelector('.cr-when').value.trim(),
+    expected: s.querySelector('.cr-then').value.trim(),
+  })).filter(r => r.content || r.expected);
+  return {
+    custom_preface: card.querySelector('.cr-preface').value.trim(),
+    custom_preconds: card.querySelector('.cr-preconds').value.trim(),
+    custom_steps_seperated: steps,
+    custom_expected: card.querySelector('.cr-expected').value.trim(),
+  };
+}
+
+async function crPost(url, body) {
+  const res = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || res.statusText);
+  return data;
+}
+
+let crTab = 'review';
+
+async function renderCaseReview() {
+  loading();
+  const target = window.CURRENT_TARGET || {};
+  if (!target.project || !target.device) { errbox('No target selected — use "Change target" first.'); return; }
+  const q = `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`;
+  let d;
+  try { d = await fetchJSON(`/api/case-review?${q}`); } catch (e) { errbox('Could not load case review: ' + e.message); return; }
+  const head = (pills) => `<div class="page-head-row"><h1>Case review</h1><div class="page-head-pills">${pills}</div></div>
+    <p style="color:var(--ink-soft);margin:4px 0 14px;font-size:13.5px;">Cases the build would not guess at. Fix each one here, or accept it with a reason — the build can't finish until none are open.</p>`;
+  if (!d.available) {
+    setContent(head('') + `<div class="card"><p style="margin:0;color:var(--ink-soft);">${esc(d.reason)}</p></div>`);
+    return;
+  }
+  const groups = {};
+  // Open cases are the to-do list; once fixed or accepted a case leaves it (the Log tab keeps the
+  // record). Done ones stay reachable, collapsed at the bottom, only so a decision can be reopened.
+  const openItems = [], doneItems = [];
+  d.items.forEach((it, i) => { (it.resolution ? doneItems : openItems).push([it, `${it.case_id}|${it.rule}|${i}`]); });
+  openItems.forEach(([it, k]) => { (groups[it.rule] = groups[it.rule] || []).push([it, k]); });
+  const body = Object.keys(groups).map(rule => `
+    <h2 style="margin:18px 0 4px;">${esc(CR_RULE_TITLE[rule] || rule)} <span class="pill code">${groups[rule].length}</span></h2>
+    <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${esc(CR_RULE_HELP[rule] || (groups[rule][0][0].action || ''))}</p>
+    ${groups[rule].map(([it, k]) => crItemHTML(it, k)).join('')}`).join('');
+  const tabs = `<div class="tab-bar">
+      <button class="tab-btn cr-tab ${crTab === 'review' ? 'active' : ''}" data-crt="review">Review</button>
+      <button class="tab-btn cr-tab ${crTab === 'log' ? 'active' : ''}" data-crt="log">Log</button></div>`;
+  let logHTML = '';
+  if (crTab === 'log') {
+    let lg = {entries: [], today: {}, all_time: {}};
+    try { lg = await fetchJSON(`/api/case-review/log?${q}`); } catch (e) { logHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+    const sum = (label, c) => `<div class="stat"><span class="n">${(c.fixed || 0) + (c.accepted || 0)}</span><span class="l">${label}: ${c.fixed || 0} fixed · ${c.accepted || 0} accepted · ${c.reopened || 0} reopened</span></div>`;
+    const actPill = {fixed: 'ok', accepted: 'code', reopened: 'warn'};
+    const rows = lg.entries.map(e => `<tr><td style="white-space:nowrap;">${esc(new Date(e.created_at + 'Z').toLocaleString())}</td><td><code>C${e.case_id}</code></td><td>${esc(e.title || '')}</td><td><span class="pill ${actPill[e.action] || 'code'}">${esc(e.action)}</span></td><td>${esc(e.by)}</td><td style="color:var(--ink-soft);font-size:12px;">${esc(e.reason || '')}</td></tr>`).join('');
+    logHTML += `<div class="stat-row">${sum('Today', lg.today)}${sum('All time', lg.all_time)}</div>`
+      + (rows ? `<div class="card"><table><thead><tr><th>When</th><th>Case</th><th>Title</th><th>Action</th><th>By</th><th>Reason</th></tr></thead><tbody>${rows}</tbody></table></div>`
+              : '<div class="card"><p style="margin:0;color:var(--ink-soft);">No decisions logged yet.</p></div>');
+  }
+  setContent(head(`
+      <span class="pill ${d.open ? 'warn' : 'ok'}">${d.open} open</span>
+      <span class="pill code">${d.resolved} done</span>
+      <button class="btn" id="crRecheck" style="font-size:12px;padding:4px 10px;">Re-check against TestRail</button>`)
+    + tabs
+    + (crTab === 'log' ? logHTML : ((openItems.length ? body : '<div class="card"><p style="margin:0;">Nothing needs review.</p></div>')
+      + (doneItems.length ? `<details style="margin-top:18px;"><summary style="cursor:pointer;color:var(--ink-soft);font-size:13px;">Done (${doneItems.length}) — reopen a decision</summary><div style="margin-top:10px;">${doneItems.map(([it, k]) => crItemHTML(it, k)).join('')}</div></details>` : ''))));
+  content.querySelectorAll('.cr-tab').forEach(b => b.addEventListener('click', () => { crTab = b.dataset.crt; renderCaseReview(); }));
+
+  document.getElementById('crRecheck')?.addEventListener('click', async (e) => {
+    e.target.disabled = true; e.target.textContent = 'Checking…';
+    try { await crPost(`/api/case-review/recheck?${q}`, {}); renderCaseReview(); }
+    catch (err) { alert('Re-check failed: ' + err.message); e.target.disabled = false; e.target.textContent = 'Re-check against TestRail'; }
+  });
+  content.querySelectorAll('.cr-item').forEach(card => {
+    const rule = card.dataset.rule, cid = card.dataset.case;
+    const msg = (t, bad) => { const m = card.querySelector('.cr-msg'); m.style.color = bad ? 'var(--bad)' : 'var(--ok)'; m.textContent = t; };
+    card.querySelector('.cr-head').addEventListener('click', () => {
+      const b = card.querySelector('.cr-body'); b.style.display = b.style.display === 'none' ? 'block' : 'none';
+    });
+    card.querySelector('.cr-add-step').addEventListener('click', () => {
+      card.querySelector('.cr-steps').insertAdjacentHTML('beforeend', crStepRow({}, 0));
+    });
+    card.addEventListener('click', (e) => { if (e.target.closest('.cr-del-step')) e.target.closest('.cr-step').remove(); });
+    card.querySelector('.cr-reopen')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await crPost(`/api/case-review/${cid}/reopen?${q}`, {rule, by: crName() || 'unknown'}); renderCaseReview(); } catch (err) { msg(err.message, true); }
+    });
+    card.querySelector('.cr-save').addEventListener('click', async (e) => {
+      const by = card.querySelector('.cr-by').value.trim();
+      if (!by) { msg('Add your name first.', true); return; }
+      crRememberName(by);
+      e.target.disabled = true; msg('Saving to TestRail…', false);
+      try { await crPost(`/api/case-review/${cid}/fix?${q}`, {rule, fields: crCollect(card), by}); renderCaseReview(); }
+      catch (err) { msg(err.message, true); e.target.disabled = false; }
+    });
+    card.querySelector('.cr-accept').addEventListener('click', async () => {
+      const by = card.querySelector('.cr-by').value.trim(), reason = card.querySelector('.cr-reason').value.trim();
+      if (!by || !reason) { msg('Add your name and why it is fine as it is.', true); return; }
+      crRememberName(by);
+      try { await crPost(`/api/case-review/${cid}/waive?${q}`, {rule, reason, by}); renderCaseReview(); }
+      catch (err) { msg(err.message, true); }
+    });
+  });
+}
+
+// "N open" on the build's final human step: filled in after render by a tiny observer so
+// renderRunStep can stay a pure string builder.
+async function crFillGateCounts() {
+  const els = content.querySelectorAll('[data-cr-gate]:not([data-cr-done])');
+  if (!els.length) return;
+  const t = window.CURRENT_TARGET || {};
+  els.forEach(el => el.setAttribute('data-cr-done', '1'));
+  try {
+    const d = await fetchJSON(`/api/case-review?project=${encodeURIComponent(t.project)}&device=${encodeURIComponent(t.device)}`);
+    els.forEach(el => { el.textContent = d.available ? (d.open ? `${d.open} case(s) still need review` : 'All cases reviewed') : ''; el.style.color = d.open ? 'var(--bad)' : 'var(--ok)'; });
+  } catch (_) { /* leave blank -- the server still enforces it */ }
+}
+new MutationObserver(() => { crFillGateCounts(); }).observe(content, {childList: true, subtree: true});
+
+const VIEWS = {caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
 const AUTOMATION_VIEWS = {dashboard: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
@@ -4623,6 +5093,43 @@ document.getElementById('askCloseBtn').addEventListener('click', () => askPanel.
 document.getElementById('consolePanelHeader').addEventListener('click', () => {
   document.getElementById('consolePanel').classList.toggle('open');
 });
+// George, 2026-09-30: "the ability to resize the console would be good? clicking it should
+// still close and open but ability to view more of the console" -- a drag handle on the
+// panel's own top edge (separate element from the header, so it never triggers the
+// click-to-toggle). Height lives in the --console-h custom property the CSS already reads
+// for the open state (see that rule's own comment) -- dragging never touches max-height
+// directly, so it can never fight the open/close animation. Persisted per-viewer via
+// localStorage (a convenience, never load-bearing -- wrapped in try/catch per the usual
+// private-window/blocked-storage gotcha).
+(() => {
+  const MIN_H = 120, MAX_H_VH = 0.85;
+  const panel = document.getElementById('consolePanel');
+  const body = document.getElementById('consolePanelBody');
+  const handle = document.getElementById('consolePanelResizeHandle');
+  let saved = null;
+  try { saved = localStorage.getItem('topc_console_h'); } catch (e) { /* private window / blocked storage */ }
+  if (saved) panel.style.setProperty('--console-h', saved);
+  handle.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    panel.classList.add('open');  // grabbing the handle clearly means "I want to see more", not toggle-closed
+    handle.classList.add('dragging');
+    body.style.transition = 'none';
+    const onMove = (ev) => {
+      const maxPx = window.innerHeight * MAX_H_VH;
+      const newH = Math.min(maxPx, Math.max(MIN_H, window.innerHeight - ev.clientY));
+      panel.style.setProperty('--console-h', newH + 'px');
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      handle.classList.remove('dragging');
+      body.style.transition = '';
+      try { localStorage.setItem('topc_console_h', panel.style.getPropertyValue('--console-h')); } catch (e) { /* best-effort only */ }
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+})();
 
 document.querySelectorAll('#setupGateBanner [data-goto-view]').forEach(btn => {
   btn.addEventListener('click', () => {

@@ -78,7 +78,7 @@ SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
 from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
-from Platform.webapp import runner, store  # noqa: E402
+from Platform.webapp import case_review, reviews, runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
@@ -995,7 +995,9 @@ def get_pipeline_run(run_id: str):
     run = store.get_run(run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="No such run")
-    return run
+    # Real, server-side auto-approve state folded into the same poll the UI already makes
+    # every 2s -- no separate round-trip needed just to know whether it's on.
+    return {**run, "auto_approve": run_id in runner._auto_approve_runs}
 
 
 @app.get("/api/pipelines/runs/{run_id}/steps")
@@ -1004,7 +1006,61 @@ def get_pipeline_run_steps(run_id: str):
     run = store.get_run(run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="No such run")
-    return store.get_steps(run_id)
+    steps = store.get_steps(run_id)
+    for s in steps:  # tells the UI which waiting steps get a "Review & decide" pop-up
+        s["has_review"] = s["kind"] == "human" and reviews.has_review(run, s["step_id"])
+    return steps
+
+
+@app.get("/api/pipelines/runs/{run_id}/steps/{step_id}/review")
+def get_step_review(run_id: str, step_id: str):
+    """Everything the Review & decide pop-up shows for a waiting human step."""
+    try:
+        spec = reviews.get_review(run_id, step_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if spec is None:
+        raise HTTPException(status_code=404, detail="This step has no review.")
+    return spec
+
+
+class StepDecisionIn(BaseModel):
+    choices: list[str] | None = None
+    note: str | None = None
+    by: str
+
+
+class StepStopIn(BaseModel):
+    note: str | None = None
+    by: str
+
+
+@app.post("/api/pipelines/runs/{run_id}/steps/{step_id}/decide")
+def decide_step(run_id: str, step_id: str, body: StepDecisionIn):
+    """Record a person's choice + note for a waiting human step, then continue the run."""
+    try:
+        reviews.decide(run_id, step_id, body.choices, body.note, body.by)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except runner.CaseReviewPendingError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except runner.TargetNotApprovedError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"ok": True}
+
+
+@app.post("/api/pipelines/runs/{run_id}/steps/{step_id}/stop")
+def stop_step(run_id: str, step_id: str, body: StepStopIn):
+    """The person does not approve: stop the run here, with who and why on record."""
+    try:
+        reviews.stop(run_id, step_id, body.note, body.by)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"ok": True}
 
 
 @app.post("/api/pipelines/runs/{run_id}/steps/{step_id}/resolve")
@@ -1017,12 +1073,16 @@ def resolve_pipeline_run_step(run_id: str, step_id: str):
         raise HTTPException(status_code=404, detail="No such step")
     if step["status"] != "waiting_human":
         raise HTTPException(status_code=409, detail=f"Step '{step_id}' is not waiting for approval (status={step['status']}).")
+    if reviews.needs_decision(run_id, step_id):
+        raise HTTPException(status_code=409, detail=f"Step '{step_id}' needs a choice -- use Review & decide.")
     try:
         runner.resolve_step(run_id, step_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except runner.TargetNotApprovedError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except runner.CaseReviewPendingError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return {"ok": True}
 
 
@@ -1047,6 +1107,29 @@ def cancel_pipeline_run(run_id: str):
         raise HTTPException(status_code=404, detail="No such run")
     runner.cancel_run(run_id)
     return {"ok": True}
+
+
+class AutoApproveIn(BaseModel):
+    enabled: bool
+
+
+@app.post("/api/pipelines/runs/{run_id}/auto-approve")
+def set_run_auto_approve(run_id: str, body: AutoApproveIn):
+    """George, 2026-09-30: "plus auto mode seems to not actual work?" -- it was a
+    browser-side (JS) toggle that silently reset on any page reload/navigation, with no
+    visible sign it had turned off. The run itself already lives server-side; this flag now
+    does too (runner._auto_approve_runs, same in-memory pattern as _cancel_events), so it
+    survives navigating away from the page and doesn't depend on any one browser tab."""
+    run = store.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No such run")
+    runner.set_auto_approve(run_id, body.enabled)
+    return {"ok": True}
+
+
+@app.get("/api/pipelines/runs/{run_id}/auto-approve")
+def get_run_auto_approve(run_id: str):
+    return {"enabled": run_id in runner._auto_approve_runs}
 
 
 @app.get("/api/pipelines/runs/{run_id}/steps/{step_id}/artifact")
@@ -1456,7 +1539,7 @@ def _gap_devices_for(file_path: str, device_map: dict) -> list[str]:
 @app.get("/api/gap-register")
 def get_gap_register(
     limit: int = 25, offset: int = 0, project: str | None = None,
-    device: str | None = None,
+    device: str | None = None, category: str | None = None,
 ):
     """Real GAP/UNCONFIRMED markers, from an actual `gap-register` run over the real repo.
     Supports real offset/limit pagination.
@@ -1525,9 +1608,41 @@ def get_gap_register(
                 pe = rewrites.get((m["file"], m["line"]))
                 if pe:
                     m["plain_english"] = pe
+    # George, 2026-10-01: sort gaps by what would close them (group-gaps pipeline). Each marker gets its
+    # group; with a device selected, gaps that only concern another device are left out of the list (and
+    # counted) instead of padding a POS to-do list. Markers the pipeline has not classified yet keep working.
+    groups_by_loc: dict[tuple[str, str], dict] = {}
+    if project:
+        gp = runner.SYSTEM_TEST_OPS_ROOT / "reports" / project / "clarify-gaps" / "gap-groups.expanded.json"
+        if gp.is_file():
+            try:
+                groups_by_loc = {(r["file"], str(r["line"])): r for r in json.loads(gp.read_text(encoding="utf-8"))}
+            except (json.JSONDecodeError, KeyError, TypeError):
+                groups_by_loc = {}
+    hidden_other_device = 0
+    if groups_by_loc:
+        kept = []
+        for m in markers:
+            g = groups_by_loc.get((m["file"], str(m["line"])))
+            m["category"] = g["category"] if g else None
+            if g:
+                m.update(evidence=g["evidence"], spec_ref=g["spec_ref"], scoped_devices=g["devices"])
+                if device and (g["category"] == "other-device" or not ("ALL" in g["devices"] or device.upper() in g["devices"])):
+                    hidden_other_device += 1
+                    continue
+            kept.append(m)
+        markers = kept
+    category_counts: dict[str, int] = {}
+    for m in markers:
+        k = m.get("category") or "unclassified"
+        category_counts[k] = category_counts.get(k, 0) + 1
+    if category:
+        markers = [m for m in markers if (m.get("category") or "unclassified") == category]
     return {
         "total": len(markers), "shown": markers[offset:offset + limit],
         "offset": offset, "limit": limit, "is_fixture": True,
+        "grouped": bool(groups_by_loc), "category_counts": category_counts,
+        "hidden_other_device": hidden_other_device,
     }
 
 
@@ -1563,6 +1678,82 @@ def add_gap_answer(body: GapAnswerIn):
 def remove_gap_answer(answer_id: int):
     if not store.delete_gap_answer(answer_id):
         raise HTTPException(status_code=404, detail="No such answer")
+    return {"ok": True}
+
+
+class CaseFixIn(BaseModel):
+    rule: str
+    fields: dict
+    by: str
+
+
+class CaseWaiveIn(BaseModel):
+    rule: str
+    reason: str
+    by: str
+
+
+class CaseRuleIn(BaseModel):
+    rule: str
+    by: str = "unknown"
+
+
+@app.get("/api/case-review")
+def get_case_review(project: str, device: str):
+    """Cases the build's repair step would not guess at (no steps, compound THENs it could not
+    cut cleanly) -- the human half of the definition-of-done gate. `open` > 0 blocks the build's
+    human_cleanup step from being approved."""
+    return case_review.load(project, device)
+
+
+@app.get("/api/case-review/log")
+def get_case_review_log(project: str, device: str):
+    """Every fix / accept / reopen made on the Case Review screen, with who, why and when,
+    plus counts for today and all time. Kept in the console DB, not the plan file, so a
+    re-check never erases it."""
+    return case_review.log(project, device)
+
+
+@app.post("/api/case-review/recheck")
+def recheck_case_review(project: str, device: str):
+    """Re-audit live TestRail: items fixed elsewhere drop off, waivers carry over."""
+    result = case_review.recheck(project, device)
+    if not result.get("ok"):
+        raise HTTPException(status_code=502, detail=result.get("error", "Re-check failed."))
+    return result
+
+
+@app.post("/api/case-review/{case_id}/fix")
+def fix_case_review(case_id: int, project: str, device: str, body: CaseFixIn):
+    """Save a human's edit to TestRail. Refused (422, nothing written) if the edited case
+    still breaks the standard -- the response says which rule."""
+    try:
+        result = case_review.fix(project, device, case_id, body.rule, body.fields, body.by)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if not result.get("ok"):
+        raise HTTPException(status_code=422, detail=result.get("error", "Not saved."))
+    return result
+
+
+@app.post("/api/case-review/{case_id}/waive")
+def waive_case_review(case_id: int, project: str, device: str, body: CaseWaiveIn):
+    try:
+        return case_review.waive(project, device, case_id, body.rule, body.reason, body.by)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/case-review/{case_id}/reopen")
+def reopen_case_review(case_id: int, project: str, device: str, body: CaseRuleIn):
+    try:
+        case_review.reopen(project, device, case_id, body.rule, body.by)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return {"ok": True}
 
 

@@ -1188,6 +1188,34 @@ def test_cancel_marks_a_waiting_human_run_failed_instead_of_doing_nothing(monkey
     assert run["error"] == "Run cancelled."
 
 
+def test_cancel_marks_a_running_step_with_no_live_process_failed_instead_of_nothing(monkeypatch):
+    """George, 2026-09-30, found live on a real onboard-suite run: "i cancelled but nothing
+    happened" -- the underlying `claude` subprocess had already exited on its own well past
+    its 900s timeout (confirmed: no such process left running), but the background thread
+    never noticed, so the step sat at `running` in the database with nothing in
+    `_run_procs` for this run_id by the time cancel ran. The old code's `status == running`
+    branch found `proc is None` and did NOTHING observable -- same failure shape already
+    fixed once for `waiting_human`, just reached a different way (a genuinely orphaned
+    process, not a step that legitimately has nothing left to terminate). Must mark both
+    the run AND the stuck step failed, not silently return."""
+    from Platform.webapp import runner as runner_module
+
+    run_id = "fake-orphaned-run"
+    store.create_run(run_id, "fake-pipeline", "Translink", "POS")
+    store.create_step_rows(run_id, [("author_area[X]", "agent")])
+    store.update_step(run_id, "author_area[X]", status="running", started_at="2026-09-30T00:00:00+00:00")
+    # Deliberately NOT registering anything in runner_module._run_procs for this run_id --
+    # that's the exact orphaned-process condition being tested.
+
+    runner_module.cancel_run(run_id)
+
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert run["error"] == "Run cancelled."
+    step = next(s for s in store.get_steps(run_id) if s["step_id"] == "author_area[X]")
+    assert step["status"] == "failed"
+
+
 def test_cancel_mid_step_reports_run_cancelled_not_a_generic_step_failure(monkeypatch):
     """A cancel mid-step terminates the in-flight subprocess, which makes that step return
     "failed" the same way a real error would -- without the fix, the run was reported as
@@ -1350,6 +1378,28 @@ def test_step_artifact_400s_for_a_non_area_step(monkeypatch):
     assert res.status_code == 400
 
 
+def test_run_subprocess_decodes_real_utf8_output_correctly_not_mojibake():
+    """George, 2026-09-30: "why is there these weird characters anyway always being caught
+    and causing problems" -- real, confirmed root cause of the mojibake (Â£, â€") flagged
+    repeatedly all session: `_run_subprocess` used `text=True` with no explicit encoding,
+    so Python decoded the child's stdout using the OS's preferred encoding (cp1252 on this
+    machine), silently mangling every UTF-8 multi-byte character a CLI step ever printed.
+    This spawns a REAL child process (not a mock) writing real UTF-8 bytes containing £ and
+    — directly to stdout, exactly reproducing the real failure mode -- a mocked
+    `_run_subprocess` call couldn't catch this, since the bug is in actual OS-level byte
+    decoding, not in any of this codebase's own logic."""
+    import sys as sys_module
+    from Platform.webapp import runner as runner_module
+
+    code = "import sys; sys.stdout.buffer.write('Total: £5.00 — done'.encode('utf-8'))"
+    returncode, stdout, stderr = runner_module._run_subprocess(
+        [sys_module.executable, "-c", code], cwd=".", timeout=10,
+    )
+    assert returncode == 0
+    assert stdout == "Total: £5.00 — done"
+    assert "Â" not in stdout and "â€" not in stdout
+
+
 def test_failed_run_shows_the_failing_steps_own_output_not_a_prior_steps(monkeypatch):
     """Found live, repeatedly: a failed step's "Run failed" card showed a PRIOR successful
     step's output instead of the real failure, because store.update_run(cli_output=...)
@@ -1380,6 +1430,42 @@ def test_failed_run_shows_the_failing_steps_own_output_not_a_prior_steps(monkeyp
     assert run["status"] == "failed"
     assert "step two's real, distinctive error" in run["cli_output"]
     assert "step one's real, distinctive output" not in run["cli_output"]
+
+
+def test_failed_run_clears_stale_summary_from_a_prior_agent_step(monkeypatch):
+    """George, 2026-09-30, found live on a real onboard-suite run: `push_area` failed on a
+    real TestRail field-validation error, but the "Run failed" card showed the PRIOR
+    `author_area` step's own successful narrative summary instead -- the exact same
+    staleness bug already fixed once for `cli_output` (see the test above), just in the
+    separate `summary` field, which `_run_cli_step`/`_run_gate_step` only ever set when
+    `_extract_plain_summary` found something to extract (never true for `push`'s own
+    output) -- so a failing cli/gate step after a summary-writing agent step left the
+    run's `summary` silently stale, making the failure look like it was reporting the
+    wrong step's result."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-stale-summary", trigger=Trigger(ui_action="fake_stale_summary"), description="test pipeline",
+        steps=[
+            Step(id="author_step", kind=StepKind.agent, agent="gherkin-author"),
+            Step(id="push_step", kind=StepKind.cli, command="python -m system_test_ops audit --suite 1"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if "claude" in cmd:
+            return 0, json.dumps({"result": "author_step's real, distinctive narrative summary"}), ""
+        return 1, "", "push_step's real TestRail field-validation error"
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-stale-summary", "Translink", "POS")
+    run = store.get_run(run_id)
+    assert run["status"] == "failed"
+    assert run["summary"] is None
+    assert "push_step's real TestRail field-validation error" in run["cli_output"]
 
 
 def test_failed_gate_step_report_path_is_its_own_not_a_prior_steps(monkeypatch, tmp_path):
@@ -1657,6 +1743,52 @@ def test_loop_step_excludes_medium_confidence_cross_reference_matches(tmp_path, 
     assert ids == ["author_area[pos-operator]"]  # the medium-confidence ETM/HHD cross-reference is excluded
 
 
+def test_loop_step_trusts_real_document_role_tag_over_filename_guess(tmp_path, monkeypatch):
+    """George, 2026-09-30 (the real fix, generalised): "specs might always be different for
+    different projects... we need to ensure we are smart enough to distinct between test
+    case writing [and] anything extra [that] is knowledge." A filename check (e.g. the
+    "Device-Endpoints" prefix) is a Translink-specific guess that won't generalise to a
+    project whose reference docs are named/laid out completely differently. spec-distiller
+    now writes a real, content-based **Document role** tag into each note's own header --
+    that must be the signal trusted here, both ways: a "high" confidence, oddly-named note
+    tagged reference must still be excluded, and one tagged functional must still be
+    included even if its name would have looked like a legacy reference doc under the old
+    filename-only fallback."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "endpoint-catalogue.md").write_text(
+        "# Endpoint Catalogue\n**Document role:** reference — describes wire protocol only.\n", encoding="utf-8")
+    (specs_dir / "device-endpoints-real-behaviour.md").write_text(
+        "# Real POS behaviour\n**Document role:** functional — this is genuinely testable POS behaviour.\n", encoding="utf-8")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-loop3", trigger=Trigger(ui_action="fake_loop3"), description="test pipeline",
+        steps=[Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area", produces="<area>.cases.yaml")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    def fake_run_subprocess(cmd, cwd, timeout, run_id=None):
+        if any("archive_knowledge.py" in part for part in cmd):
+            return 0, json.dumps({"archived": [
+                {"file": "endpoint-catalogue.md", "reason": "title", "confidence": "high"},
+                {"file": "device-endpoints-real-behaviour.md", "reason": "title", "confidence": "high"},
+            ], "kept": []}), ""
+        return 0, "ok", ""
+
+    monkeypatch.setattr(runner_module, "_run_subprocess", fake_run_subprocess)
+
+    run_id = runner_module.start_run("fake-loop3", "FakeProj", "POS")
+    steps = store.get_steps(run_id)
+    ids = sorted(s["step_id"] for s in steps)
+    assert ids == ["author_area[device-endpoints-real-behaviour]"]  # tagged functional, kept despite its name
+    # endpoint-catalogue.md tagged reference: excluded despite matching "high" confidence and an innocuous name
+
+
 def test_consecutive_loop_steps_interleave_per_area_not_run_fully_then_fully(tmp_path, monkeypatch):
     """onboard-suite's real shape: author_area then push_area, both 'one per functional
     area'. Must produce author[A1], push[A1], author[A2], push[A2] -- one area reviewed
@@ -1692,6 +1824,75 @@ def test_consecutive_loop_steps_interleave_per_area_not_run_fully_then_fully(tmp
         "author_area[fare-structure]", "push_area[fare-structure]",
         "author_area[operator-menu]", "push_area[operator-menu]",
     ]
+
+
+def test_set_auto_approve_resumes_a_waiting_push_gate_and_continues_through_all_areas(tmp_path, monkeypatch):
+    """George, 2026-09-30: "there should be a way to approve all so you dont have to keep
+    approving... put it into approve auto mode" -- and then, found live: "plus auto mode
+    seems to not actual work?" (it was browser-side and silently reset on navigation).
+    set_auto_approve now lives server-side: turning it on while a run sits at a genuine
+    push --commit gate must resume that gate immediately AND keep auto-resolving every
+    subsequent one, without any further API calls, all the way to the run's real end."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    specs_dir = tmp_path / "knowledge" / "fakeproj" / "specs"
+    specs_dir.mkdir(parents=True)
+    (specs_dir / "fs002-fare-structure.md").write_text("x")
+    (specs_dir / "fs002-operator-menu.md").write_text("x")
+    monkeypatch.setattr(runner_module, "SYSTEM_TEST_OPS_ROOT", tmp_path)
+
+    fake_pipeline = Pipeline(
+        id="fake-auto-approve", trigger=Trigger(ui_action="fake_auto_approve"), description="test pipeline",
+        steps=[
+            Step(id="author_area", kind=StepKind.agent, agent="gherkin-author", loop="one per functional area"),
+            Step(id="push_area", kind=StepKind.cli, loop="one per functional area",
+                 command="python -m system_test_ops push --file area.cases.yaml --commit"),
+        ],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(runner_module, "_run_subprocess", lambda *a, **kw: (0, "ok", ""))
+    monkeypatch.setattr(runner_module.store, "is_target_approved", lambda *a, **kw: True)
+
+    run_id = runner_module.start_run("fake-auto-approve", "FakeProj", "ETM")
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"  # paused at push_area[fare-structure], as today
+
+    runner_module.set_auto_approve(run_id, True)
+
+    run = store.get_run(run_id)
+    assert run["status"] == "succeeded"  # auto-resolved straight through both areas
+    ids = [s["step_id"] for s in store.get_steps(run_id) if s["status"] == "succeeded"]
+    assert ids == [
+        "author_area[fare-structure]", "push_area[fare-structure]",
+        "author_area[operator-menu]", "push_area[operator-menu]",
+    ]
+
+
+def test_set_auto_approve_stops_at_a_non_push_human_checkpoint(tmp_path, monkeypatch):
+    """A plain human 'Continue' checkpoint (e.g. confirm_scope) is never auto-clicked --
+    only a genuine push --commit gate. Turning auto mode on while paused at one, or
+    reaching one after auto mode was already on, must leave it at waiting_human."""
+    from model.pipelines import Pipeline, Step, StepKind, Trigger
+    from Platform.webapp import runner as runner_module
+
+    fake_pipeline = Pipeline(
+        id="fake-auto-checkpoint", trigger=Trigger(ui_action="fake_auto_checkpoint"), description="test pipeline",
+        steps=[Step(id="confirm_scope", kind=StepKind.human, action="Confirm scope with the engineer.")],
+    )
+    monkeypatch.setattr(runner_module, "load_pipeline", lambda pid: fake_pipeline)
+    monkeypatch.setattr(runner_module.threading, "Thread", _SyncThread)
+
+    run_id = runner_module.start_run("fake-auto-checkpoint", "Translink", "POS")
+    assert store.get_run(run_id)["status"] == "waiting_human"
+
+    runner_module.set_auto_approve(run_id, True)
+
+    run = store.get_run(run_id)
+    assert run["status"] == "waiting_human"  # never auto-clicked
+    step = next(s for s in store.get_steps(run_id) if s["step_id"] == "confirm_scope")
+    assert step["status"] == "waiting_human"
 
 
 def test_loop_step_fails_clearly_with_no_ingested_specs(tmp_path, monkeypatch):

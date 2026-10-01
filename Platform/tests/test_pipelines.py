@@ -74,7 +74,10 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # report(s) separately; the drafting step's own note says so explicitly rather than
     # inventing a layout in the meantime.
     assert "generate-test-run-report" in ids
-    assert len(ids) == 24
+    # 2026-10-01: sorts every open gap by what would close it (screen comparison / behaviour run /
+    # spec contradiction / exact value / other device), and writes one sheet per group.
+    assert "group-gaps" in ids
+    assert len(ids) == 25
 
 
 def test_clarify_gaps_only_rewords_never_answers(pipelines):
@@ -129,7 +132,9 @@ def test_consolidate_execute_folds_references_a_real_produced_file_not_a_placeho
     # actually did.
     find_fold_groups = next(s for s in p.steps if s.id == "find_fold_groups")
     assert find_fold_groups.produces.startswith("proposals/{project}-{device}-suite-restructure/")
-    assert author_folds.reads == [find_fold_groups.produces]
+    # author_folds now reads ONLY the proposals a person ticked (Review & decide writes approved-folds.json),
+    # not the whole audit -- so nothing unticked can be authored.
+    assert any('approved-folds.json' in r for r in author_folds.reads)
 
 
 def test_fold_defect_regression_register_path_matches_real_naming_convention(pipelines):
@@ -181,7 +186,7 @@ def test_shared_guardrails_load_and_all_references_resolve(pipelines):
 def test_ai_density_report_matches_known_onboard_suite_shape(pipelines):
     report = pipelines.ai_density_report()
     assert report["onboard-suite"]["agent"] == 5
-    assert report["onboard-suite"]["cli"] == 5
+    assert report["onboard-suite"]["cli"] == 7
     assert report["audit"]["cli"] == 1 and report["audit"]["agent"] == 1
 
 
@@ -191,3 +196,17 @@ def test_missing_root_raises_a_clear_error(monkeypatch):
 
     with pytest.raises(FileNotFoundError, match="stale"):
         mod.load_pipeline_index()
+
+
+def test_group_gaps_classifies_and_never_answers(pipelines):
+    """The device is evidence, not gospel: group-gaps sorts gaps by what closes them and records a
+    verdict column for a person -- it must never resolve a gap or write a case."""
+    p = pipelines.load_pipeline("group-gaps")
+    ids = [s.id for s in p.steps]
+    assert ids == ["collect_markers", "gap_inputs", "classify_gaps", "gap_sheet"]
+    classify = next(s for s in p.steps if s.id == "classify_gaps")
+    assert "never answer" in classify.note.lower()
+    for cat in ("screen", "behaviour", "conflict", "value", "other-device", "unclear"):
+        assert f'"{cat}"' in classify.note
+    sheet = next(s for s in p.steps if s.id == "gap_sheet")
+    assert "Mismatch" in sheet.note and "--commit" not in (sheet.command or "")

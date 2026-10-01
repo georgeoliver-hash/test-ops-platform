@@ -303,6 +303,37 @@ def init_db() -> None:
                 created_at TEXT NOT NULL
             )"""
         )
+        # What a person chose / noted / stopped at a pipeline's waiting human step (reviews.py).
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS step_decisions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                run_id TEXT NOT NULL,
+                step_id TEXT NOT NULL,
+                choice TEXT,
+                note TEXT,
+                by TEXT NOT NULL,
+                outcome TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )"""
+        )
+        # Durable record of every human decision on the Case Review screen. Deliberately NOT
+        # derived from repair-plan.json: a re-check drops cases that stop being flagged from that
+        # file, which would erase the record of who accepted/fixed what and why.
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS case_review_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                project TEXT NOT NULL,
+                device TEXT NOT NULL,
+                case_id INTEGER NOT NULL,
+                title TEXT,
+                rule TEXT NOT NULL,
+                action TEXT NOT NULL,
+                by TEXT NOT NULL,
+                reason TEXT,
+                created_at TEXT NOT NULL
+            )"""
+        )
         # entry_type distinguishes a real answer from a "please clarify" reply or a
         # "this conflicts with the spec" flag -- George's ask (2026-09-11): a way to ask
         # for more info, and a tab for answers that actually conflict with spec/functionality.
@@ -933,6 +964,60 @@ def list_gap_answers(project: str | None = None, user_id: int = DEFAULT_USER_ID)
             rows = conn.execute(
                 "SELECT * FROM gap_answers WHERE user_id = ? ORDER BY created_at DESC", (user_id,),
             ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def add_step_decision(run_id: str, step_id: str, choice: str | None, note: str, by: str, outcome: str) -> int:
+    if outcome not in ("approved", "stopped"):
+        raise ValueError("outcome must be 'approved' or 'stopped'.")
+    with _connect() as conn:
+        cur = conn.execute(
+            "INSERT INTO step_decisions (run_id, step_id, choice, note, by, outcome, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))",
+            (run_id, step_id, choice, note, by, outcome),
+        )
+        return cur.lastrowid
+
+
+def list_step_decisions(run_id: str) -> list[dict]:
+    with _connect() as conn:
+        rows = conn.execute("SELECT * FROM step_decisions WHERE run_id = ? ORDER BY id", (run_id,)).fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_step_decision(run_id: str, step_id: str) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM step_decisions WHERE run_id = ? AND step_id = ? ORDER BY id DESC LIMIT 1", (run_id, step_id),
+        ).fetchone()
+        return dict(row) if row else None
+
+
+CASE_REVIEW_ACTIONS = ("fixed", "accepted", "reopened")
+
+
+def add_case_review_log(
+    project: str, device: str, case_id: int, title: str | None, rule: str, action: str,
+    by: str, reason: str | None = None, created_at: str | None = None, user_id: int = DEFAULT_USER_ID,
+) -> int:
+    """Plain INSERT (no AI) recording one human decision on a case. `created_at` is only
+    passed when back-filling decisions made before this log existed."""
+    if action not in CASE_REVIEW_ACTIONS:
+        raise ValueError(f"action must be one of {CASE_REVIEW_ACTIONS}.")
+    with _connect() as conn:
+        cur = conn.execute(
+            """INSERT INTO case_review_log (user_id, project, device, case_id, title, rule, action, by, reason, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now')))""",
+            (user_id, project, device, int(case_id), title, rule, action, by, reason, created_at),
+        )
+        return cur.lastrowid
+
+
+def list_case_review_log(project: str, device: str, user_id: int = DEFAULT_USER_ID) -> list[dict]:
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM case_review_log WHERE user_id = ? AND project = ? AND device = ? ORDER BY created_at DESC, id DESC",
+            (user_id, project, device),
+        ).fetchall()
         return [dict(r) for r in rows]
 
 
