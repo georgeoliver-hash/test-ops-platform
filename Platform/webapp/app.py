@@ -27,6 +27,7 @@ Run: uvicorn Platform.webapp.app:app --reload --app-dir . (from the repo root)
 """
 from __future__ import annotations
 
+import csv
 import json
 import os
 import re
@@ -78,7 +79,7 @@ SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
 from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
-from Platform.webapp import case_review, reviews, runner, store  # noqa: E402
+from Platform.webapp import case_review, gap_exchange, reviews, runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
@@ -1626,7 +1627,8 @@ def get_gap_register(
             g = groups_by_loc.get((m["file"], str(m["line"])))
             m["category"] = g["category"] if g else None
             if g:
-                m.update(evidence=g["evidence"], spec_ref=g["spec_ref"], scoped_devices=g["devices"])
+                m.update(evidence=g["evidence"], spec_ref=g["spec_ref"], scoped_devices=g["devices"],
+                         gap_id=g.get("gap_id"), summary=g.get("summary") or None, question=g.get("question") or None)
                 if device and (g["category"] == "other-device" or not ("ALL" in g["devices"] or device.upper() in g["devices"])):
                     hidden_other_device += 1
                     continue
@@ -1644,6 +1646,37 @@ def get_gap_register(
         "grouped": bool(groups_by_loc), "category_counts": category_counts,
         "hidden_other_device": hidden_other_device,
     }
+
+
+class GapImportIn(BaseModel):
+    csv_text: str
+    by: str | None = None
+
+
+@app.get("/api/gap-export")
+def export_gaps(project: str, device: str | None = None):
+    """The grouped gaps as a CSV for reviewers to fill in (Verdict / Answer / Answered by / Evidence)."""
+    from fastapi.responses import FileResponse
+    try:
+        path = gap_exchange.export_csv(project, device)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except (RuntimeError, OSError) as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    name = f"gaps-{project.lower()}-{(device or 'all').lower()}-{datetime.now().strftime('%Y-%m-%d')}.csv"
+    return FileResponse(path, media_type="text/csv", filename=name)
+
+
+@app.post("/api/gap-import")
+def import_gaps(project: str, body: GapImportIn, device: str | None = None):
+    """Take back a filled-in export: every answered row is recorded in the gap-answers log, matched to
+    its gap by Gap ID. Bad rows are reported, never block the good ones; nothing edits a case."""
+    try:
+        return gap_exchange.import_csv(project, device, body.csv_text, body.by)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except csv.Error as exc:
+        raise HTTPException(status_code=400, detail=f"That does not look like the exported CSV: {exc}") from exc
 
 
 @app.post("/api/gap-register/refresh")

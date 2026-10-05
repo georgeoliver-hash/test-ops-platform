@@ -641,7 +641,7 @@ const NAV_ICONS = {
   // Checks group (Audit's 4 + Health's 7)
   'audit-coverage': '🔗', 'audit-flows': '🧩', audit: '✅', 'generate-test-run-report': '📝',
   'fold-defect': '🐛', 'review-runs': '📈', 'consolidation-check': '🧹',
-  'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡', 'group-gaps': '🗂️',
+  'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡', 'group-gaps': '🗂️', 'link-defects': '🐞',
   // Automation tab
   dashboard: '📊', tests: '🧪', keywords: '🔑', flows: '🔀',
   'export-automation': '⬇️', 'write-automation': '✍️', 'draft-automation': '📝',
@@ -798,6 +798,7 @@ const PIPELINE_PLAIN = {
   'onboard-suite': 'Builds (or rebuilds) a suite for a device from scratch, checking real sources first.',
   'update-suite-from-docs': "Checks one or more already-ingested documents against an EXISTING suite's live cases and drafts build/add/edit updates for your review — never a full rebuild. Run Ingest Docs first.",
   'resolve-gaps': 'Turns open questions (GAP/UNCONFIRMED markers) into confirmed, cited facts.',
+  'link-defects': 'Links every known defect to the test cases that would fail because of it, and lists the defects no test would catch. A failing case then reads as a known defect. Works offline; writes nothing to TestRail.',
   'group-gaps': 'Sorts every open gap by what would close it (a screen comparison, a device run, a spec contradiction, an exact value, or not this device) and writes a sheet per group. The device is evidence, not proof: a mismatch is raised, never written into a case.',
   'clarify-gaps': 'Rewrites GAP/UNCONFIRMED markers into a plain-English question, no jargon — never answers them, just makes the real question legible. Use Resolve to actually answer.',
   'review-runs': "Looks at recent test runs and recommends what to add, edit, remove, or reorganise. Doesn't change TestRail.",
@@ -1879,14 +1880,18 @@ async function renderGaps() {
     // George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers into plain English -- a
     // real cached rewrite (clarify-gaps) shows instead of the raw jargon-heavy marker text
     // when one exists for this exact marker; the raw text stays available via title tooltip.
-    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}${g.category ? ` <span class="pill code" style="font-size:10px;" title="${esc(g.evidence || '')}">${esc(GAP_CAT_LABEL[g.category] || g.category)}</span>` : ''}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${g.plain_english ? `${esc(g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;">Open →</button></td></tr>`).join('');
+    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}${g.category ? ` <span class="pill code" style="font-size:10px;" title="${esc(g.evidence || '')}">${esc(GAP_CAT_LABEL[g.category] || g.category)}</span>` : ''}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${(g.summary || g.plain_english) ? `${esc(g.summary || g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;">Open →</button></td></tr>`).join('');
     const pageStart = d.total ? d.offset + 1 : 0;
     const pageEnd = Math.min(d.offset + d.shown.length, d.total);
 
     const gapsTabHTML = `
       <div class="card" style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">${esc(target.project)}/${esc(target.device)} only, showing ${pageStart}-${pageEnd} of ${d.total}. Click a row to answer it.</p>
-        <button class="btn" id="gapRefreshBtn">↻ Refresh against new docs</button>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn" id="gapExportBtn" title="One row per distinct gap, grouped, with a summary and one question, and blank columns for the answer">⬇ Export for review</button>
+          <label class="btn" style="cursor:pointer;" title="Upload the sheet after someone has filled it in">⬆ Import answers<input type="file" id="gapImportFile" accept=".csv" hidden></label>
+          <button class="btn" id="gapRefreshBtn">↻ Refresh against new docs</button>
+        </span>
       </div>
       <div id="gapRefreshResult"></div>
       ${d.grouped ? `<div class="card" style="margin-bottom:10px;">
@@ -1958,6 +1963,33 @@ async function renderGaps() {
     });
     content.querySelectorAll('[data-gap-open-idx]').forEach(btn => {
       btn.addEventListener('click', (e) => { e.stopPropagation(); openGapModal(d.shown[Number(btn.dataset.gapOpenIdx)]); });
+    });
+    const gapQ = `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`;
+    const gapMsg = (html, bad) => { const el = document.getElementById('gapRefreshResult'); if (el) el.innerHTML = `<div class="${bad ? 'errbox' : 'card'}" style="margin-bottom:10px;font-size:12.5px;">${html}</div>`; };
+    document.getElementById('gapExportBtn')?.addEventListener('click', async () => {
+      try {
+        const res = await fetch(`/api/gap-export?${gapQ}`);
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+        const url = URL.createObjectURL(await res.blob());
+        const a = document.createElement('a');
+        a.href = url; a.download = `gaps-${target.project.toLowerCase()}-${target.device.toLowerCase()}.csv`;
+        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        gapMsg('Exported. Send it to whoever can answer. For each row they fill in Answer and Answered by, and for screen or behaviour rows a Verdict. Then use Import answers.');
+      } catch (err) { gapMsg(esc(err.message), true); }
+    });
+    document.getElementById('gapImportFile')?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const by = crName() || prompt('Your name (used for any row with no "Answered by"):') || '';
+      if (by) crRememberName(by);
+      try {
+        const res = await fetch(`/api/gap-import?${gapQ}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({csv_text: await file.text(), by})});
+        const r = await res.json();
+        if (!res.ok) throw new Error(r.detail || res.statusText);
+        const probs = [...r.unknown_ids.map(i => `${esc(i)}: not a gap I know`), ...r.errors.map(x => `row ${x.row} (${esc(x.gap_id)}): ${esc(x.reason)}`)];
+        gapMsg(`<b>${r.imported} answer(s) recorded</b> (see the Log tab). ${r.conflicts ? `${r.conflicts} mismatch(es) logged as conflicts to raise. ` : ''}${r.decisions ? `${r.decisions} need a decision from an owner. ` : ''}${r.drafts ? `<b>${r.drafts} of them are drafts</b> (marked [DRAFT]) -- evidence from the code, still to be confirmed by a person. ` : ''}${r.skipped_duplicate_or_out_of_scope ? `${r.skipped_duplicate_or_out_of_scope} duplicate / out-of-scope row(s) not recorded. ` : ''}${r.blank} blank row(s) skipped, ${r.duplicates} already imported.${probs.length ? `<br>Not imported:<ul style="margin:4px 0 0 18px;">${probs.slice(0, 8).map(p => `<li>${p}</li>`).join('')}</ul>` : ''}<br><span style="color:var(--ink-soft);">Nothing was changed in any case. Answers are applied by Resolve.</span>`, probs.length > 0 && !r.imported);
+      } catch (err) { gapMsg(esc(err.message), true); }
+      e.target.value = '';
     });
     content.querySelectorAll('.gap-cat-chip').forEach(b => b.addEventListener('click', () => { gapCategory = b.dataset.cat; gapOffset = 0; renderGaps(); }));
     document.getElementById('gapPrevBtn')?.addEventListener('click', () => { gapOffset = Math.max(0, gapOffset - GAP_PAGE_SIZE); renderGaps(); });
@@ -3877,7 +3909,7 @@ const GROUPS = {
   // you click approve the same number of times either way. The pipeline file stays as
   // plumbing; it just isn't offered as a button.
   Build: ['start', 'ingest-docs', 'scheduled-scan', 'onboard-suite', 'add-feature', 'update-suite-from-docs', 'consolidate', 'targeted-run'],
-  Checks: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report', 'fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps', 'group-gaps'],
+  Checks: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report', 'fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps', 'group-gaps', 'link-defects'],
 };
 // Display-only renames (round 2, ISSUES.md) -- never the real pipeline `id` or group DOM
 // id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
@@ -3929,6 +3961,7 @@ const PIPELINE_DISPLAY_NAME = {
   'resolve-gaps': 'Resolve',
   'clarify-gaps': 'Clarify',
   'group-gaps': 'Group gaps',
+  'link-defects': 'Link defects',
 };
 // "Proper English" rule (ISSUES.md round 2): a label the TOOL generates (this fallback,
 // when a pipeline has no explicit display name above) must read as a normal sentence/

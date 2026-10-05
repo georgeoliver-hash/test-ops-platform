@@ -77,7 +77,10 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # 2026-10-01: sorts every open gap by what would close it (screen comparison / behaviour run /
     # spec contradiction / exact value / other device), and writes one sheet per group.
     assert "group-gaps" in ids
-    assert len(ids) == 25
+    # 2026-10-02: links each known defect to the cases that would fail because of it (and lists the
+    # defects no test would catch), from local files only -- no TestRail needed.
+    assert "link-defects" in ids
+    assert len(ids) == 26
 
 
 def test_clarify_gaps_only_rewords_never_answers(pipelines):
@@ -210,3 +213,12 @@ def test_group_gaps_classifies_and_never_answers(pipelines):
         assert f'"{cat}"' in classify.note
     sheet = next(s for s in p.steps if s.id == "gap_sheet")
     assert "Mismatch" in sheet.note and "--commit" not in (sheet.command or "")
+
+
+def test_link_defects_works_offline_and_writes_nothing_to_testrail(pipelines):
+    p = pipelines.load_pipeline("link-defects")
+    assert [s.id for s in p.steps] == ["defect_inputs", "link_defects", "defect_report"]
+    link = next(s for s in p.steps if s.id == "link_defects")
+    assert "never" in link.note.lower() and "do not link" in link.note.lower() and "CANNOT RUN CODE" in link.note
+    for s in p.steps:
+        assert "--commit" not in (s.command or "") and "push" not in (s.command or "")
