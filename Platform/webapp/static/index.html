@@ -4786,7 +4786,7 @@ async function refreshTargetsGitStatus() {
     const s = await fetchJSON('/api/suite-mappings/git-status');
     const messages = {
       clean: 'Target list up to date with origin.',
-      uncommitted: 'Uncommitted local target changes — commit suite_targets.yaml to share.',
+      uncommitted: '',  // George, 2026-09-30: remove this nag text from Change target
       unpushed: 'Committed locally, not pushed yet.',
       unknown: 'Could not check target list status' + (s.detail ? ` (${s.detail})` : '') + '.',
     };

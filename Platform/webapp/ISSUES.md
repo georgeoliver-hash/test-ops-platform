@@ -498,3 +498,5 @@ As i go through the process:
   - end goal: used company-wide (projects, testers, automation) to see stats, data and runs in real time;
   - same for Reports: keep adding many quick, narrowed-down reports and dashboards for most of what the tool and automation do.
   - Depends on: sit's results ingestion (see the SIT results dashboard plan; results upload is off in sit today). Single-user local console today, so "company-wide" is the shared-service jump flagged earlier (credentials store + uploads need the multi-user redesign first).
+
+- **Status (2026-10-06):** removed the "Uncommitted local target changes" text from Change target. Audit of the rest of this list against the code: most items are built; still open are human-check guidance, ingest-docs simplification (needs a decision), better results (plain-English verdict + a pill per issue), gap re-check against new specs, Design docs in Settings (needs a decision), pipeline-page 2x2 layout (needs a decision), stale-dashboard approach (needs a decision).
