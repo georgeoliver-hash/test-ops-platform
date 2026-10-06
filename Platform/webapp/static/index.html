@@ -2677,11 +2677,17 @@ async function renderPipelineDetail(id) {
     // flow_data_path (2026-09-28): system-resolved from the target's Design docs upload
     // folder now (see runner.py's _build_params), same "not hand-typed" treatment as
     // docs_path -- no editable field for it any more either.
-    const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name) && i.name !== 'docs_path' && i.name !== 'flow_data_path');
+    // only_file is gone from the UI too (2026-10-06): every run sweeps the target's docs; the ingest memory (content hash)
+    // skips anything already distilled, so there is no need to pick documents per run.
+    const extraInputs = (detail.inputs || []).filter(i => !SYSTEM_DERIVED_INPUTS.includes(i.name) && i.name !== 'docs_path' && i.name !== 'flow_data_path' && !(isIngestDocs && i.name === 'only_file'));
+    let lastIngestRun = null;
     if (isIngestDocs && target.project && target.device) {
       try {
         const r = await fetchJSON(`/api/docs/folder?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`);
-        docsFolder = r.path; docsSource = r.source; docsOptions = r.options || [];
+        docsFolder = r.path; docsSource = r.source;
+        // George, 2026-10-06: one source of truth -- the target's uploaded docs. No per-run choice of folder.
+        docsOptions = (r.options || []).filter(o => o.source !== 'requirements_folder');
+        try { lastIngestRun = await fetchJSON(`/api/pipelines/ingest-docs/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); } catch (e) { lastIngestRun = null; }
       } catch (e) { /* best-effort default only */ }
     }
     // George's ask (ISSUES.md round 4): "ingest docs page needs overview of the current
@@ -2782,6 +2788,7 @@ async function renderPipelineDetail(id) {
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
           ${docsOptions.map(o => `<button type="button" class="btn${o.path === docsFolder ? ' primary' : ''}" data-docs-source-btn data-path="${esc(o.path)}" style="font-size:12.5px;">${esc(o.label)} (${o.file_count})</button>`).join('')}
         </div>` : ''}
+        <p style="font-size:12.5px;margin:0 0 8px;"><b>Last ingested:</b> ${lastIngestRun && lastIngestRun.status ? `${esc(new Date((lastIngestRun.updated_at || '') + 'Z').toLocaleString())} <span class="pill ${lastIngestRun.status === 'succeeded' ? 'ok' : lastIngestRun.status === 'failed' ? 'bad' : 'warn'}">${esc(lastIngestRun.status)}</span>` : '<span style="color:var(--ink-soft);">never for this target</span>'}. Docs already distilled at the same content are skipped.</p>
         <div id="docsSourceCardBody" style="${docsOptions.length > 1 ? 'margin-top:10px;' : ''}">${renderDocsSourceBody(docsOptions.find(o => o.path === docsFolder) || docsOptions[0])}</div>
       </div>` : '';
     // Real preview, before committing to a tracked run (George, 2026-09-22: "an initial
