@@ -80,3 +80,26 @@ def test_tickets_newest_first(tmp_path, monkeypatch):
     os.utime(t / "old.txt", (1000, 1000))
     out = live_sit.tickets()
     assert out["configured"] and [x["name"] for x in out["tickets"]] == ["new.txt", "old.txt"] and out["tickets"][0]["text"] == "NEW"
+
+
+def test_robot_files_are_found_by_content_not_name(tmp_path, monkeypatch):
+    (tmp_path / "Suite-52843.xml").write_text('<?xml version="1.0"?><robot generator="Robot 7"></robot>', encoding="utf-8")
+    (tmp_path / "other.xml").write_text("<config/>", encoding="utf-8")
+    assert [p.name for p in live_sit._robot_xmls(str(tmp_path))] == ["Suite-52843.xml"]
+
+
+def test_a_github_cache_run_is_labelled_and_a_bad_run_id_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(live_sit, "DATA", tmp_path)
+    monkeypatch.setattr(live_sit, "CONFIG", tmp_path / "c.json")
+    monkeypatch.setattr(live_sit, "GH_CACHE", tmp_path / "live" / "gh")
+    f = tmp_path / "live" / "gh" / "12345678901" / "robot-results-Translink-169-836" / "S-1.xml"
+    f.parent.mkdir(parents=True)
+    f.write_text('<robot><suite name="S"><test id="s1-t1" name="a"><status status="FAIL" elapsed="1"/></test></suite></robot>', encoding="utf-8")
+    runs = live_sit.list_runs()
+    assert runs["configured"] and runs["runs"][0]["name"] == "GitHub Translink-169-836" and runs["runs"][0]["failed"] == 1
+    assert live_sit.run_detail(str(f))["tests"][0]["status"] == "FAIL"
+    try:
+        live_sit.gh_load("not-an-id")
+        assert False
+    except ValueError:
+        pass

@@ -8,6 +8,9 @@ files (a local run's --outputdir, or a downloaded CI artifact), `tickets_dir` = 
 from __future__ import annotations
 
 import json
+import re
+import shutil
+import subprocess
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -16,6 +19,9 @@ from pathlib import Path
 DATA = Path(__file__).resolve().parent / "data"
 CONFIG = DATA / "live_sources.json"
 MAX_RUNS = 25
+GH_REPO = "flowbird-group/sit"
+GH_WORKFLOW = "trigger-pipeline.yml"
+GH_CACHE = DATA / "live" / "gh"          # downloaded "robot-results-*" artifacts, one folder per Actions run id
 MAX_TICKET_BYTES = 6000
 
 
@@ -152,6 +158,24 @@ def _parse(p: Path) -> dict:
     return parse_events(p) if p.suffix == ".jsonl" else parse_output(p)
 
 
+def _robot_xmls(root: str) -> list[Path]:
+    """Robot result files, found by content (CI names them '<suite>-<id>.xml', local runs 'output.xml')."""
+    out = []
+    for p in Path(root).rglob("*.xml"):
+        try:
+            with p.open("rb") as f:
+                if b"<robot" in f.read(600):
+                    out.append(p)
+        except OSError:
+            continue
+    return out
+
+
+def _roots() -> list[str]:
+    cfg = get_config()
+    return [r for r in (cfg["results_dir"], str(GH_CACHE)) if r and Path(r).is_dir()]
+
+
 def _safe_under(root: str, p: Path) -> bool:
     try:
         p.resolve().relative_to(Path(root).resolve())
@@ -161,15 +185,17 @@ def _safe_under(root: str, p: Path) -> bool:
 
 
 def list_runs() -> dict:
+    roots = _roots()
     root = get_config()["results_dir"]
-    if not root or not Path(root).is_dir():
+    if not roots:
         return {"configured": False, "runs": []}
     files = []
-    for p in [*Path(root).rglob("output*.xml"), *Path(root).rglob("*.jsonl")]:
-        try:
-            files.append((p.stat().st_mtime, p))
-        except OSError:
-            continue
+    for r in roots:
+        for p in [*_robot_xmls(r), *Path(r).rglob("*.jsonl")]:
+            try:
+                files.append((p.stat().st_mtime, p))
+            except OSError:
+                continue
     files.sort(reverse=True)
     # one run = one row: when a folder has both the live listener file and Robot's output.xml, show the live one
     jsonl_dirs = {p.parent for _, p in files if p.suffix == ".jsonl"}
@@ -179,17 +205,17 @@ def list_runs() -> dict:
     for mtime, p in files[:MAX_RUNS]:
         info = _parse(p)
         c = info["counts"]
-        runs.append({"path": str(p), "name": p.parent.name if (p.name == "output.xml" or p.suffix == ".jsonl") else p.stem, "kind": "live" if p.suffix == ".jsonl" else "xml", "modified": mtime,
+        gh = _gh_label(p)
+        runs.append({"path": str(p), "name": gh or (p.parent.name if (p.name == "output.xml" or p.suffix == ".jsonl") else p.stem), "source": "github" if gh else "local", "kind": "live" if p.suffix == ".jsonl" else "xml", "modified": mtime,
                      "live": (not info["complete"]) and now - mtime < 600, "complete": info["complete"],
                      "total": len(info["tests"]), "passed": c.get("PASS", 0), "failed": c.get("FAIL", 0), "skipped": c.get("SKIP", 0),
                      "running": info["running"]["name"] if info["running"] else None})
-    return {"configured": True, "results_dir": root, "runs": runs}
+    return {"configured": bool(root) or bool(runs), "results_dir": root, "runs": runs}
 
 
 def run_detail(path: str) -> dict:
-    cfg = get_config()
     p = Path(path)
-    if not cfg["results_dir"] or not _safe_under(cfg["results_dir"], p) or not p.is_file():
+    if not any(_safe_under(r, p) for r in _roots()) or not p.is_file():
         raise FileNotFoundError("That run is not inside the configured results folder.")
     info = _parse(p)
     info["path"], info["modified"] = str(p), p.stat().st_mtime
@@ -218,3 +244,52 @@ def tickets(limit: int = 25) -> dict:
             continue
         out.append({"name": p.name, "modified": mtime, "text": text})
     return {"configured": True, "tickets_dir": root, "tickets": out}
+
+
+# ---- GitHub Actions source: sit's own runs (self-hosted lab runners) upload their Robot results as an artifact ----
+def _gh_label(p: Path) -> str | None:
+    try:
+        rel = p.resolve().relative_to(GH_CACHE.resolve())
+    except (ValueError, OSError):
+        return None
+    parts = rel.parts
+    return f"GitHub {parts[1].removeprefix('robot-results-')}" if len(parts) > 2 else f"GitHub run {parts[0]}"
+
+
+def _gh(args: list[str], timeout: int = 180) -> tuple[int, str]:
+    try:
+        r = subprocess.run(["gh", *args], capture_output=True, text=True, timeout=timeout, encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        return 127, "The GitHub CLI (gh) is not installed on this machine."
+    except subprocess.TimeoutExpired:
+        return 124, f"Timed out after {timeout}s."
+    return r.returncode, (r.stdout or "") + (r.stderr or "")
+
+
+def gh_runs(limit: int = 20) -> dict:
+    rc, out = _gh(["run", "list", "-R", GH_REPO, "--workflow", GH_WORKFLOW, "-L", str(max(1, min(limit, 50))),
+                   "--json", "databaseId,displayTitle,status,conclusion,createdAt,event,url"], timeout=60)
+    if rc != 0:
+        return {"ok": False, "detail": out.strip().splitlines()[-1] if out.strip() else "gh failed"}
+    cached = {p.name for p in GH_CACHE.iterdir()} if GH_CACHE.is_dir() else set()
+    runs = json.loads(out)
+    for r in runs:
+        r["loaded"] = str(r["databaseId"]) in cached
+    return {"ok": True, "repo": GH_REPO, "runs": runs}
+
+
+def gh_load(run_id: str) -> dict:
+    """Download the run's robot-results artifact(s) into the cache and return the output.xml files found."""
+    if not re.fullmatch(r"\d{5,15}", run_id or ""):
+        raise ValueError("That is not a GitHub run id.")
+    dest = GH_CACHE / run_id
+    if dest.is_dir() and _robot_xmls(str(dest)):
+        pass  # already downloaded: runs that have finished do not change
+    else:
+        dest.mkdir(parents=True, exist_ok=True)
+        rc, out = _gh(["run", "download", run_id, "-R", GH_REPO, "-p", "robot-results-*", "-D", str(dest)])
+        if rc != 0 or not _robot_xmls(str(dest)):
+            shutil.rmtree(dest, ignore_errors=True)
+            msg = out.strip().splitlines()[-1] if out.strip() else "no output"
+            raise FileNotFoundError(f"No Robot results for run {run_id}: {msg}. The run may still be going, may not have produced results, or the artifact has expired.")
+    return {"run_id": run_id, "files": [str(p) for p in sorted(_robot_xmls(str(dest)))]}

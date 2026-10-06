@@ -4506,6 +4506,36 @@ async function renderLiveDashboard() {
     } catch (e) { msg.style.color = 'var(--bad)'; msg.textContent = e.message; }
   });
 
+  // sit's own runs (self-hosted lab runners) upload their Robot results to GitHub Actions; this lists them and pulls one in.
+  function ghCard() {
+    const g = window.__ghRuns, msg = window.__ghMsg || '';
+    const rows = g && g.ok ? g.runs.map(r => `<tr><td style="font-size:12px;white-space:nowrap;">${esc(ago(Date.parse(r.createdAt) / 1000))}</td><td style="font-size:12.5px;">${esc((r.displayTitle || '').replace('Trigger-Pipeline · ', ''))}</td><td><span class="pill ${r.status !== 'completed' ? 'warn' : r.conclusion === 'success' ? 'ok' : 'bad'}">${esc(r.status !== 'completed' ? r.status : r.conclusion)}</span></td><td><button class="btn" data-gh-load="${r.databaseId}" style="font-size:11.5px;padding:2px 8px;">${r.loaded ? 'Open' : 'Load results'}</button></td></tr>`).join('') : '';
+    return `<div class="card" id="lvGh"><h2>sit runs on GitHub</h2>
+      <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 8px;">Lab runs finish on the self-hosted runners and upload their Robot results here. Load one to see its tests, failures and log. Finished runs only; a run still going has no results yet.</p>
+      <button class="btn" id="lvGhBtn" style="font-size:12px;">${g ? '↻ Refresh list' : 'Show recent runs'}</button> <span id="lvGhMsg" style="font-size:12.5px;margin-left:6px;color:${msg.startsWith('!') ? 'var(--bad)' : 'var(--ink-soft)'};">${esc(msg.replace(/^!/, ''))}</span>
+      ${g && !g.ok ? `<p class="errbox" style="margin-top:8px;">${esc(g.detail)}</p>` : ''}
+      ${rows ? `<table style="margin-top:8px;"><tr><th>When</th><th>Run</th><th>Result</th><th></th></tr>${rows}</table>` : ''}</div>`;
+  }
+  function wireGh(scope) {
+    scope.querySelector('#lvGhBtn')?.addEventListener('click', async () => {
+      window.__ghMsg = 'Asking GitHub…'; tick();
+      try { window.__ghRuns = await fetchJSON('/api/live/gh/runs?limit=20'); window.__ghMsg = ''; } catch (e) { window.__ghMsg = '!' + e.message; }
+      tick();
+    });
+    scope.querySelectorAll('[data-gh-load]').forEach(b => b.addEventListener('click', async () => {
+      window.__ghMsg = 'Downloading the results…'; tick();
+      try {
+        const res = await fetch(`/api/live/gh/load?run_id=${b.dataset.ghLoad}`, {method: 'POST'});
+        const r = await res.json(); if (!res.ok) throw new Error(r.detail || res.statusText);
+        const list = await fetchJSON('/api/live/runs');
+        const hit = list.runs.find(x => r.files.includes(x.path));
+        if (hit) window.__liveSel = hit.path;
+        window.__ghMsg = 'Loaded.'; if (window.__ghRuns) window.__ghRuns.runs.forEach(x => { if (String(x.databaseId) === b.dataset.ghLoad) x.loaded = true; });
+      } catch (e) { window.__ghMsg = '!' + e.message; }
+      tick();
+    }));
+  }
+
   async function tick() {
     clearTimeout(window.__liveTimer);
     const root = document.getElementById('lvRoot');
@@ -4514,13 +4544,13 @@ async function renderLiveDashboard() {
     try {
       const [runsRes, tix] = await Promise.all([fetchJSON('/api/live/runs'), fetchJSON('/api/live/tickets')]);
       if (!runsRes.configured) {
-        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No results folder set yet. Use <b>⚙ Sources</b> above to point at the folder your sit runs write to.</p></div>`;
-        document.getElementById('lvState').textContent = 'not set up'; return;
+        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No local results folder set. Use <b>⚙ Sources</b> for a folder you run into, or load a finished run from GitHub below.</p></div>${ghCard()}`;
+        wireGh(root); document.getElementById('lvState').textContent = 'not set up'; return;
       }
       const runs = runsRes.runs;
       if (!runs.length) {
-        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No runs found in <code>${esc(runsRes.results_dir)}</code> yet. Start a run with the listener (see ⚙ Sources) and it appears here within a couple of seconds.</p></div>`;
-        document.getElementById('lvState').textContent = 'waiting'; return;
+        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No runs found in <code>${esc(runsRes.results_dir)}</code> yet. Start a run with the listener (see ⚙ Sources) and it appears here within a couple of seconds, or load a finished run from GitHub below.</p></div>${ghCard()}`;
+        wireGh(root); document.getElementById('lvState').textContent = 'waiting'; return;
       }
       const sel = runs.find(r => r.path === window.__liveSel) || runs.find(r => r.live) || runs[0];
       window.__liveSel = sel.path;
@@ -4578,10 +4608,12 @@ async function renderLiveDashboard() {
           <div>
             <div class="card"><h2>Printed tickets</h2>${ticketsHtml}</div>
             <div class="card"><h2>Recent runs</h2><table class="lv-runs"><tr><th>Run</th><th>When</th><th>P / F / S</th><th></th></tr>${runRows}</table></div>
+            ${ghCard()}
             <div class="card"><h2>Schedule and targeted runs</h2><p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Not connected yet: the schedule lives in the CI system, and choosing tags to run needs a way to start a run from here. Both come after results ingestion.</p></div>
           </div>
         </div>`;
       const lg = document.getElementById('lvLog'); if (lg) lg.scrollTop = lg.scrollHeight;
+      wireGh(root);
       root.querySelectorAll('.lv-chip').forEach(b => b.addEventListener('click', () => { window.__liveFilter = b.dataset.f; tick(); }));
       root.querySelectorAll('.lv-runs tr[data-path]').forEach(tr => tr.addEventListener('click', () => { window.__liveSel = tr.dataset.path; tick(); }));
     } catch (e) {

@@ -1423,6 +1423,23 @@ def live_run(path: str):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.get("/api/live/gh/runs")
+def live_gh_runs(limit: int = 20):
+    """Recent runs of sit's trigger-pipeline workflow (read-only, via the gh CLI)."""
+    return live_sit.gh_runs(limit)
+
+
+@app.post("/api/live/gh/load")
+def live_gh_load(run_id: str):
+    """Download that run's Robot results artifact into the local cache so it shows in Live runs."""
+    try:
+        return live_sit.gh_load(run_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/api/live/tickets")
 def live_tickets(limit: int = 25):
     """Ticket print records from the configured folder, newest first (read-only)."""
