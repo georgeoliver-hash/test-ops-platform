@@ -1651,14 +1651,16 @@ def get_gap_register(
 class GapImportIn(BaseModel):
     csv_text: str
     by: str | None = None
+    confirm_drafts: bool = False
 
 
 @app.get("/api/gap-export")
-def export_gaps(project: str, device: str | None = None):
-    """The grouped gaps as a CSV for reviewers to fill in (Verdict / Answer / Answered by / Evidence)."""
+def export_gaps(project: str, device: str | None = None, with_answers: bool = True):
+    """The grouped gaps as a CSV (Verdict / Answer / Answered by / Evidence), with every logged answer filled
+    in unless with_answers=false. Edit it and import it back: only the changed rows are recorded."""
     from fastapi.responses import FileResponse
     try:
-        path = gap_exchange.export_csv(project, device)
+        path = (gap_exchange.export_with_answers if with_answers else gap_exchange.export_csv)(project, device)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (RuntimeError, OSError) as exc:
@@ -1672,7 +1674,7 @@ def import_gaps(project: str, body: GapImportIn, device: str | None = None):
     """Take back a filled-in export: every answered row is recorded in the gap-answers log, matched to
     its gap by Gap ID. Bad rows are reported, never block the good ones; nothing edits a case."""
     try:
-        return gap_exchange.import_csv(project, device, body.csv_text, body.by)
+        return gap_exchange.import_csv(project, device, body.csv_text, body.by, body.confirm_drafts)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     except csv.Error as exc:

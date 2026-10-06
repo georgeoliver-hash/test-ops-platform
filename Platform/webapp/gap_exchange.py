@@ -32,6 +32,22 @@ DRAFT_VERDICTS = {
 }
 # Nothing to record for these: a duplicate is answered on the row it duplicates, a gap that is not about
 # this device is not this device's to answer, and "not a gap" is a note that only looked like one.
+# A person accepted a drafted answer (George, 2026-10-05): kept as an answer, but the provenance stays visible.
+ACCEPTED_VERDICTS = {
+    "accepted - from code": ("answer", "[Accepted - from code, not seen on a device] "),
+    "accepted": ("answer", "[Accepted] "),
+}
+# Stored-text prefix -> the Verdict a sheet shows, so an export can be re-imported and read as unchanged.
+_PREFIX_TO_VERDICT = {
+    "[DRAFT from code - not seen on a device] ": "Answered from code",
+    "[DRAFT - review before use] ": "Answered",
+    "[DRAFT - needs confirmation] ": "Needs confirmation",
+    "[Accepted - from code, not seen on a device] ": "Accepted - from code",
+    "[Accepted] ": "Accepted",
+    "Matches spec: ": "Matches spec",
+    "Mismatch: ": "Mismatch",
+    "Needs a decision: ": "Needs a decision",
+}
 SKIP_VERDICTS = ("duplicate", "out of scope", "not a gap")
 
 
@@ -42,7 +58,7 @@ def _dir(project: str) -> Path:
 def export_csv(project: str, device: str | None) -> Path:
     """Regenerate the sheets for this device and return the CSV path. Raises FileNotFoundError with a
     plain message if the grouping has not been run yet."""
-    if not (_dir(project) / "gap-groups.json").is_file():
+    if not any(_dir(project).glob("gap-groups*.json")):  # gap-groups.json, or the gap-groups.partN.json the grouping writes
         raise FileNotFoundError("The gaps have not been grouped yet. Run Group gaps (under Checks) first.")
     args = [str(runner._VENV_PYTHON), "-m", "system_test_ops", "gap-sheet", "--project", project.lower()]
     if device:
@@ -56,17 +72,63 @@ def export_csv(project: str, device: str | None) -> Path:
     return path
 
 
-def import_csv(project: str, device: str | None, csv_text: str, default_by: str | None) -> dict:
+def _split_stored(text: str) -> tuple[str, str, str]:
+    """Stored answer text -> (Verdict, Answer, Evidence), the inverse of how import_csv builds it."""
+    verdict = ""
+    for prefix, v in _PREFIX_TO_VERDICT.items():
+        if text.startswith(prefix):
+            verdict, text = v, text[len(prefix):]
+            break
+    m = re.search(r" \[Evidence: (.*)\]$", text, re.S)
+    evidence = ""
+    if m:
+        evidence, text = m.group(1), text[:m.start()]
+    return verdict, ("" if text == "(verdict only)" else text), evidence
+
+
+def export_with_answers(project: str, device: str | None) -> Path:
+    """The same sheet as export_csv, but every gap that already has an answer in the log comes back filled in
+    (Verdict / Answer / Answered by / Evidence from its latest entry). Edit it and import it back: only the rows
+    you changed are recorded."""
+    src = export_csv(project, device)
+    latest: dict[str, dict] = {}
+    for a in sorted(store.list_gap_answers(project), key=lambda x: x["created_at"]):  # oldest first, newest wins
+        latest[a["gap_ref"].split()[0]] = a
+    with src.open(encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        fields = list(reader.fieldnames or [])
+        rows = list(reader)
+    for row in rows:
+        ids = [(row.get("Gap ID") or "").strip()] + [x for x in re.split(r"[,; ]+", row.get("Also answers (Gap IDs)") or "") if x.startswith("G-")]
+        entry = next((latest[i] for i in ids if i in latest), None)
+        if entry is None or (row.get("Answer") or "").strip():
+            continue
+        verdict, answer, evidence = _split_stored(entry["answer"])
+        row["Verdict"], row["Answer"], row["Answered by"], row["Evidence or notes"] = verdict, answer, entry["answered_by"], evidence
+    out = _dir(project) / "gap-export-with-answers.csv"
+    with out.open("w", encoding="utf-8-sig", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        w.writerows(rows)
+    return out
+
+
+def import_csv(project: str, device: str | None, csv_text: str, default_by: str | None, confirm_drafts: bool = False) -> dict:
     """Record every answered row of a returned sheet. Returns counts plus per-row problems; a bad row
-    never blocks the good ones."""
+    never blocks the good ones. Only rows that differ from the gap's latest logged answer are recorded.
+    confirm_drafts: a drafted row (Answered / Answered from code) is recorded as accepted by `default_by` instead
+    of as a draft; "Needs confirmation" rows stay open questions."""
     inputs_path = _dir(project) / "gap-inputs.json"
     if not inputs_path.is_file():
         raise FileNotFoundError("No gap list for this project yet. Run Group gaps first.")
     by_id = {i["id"]: i for i in json.loads(inputs_path.read_text(encoding="utf-8")) if i.get("id")}
     existing = {(a["gap_ref"], a["answer"]) for a in store.list_gap_answers(project)}
+    latest_text: dict[str, str] = {}
+    for a in sorted(store.list_gap_answers(project), key=lambda x: x["created_at"]):
+        latest_text[a["gap_ref"].split()[0]] = a["answer"]
     reader = csv.DictReader(io.StringIO(csv_text.lstrip("﻿")))
     result = {"imported": 0, "blank": 0, "duplicates": 0, "unknown_ids": [], "errors": [], "conflicts": 0, "decisions": 0,
-              "skipped_duplicate_or_out_of_scope": 0, "drafts": 0}
+              "skipped_duplicate_or_out_of_scope": 0, "drafts": 0, "updated": 0, "accepted": 0}
     for n, row in enumerate(reader, start=2):  # row 1 is the header
         gid = (row.get("Gap ID") or "").strip()
         answer = (row.get("Answer") or "").strip()
@@ -86,19 +148,25 @@ def import_csv(project: str, device: str | None, csv_text: str, default_by: str 
             result["unknown_ids"].append(gid)
             continue
         draft = next((v for k, v in DRAFT_VERDICTS.items() if vlow.startswith(k)), None)
+        accepted = next((v for k, v in ACCEPTED_VERDICTS.items() if vlow.startswith(k)), None)
         vkey = next((k for k in VERDICT_TYPES if vlow.startswith(k)), None)
-        if verdict and vkey is None and draft is None:
-            result["errors"].append({"row": n, "gap_id": gid, "reason": f"Verdict '{verdict}' is not one of: Matches spec / Mismatch / Needs a decision."})
+        if verdict and vkey is None and draft is None and accepted is None:
+            result["errors"].append({"row": n, "gap_id": gid, "reason": f"Verdict '{verdict}' is not one of: Matches spec / Mismatch / Needs a decision / Accepted."})
             continue
         who = (row.get("Answered by") or "").strip() or (default_by or "").strip()
+        if confirm_drafts and draft and draft[0] == "answer":
+            # a person is accepting the drafted answer: it is theirs from now on, provenance kept in the prefix
+            accepted = ACCEPTED_VERDICTS["accepted - from code" if "code" in vlow else "accepted"]
+            draft, who = None, (default_by or "").strip()
+            result["accepted"] += 1
         if not who:
             result["errors"].append({"row": n, "gap_id": gid, "reason": "No 'Answered by' on the row and no name given for the import."})
             continue
-        text = (draft[1] if draft else (f"{verdict}: " if verdict else "")) + (answer or "(verdict only)") + (f" [Evidence: {notes}]" if notes else "")
+        text = (draft[1] if draft else accepted[1] if accepted else (f"{verdict}: " if verdict else "")) + (answer or "(verdict only)") + (f" [Evidence: {notes}]" if notes else "")
         # A merged row (the same question asked in several places) lists the other ids it also answers;
         # the one answer is recorded against every id so none is left open.
         also = [x for x in re.split(r"[,; ]+", row.get("Also answers (Gap IDs)") or "") if x.startswith("G-")]
-        entry_type = draft[0] if draft else VERDICT_TYPES.get(vkey, "answer")
+        entry_type = draft[0] if draft else accepted[0] if accepted else VERDICT_TYPES.get(vkey, "answer")
         for tid in [gid] + also:
             target = by_id.get(tid)
             if target is None:
@@ -106,9 +174,11 @@ def import_csv(project: str, device: str | None, csv_text: str, default_by: str 
                     result["unknown_ids"].append(tid)
                 continue
             ref = f"{tid} {target['occurrences'][0]}"
-            if (ref, text) in existing:
+            if (ref, text) in existing or latest_text.get(tid) == text:
                 result["duplicates"] += 1
                 continue
+            if tid in latest_text:
+                result["updated"] += 1
             try:
                 store.add_gap_answer(project, ref, (row.get("Question to answer") or target.get("plain_english") or target["text"]).strip(),
                                      text, who, device=device, entry_type=entry_type)
@@ -116,6 +186,7 @@ def import_csv(project: str, device: str | None, csv_text: str, default_by: str 
                 result["errors"].append({"row": n, "gap_id": tid, "reason": str(exc)})
                 continue
             existing.add((ref, text))
+            latest_text[tid] = text
             result["imported"] += 1
             if draft:
                 result["drafts"] += 1

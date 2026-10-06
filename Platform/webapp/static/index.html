@@ -1888,8 +1888,8 @@ async function renderGaps() {
       <div class="card" style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">${esc(target.project)}/${esc(target.device)} only, showing ${pageStart}-${pageEnd} of ${d.total}. Click a row to answer it.</p>
         <span style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn" id="gapExportBtn" title="One row per distinct gap, grouped, with a summary and one question, and blank columns for the answer">⬇ Export for review</button>
-          <label class="btn" style="cursor:pointer;" title="Upload the sheet after someone has filled it in">⬆ Import answers<input type="file" id="gapImportFile" accept=".csv" hidden></label>
+          <button class="btn" id="gapExportBtn" title="Every distinct gap with its question and its current answer filled in. Edit it, then import it back.">⬇ Download gaps + answers</button>
+          <label class="btn" style="cursor:pointer;" title="Upload the edited sheet. Only the rows you changed are recorded.">⬆ Import changes<input type="file" id="gapImportFile" accept=".csv" hidden></label>
           <button class="btn" id="gapRefreshBtn">↻ Refresh against new docs</button>
         </span>
       </div>
@@ -1915,16 +1915,24 @@ async function renderGaps() {
     // (with date/time), clarifications requested, spec conflicts, and the last resolve-gaps
     // sync (date/time + real status) -- George's ask (ISSUES.md round 2). Read-only; the
     // click-to-answer flow (Gaps tab) is the only way to add an entry now.
-    const answerList = (type) => answers.filter(a => (a.entry_type || 'answer') === type).map(a => `
-      <li>
-        <b>${esc(a.gap_ref)}</b> — ${esc(a.answer)}
-        <button class="btn" data-del-answer="${a.id}" style="font-size:11px;padding:3px 8px;margin-left:6px;">Remove</button>
-        <span style="color:var(--ink-soft);font-size:11px;display:block;">Q: ${esc(a.question)} — answered by ${esc(a.answered_by)}, ${esc(new Date(a.created_at + 'Z').toLocaleString())}${a.device ? ` (${esc(a.device)})` : ''}</span>
-      </li>`).join('');
-    const answerSection = (type, label) => {
-      const items = answerList(type);
-      return `<div><h3 style="font-size:13px;margin:10px 0 6px;">${esc(label)}</h3>${items ? `<ul class="activity">${items}</ul>` : `<p style="color:var(--ink-soft);font-size:13px;">None logged yet.</p>`}</div>`;
-    };
+    const ENTRY_LABEL = {answer: ['Answer', 'ok'], clarification_request: ['Needs a decision', 'warn'], conflict: ['Conflict', 'bad']};
+    // One row per gap: its latest entry (the list arrives newest first); earlier ones are counted, not listed.
+    const earlier = {};
+    const latestPerGap = answers.filter(a => { const id = a.gap_ref.split(' ')[0]; earlier[id] = (earlier[id] || 0) + 1; return earlier[id] === 1; });
+    const answerRows = latestPerGap.map(a => {
+      const [lbl, cls] = ENTRY_LABEL[a.entry_type || 'answer'] || ['Answer', 'ok'];
+      const draft = /^\[DRAFT/.test(a.answer);
+      return `<tr>
+        <td><b>${esc(a.gap_ref.split(' ')[0])}</b></td>
+        <td><span class="pill ${draft ? 'warn' : cls}" style="font-size:10px;">${draft ? 'Draft' : esc(lbl)}</span></td>
+        <td title="${esc(a.question)}">${esc(a.answer)}${earlier[a.gap_ref.split(' ')[0]] > 1 ? ` <span style="color:var(--ink-soft);font-size:11px;">(${earlier[a.gap_ref.split(' ')[0]] - 1} earlier)</span>` : ''}</td>
+        <td style="white-space:nowrap;font-size:12px;">${esc(a.answered_by)}<br><span style="color:var(--ink-soft);">${esc(new Date(a.created_at + 'Z').toLocaleDateString())}</span></td>
+        <td><button class="btn" data-del-answer="${a.id}" style="font-size:11px;padding:3px 8px;">Remove</button></td>
+      </tr>`;
+    }).join('');
+    const answerSection = () => answerRows
+      ? `<table><tr><th>Gap</th><th>Status</th><th>Answer</th><th>By</th><th></th></tr>${answerRows}</table>`
+      : `<p style="color:var(--ink-soft);font-size:13px;">Nothing logged yet.</p>`;
     const lastSyncLine = lastResolve && lastResolve.status
       ? `<span class="pill ${lastResolve.status === 'succeeded' ? 'ok' : lastResolve.status === 'failed' ? 'bad' : 'warn'}">${esc(lastResolve.status)}</span> ${lastResolve.updated_at ? esc(new Date(lastResolve.updated_at + 'Z').toLocaleString()) : ''}`
       : `<span style="color:var(--ink-soft);">Never run for ${esc(target.project || '(no target)')}/${esc(target.device || '')} yet.</span>`;
@@ -1934,11 +1942,9 @@ async function renderGaps() {
         <p style="font-size:13.5px;margin:0;">${lastSyncLine}</p>
       </div>
       <div class="card">
-        <h2>Answer log — ${esc(target.project || 'no target')}</h2>
+        <h2>Answer log — ${esc(target.project || 'no target')} (${latestPerGap.length} gaps)</h2>
         <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record — plain storage, never AI-written. Answering a gap here does not automatically re-audit or re-edit the suite yet (needs the same pipeline-execution-from-console wiring flagged in the carried-forward list); this is the decision trail in the meantime.</p>
-        ${answerSection('answer', 'Answers')}
-        ${answerSection('clarification_request', 'Clarifications requested')}
-        ${answerSection('conflict', 'Conflicts with spec')}
+        ${answerSection()}
       </div>`;
 
     setContent(`
@@ -1972,9 +1978,9 @@ async function renderGaps() {
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
         const url = URL.createObjectURL(await res.blob());
         const a = document.createElement('a');
-        a.href = url; a.download = `gaps-${target.project.toLowerCase()}-${target.device.toLowerCase()}.csv`;
+        a.href = url; a.download = `gaps-${target.project.toLowerCase()}-${target.device.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`;
         document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-        gapMsg('Exported. Send it to whoever can answer. For each row they fill in Answer and Answered by, and for screen or behaviour rows a Verdict. Then use Import answers.');
+        gapMsg('Downloaded with every logged answer filled in. Edit Verdict / Answer / Answered by, then Import changes: only changed rows are recorded.');
       } catch (err) { gapMsg(esc(err.message), true); }
     });
     document.getElementById('gapImportFile')?.addEventListener('change', async (e) => {
@@ -1982,12 +1988,14 @@ async function renderGaps() {
       if (!file) return;
       const by = crName() || prompt('Your name (used for any row with no "Answered by"):') || '';
       if (by) crRememberName(by);
+      const csv_text = await file.text();
+      const confirm_drafts = /draft/i.test(csv_text) && by && confirm(`Some rows are Claude drafts. Record the answered ones as accepted by ${by}? (Cancel keeps them as drafts. "Needs confirmation" rows stay open either way.)`);
       try {
-        const res = await fetch(`/api/gap-import?${gapQ}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({csv_text: await file.text(), by})});
+        const res = await fetch(`/api/gap-import?${gapQ}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({csv_text, by, confirm_drafts: !!confirm_drafts})});
         const r = await res.json();
         if (!res.ok) throw new Error(r.detail || res.statusText);
         const probs = [...r.unknown_ids.map(i => `${esc(i)}: not a gap I know`), ...r.errors.map(x => `row ${x.row} (${esc(x.gap_id)}): ${esc(x.reason)}`)];
-        gapMsg(`<b>${r.imported} answer(s) recorded</b> (see the Log tab). ${r.conflicts ? `${r.conflicts} mismatch(es) logged as conflicts to raise. ` : ''}${r.decisions ? `${r.decisions} need a decision from an owner. ` : ''}${r.drafts ? `<b>${r.drafts} of them are drafts</b> (marked [DRAFT]) -- evidence from the code, still to be confirmed by a person. ` : ''}${r.skipped_duplicate_or_out_of_scope ? `${r.skipped_duplicate_or_out_of_scope} duplicate / out-of-scope row(s) not recorded. ` : ''}${r.blank} blank row(s) skipped, ${r.duplicates} already imported.${probs.length ? `<br>Not imported:<ul style="margin:4px 0 0 18px;">${probs.slice(0, 8).map(p => `<li>${p}</li>`).join('')}</ul>` : ''}<br><span style="color:var(--ink-soft);">Nothing was changed in any case. Answers are applied by Resolve.</span>`, probs.length > 0 && !r.imported);
+        gapMsg(`<b>${r.imported} recorded</b>${r.updated ? ` (${r.updated} changed an existing answer)` : ''} (see the Log tab). ${r.accepted ? `${r.accepted} drafts accepted as ${esc(by)}. ` : ''}${r.conflicts ? `${r.conflicts} mismatch(es) logged as conflicts to raise. ` : ''}${r.decisions ? `${r.decisions} need a decision from an owner. ` : ''}${r.drafts ? `<b>${r.drafts} of them are drafts</b> (marked [DRAFT]) -- evidence from the code, still to be confirmed by a person. ` : ''}${r.skipped_duplicate_or_out_of_scope ? `${r.skipped_duplicate_or_out_of_scope} duplicate / out-of-scope row(s) not recorded. ` : ''}${r.blank} blank row(s) skipped, ${r.duplicates} unchanged.${probs.length ? `<br>Not imported:<ul style="margin:4px 0 0 18px;">${probs.slice(0, 8).map(p => `<li>${p}</li>`).join('')}</ul>` : ''}<br><span style="color:var(--ink-soft);">Nothing was changed in any case. Answers are applied by Resolve.</span>`, probs.length > 0 && !r.imported);
       } catch (err) { gapMsg(esc(err.message), true); }
       e.target.value = '';
     });

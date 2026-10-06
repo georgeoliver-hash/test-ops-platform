@@ -151,3 +151,10 @@ def test_a_drafted_sheet_is_imported_as_drafts_and_duplicates_and_out_of_scope_r
     assert any(t.startswith("[DRAFT - needs confirmation] ") for t in texts) and any(t.startswith("[DRAFT - review before use] ") for t in texts)
     types = {a["entry_type"] for a in log if a["answer"].startswith("[DRAFT - needs")}
     assert types == {"clarification_request"}
+
+
+def test_split_stored_inverts_import_prefixes():
+    from Platform.webapp import gap_exchange as g
+    for prefix, verdict in g._PREFIX_TO_VERDICT.items():
+        assert g._split_stored(f"{prefix}It does. [Evidence: spec 5.1]") == (verdict, "It does.", "spec 5.1")
+    assert g._split_stored("plain answer") == ("", "plain answer", "")
