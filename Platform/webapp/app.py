@@ -79,7 +79,7 @@ SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
 from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
-from Platform.webapp import case_review, gap_exchange, reviews, runner, store  # noqa: E402
+from Platform.webapp import case_review, gap_exchange, live_sit, reports_insights, reviews, runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
@@ -1383,6 +1383,50 @@ def get_suite_name_drift(project: str, device: str):
     still match what TestRail actually calls it right now (George: 'do we need to ensure
     the naming is correct for the ID or refresh if been changed')."""
     return runner.check_suite_name_drift(project, device)
+
+
+class LiveConfigIn(BaseModel):
+    results_dir: str | None = None
+    tickets_dir: str | None = None
+
+
+@app.get("/api/reports/insights")
+def reports_insights_endpoint(project: str, device: str):
+    """Narrowed-down reports for one target, each from a real local report file (or absent, never guessed)."""
+    return reports_insights.insights(project, device)
+
+
+@app.get("/api/live/config")
+def live_config():
+    return live_sit.get_config()
+
+
+@app.put("/api/live/config")
+def live_set_config(body: LiveConfigIn):
+    try:
+        return live_sit.set_config(body.results_dir, body.tickets_dir)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/live/runs")
+def live_runs():
+    """Runs found in the configured sit results folder (live listener files and Robot output.xml), newest first."""
+    return live_sit.list_runs()
+
+
+@app.get("/api/live/run")
+def live_run(path: str):
+    try:
+        return live_sit.run_detail(path)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/api/live/tickets")
+def live_tickets(limit: int = 25):
+    """Ticket print records from the configured folder, newest first (read-only)."""
+    return live_sit.tickets(limit)
 
 
 @app.get("/api/dashboard-live")

@@ -439,8 +439,9 @@
     </nav>
     <nav class="navgroups" id="automationNavgroups" style="display:none;">
       <div class="navgroup">
-        <div class="label">SIT (view only)</div>
-        <button class="navitem" data-aview="dashboard"><span class="dot"></span>Dashboard</button>
+        <div class="label">SIT</div>
+        <button class="navitem" data-aview="dashboard"><span class="dot"></span>Live runs</button>
+        <button class="navitem" data-aview="overview"><span class="dot"></span>Overview</button>
         <button class="navitem" data-aview="tests"><span class="dot"></span>Tests written</button>
         <button class="navitem" data-aview="keywords"><span class="dot"></span>Keywords</button>
         <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
@@ -4431,8 +4432,168 @@ async function crFillGateCounts() {
 }
 new MutationObserver(() => { crFillGateCounts(); }).observe(content, {childList: true, subtree: true});
 
+/* ---------------- Live runs (George, 2026-10-06): real-time sit results, logs and printed tickets ---------------- */
+async function renderLiveDashboard() {
+  const token = (window.__liveToken = (window.__liveToken || 0) + 1);
+  window.__liveFilter = window.__liveFilter || 'all';
+  let cfg;
+  try { cfg = await fetchJSON('/api/live/config'); } catch (e) { errbox('Could not load live settings: ' + e.message); return; }
+  const seenTickets = new Set();
+  let firstTickets = true;
+
+  const ago = (epoch) => {
+    const s = Math.max(0, Math.round(Date.now() / 1000 - epoch));
+    return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : s < 86400 ? `${Math.round(s / 3600)}h ago` : `${Math.round(s / 86400)}d ago`;
+  };
+  const dur = (sec) => sec == null ? '' : sec < 1 ? `${Math.round(sec * 1000)} ms` : sec < 60 ? `${sec.toFixed(1)} s` : `${Math.floor(sec / 60)}m ${Math.round(sec % 60)}s`;
+
+  setContent(`
+    <style>
+      .lv-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start;}
+      @media (max-width:1100px){.lv-grid{grid-template-columns:1fr;}}
+      .lv-top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-bottom:14px;}
+      .lv-ring text{font-family:inherit;}
+      .lv-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line);margin-top:10px;}
+      .lv-bar i{display:block;height:100%;transition:width .5s ease;}
+      .lv-live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.04em;padding:3px 10px;border-radius:999px;background:var(--bad-bg);color:var(--bad);}
+      .lv-live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--bad);animation:lvpulse 1.2s ease-in-out infinite;}
+      @keyframes lvpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+      .lv-idle{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--line);color:var(--ink-soft);}
+      .lv-chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;}
+      .lv-feed{max-height:430px;overflow:auto;border:1px solid var(--line);border-radius:10px;}
+      .lv-row{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:start;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px;}
+      .lv-row:last-child{border-bottom:0;}
+      .lv-row .nm{font-weight:500;word-break:break-word;}
+      .lv-row .sub{color:var(--ink-soft);font-size:11.5px;}
+      .lv-row .msg{grid-column:2 / 4;font-size:12px;color:var(--bad);background:var(--bad-bg);padding:6px 8px;border-radius:6px;white-space:pre-wrap;}
+      .lv-ico{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+      .lv-ico.pass{background:var(--ok);} .lv-ico.fail{background:var(--bad);} .lv-ico.skip{background:var(--ink-soft);}
+      .lv-running{background:var(--warn-bg);}
+      .lv-log{background:#0f172a;color:#cbd5e1;font:12px/1.5 ui-monospace,Consolas,monospace;padding:10px 12px;border-radius:10px;height:230px;overflow:auto;white-space:pre-wrap;}
+      .lv-log .w{color:#fbbf24;} .lv-log .e{color:#f87171;} .lv-log .i{color:#94a3b8;}
+      .lv-tickets{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow:auto;padding:2px;}
+      .lv-ticket{background:#fffef6;color:#1f2937;border:1px dashed #cbbf9c;border-radius:4px;padding:10px 14px;box-shadow:0 1px 3px rgba(0,0,0,.12);transition:box-shadow .6s, transform .6s;}
+      .lv-ticket pre{margin:6px 0 0;font:12.5px/1.45 ui-monospace,Consolas,monospace;white-space:pre-wrap;}
+      .lv-ticket .h{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;}
+      .lv-ticket.lv-new{box-shadow:0 0 0 2px var(--ok),0 4px 14px rgba(0,0,0,.2);transform:translateY(-2px);}
+      .lv-runs tr{cursor:pointer;} .lv-runs tr.sel{background:var(--warn-bg);}
+      .lv-mini{display:flex;height:6px;width:90px;border-radius:4px;overflow:hidden;background:var(--line);}
+      .lv-mini i{display:block;height:100%;}
+    </style>
+    <div class="page-head-row">
+      <h1>Live runs</h1>
+      <div class="page-head-pills"><span id="lvState" class="lv-idle">connecting…</span><button class="btn" id="lvCfgBtn" style="font-size:12px;padding:4px 10px;">⚙ Sources</button></div>
+    </div>
+    <div id="lvCfg" class="card" style="display:${cfg.results_dir ? 'none' : 'block'};">
+      <h2>Where the data comes from</h2>
+      <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Two folders on this machine. Nothing is shown until you set the first.</p>
+      <label style="font-size:12.5px;font-weight:600;">Results folder</label>
+      <input class="input" id="lvResults" value="${esc(cfg.results_dir)}" placeholder="e.g. C:\\sit-results\\pos-run" style="width:100%;margin:4px 0 4px;">
+      <p style="color:var(--ink-soft);font-size:12px;margin:0 0 10px;">For real-time updates add the listener to the run: <code>robot --listener tools/robot_live_listener.py:&lt;folder&gt;/live-events.jsonl …</code>. Finished runs (<code>output.xml</code>) in the folder show too.</p>
+      <label style="font-size:12.5px;font-weight:600;">Ticket print folder</label>
+      <input class="input" id="lvTickets" value="${esc(cfg.tickets_dir)}" placeholder="the device's PrintJobRecordPath, copied or mounted here" style="width:100%;margin:4px 0 10px;">
+      <button class="btn primary" id="lvSave">Save</button> <span id="lvCfgMsg" style="font-size:12.5px;margin-left:8px;"></span>
+    </div>
+    <div id="lvRoot"><div class="loading">Looking for runs…</div></div>`);
+
+  document.getElementById('lvCfgBtn').addEventListener('click', () => { const c = document.getElementById('lvCfg'); c.style.display = c.style.display === 'none' ? 'block' : 'none'; });
+  document.getElementById('lvSave').addEventListener('click', async () => {
+    const msg = document.getElementById('lvCfgMsg');
+    try {
+      const res = await fetch('/api/live/config', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({results_dir: document.getElementById('lvResults').value, tickets_dir: document.getElementById('lvTickets').value})});
+      const r = await res.json(); if (!res.ok) throw new Error(r.detail || res.statusText);
+      msg.style.color = 'var(--ok)'; msg.textContent = 'Saved.'; renderLiveDashboard();
+    } catch (e) { msg.style.color = 'var(--bad)'; msg.textContent = e.message; }
+  });
+
+  async function tick() {
+    clearTimeout(window.__liveTimer);
+    const root = document.getElementById('lvRoot');
+    if (!root || token !== window.__liveToken) return;       // page changed: stop polling
+    let live = false;
+    try {
+      const [runsRes, tix] = await Promise.all([fetchJSON('/api/live/runs'), fetchJSON('/api/live/tickets')]);
+      if (!runsRes.configured) {
+        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No results folder set yet. Use <b>⚙ Sources</b> above to point at the folder your sit runs write to.</p></div>`;
+        document.getElementById('lvState').textContent = 'not set up'; return;
+      }
+      const runs = runsRes.runs;
+      if (!runs.length) {
+        root.innerHTML = `<div class="card"><p style="color:var(--ink-soft);font-size:13.5px;margin:0;">No runs found in <code>${esc(runsRes.results_dir)}</code> yet. Start a run with the listener (see ⚙ Sources) and it appears here within a couple of seconds.</p></div>`;
+        document.getElementById('lvState').textContent = 'waiting'; return;
+      }
+      const sel = runs.find(r => r.path === window.__liveSel) || runs.find(r => r.live) || runs[0];
+      window.__liveSel = sel.path;
+      const d = await fetchJSON(`/api/live/run?path=${encodeURIComponent(sel.path)}`);
+      live = !!d.live;
+      const c = d.counts, done = d.tests.length, total = d.total || (done + (d.running ? 1 : 0));
+      const passRate = done ? Math.round((c.PASS || 0) * 100 / done) : 0;
+      const R = 34, C = 2 * Math.PI * R, ringCol = passRate >= 90 ? 'var(--ok)' : passRate >= 70 ? 'var(--warn)' : 'var(--bad)';
+      const pct = (n) => total ? (n * 100 / total).toFixed(2) : 0;
+      const stateEl = document.getElementById('lvState');
+      stateEl.className = live ? 'lv-live' : 'lv-idle'; stateEl.textContent = live ? 'LIVE' : (d.complete ? 'finished' : 'stopped');
+
+      const f = window.__liveFilter;
+      const shown = [...d.tests].reverse().filter(t => f === 'all' || (f === 'failed' && t.status === 'FAIL') || (f === 'skipped' && t.status === 'SKIP') || (f === 'passed' && t.status === 'PASS'));
+      const icon = (s) => s === 'PASS' ? '<span class="lv-ico pass">✓</span>' : s === 'FAIL' ? '<span class="lv-ico fail">✕</span>' : '<span class="lv-ico skip">–</span>';
+      const feed = (d.running && (f === 'all') ? `<div class="lv-row lv-running"><span class="spin"></span><div><div class="nm">${esc(d.running.name)}</div><div class="sub">running now · ${esc(d.running.suite || '')}</div></div><span class="pill warn">running</span></div>` : '')
+        + shown.map(t => `<div class="lv-row">${icon(t.status)}<div><div class="nm">${esc(t.name)}</div><div class="sub">${esc(t.suite || '')}</div></div><span class="sub">${esc(dur(t.seconds))}</span>${t.status === 'FAIL' && t.message ? `<div class="msg">${esc(t.message)}</div>` : ''}</div>`).join('')
+        || `<div class="lv-row"><span></span><span class="sub">Nothing here yet.</span></div>`;
+      const chip = (k, label, n) => `<button class="btn lv-chip ${f === k ? 'primary' : ''}" data-f="${k}" style="font-size:12px;padding:3px 10px;">${label} (${n})</button>`;
+      const logHtml = d.log.length ? d.log.map(m => `<div class="${m.level === 'WARN' ? 'w' : (m.level === 'ERROR' || m.level === 'FAIL') ? 'e' : 'i'}">[${esc(m.level)}] ${esc(m.text)}</div>`).join('') : '<div class="i">No log lines yet.</div>';
+
+      const ticketsHtml = !tix.configured
+        ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No ticket folder set. Add the print record folder under ⚙ Sources to watch tickets arrive.</p>`
+        : tix.tickets.length ? `<div class="lv-tickets">${tix.tickets.map(t => {
+            const fresh = !firstTickets && !seenTickets.has(t.name + t.modified);
+            seenTickets.add(t.name + t.modified);
+            return `<div class="lv-ticket${fresh ? ' lv-new' : ''}"><div class="h"><span>${esc(t.name)}</span><span>${esc(ago(t.modified))}</span></div><pre>${esc(t.text || '(empty file)')}</pre></div>`;
+          }).join('')}</div>` : `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No tickets printed yet in <code>${esc(tix.tickets_dir)}</code>.</p>`;
+      firstTickets = false;
+
+      const runRows = runs.map(r => `<tr data-path="${esc(r.path)}" class="${r.path === sel.path ? 'sel' : ''}"><td>${esc(r.name)} ${r.live ? '<span class="lv-live" style="padding:1px 7px;">LIVE</span>' : ''}</td><td style="color:var(--ink-soft);font-size:12px;">${esc(ago(r.modified))}</td><td><span style="color:var(--ok);font-weight:600;">${r.passed}</span> / <span style="color:var(--bad);font-weight:600;">${r.failed}</span> / <span style="color:var(--ink-soft);">${r.skipped}</span></td><td><div class="lv-mini"><i style="background:var(--ok);width:${r.total ? r.passed * 100 / r.total : 0}%"></i><i style="background:var(--bad);width:${r.total ? r.failed * 100 / r.total : 0}%"></i><i style="background:var(--ink-soft);width:${r.total ? r.skipped * 100 / r.total : 0}%"></i></div></td></tr>`).join('');
+
+      root.innerHTML = `
+        <div class="card lv-top">
+          <svg class="lv-ring" width="92" height="92" viewBox="0 0 92 92"><circle cx="46" cy="46" r="${R}" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="46" cy="46" r="${R}" fill="none" stroke="${ringCol}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C * passRate / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 46 46)" style="transition:stroke-dasharray .6s ease"/><text x="46" y="51" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">${passRate}%</text></svg>
+          <div>
+            <div class="stat-row" style="margin:0;">
+              <div class="stat"><span class="n">${done}${d.total ? `<span style="font-size:13px;color:var(--ink-soft);"> / ${d.total}</span>` : ''}</span><span class="l">tests run</span></div>
+              <div class="stat ok"><span class="n">${c.PASS || 0}</span><span class="l">passed</span></div>
+              <div class="stat bad"><span class="n">${c.FAIL || 0}</span><span class="l">failed</span></div>
+              <div class="stat"><span class="n">${c.SKIP || 0}</span><span class="l">skipped</span></div>
+              ${d.running ? `<div class="stat warn"><span class="n">1</span><span class="l">running</span></div>` : ''}
+            </div>
+            <div class="lv-bar"><i style="background:var(--ok);width:${pct(c.PASS || 0)}%"></i><i style="background:var(--bad);width:${pct(c.FAIL || 0)}%"></i><i style="background:var(--ink-soft);width:${pct(c.SKIP || 0)}%"></i></div>
+            <div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">${esc(sel.name)} · updated ${esc(ago(d.modified))}</div>
+          </div>
+        </div>
+        <div class="lv-grid">
+          <div>
+            <div class="card"><h2>Tests</h2>
+              <div class="lv-chips">${chip('all', 'All', done)}${chip('failed', 'Failed', c.FAIL || 0)}${chip('skipped', 'Skipped', c.SKIP || 0)}${chip('passed', 'Passed', c.PASS || 0)}</div>
+              <div class="lv-feed">${feed}</div></div>
+            <div class="card"><h2>Log</h2><div class="lv-log" id="lvLog">${logHtml}</div></div>
+          </div>
+          <div>
+            <div class="card"><h2>Printed tickets</h2>${ticketsHtml}</div>
+            <div class="card"><h2>Recent runs</h2><table class="lv-runs"><tr><th>Run</th><th>When</th><th>P / F / S</th><th></th></tr>${runRows}</table></div>
+            <div class="card"><h2>Schedule and targeted runs</h2><p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Not connected yet: the schedule lives in the CI system, and choosing tags to run needs a way to start a run from here. Both come after results ingestion.</p></div>
+          </div>
+        </div>`;
+      const lg = document.getElementById('lvLog'); if (lg) lg.scrollTop = lg.scrollHeight;
+      root.querySelectorAll('.lv-chip').forEach(b => b.addEventListener('click', () => { window.__liveFilter = b.dataset.f; tick(); }));
+      root.querySelectorAll('.lv-runs tr[data-path]').forEach(tr => tr.addEventListener('click', () => { window.__liveSel = tr.dataset.path; tick(); }));
+    } catch (e) {
+      root.innerHTML = `<div class="errbox">${esc(e.message)}</div>`;
+    }
+    window.__liveTimer = setTimeout(tick, live ? 2000 : 6000);
+  }
+  tick();
+}
+
 const VIEWS = {caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
-const AUTOMATION_VIEWS = {dashboard: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
+const AUTOMATION_VIEWS = {dashboard: renderLiveDashboard, overview: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
 // page THIS tracks -- but renderPipelineDetail (any Build/Audit/Maintain pipeline page) is
@@ -4563,12 +4724,12 @@ async function renderReportsPage() {
   loading();
   const target = window.CURRENT_TARGET || {};
   try {
-    const [reports, liveSummary, recentRuns] = await Promise.all([
+    const tq = target.project && target.device ? `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}` : '';
+    const [reports, liveSummary, recentRuns, ins] = await Promise.all([
       fetchJSON('/api/reports'),
-      target.project && target.device
-        ? fetchJSON('/api/build-stats').catch(() => null)
-        : Promise.resolve(null),
+      tq ? fetchJSON(`/api/dashboard-live?${tq}`).then(d => d.available ? d.build_stats : null).catch(() => null) : Promise.resolve(null),
       fetchJSON('/api/runs/recent?limit=30').catch(() => []),
+      tq ? fetchJSON(`/api/reports/insights?${tq}`).catch(() => null) : Promise.resolve(null),
     ]);
     // George, 2026-09-28: "reports can be more of a link to the generated test run
     // reports, and other tabs menu options for like the tools bug issues, reports,
@@ -4601,6 +4762,39 @@ async function renderReportsPage() {
           ${liveSummary.gap_open_count !== null ? `<div class="stat bad"><span class="n">${liveSummary.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
         </div>
       </div>` : `<div class="card"><h2>Live data</h2><p style="color:var(--ink-soft);font-size:12.5px;">Set a project/device target (Change target) to see live numbers here too.</p></div>`;
+    // George, 2026-10-06: "bulk out reports with quick narrowed-down dashboards". Each card is one question, from one
+    // real source file; a card with no source says so instead of showing a number.
+    const VCOL = {COVERED: 'var(--ok)', READY: '#34d399', EASY: '#a7f3d0', FIXTURE: 'var(--warn)', HARD: 'var(--bad)', MANUAL: 'var(--ink-soft)'};
+    const VNOTE = {COVERED: 'a real sit test exists', READY: 'write the test now', EASY: 'one small gap', FIXTURE: 'needs a card / printer / cash fixture', HARD: 'sit lacks screens or keywords', MANUAL: 'not worth automating'};
+    const insCard = (title, sub, body) => `<div class="card"><h2>${title}</h2>${sub ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${sub}</p>` : ''}${body}</div>`;
+    const tile = (n, l, cls) => `<div class="stat ${cls || ''}"><span class="n">${n}</span><span class="l">${l}</span></div>`;
+    let insightsHtml = '';
+    if (ins && target.project) {
+      const rd = ins.readiness;
+      const maxSec = rd ? Math.max(...rd.sections.map(x => x.total)) : 1;
+      const readinessHtml = rd ? insCard('Automation readiness', `What sit can automate today, per section. sit ${esc(rd.sit_branch || '')} @ ${esc(rd.sit_sha || '')}, judged ${esc((rd.generated || '').slice(0, 10))}. A triage from keyword matching, not proof.`, `
+        <div class="stat-row">${Object.entries(rd.totals).map(([v, n]) => `<div class="stat" title="${esc(VNOTE[v])}"><span class="n" style="color:${VCOL[v]}">${n}</span><span class="l">${v.toLowerCase()}</span></div>`).join('')}</div>
+        <div style="display:grid;grid-template-columns:minmax(120px,210px) 1fr 40px;gap:6px 12px;align-items:center;margin-top:12px;font-size:12.5px;">
+          ${rd.sections.map(x => `<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(x.name)}">${esc(x.name)}</div>
+            <div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);width:${(x.total * 100 / maxSec).toFixed(1)}%;min-width:8px;">${['COVERED', 'READY', 'EASY', 'FIXTURE', 'HARD', 'MANUAL'].map(v => x[v] ? `<i title="${v}: ${x[v]}" style="display:block;height:100%;width:${x[v] * 100 / x.total}%;background:${VCOL[v]}"></i>` : '').join('')}</div>
+            <div style="color:var(--ink-soft);text-align:right;">${x.total}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--ink-soft);">${Object.keys(VCOL).map(v => `<span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${VCOL[v]};margin-right:5px;"></i>${v.toLowerCase()} — ${esc(VNOTE[v])}</span>`).join('')}</div>`)
+        : insCard('Automation readiness', '', `<p style="color:var(--ink-soft);font-size:13px;margin:0;">No sit judgement found for this suite yet. Run Pull cases (Automation) to produce one.</p>`);
+      const df = ins.defects;
+      const defectsHtml = df ? insCard('Known defects', 'The tracked defect list for this device, not Jira. Code-derived: none seen on a device yet.', `
+        <div class="stat-row">${tile(df.total, 'defects')}${tile(df.by_severity.High, 'high', 'bad')}${tile(df.by_severity.Medium, 'medium', 'warn')}${tile(df.by_severity.Low, 'low')}</div>
+        <p style="font-size:13px;margin:10px 0 0;"><b>${df.cases_affected}</b> cases carry a known defect and are expected to fail until it is fixed. <b>${df.no_covering_test}</b> defects have no test covering them yet; ${df.needs_device_check} still need a device check.</p>`) : '';
+      const gp = ins.gaps;
+      const gapsHtml = insCard('Gap answers', 'Latest status of every gap that has an entry in the answers log (all devices of this project).', `
+        <div class="stat-row">${tile(gp.gaps_with_an_entry, 'gaps logged')}${Object.entries(gp.by_status).map(([k, n]) => tile(n, k.toLowerCase(), k === 'Accepted' ? 'ok' : k === 'Conflict' ? 'bad' : 'warn')).join('')}</div>`);
+      const au = ins.audit;
+      const auditHtml = au ? insCard('Case quality', `Latest audit, ${esc(au.date)}.`, `
+        <div class="stat-row">${tile(au.cases, 'cases audited')}${tile(au.blocking, 'blocking', au.blocking ? 'bad' : 'ok')}${tile(au.advisory, 'advisory')}</div>
+        <ul class="activity" style="margin-top:10px;">${au.top_findings.map(([n, c]) => `<li><b style="display:inline-block;min-width:36px;">${c}</b>${esc(n.length > 110 ? n.slice(0, 107) + '…' : n)}</li>`).join('') || '<li style="color:var(--ink-soft);">No findings.</li>'}</ul>`) : '';
+      insightsHtml = `<h2 style="margin:6px 0 10px;font-size:15px;">${esc(target.project)} / ${esc(target.device)} — at a glance${ins.suite ? ` <span style="font-weight:400;color:var(--ink-soft);">· ${esc(ins.suite)}</span>` : ''}</h2>
+        ${readinessHtml}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start;">${defectsHtml}${gapsHtml}${auditHtml}</div>`;
+    }
     const rows = reports.map((r, i) => `<tr data-report-idx="${i}" style="cursor:pointer;">
       <td>${esc(r.project)}</td>
       <td style="font-size:12.5px;">${esc(r.path)}</td>
@@ -4609,6 +4803,7 @@ async function renderReportsPage() {
     </tr>`).join('');
     setContent(`
       <div class="page-head"><h1>Reports</h1><p>Every real report this console/system-test-ops has generated, plus a live view of the current target, tool-wide run activity, and AI cost.</p></div>
+      ${insightsHtml}
       ${liveHtml}
       <div class="card">
         <h2>Generated reports${reports.length ? ` (${reports.length})` : ''}</h2>
