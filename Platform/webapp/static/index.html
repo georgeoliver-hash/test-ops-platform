@@ -3757,7 +3757,7 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
       const autoModeBtn = (waitingStep && isPushGateStep(waitingStep))
         ? `<button class="btn" id="autoApproveToggleBtn" style="margin-left:8px;" title="Auto-approves every remaining push --commit gate in this run -- stops immediately on a real failure or a non-push checkpoint">Auto-approve remaining pushes</button>`
         : '';
-      resultEl.innerHTML = `<div class="card"><h2>Waiting for you</h2><p style="font-size:14px;">This run is paused at a step that needs your confirmation — see the step list above.</p>${cancelRunButtonHtml(runId)}${autoModeBtn}</div>`;
+      resultEl.innerHTML = `<div class="card"><h2>Waiting for you</h2>${waitingStep ? `<p style="font-size:14px;margin:0 0 4px;"><b>${esc(STEP_DISPLAY_NAME[waitingStep.step_id] || waitingStep.step_id)}</b></p><p style="font-size:13.5px;margin:0 0 8px;white-space:pre-wrap;">${esc((waitingStep.output || '').replace(/^\[requires approval before this runs\]\s*/, 'About to run: '))}</p>` : ''}<p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 8px;">Do this, then confirm the step in the list above.</p>${cancelRunButtonHtml(runId)}${autoModeBtn}</div>`;
       bindCancelRunButton(runId, resultEl, btn, stepListEl);
       document.getElementById('autoApproveToggleBtn')?.addEventListener('click', async () => {
         if (!confirm('This will approve & push EVERY remaining area in this run without asking again -- real, permanent TestRail writes, one after another. It stops immediately on any real failure or a non-push checkpoint. Continue?')) return;
