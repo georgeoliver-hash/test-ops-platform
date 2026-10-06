@@ -1282,7 +1282,7 @@ async function renderHealth() {
     const deltaCard = `
       <div class="card">
         <h2>Observed changes since last audit</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Compares this suite's cases now vs. the last time build-stats ran. This is a raw diff — it doesn't yet know who made a change or whether it was a manual edit vs. a re-export, so treat it as "something moved" rather than "someone edited this by hand". "Removed" means a case id that was in the last snapshot but isn't in the suite any more — TestRail's API here can't delete cases, so this only happens if someone removed it by hand in the TestRail UI, or it moved to a different suite.</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">This suite now vs the last build-stats run. A raw diff: it shows something moved, not who or why. Removed = in the last snapshot, gone now (deleted or moved by hand in TestRail).</p>
         <table>
           <tr><th>Change</th><th>Case ids (first 10)</th></tr>
           <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
@@ -1885,13 +1885,13 @@ async function renderGaps() {
     // George, 2026-09-28: "re-write all" GAP/UNCONFIRMED markers into plain English -- a
     // real cached rewrite (clarify-gaps) shows instead of the raw jargon-heavy marker text
     // when one exists for this exact marker; the raw text stays available via title tooltip.
-    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}${g.category ? ` <span class="pill code" style="font-size:10px;" title="${esc(g.evidence || '')}">${esc(GAP_CAT_LABEL[g.category] || g.category)}</span>` : ''}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${(g.summary || g.plain_english) ? `${esc(g.summary || g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;">Open →</button></td></tr>`).join('');
+    const rows = d.shown.map((g, i) => `<tr class="variant-row" data-gap-idx="${i}"><td>${esc(g.kind)}${g.category ? ` <span class="pill code" style="font-size:10px;" title="${esc(g.evidence || '')}">${esc(GAP_CAT_LABEL[g.category] || g.category)}</span>` : ''}</td><td><code style="font-size:12px">${esc(g.file)}:${g.line}</code></td><td title="${esc(g.text)}">${(g.summary || g.plain_english) ? `${esc(g.summary || g.plain_english)} <span class="pill ok" style="font-size:10px;">plain English</span>` : esc(g.text.slice(0, 100))}</td><td><button class="btn" data-gap-open-idx="${i}" style="font-size:11px;padding:3px 8px;" title="Select this gap to read it and add an answer">Select</button></td></tr>`).join('');
     const pageStart = d.total ? d.offset + 1 : 0;
     const pageEnd = Math.min(d.offset + d.shown.length, d.total);
 
     const gapsTabHTML = `
       <div class="card" style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">${esc(target.project)}/${esc(target.device)} only, showing ${pageStart}-${pageEnd} of ${d.total}. Click a row to answer it.</p>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">${esc(target.project)}/${esc(target.device)} only, showing ${pageStart}-${pageEnd} of ${d.total}. Select a gap to read it and answer it.</p>
         <span style="display:flex;gap:6px;flex-wrap:wrap;">
           <button class="btn" id="gapExportBtn" title="Every distinct gap with its question and its current answer filled in. Edit it, then import it back.">⬇ Download gaps + answers</button>
           <label class="btn" style="cursor:pointer;" title="Upload the edited sheet. Only the rows you changed are recorded.">⬆ Import changes<input type="file" id="gapImportFile" accept=".csv" hidden></label>
@@ -2540,8 +2540,8 @@ async function renderSettings() {
           <tr><td>Confluence (Atlassian Rovo MCP)</td><td>Release notes for scope/coverage context</td><td><span class="pill human">Checked in Claude Code, not here</span></td></tr>
         </table>
         <div id="testrailConnDetail" style="margin-top:8px;font-size:12px;"></div>
-        <p style="color:var(--ink-soft);font-size:12px;margin:12px 0 0;">This app is a plain FastAPI server — it can't see which MCP servers your Claude Code session has authenticated. JIRA/Confluence access is per-engineer, connected in Claude Code itself (<code>mcp__claude_ai_Atlassian_Rovo__authenticate</code>), not something this console stores or checks. The pipelines that need them (audit-coverage, ingest-docs, etc.) run as Claude Code agents, not through this API — so "connected" for those means connected in your Claude Code session, checked there, not here.</p>
-        <p style="color:var(--ink-soft);font-size:12px;margin:8px 0 0;">⚠ Real gap: the "TestRail credentials" saved above aren't actually what any live TestRail call in this app uses today — every real call (cases/runs/push, every pipeline step) reads <code>system-test-ops/.env</code> on disk instead. "Check connection" tests <b>that</b> real path, not the saved row — so it can say Connected even if nothing's saved above, or fail even if something is.</p>
+        <p style="color:var(--ink-soft);font-size:12px;margin:12px 0 0;">JIRA and Confluence are connected per person in Claude Code, not here. Pipelines that need them run as Claude Code agents, so check the connection there.</p>
+        <p style="color:var(--ink-soft);font-size:12px;margin:8px 0 0;">⚠ Live TestRail calls read <code>system-test-ops/.env</code>, not the saved credentials above. "Check connection" tests that file.</p>
       </div>`;
 
     const mapRows = mappings.map(m => `
