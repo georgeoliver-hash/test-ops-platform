@@ -1,6 +1,13 @@
 import json
 
 from Platform.webapp import live_sit
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _isolated_github_cache(tmp_path, monkeypatch):
+    """Never read the real downloaded runs under data/live/gh in these tests."""
+    monkeypatch.setattr(live_sit, "GH_CACHE", tmp_path / "gh-cache-empty")
 
 
 def _cfg(tmp_path, monkeypatch, results=True, tickets=True):
