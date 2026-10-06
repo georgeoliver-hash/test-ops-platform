@@ -1385,6 +1385,13 @@ def get_suite_name_drift(project: str, device: str):
     return runner.check_suite_name_drift(project, device)
 
 
+@app.get("/api/dashboard-live")
+def get_dashboard_live(project: str, device: str, refresh: bool = False):
+    """Live Status data for the target's CURRENT mapped suite (cases, run health, automation split), cached
+    5 minutes. Replaces the old captured fixtures so the dashboard never shows another suite's numbers."""
+    return runner.live_dashboard(project, device, force=refresh)
+
+
 @app.get("/api/build-stats")
 def get_build_stats():
     """Suite health — real numbers from an actual `build-stats` run against real POS report

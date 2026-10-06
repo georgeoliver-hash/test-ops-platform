@@ -31,11 +31,13 @@ both the overall run (`pipeline_runs`) and each step's own status (`pipeline_run
 from __future__ import annotations
 
 import json
+import os
 import re
 import shlex
 import subprocess
 import sys
 import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -1647,3 +1649,73 @@ def ask_question(project: str, device: str | None, question: str) -> dict:
         "citations": parsed.get("citations") or [],
         "next_step": parsed.get("next_step") or "",
     }
+
+
+# ---- live dashboard (George, 2026-10-06: "it shouldn't show old stuff") -----------------------------------
+# The Status dashboard used to read August fixtures captured against one suite. This runs the same read-only,
+# deterministic CLIs (`cases`, `runs`, `export-automation`, `build-stats`) against the target's CURRENT mapped
+# suite and caches the result for a few minutes so every visit/refresh is real, never an old snapshot.
+_LIVE_DIR = Path(__file__).resolve().parent / "data" / "live"
+
+
+def _cli(args: list[str], timeout: int = 180) -> tuple[int, str]:
+    try:
+        r = subprocess.run([str(_VENV_PYTHON), "-m", "system_test_ops", *args], cwd=str(SYSTEM_TEST_OPS_ROOT),
+                           capture_output=True, text=True, timeout=timeout, encoding="utf-8", errors="replace",
+                           env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    except subprocess.TimeoutExpired:
+        return 124, f"Timed out after {timeout}s: {' '.join(args[:2])}"
+    except OSError as exc:
+        return 1, str(exc)
+    return r.returncode, (r.stdout or "") + (r.stderr or "")
+
+
+def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool = False) -> dict:
+    suite_id = store.get_new_suite_id(project, device)
+    if suite_id is None:
+        return {"available": False, "reason": f"No suite is mapped for {project}/{device} yet. Add one with Change target."}
+    tr_pid = store.get_new_testrail_project_id(project, device) or store.get_testrail_project_id(project, device)
+    if tr_pid is None:
+        return {"available": False, "reason": f"No TestRail project id is set for {project}/{device}."}
+    slug = re.sub(r"[^a-z0-9]+", "-", f"{project}-{device}-{suite_id}".lower()).strip("-")
+    out = _LIVE_DIR / slug
+    out.mkdir(parents=True, exist_ok=True)
+    cache = out / "dashboard.json"
+    if cache.is_file() and not force:
+        try:
+            cached = json.loads(cache.read_text(encoding="utf-8"))
+            if time.time() - cached.get("_generated_epoch", 0) < max_age_s:
+                return cached
+        except (OSError, ValueError):
+            pass
+    common = ["--project", str(tr_pid), "--suite", str(suite_id), "--out", str(out)]
+    rc, msg = _cli(["cases", *common])
+    if rc != 0 or not (out / "cases.json").is_file():
+        return {"available": False, "reason": "Could not read the suite from TestRail: " + (msg.strip().splitlines()[-1] if msg.strip() else "no output")}
+    rc_b, _ = _cli(["export-automation", *common])
+    rc_r, _ = _cli(["runs", *common, "--last", "10"])
+    bs_args = ["build-stats", "--cases", str(out / "cases.json"), "--snapshot-path", str(out / "_snapshot.json"), "--out", str(out)]
+    if rc_b == 0 and (out / "automation-backlog.json").is_file():
+        bs_args += ["--backlog", str(out / "automation-backlog.json")]
+    if rc_r == 0 and (out / "run-health.json").is_file():
+        bs_args += ["--run-health", str(out / "run-health.json")]
+    rc_s, msg_s = _cli(bs_args)
+    stats_path = out / "build-stats.json"
+    if rc_s != 0 or not stats_path.is_file():
+        return {"available": False, "reason": "Could not build the stats: " + (msg_s.strip().splitlines()[-1] if msg_s.strip() else "no output")}
+    stats = json.loads(stats_path.read_text(encoding="utf-8"))
+    run_health = None
+    rh_path = out / "run-health.json"
+    if rc_r == 0 and rh_path.is_file():
+        data = json.loads(rh_path.read_text(encoding="utf-8"))
+        cases = data.get("cases", [])
+        flag_names = ("always_failing", "never_executed", "flaky", "recently_regressed", "orphaned")
+        flagged = sorted([c for c in cases if any(c.get(f) for f in flag_names)],
+                         key=lambda c: (c.get("failed", 0), c.get("executed_count", 0)), reverse=True)
+        run_health = {"suite": data.get("suite"), "project": data.get("project"), "runs_considered": len(data.get("run_ids", [])),
+                      "cases_total": len(cases), "flagged_total": len(flagged),
+                      "counts": {f: sum(1 for c in cases if c.get(f)) for f in flag_names}, "shown": flagged[:15]}
+    result = {"available": True, "build_stats": stats, "run_health": run_health, "suite_id": suite_id,
+              "generated_at": _now(), "_generated_epoch": time.time()}
+    cache.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    return result

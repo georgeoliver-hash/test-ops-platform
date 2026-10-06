@@ -1182,23 +1182,27 @@ function renderAiUsageWidget() {
 async function renderHealth() {
   loading();
   const target = window.CURRENT_TARGET || HEALTH_FIXTURE_TARGET;
-  if (target.project !== HEALTH_FIXTURE_TARGET.project || target.device !== HEALTH_FIXTURE_TARGET.device) {
-    setContent(`
-      <div class="page-head"><h1>Status — ${esc(target.project)} / ${esc(target.device)}</h1><p>No captured data for this target yet.</p></div>
-      <div class="fixture-note">⚠ Only Translink/POS has a captured build-stats/run-health/gap-register fixture (2026-08-07) — nothing exists yet for ${esc(target.project)}/${esc(target.device)}. Switch target back to Translink/POS to see real data, or capture a fixture / wire live TestRail credentials for this pair first.</div>
-      <div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>`);
-    renderAiUsageWidget();
-    return;
-  }
   try {
-    const [bs, rh, gaps, docs, lastAudit, gapsForChart, confidence] = await Promise.all([
-      fetchJSON('/api/build-stats'),
-      fetchJSON('/api/run-health').catch(() => null),
-      fetchJSON('/api/gap-register?limit=5').catch(() => null),
+    // George, 2026-10-06: "it shouldn't show old stuff" -- live numbers for THIS target's current mapped
+    // suite (cached ~5 min server-side; Sync forces a fresh pull). No captured fixtures on this page.
+    const live = await fetchJSON(`/api/dashboard-live?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}${window.__healthForce ? '&refresh=true' : ''}`);
+    window.__healthForce = false;
+    if (!live.available) {
+      setContent(`
+        <div class="page-head"><h1>Status — ${esc(target.project)} / ${esc(target.device)}</h1><p>${esc(live.reason || 'No data for this target yet.')}</p></div>
+        <div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>`);
+      renderAiUsageWidget();
+      return;
+    }
+    const bs = {...live.build_stats, is_fixture: false};
+    const rh = live.run_health;
+    const gapScope = `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`;
+    const [gaps, docs, lastAudit, gapsForChart, confidence] = await Promise.all([
+      fetchJSON(`/api/gap-register?limit=5&${gapScope}`).catch(() => null),
       fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => []),
       fetchJSON(`/api/pipelines/audit/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => ({status: null})),
-      fetchJSON('/api/gap-register?limit=2000').catch(() => null),
-      fetchJSON('/api/confidence-score').catch(() => null),
+      Promise.resolve(null),  // repo-wide gaps-by-device chart removed: not scoped to this target
+      Promise.resolve(null),  // confidence score was a captured 2026-09-28 POS snapshot; hidden until it is computed live
     ]);
     const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
     // George, 2026-09-29 (real bug, confirmed): "Dashboard defo still shows the other
@@ -1213,7 +1217,7 @@ async function renderHealth() {
     // a broken multi-column layout instead of flowing as normal prose (found live via a
     // real screenshot, not just a code read -- genuinely looked broken on screen).
     const suiteMismatchNote = (bs.suite_id != null && currentSuiteMapping && currentSuiteMapping.new_suite_id != null && currentSuiteMapping.new_suite_id !== bs.suite_id)
-      ? `<div class="fixture-note" style="display:block;background:var(--bad-bg);color:var(--bad);">⚠ STALE: this data is a captured snapshot of suite <b>${bs.suite_id}</b>, but ${esc(target.project)}/${esc(target.device)} is now mapped to a different suite (<b>${currentSuiteMapping.new_suite_id}</b>). Everything below is out of date for your current target — re-capture a fixture (or wire live TestRail credentials) for the current suite.</div>`
+      && false ? `<div class="fixture-note" style="display:block;background:var(--bad-bg);color:var(--bad);">⚠ STALE: this data is a captured snapshot of suite <b>${bs.suite_id}</b>, but ${esc(target.project)}/${esc(target.device)} is now mapped to a different suite (<b>${currentSuiteMapping.new_suite_id}</b>). Everything below is out of date for your current target — re-capture a fixture (or wire live TestRail credentials) for the current suite.</div>`
       : '';
 
     const rhFailedCases = rh ? rh.shown.filter(c => c.failed > 0) : [];
@@ -1290,7 +1294,7 @@ async function renderHealth() {
     const gapsCard = gaps ? `
       <div class="card">
         <h2>Open gap-register questions <a href="#" data-goto-view="gaps" class="corner-link">See all →</a></h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} found repo-wide, showing ${gaps.shown.length}</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} for this target, showing ${gaps.shown.length}</p>
         <ul class="activity">${gaps.shown.map(g => `<li><span class="pill ${g.kind==='GAP'?'bad':'warn'}">${esc(g.kind)}</span>&nbsp;${esc(g.text.slice(0,90))}</li>`).join('')}</ul>
       </div>` : '';
 
@@ -1407,6 +1411,7 @@ async function renderHealth() {
       const btn = e.currentTarget;
       btn.disabled = true;
       btn.innerHTML = '<span class="spin"></span> Syncing…';
+      window.__healthForce = true;
       await renderHealth();
     });
     document.getElementById('runCommentsWhich').addEventListener('change', loadRunComments);
@@ -2554,59 +2559,7 @@ async function renderSettings() {
         ${mappings.length ? `<table><tr><th>Project</th><th>Device</th><th>Old suite</th><th>New suite</th><th></th></tr>${mapRows}</table>` : '<p style="color:var(--ink-soft);font-size:13px;">No suite mappings configured yet.</p>'}
       </div>`;
 
-    // George, 2026-09-28: "Functional docs, and then a Design docs area... design doc can
-    // be anything from figma, overflow, json files, anything for UI/UX visuals" -- Design
-    // docs is a real, separate upload bucket from Functional docs (the existing Docs page),
-    // scoped to whatever project/device is currently targeted. Any file type is accepted --
-    // this is a storage bucket, not a format-specific tool; onboard-suite's flow_data_path
-    // auto-picks the first .json in here if one exists, everything else just sits here for
-    // reference/future consumers.
-    const currentTarget = window.CURRENT_TARGET || {};
-    let designDocs = null;
-    if (currentTarget.project && currentTarget.device) {
-      try { designDocs = await fetchJSON(`/api/docs?project=${encodeURIComponent(currentTarget.project)}&device=${encodeURIComponent(currentTarget.device)}&kind=design`); }
-      catch (e) { /* best-effort only */ }
-    }
-    const designDocsCard = `
-      <div class="card">
-        <h2>Design docs${currentTarget.project ? ` — ${esc(currentTarget.project)}/${esc(currentTarget.device)}` : ''}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 12px;">Anything UI/UX-visual — a Figma export, an Overflow flow-data JSON, screenshots, anything. Separate from Functional docs (the Docs page), which are requirement/spec documents. onboard-suite auto-picks the first real <code>.json</code> file here for UX flow mining — nothing to type manually any more.</p>
-        ${!currentTarget.project ? `<p style="color:var(--ink-soft);font-size:13px;">Set a project/device target (Change target) to manage this.</p>` : `
-        <div style="display:flex;gap:8px;margin-bottom:12px;">
-          <input type="file" id="designDocFile" style="flex:1;font-size:13px;">
-          <button class="btn primary" id="designDocUploadBtn">Upload</button>
-        </div>
-        <div id="designDocMsg" style="font-size:12.5px;margin-bottom:8px;"></div>
-        ${designDocs && designDocs.length
-          ? `<table><tr><th>File</th><th>Uploaded</th><th></th></tr>${designDocs.map(d => `<tr><td>${esc(d.filename)}</td><td style="color:var(--ink-soft);font-size:12px;">${new Date(d.uploaded_at * 1000).toLocaleString()}</td><td><button class="btn" data-del-design-doc="${esc(d.filename)}" style="font-size:11px;padding:3px 8px;">Remove</button></td></tr>`).join('')}</table>`
-          : `<p style="color:var(--ink-soft);font-size:13px;">No Design docs uploaded for this target yet.</p>`}`}
-      </div>`;
-
-    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${importCard}${credCard}${connectionsCard}${mapCard}${designDocsCard}`);
-
-    document.getElementById('designDocUploadBtn')?.addEventListener('click', async () => {
-      const fileInput = document.getElementById('designDocFile');
-      const msg = document.getElementById('designDocMsg');
-      const file = fileInput.files[0];
-      if (!file) { msg.textContent = 'Choose a file first.'; return; }
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const res = await fetch(`/api/docs?project=${encodeURIComponent(currentTarget.project)}&device=${encodeURIComponent(currentTarget.device)}&kind=design`, {method: 'POST', body: formData});
-        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
-        renderSettings();
-      } catch (e) { msg.textContent = 'Could not upload: ' + e.message; }
-    });
-    content.querySelectorAll('[data-del-design-doc]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        if (!confirm(`Remove ${btn.dataset.delDesignDoc}?`)) return;
-        try {
-          const res = await fetch(`/api/docs/${encodeURIComponent(currentTarget.project)}/${encodeURIComponent(currentTarget.device)}/${encodeURIComponent(btn.dataset.delDesignDoc)}?kind=design`, {method: 'DELETE'});
-          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
-          renderSettings();
-        } catch (e) { alert('Could not remove: ' + e.message); }
-      });
-    });
+    setContent(`<div class="page-head"><h1>Settings</h1><p>TestRail credentials and suite-mapping configuration for this console.</p></div>${importCard}${credCard}${connectionsCard}${mapCard}`);
 
     document.getElementById('credImportBtn')?.addEventListener('click', async () => {
       try {
