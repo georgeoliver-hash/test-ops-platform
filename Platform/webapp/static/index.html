@@ -2984,18 +2984,14 @@ async function renderPipelineDetail(id) {
     // a button next to Run that opens it in a popup, same global reach as before (still built
     // outside extraInputs, so it's the same one field on every pipeline, just not always
     // taking up viewport room).
-    const intentModalHtml = `
-      <div class="modal-overlay" id="intentModalOverlay">
-        <div class="modal" style="max-width:520px;">
-          <div class="modal-head"><h3>What are you trying to achieve with this run?</h3><button class="modal-close" id="intentModalClose">&times;</button></div>
-          <div class="modal-body">
-            <p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Optional. Extra context for the agent steps in this run -- e.g. "I need this grounded for back-office comms testing, not just device navigation." Doesn't override the pipeline's own steps, just helps it make better judgment calls.</p>
-            <textarea class="input" data-extra-input="intent" rows="6" style="display:block;width:100%;resize:vertical;"></textarea>
-            <button class="btn primary" id="intentModalDone" style="align-self:flex-end;">Done</button>
-          </div>
-        </div>
+    // George, 2026-10-06: "move the give context" -- no pop-up; the box sits inline under the step pills.
+    const intentModalHtml = '';
+    const intentInlineHtml = `
+      <div class="card" style="margin:10px 0;">
+        <b style="font-size:13px;">What are you trying to achieve with this run? <span style="color:var(--ink-soft);font-weight:400;">(optional)</span></b>
+        <textarea class="input" data-extra-input="intent" rows="3" placeholder="e.g. grounded for back-office comms testing, not just device navigation" style="display:block;width:100%;resize:vertical;margin-top:6px;"></textarea>
       </div>`;
-    const giveContextBtn = `<button class="btn" type="button" id="giveContextBtn">Give context</button>`;
+    const giveContextBtn = '';
     const runButton = detail.runnable
       ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
       : `<div class="tooltip-wrap"><button class="btn primary" disabled>Run</button><span class="tip">Not wired yet — only read-only pipelines are, so far</span></div>`;
@@ -3020,6 +3016,7 @@ async function renderPipelineDetail(id) {
         </div>
       </div>
       ${renderFlowPills(detail.steps)}
+      ${intentInlineHtml}
       <div id="pipelineAlreadyDone"></div>
       <div class="tab-row" style="display:flex;gap:8px;margin:14px 0 10px;">
         <button class="tab-btn active" id="pipelineTabDetails" data-ptab="details">Details</button>
@@ -3716,6 +3713,23 @@ function bindCancelRunButton(runId, resultEl, btn, stepListEl) {
 // catch() gave up on the FIRST failed poll and showed a scary permanent error. Now it
 // retries a few times with backoff first -- a real dropped connection recovers in a couple
 // seconds once the server's back; only a poll that keeps failing past that says "lost track".
+// George, 2026-10-06: "plain english quick to the point summary of the result, failed or passed... if you hit
+// multiple issues, pill them out so you can open each". Verdict line + one pill per failed step (each opens its
+// own output). Raw CLI output stays below, untouched.
+function resultVerdictHtml(run, steps) {
+  const st = steps || [];
+  const failed = st.filter(x => x.status === 'failed');
+  const done = st.filter(x => x.status === 'succeeded' || x.status === 'done').length;
+  const name = (x) => (typeof STEP_DISPLAY_NAME !== 'undefined' && STEP_DISPLAY_NAME[x.step_id]) || x.step_id;
+  const head = run.status === 'failed' || failed.length
+    ? `<p style="font-size:15px;margin:0 0 8px;"><span class="pill bad">Failed</span> ${failed.length ? `${failed.length} step${failed.length === 1 ? '' : 's'} need${failed.length === 1 ? 's' : ''} attention` : 'The run did not finish'}.</p>`
+    : `<p style="font-size:15px;margin:0 0 8px;"><span class="pill ok">Passed</span> ${st.length ? `${done} of ${st.length} steps completed.` : 'Completed.'}</p>`;
+  const issues = failed.length ? `<div style="display:flex;flex-direction:column;gap:6px;margin:0 0 10px;">${failed.map(x => `
+    <details style="border:1px solid var(--line);border-radius:8px;padding:6px 10px;"><summary style="cursor:pointer;font-size:13px;"><span class="pill bad" style="font-size:11px;">${esc(name(x))}</span></summary>
+      <pre style="white-space:pre-wrap;font-size:12px;margin:8px 0 0;">${esc(x.output || x.error || 'No output recorded.')}</pre></details>`).join('')}</div>` : '';
+  return head + issues;
+}
+
 async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
   retryCount = retryCount || 0;
   try {
@@ -3793,6 +3807,7 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
       resultEl.innerHTML = `
         <div class="card">
           <h2>Run failed</h2>
+          ${resultVerdictHtml(run, steps)}
           <div class="errbox">${esc(run.error || 'Unknown error')}</div>
           ${run.summary ? `<p style="font-size:14px;">${esc(run.summary)}</p>` : ''}
           ${run.report_path ? `<p style="color:var(--ink-soft);font-size:12.5px;">Full report: <code>${esc(run.report_path)}</code></p>` : ''}
@@ -3813,6 +3828,7 @@ async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
     resultEl.innerHTML = `
       <div class="card">
         <h2>Result</h2>
+        ${resultVerdictHtml(run, steps)}
         ${run.summary ? `<p style="font-size:14px;">${esc(run.summary)}</p>` : ''}
         ${run.report_path ? `<p style="color:var(--ink-soft);font-size:12.5px;">Full report: <code>${esc(run.report_path)}</code></p>` : ''}
         ${ingestMapLinkHtml}
