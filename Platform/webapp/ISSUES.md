@@ -490,3 +490,11 @@ As i go through the process:
 - NEW (George, 2026-09-30): if a doc genuinely covers multiple devices for one project (e.g. Translink-Device-Endpoints-STE12.docx, spans ETM/HHD/PV/GV/POS), and it's later uploaded again for a different device target, ingest-docs has no memory it was already distilled -- convert + distil both re-run from scratch on the same file, real AI cost + risk of drift from the notes already sitting in knowledge/{project}/specs/. Needs a "already distilled this exact file/version for this project?" check before distil runs, not a re-run every time. Confirmed real (checked tools/ingest_docs.py directly -- no hash/dedup memory across runs at all, only within-one-run version-family de-dupe).
 - 
   **Status (2026-10-06): fixed in `system-test-ops/tools/ingest_docs.py`.** Convert now hashes each source file (SHA-256 of the content, any folder or device), keeps `_ingest_manifest.json`, and writes `_text/_to_distil.json` listing only new or changed docs; docs already distilled at that exact content are converted but skipped by distil. New pipeline step `mark_distilled` stamps them after distil. `--force` re-distils on purpose. Tested on a scratch folder: same file from another device folder skipped, edited file re-queued. Not yet run through the console on the real POS docs.
+
+- **NEW (George, 2026-10-06): revamp the automation dashboard toggle area into a live, visual runs view; and bulk out Reports.** Not started. Wants:
+  - a visual way to see runs, pipelines in progress, passes and fails as they come in; a live running log of the pipeline; easy to see which test is running right now and whether it passed or failed, all pulling through in real time;
+  - how many tests are in a run, the schedule time, and the ability to change the schedule from the tool;
+  - set up a targeted run by choosing the tags to include;
+  - end goal: used company-wide (projects, testers, automation) to see stats, data and runs in real time;
+  - same for Reports: keep adding many quick, narrowed-down reports and dashboards for most of what the tool and automation do.
+  - Depends on: sit's results ingestion (see the SIT results dashboard plan; results upload is off in sit today). Single-user local console today, so "company-wide" is the shared-service jump flagged earlier (credentials store + uploads need the multi-user redesign first).
