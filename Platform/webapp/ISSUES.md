@@ -500,3 +500,13 @@ As i go through the process:
   - Depends on: sit's results ingestion (see the SIT results dashboard plan; results upload is off in sit today). Single-user local console today, so "company-wide" is the shared-service jump flagged earlier (credentials store + uploads need the multi-user redesign first).
 
 - **Status (2026-10-06):** removed the "Uncommitted local target changes" text from Change target. Audit of the rest of this list against the code: most items are built; still open are human-check guidance, ingest-docs simplification (needs a decision), better results (plain-English verdict + a pill per issue), gap re-check against new specs, Design docs in Settings (needs a decision), pipeline-page 2x2 layout (needs a decision), stale-dashboard approach (needs a decision).
+
+- **Status (2026-10-06, George's answers applied):**
+  - Design docs removed from Settings.
+  - Status dashboard is now live per target (`/api/dashboard-live`: cases, run health, automation split from TestRail for the mapped suite, 5 min cache, Sync forces a pull). Fixture data, the STALE banner, the repo-wide gaps chart and the old confidence score are gone from that page. Confidence score is hidden until it is computed live.
+  - Ingest docs: one source (the target's uploaded docs), no synced-folder choice, no per-run document picker; "Last ingested" shown on the docs card.
+  - "Give context" is now an inline box under the step pills (no pop-up).
+  - Waiting-for-you card shows what to check at that step; `ingest-docs` human steps reworded.
+  - Results: Passed/Failed verdict line plus one pill per failed step (each opens its own output); raw output kept below.
+  - Gaps: "Refresh against new docs" now reports gaps closed / new / unchanged since the last refresh (marker gone from the notes and cases = closed). Not an AI judgement of whether a new doc answers a question; that remains a Resolve/clarify-gaps run.
+  - Still open: gap-page "select" affordance, briefer descriptive text everywhere, change-target second pop-up, collapsed-sidebar padding (unverified), live automation dashboard + reports vision (needs sit results ingestion), shared hosting (needs IT).

@@ -1303,7 +1303,15 @@ def check_testrail_connection() -> dict:
 _GAPS_FIXTURE = _PLATFORM_ROOT / "webapp" / "fixtures" / "gaps.json"
 
 
+def _marker_keys(path) -> set[str]:
+    try:
+        return {re.sub(r"\s+", " ", (m.get("text") or "")).strip()[:160] for m in json.loads(path.read_text(encoding="utf-8"))}
+    except (OSError, ValueError, AttributeError):
+        return set()
+
+
 def refresh_gap_register() -> dict:
+    before = _marker_keys(_GAPS_FIXTURE) if _GAPS_FIXTURE.is_file() else None
     try:
         result = subprocess.run(
             [str(_VENV_PYTHON), "-m", "system_test_ops", "gap-register", "--json-out", str(_GAPS_FIXTURE)],
@@ -1323,7 +1331,13 @@ def refresh_gap_register() -> dict:
             total = len(json.loads(_GAPS_FIXTURE.read_text(encoding="utf-8")))
         except (json.JSONDecodeError, OSError):
             pass
-    return {"ok": True, "total": total, "refreshed_at": _now()}
+    out = {"ok": True, "total": total, "refreshed_at": _now()}
+    if before is not None:
+        after = _marker_keys(_GAPS_FIXTURE)
+        out["closed"] = len(before - after)      # marker text no longer anywhere in the notes/cases
+        out["new"] = len(after - before)         # markers that were not there at the last refresh
+        out["unchanged"] = len(before & after)
+    return out
 
 
 def _case_counts(suite_id: int) -> tuple[int | None, int]:

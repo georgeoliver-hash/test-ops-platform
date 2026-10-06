@@ -1977,6 +1977,7 @@ async function renderGaps() {
     });
     const gapQ = `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`;
     const gapMsg = (html, bad) => { const el = document.getElementById('gapRefreshResult'); if (el) el.innerHTML = `<div class="${bad ? 'errbox' : 'card'}" style="margin-bottom:10px;font-size:12.5px;">${html}</div>`; };
+    if (window.__gapRefreshNote) { gapMsg(window.__gapRefreshNote); window.__gapRefreshNote = null; }
     document.getElementById('gapExportBtn')?.addEventListener('click', async () => {
       try {
         const res = await fetch(`/api/gap-export?${gapQ}`);
@@ -2015,6 +2016,7 @@ async function renderGaps() {
         const body = await res.json();
         if (!res.ok || !body.ok) throw new Error(body.detail || 'Could not refresh.');
         resultEl.innerHTML = '';
+        window.__gapRefreshNote = body.closed === undefined ? 'Re-checked against the current notes.' : `Re-checked against the current notes: <b>${body.closed}</b> gap(s) closed, <b>${body.new}</b> new, ${body.unchanged} unchanged. A gap only counts as closed when its marker is gone from the notes and cases.`;
         gapOffset = 0; renderGaps();
       } catch (err) { resultEl.innerHTML = `<p class="errbox">${esc(err.message)}</p>`; btn.disabled = false; }
     });
