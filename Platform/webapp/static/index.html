@@ -270,6 +270,11 @@
   .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
   .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex:none;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  /* George, 2026-10-07: edit-pair form is a second pop-up above Change target, nudged up and
+     right so both stay visible, instead of growing the first one off-screen. */
+  .pair-overlay{z-index:60;background:rgba(32,30,29,.15);align-items:flex-start;padding-top:3vh;}
+  .pair-modal{max-width:480px;max-height:90vh;transform:translate(150px,0);}
+  @media (max-width:900px){.pair-modal{transform:none;}}
 
   .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
   @media (max-width:960px){.grid2{grid-template-columns:1fr;}}
@@ -540,7 +545,22 @@
           <button class="btn" id="suiteAddProjectBtn" type="button" style="font-size:12px;padding:6px 10px;">Add project</button>
           <button class="btn" id="suiteDeleteBtn" type="button" style="font-size:12px;padding:6px 10px;display:none;">Remove pair</button>
         </div>
-        <div id="suiteEditForm" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);gap:8px;flex-direction:column;">
+      </div>
+      <label id="approveRow" style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);">
+        <input type="checkbox" id="approveCheck" style="margin-top:2px;">
+        <span id="approveCheckLabel">I approve pointing this console at the suites shown above.</span>
+      </label>
+      <div id="approveStatus" style="font-size:12px;color:var(--ink-soft);margin-top:4px;"></div>
+      <div id="targetsGitStatus" style="font-size:11.5px;color:var(--ink-soft);margin-top:8px;font-style:italic;"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply" disabled>Approve &amp; apply target</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay pair-overlay" id="pairModal">
+  <div class="modal pair-modal">
+    <div class="modal-head"><h3 id="pairModalTitle">Add / edit pair</h3><button class="modal-close" id="pairModalClose">&times;</button></div>
+        <div id="suiteEditForm" class="modal-body" style="gap:10px;">
           <!-- "Add project" mode: brand-new project name + its parent TestRail project,
                nothing else -- George's ask (ISSUES.md round 2): a new project should always
                get a real parent TestRail project chosen right away. Hidden entirely for the
@@ -581,15 +601,6 @@
             <button class="btn primary" id="suiteEditSave" type="button" style="font-size:12px;">Save pair</button>
           </div>
         </div>
-      </div>
-      <label id="approveRow" style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft);">
-        <input type="checkbox" id="approveCheck" style="margin-top:2px;">
-        <span id="approveCheckLabel">I approve pointing this console at the suites shown above.</span>
-      </label>
-      <div id="approveStatus" style="font-size:12px;color:var(--ink-soft);margin-top:4px;"></div>
-      <div id="targetsGitStatus" style="font-size:11.5px;color:var(--ink-soft);margin-top:8px;font-style:italic;"></div>
-    </div>
-    <div class="modal-foot"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalApply" disabled>Approve &amp; apply target</button></div>
   </div>
 </div>
 
@@ -5079,7 +5090,7 @@ function refreshSuiteReadout() {
   approveStatus.textContent = approved
     ? `Approved by ${pair.approved_by} on ${new Date(pair.approved_at).toLocaleString()}.`
     : '';
-  suiteEditForm.style.display = 'none';
+  document.getElementById('pairModal').classList.remove('open');
   suiteDeleteBtn.style.display = pair ? '' : 'none';
   suiteEditBtn.textContent = pair ? 'Edit this pair' : 'Add this pair';
   updateApplyEnabled();
@@ -5221,11 +5232,12 @@ function openSuiteEditForm(addingNewProject) {
     editTestrailProjectLocked.style.display = 'none';
     loadTestrailProjectsDropdown(CURRENT_TESTRAIL_PROJECT_ID);
   }
-  suiteEditForm.style.display = 'flex';
+  document.getElementById('pairModal').classList.add('open');
 }
 suiteEditBtn.addEventListener('click', () => openSuiteEditForm(false));
 document.getElementById('suiteAddProjectBtn').addEventListener('click', () => openSuiteEditForm(true));
-document.getElementById('suiteEditCancel').addEventListener('click', () => { suiteEditForm.style.display = 'none'; });
+document.getElementById('pairModalClose').addEventListener('click', () => document.getElementById('pairModal').classList.remove('open'));
+document.getElementById('suiteEditCancel').addEventListener('click', () => { document.getElementById('pairModal').classList.remove('open'); });
 document.getElementById('suiteEditSave').addEventListener('click', async () => {
   const fresh_build = editFreshBuild.checked;
   const old_suite = fresh_build ? '' : editOldSuite.value.trim();
@@ -5256,7 +5268,7 @@ document.getElementById('suiteEditSave').addEventListener('click', async () => {
     fillSelect(selDevice, devicesForProject(project));
     selDevice.value = device;
     refreshSuiteReadout();
-    suiteEditForm.style.display = 'none';
+    document.getElementById('pairModal').classList.remove('open');
     updateApplyEnabled();
   } catch (e) { alert('Could not save: ' + e.message); }
 });
