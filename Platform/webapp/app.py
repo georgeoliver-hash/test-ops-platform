@@ -1402,6 +1402,50 @@ def reports_insights_endpoint(project: str, device: str):
     return reports_insights.insights(project, device)
 
 
+class HandoffDecisionIn(BaseModel):
+    decision: str  # "approved" | "rejected"
+    note: str = ""
+
+
+def _handoff_dir() -> Path:
+    override = os.environ.get("HANDOFF_QUEUE_DIR")
+    return Path(override) if override else runner.SYSTEM_TEST_OPS_ROOT / "handoff-queue"
+
+
+@app.get("/api/handoff")
+def handoff_queue():
+    """The hand-off queue (author > review > approve > automate > run > report): one JSON file per item, written by
+    system-test-ops. Read straight from the folder; an unreadable file is skipped, never invented."""
+    stages = ["author", "review", "approve", "automate", "run", "report"]
+    items = []
+    folder = _handoff_dir()
+    if folder.is_dir():
+        for p in sorted(folder.glob("*.json")):
+            try:
+                items.append(json.loads(p.read_text(encoding="utf-8")))
+            except (OSError, ValueError):
+                continue
+    items.sort(key=lambda it: (stages.index(it["stage"]) if it.get("stage") in stages else 99, it.get("created_at", "")))
+    return {"stages": stages, "folder": str(folder), "items": items}
+
+
+@app.post("/api/handoff/{item_id}/decide")
+def handoff_decide(item_id: str, body: HandoffDecisionIn):
+    """Approve or reject a proposed item as the signed-in person. The rules (named decider, never the producer, a reason
+    for a rejection, decisions are final) live in system-test-ops and are applied by its CLI, not re-implemented here."""
+    if body.decision not in ("approved", "rejected"):
+        raise HTTPException(status_code=400, detail="decision must be approved or rejected")
+    who = store.get_current_user().get("display_name") or ""
+    args = ["queue-decide", item_id, body.decision, "--by", who]
+    if body.note.strip():
+        args += ["--note", body.note.strip()]
+    rc, msg = runner._cli(args)
+    if rc != 0:
+        line = (msg.strip().splitlines() or ["refused"])[-1]
+        raise HTTPException(status_code=400, detail=line.removeprefix("error: "))
+    return {"ok": True, "decided_by": who}
+
+
 @app.get("/api/live/config")
 def live_config():
     return live_sit.get_config()

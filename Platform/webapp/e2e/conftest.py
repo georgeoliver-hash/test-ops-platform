@@ -29,7 +29,7 @@ def server(tmp_path_factory):
         "targets:", "- project: Translink", "  device: POS", "  old_suite: Old E2E", "  old_suite_id: 900000",
         "  new_suite: New E2E", "  new_suite_id: 900001", "  fresh_build: false", "  testrail_project_id: 99",
         "  new_testrail_project_id: null", ""]), encoding="utf-8")
-    env = {**os.environ, "TESTOPS_WEBAPP_DATA_DIR": str(data), "TESTOPS_SUITE_TARGETS_PATH": str(targets), "TESTRAIL_URL": "http://127.0.0.1:9/testrail",
+    env = {**os.environ, "TESTOPS_WEBAPP_DATA_DIR": str(data), "TESTOPS_SUITE_TARGETS_PATH": str(targets), "HANDOFF_QUEUE_DIR": str(data / "handoff-queue"), "TESTRAIL_URL": "http://127.0.0.1:9/testrail",
            "PYTHONIOENCODING": "utf-8"}
     log = open(data / "server.log", "w", encoding="utf-8")
     proc = subprocess.Popen([sys.executable, "-m", "uvicorn", "Platform.webapp.app:app", "--host", "127.0.0.1", "--port", str(port)],
@@ -63,9 +63,10 @@ def page(browser, server):
     ctx = browser.new_context(viewport={"width": 1400, "height": 1000})
     pg = ctx.new_page()
     pg.set_default_timeout(8000)
+    pg.allow_4xx = False  # a test that deliberately provokes a refusal sets this True
     problems: list[str] = []
     pg.on("pageerror", lambda e: problems.append(f"JS error: {e}"))
-    pg.on("console", lambda m: problems.append(f"console error: {m.text}") if m.type == "error" and "status of 503" not in m.text else None)
+    pg.on("console", lambda m: problems.append(f"console error: {m.text}") if m.type == "error" and "status of 503" not in m.text and not (pg.allow_4xx and "status of 4" in m.text) else None)
     pg.on("response", lambda r: problems.append(f"HTTP {r.status} {r.url}") if r.status >= 500 and r.status != 503 else None)
     pg.base = server
     pg.goto(server + "/")

@@ -432,6 +432,7 @@
                via the Gaps page's own tab bar, same as every other dashboard page). -->
           <button class="navitem" data-view="gaps"><span class="dot"></span>Gaps</button>
           <button class="navitem" data-view="caseReview"><span class="dot"></span>Case review</button>
+          <button class="navitem" data-view="handoff"><span class="dot"></span>Hand-offs</button>
         </div>
       </div>
       <div class="navgroup collapsible" id="navBuild">
@@ -4347,6 +4348,48 @@ async function crPost(url, body) {
 
 let crTab = 'review';
 
+// Hand-off queue: every step of author > review > approve > automate > run > report leaves one item here, proposed by
+// whoever made it, and moves on only when a different named person approves it.
+async function renderHandoff() {
+  loading();
+  let d;
+  try { d = await fetchJSON('/api/handoff'); } catch (e) { errbox('Could not load the hand-off queue: ' + e.message); return; }
+  const pill = (s) => `<span class="pill ${s === 'approved' ? 'ok' : s === 'rejected' ? 'bad' : 'warn'}">${esc(s)}</span>`;
+  const byStage = Object.fromEntries(d.stages.map(s => [s, d.items.filter(i => i.stage === s)]));
+  const row = (i) => `<tr data-handoff-id="${esc(i.id)}">
+      <td>${pill(i.status)}</td>
+      <td><b>${esc(i.title)}</b><div style="color:var(--ink-soft);font-size:11.5px;">${esc(i.id)}${i.parent ? ' &middot; from ' + esc(i.parent) : ''}</div>
+        ${i.payload ? `<div style="font-size:12px;">File: <code>${esc(i.payload)}</code></div>` : ''}
+        ${(i.evidence || []).map(e => `<div style="font-size:12px;">Evidence: <code>${esc(e)}</code></div>`).join('')}
+        ${i.note ? `<div style="font-size:12px;color:var(--ink-soft);">${esc(i.note)}</div>` : ''}</td>
+      <td style="font-size:12.5px;">${esc(i.produced_by)}<div style="color:var(--ink-soft);font-size:11.5px;">${esc(i.created_at || '')}</div></td>
+      <td style="font-size:12.5px;">${i.decided_by ? esc(i.decided_by) + '<div style="color:var(--ink-soft);font-size:11.5px;">' + esc(i.decided_at || '') + '</div>' : ''}</td>
+      <td style="white-space:nowrap;">${i.status === 'proposed'
+        ? `<button class="btn primary" data-handoff-decide="approved" data-id="${esc(i.id)}" style="font-size:12px;padding:4px 10px;">Approve</button>
+           <button class="btn" data-handoff-decide="rejected" data-id="${esc(i.id)}" style="font-size:12px;padding:4px 10px;">Reject</button>` : ''}</td>
+    </tr>`;
+  const counts = d.stages.map(s => `${s}: ${byStage[s].length}`).join(' &middot; ');
+  const sections = d.stages.map(s => byStage[s].length ? `<div class="card"><h2 style="text-transform:capitalize;">${esc(s)}</h2>
+      <table><tr><th>Status</th><th>Item</th><th>Proposed by</th><th>Decided by</th><th></th></tr>${byStage[s].map(row).join('')}</table></div>` : '').join('');
+  setContent(`<div class="page-head-row"><h1>Hand-offs</h1><div class="page-head-pills"><span class="pill code">${d.items.length} item(s)</span></div></div>
+    <p style="color:var(--ink-soft);margin:4px 0 14px;font-size:13.5px;">Each step proposes; a different named person approves or rejects. ${counts}</p>
+    <div id="handoffMsg" class="errbox" style="display:none;margin-bottom:10px;"></div>
+    ${d.items.length ? sections : `<div class="card"><p style="margin:0;color:var(--ink-soft);">Nothing is waiting. Items appear here when a step is proposed (queue-add, draft-jira-bugs --queue).</p></div>`}`);
+  content.querySelectorAll('[data-handoff-decide]').forEach(btn => btn.addEventListener('click', async () => {
+    const decision = btn.dataset.handoffDecide;
+    let note = '';
+    if (decision === 'rejected') { note = window.prompt('Why is this rejected?') || ''; if (!note.trim()) return; }
+    const res = await fetch(`/api/handoff/${encodeURIComponent(btn.dataset.id)}/decide`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({decision, note})});
+    if (!res.ok) {
+      const msg = document.getElementById('handoffMsg');
+      msg.textContent = (await res.json().catch(() => ({}))).detail || res.statusText;
+      msg.style.display = 'block';
+      return;
+    }
+    renderHandoff();
+  }));
+}
+
 async function renderCaseReview() {
   loading();
   const target = window.CURRENT_TARGET || {};
@@ -4648,7 +4691,7 @@ async function renderLiveDashboard() {
   tick();
 }
 
-const VIEWS = {caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
+const VIEWS = {handoff: renderHandoff, caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
 const AUTOMATION_VIEWS = {dashboard: renderLiveDashboard, overview: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
