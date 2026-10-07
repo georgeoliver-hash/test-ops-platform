@@ -3243,6 +3243,21 @@ def test_suite_name_drift_unavailable_for_unconfigured_target():
     assert res.json()["available"] is False
 
 
+@pytest.fixture(autouse=True)
+def _testrail_reachable_by_default(monkeypatch):
+    """Tests fake the TestRail CLI; the real network probe would fail on a machine off the VPN."""
+    from Platform.webapp import runner as runner_module
+    monkeypatch.setattr(runner_module, "_testrail_reachable", lambda timeout=4.0: (True, ""))
+
+
+def test_dashboard_live_fails_fast_when_testrail_unreachable(monkeypatch):
+    from Platform.webapp import runner as runner_module
+    monkeypatch.setattr(runner_module, "_testrail_reachable", lambda timeout=4.0: (False, "TestRail (x) is not reachable from this machine (VPN / network?)."))
+    res = runner_module.compare_suite_case_counts("Translink", "POS")
+    assert res["available"] is False
+    assert "not reachable" in res["reason"] or "not configured" in res["reason"]
+
+
 def test_suite_name_drift_detects_a_real_mismatch(monkeypatch):
     """George, 2026-09-30: "POS TL suite name new one, is GG - POS - Claude Suite but on
     testrail it is something else? do we need to ensure the naming is correct" -- real

@@ -159,6 +159,7 @@ def test_suite_counts_leave_retired_cases_out_and_report_them_separately(monkeyp
 def test_suite_comparison_reports_marked_for_delete_per_suite(monkeypatch):
     monkeypatch.setattr(store, "get_suite_ids", lambda p, d: {"old_suite_id": 9317, "new_suite_id": 30607})
     monkeypatch.setattr(runner, "_case_counts", lambda sid: (2193, 0) if sid == 9317 else (841, 463))
+    monkeypatch.setattr(runner, "_testrail_reachable", lambda timeout=4.0: (True, ""))
     d = runner.compare_suite_case_counts("Translink", "POS")
     assert (d["old_case_count"], d["new_case_count"]) == (2193, 841)
     assert (d["old_marked_for_delete"], d["new_marked_for_delete"]) == (0, 463)

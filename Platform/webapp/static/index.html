@@ -958,7 +958,7 @@ const STEP_PLAIN = {
 // reused for plain identity. Without it, every bar uses one consistent hue (`--accent`
 // falling back to `--code`), since a single-series magnitude comparison needs no
 // categorical palette at all (dataviz skill: "sequential = one hue" for magnitude-only).
-function renderBarChart(items, {valueKey = 'value', labelKey = 'label', statusColors = null, maxBars = 8} = {}) {
+function renderBarChart(items, {valueKey = 'value', labelKey = 'label', statusColors = null, maxBars = 8, fmt = null} = {}) {
   const rows = [...items].sort((a, b) => b[valueKey] - a[valueKey]).slice(0, maxBars);
   if (!rows.length) return '<p style="color:var(--ink-soft);font-size:12.5px;">No data yet.</p>';
   const max = Math.max(...rows.map(r => r[valueKey]), 1);
@@ -973,7 +973,7 @@ function renderBarChart(items, {valueKey = 'value', labelKey = 'label', statusCo
       <text x="${labelW - 8}" y="${y + barH / 2 + 4}" font-size="11.5" text-anchor="end" fill="var(--ink)">${esc(String(r[labelKey]))}</text>
       <rect x="${labelW}" y="${y}" width="${chartW}" height="${barH}" rx="4" fill="var(--bg)"/>
       <rect x="${labelW}" y="${y}" width="${w}" height="${barH}" rx="4" fill="${colorFor(r)}"/>
-      <text x="${labelW + chartW + 8}" y="${y + barH / 2 + 4}" font-size="11" fill="var(--ink-soft)">${esc(String(r[valueKey]))}</text>`;
+      <text x="${labelW + chartW + 8}" y="${y + barH / 2 + 4}" font-size="11" fill="var(--ink-soft)">${esc(String(fmt ? fmt(r[valueKey]) : r[valueKey]))}</text>`;
   }).join('');
   return `<svg viewBox="0 0 ${totalW} ${totalH}" width="100%" style="max-width:${totalW}px;" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
 }
@@ -1179,7 +1179,7 @@ function renderAiUsageWidget() {
     const top = rows.slice(0, 6);
     const chartData = rows.map(r => ({label: PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id, value: r.avg_cost_usd}));
     el.innerHTML = `<h2>AI usage — average per run</h2>
-      ${renderBarChart(chartData)}
+      ${renderBarChart(chartData, {fmt: v => '$' + v.toFixed(2)})}
       <table style="margin-top:10px;"><tr><th>Pipeline</th><th>Avg cost</th><th>Avg tokens</th><th>Runs</th></tr>
         ${top.map(r => `<tr>
           <td>${esc(PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id)}</td>
@@ -1334,6 +1334,7 @@ async function renderHealth() {
           <span class="pill code">${esc(bs.suite)}</span>
           <span class="pill human">generated ${esc(bs.generated_at)}</span>
           ${bs.is_fixture ? `<span class="pill warn">⚠ fixture data</span>` : ''}
+          ${live.stale_note ? `<span class="pill warn" title="${esc(live.stale_note)}">Offline — last pull</span>` : ''}
           <button class="sync-btn" id="healthSyncBtn">↻ Sync</button>
         </div>
       </div>

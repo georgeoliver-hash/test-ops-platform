@@ -1452,6 +1452,9 @@ def check_suite_name_drift(project: str, device: str) -> dict:
     )
     if mapping is None:
         return {"available": False, "reason": "No suite mapping configured for this target."}
+    ok, why = _testrail_reachable()
+    if not ok:
+        return {"available": False, "reason": why}
     checks = []
     by_tr_project: dict[int, dict[int, str] | None] = {}
     for label, suite_id, stored_name, tr_project in (
@@ -1550,6 +1553,9 @@ def compare_suite_case_counts(project: str, device: str) -> dict:
     ids = store.get_suite_ids(project, device)
     if not ids or ids["old_suite_id"] is None or ids["new_suite_id"] is None:
         return {"available": False, "reason": "old_suite_id and/or new_suite_id not configured for this target."}
+    ok, why = _testrail_reachable()
+    if not ok:
+        return {"available": False, "reason": why}
     old_count, old_marked = _case_counts(ids["old_suite_id"])
     new_count, new_marked = _case_counts(ids["new_suite_id"])
     if old_count is None or new_count is None:
@@ -1684,6 +1690,29 @@ def _cli(args: list[str], timeout: int = 180) -> tuple[int, str]:
     return r.returncode, (r.stdout or "") + (r.stderr or "")
 
 
+def _testrail_reachable(timeout: float = 4.0) -> tuple[bool, str]:
+    """Quick TCP probe of the TestRail host so an unreachable network fails in seconds, not after the CLI's 180s timeout."""
+    import socket
+    from urllib.parse import urlparse
+    url = os.environ.get("TESTRAIL_URL", "")
+    if not url:
+        env = SYSTEM_TEST_OPS_ROOT / ".env"
+        try:
+            for line in env.read_text(encoding="utf-8", errors="replace").splitlines():
+                if line.startswith("TESTRAIL_URL="):
+                    url = line.split("=", 1)[1].strip().strip('"')
+        except OSError:
+            pass
+    u = urlparse(url if "//" in url else "//" + url)
+    if not u.hostname:
+        return True, ""  # unknown host: let the CLI report its own error
+    try:
+        with socket.create_connection((u.hostname, u.port or (443 if u.scheme == "https" else 80)), timeout=timeout):
+            return True, ""
+    except OSError:
+        return False, f"TestRail ({u.hostname}) is not reachable from this machine (VPN / network?)."
+
+
 def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool = False) -> dict:
     suite_id = store.get_new_suite_id(project, device)
     if suite_id is None:
@@ -1702,6 +1731,16 @@ def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool 
                 return cached
         except (OSError, ValueError):
             pass
+    ok, why = _testrail_reachable()
+    if not ok:
+        if cache.is_file():
+            try:
+                stale = json.loads(cache.read_text(encoding="utf-8"))
+                stale["stale_note"] = f"{why} Showing the last pull from {stale.get('generated_at', 'earlier')}."
+                return stale
+            except (OSError, ValueError):
+                pass
+        return {"available": False, "reason": why}
     common = ["--project", str(tr_pid), "--suite", str(suite_id), "--out", str(out)]
     rc, msg = _cli(["cases", *common])
     if rc != 0 or not (out / "cases.json").is_file():
