@@ -1194,12 +1194,15 @@ function renderAiUsageWidget() {
 
 async function renderHealth() {
   loading();
+  const epoch = window.__navEpoch;
+  const gone = () => epoch !== window.__navEpoch;   // the person navigated away while this was loading
   const target = window.CURRENT_TARGET || HEALTH_FIXTURE_TARGET;
   try {
     // George, 2026-10-06: "it shouldn't show old stuff" -- live numbers for THIS target's current mapped
     // suite (cached ~5 min server-side; Sync forces a fresh pull). No captured fixtures on this page.
     const live = await fetchJSON(`/api/dashboard-live?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}${window.__healthForce ? '&refresh=true' : ''}`);
     window.__healthForce = false;
+    if (gone()) return;
     if (!live.available) {
       setContent(`
         <div class="page-head"><h1>Status — ${esc(target.project)} / ${esc(target.device)}</h1><p>${esc(live.reason || 'No data for this target yet.')}</p></div>
@@ -1328,6 +1331,7 @@ async function renderHealth() {
           : `<p style="color:var(--ink-soft);font-size:13px;">Never run for ${esc(target.project)}/${esc(target.device)} yet — a real timestamp will show here once it is.</p>`}
       </div>`;
 
+    if (gone()) return;
     setContent(`
       <div class="page-head-row">
         <h1>Status — ${esc(bs.project)}</h1>
@@ -1452,7 +1456,7 @@ async function renderHealth() {
         const el = document.getElementById('suiteComparisonCard');
         if (el) el.innerHTML = `<h2>Old vs. new suite — case counts</h2><div class="errbox">Could not pull live counts.</div>`;
       });
-  } catch (e) { errbox('Could not load suite health: ' + e.message); }
+  } catch (e) { if (!gone()) errbox('Could not load suite health: ' + e.message); }
 }
 
 /* ---------------- Processes & flows (simplified, replaces the dense FigJam board) ---------------- */
@@ -3974,7 +3978,11 @@ function pipelineDisplayName(p) {
   return p.slash_command ? titleCaseWords(p.slash_command.replace('/', '').replace(/-/g, ' ')) : p.id;
 }
 
+// Bumped on every navigation. A render that awaited the network checks it before writing, so a slow page (the landing
+// Status page) cannot land on top of the view the person has since opened.
+window.__navEpoch = 0;
 function setActiveNav(btn) {
+  window.__navEpoch++;
   document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
