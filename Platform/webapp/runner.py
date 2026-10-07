@@ -1675,7 +1675,7 @@ def ask_question(project: str, device: str | None, question: str) -> dict:
 # The Status dashboard used to read August fixtures captured against one suite. This runs the same read-only,
 # deterministic CLIs (`cases`, `runs`, `export-automation`, `build-stats`) against the target's CURRENT mapped
 # suite and caches the result for a few minutes so every visit/refresh is real, never an old snapshot.
-_LIVE_DIR = Path(__file__).resolve().parent / "data" / "live"
+_LIVE_DIR = Path(os.environ.get("TESTOPS_WEBAPP_DATA_DIR") or (Path(__file__).resolve().parent / "data")) / "live"
 
 
 def _cli(args: list[str], timeout: int = 180) -> tuple[int, str]:

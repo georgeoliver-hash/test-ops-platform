@@ -8,6 +8,7 @@ files (a local run's --outputdir, or a downloaded CI artifact), `tickets_dir` = 
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -16,11 +17,15 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parent / "data"
+# Honours the same override as store.py so tests/e2e never touch the real console data.
+DATA = Path(os.environ.get("TESTOPS_WEBAPP_DATA_DIR") or (Path(__file__).resolve().parent / "data"))
 CONFIG = DATA / "live_sources.json"
 MAX_RUNS = 25
 GH_REPO = "flowbird-group/sit"
 GH_WORKFLOW = "trigger-pipeline.yml"
+PUSH_DIR = DATA / "live" / "pushed"      # events POSTed by a runner (see ingest), one folder per run id
+MAX_PUSH_BATCH_BYTES = 1_000_000
+MAX_PUSH_RUN_BYTES = 50_000_000
 GH_CACHE = DATA / "live" / "gh"          # downloaded "robot-results-*" artifacts, one folder per Actions run id
 MAX_TICKET_BYTES = 6000
 
@@ -173,7 +178,7 @@ def _robot_xmls(root: str) -> list[Path]:
 
 def _roots() -> list[str]:
     cfg = get_config()
-    return [r for r in (cfg["results_dir"], str(GH_CACHE)) if r and Path(r).is_dir()]
+    return [r for r in (cfg["results_dir"], str(GH_CACHE), str(PUSH_DIR)) if r and Path(r).is_dir()]
 
 
 def _safe_under(root: str, p: Path) -> bool:
@@ -249,6 +254,11 @@ def tickets(limit: int = 25) -> dict:
 # ---- GitHub Actions source: sit's own runs (self-hosted lab runners) upload their Robot results as an artifact ----
 def _gh_label(p: Path) -> str | None:
     try:
+        rel = p.resolve().relative_to(PUSH_DIR.resolve())
+        return f"Pushed {rel.parts[0]}"
+    except (ValueError, OSError):
+        pass
+    try:
         rel = p.resolve().relative_to(GH_CACHE.resolve())
     except (ValueError, OSError):
         return None
@@ -293,3 +303,50 @@ def gh_load(run_id: str) -> dict:
             msg = out.strip().splitlines()[-1] if out.strip() else "no output"
             raise FileNotFoundError(f"No Robot results for run {run_id}: {msg}. The run may still be going, may not have produced results, or the artifact has expired.")
     return {"run_id": run_id, "files": [str(p) for p in sorted(_robot_xmls(str(dest)))]}
+
+
+# ---- Push transport: a lab runner POSTs its listener events to the console (no shared folder needed) ----
+TOKEN_FILE = DATA / "live_token"
+
+
+def push_token() -> str:
+    """Shared secret the runner sends. TOPS_LIVE_TOKEN wins; otherwise one is generated once and kept in data/."""
+    env = os.environ.get("TOPS_LIVE_TOKEN")
+    if env:
+        return env
+    try:
+        tok = TOKEN_FILE.read_text(encoding="utf-8").strip()
+        if tok:
+            return tok
+    except OSError:
+        pass
+    import secrets
+    tok = secrets.token_urlsafe(24)
+    DATA.mkdir(parents=True, exist_ok=True)
+    TOKEN_FILE.write_text(tok, encoding="utf-8")
+    return tok
+
+
+def ingest(run_id: str, events: list[dict], token: str | None) -> dict:
+    import hmac
+    if not token or not hmac.compare_digest(token, push_token()):
+        raise PermissionError("bad or missing live token")
+    safe = re.sub(r"[^A-Za-z0-9._-]+", "-", run_id or "").strip("-.")[:80]
+    if not safe:
+        raise ValueError("run_id is required (letters, digits, . _ -).")
+    lines = []
+    for e in events:
+        if isinstance(e, dict) and isinstance(e.get("ev"), str):
+            lines.append(json.dumps(e, ensure_ascii=False))
+    body = ("\n".join(lines) + "\n").encode("utf-8") if lines else b""
+    if len(body) > MAX_PUSH_BATCH_BYTES:
+        raise ValueError("batch too large")
+    folder = PUSH_DIR / safe
+    folder.mkdir(parents=True, exist_ok=True)
+    f = folder / "live-events.jsonl"
+    if f.exists() and f.stat().st_size + len(body) > MAX_PUSH_RUN_BYTES:
+        raise ValueError("run is over its size cap")
+    if body:
+        with f.open("ab") as fh:
+            fh.write(body)
+    return {"ok": True, "accepted": len(lines)}

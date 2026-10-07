@@ -43,7 +43,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Header, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -1413,6 +1413,28 @@ def live_set_config(body: LiveConfigIn):
         return live_sit.set_config(body.results_dir, body.tickets_dir)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+class LiveIngestIn(BaseModel):
+    run_id: str
+    events: list[dict]
+
+
+@app.post("/api/live/ingest")
+def live_ingest(body: LiveIngestIn, x_live_token: str | None = Header(default=None)):
+    """A runner pushes listener events here (transport for runs the console cannot read a folder of)."""
+    try:
+        return live_sit.ingest(body.run_id, body.events, x_live_token)
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/live/push-info")
+def live_push_info(request: Request):
+    """What to set on the runner: the URL to post to and the token (local single-user console only)."""
+    return {"url": str(request.base_url).rstrip("/") + "/api/live/ingest", "token": live_sit.push_token()}
 
 
 @app.get("/api/live/runs")

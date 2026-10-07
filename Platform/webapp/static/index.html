@@ -4505,9 +4505,21 @@ async function renderLiveDashboard() {
       <label style="font-size:12.5px;font-weight:600;">Ticket print folder</label>
       <input class="input" id="lvTickets" value="${esc(cfg.tickets_dir)}" placeholder="the device's PrintJobRecordPath, copied or mounted here" style="width:100%;margin:4px 0 10px;">
       <button class="btn primary" id="lvSave">Save</button> <span id="lvCfgMsg" style="font-size:12.5px;margin-left:8px;"></span>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px;">
+        <button class="btn" id="lvPushBtn" style="font-size:12px;">Runner push settings</button>
+        <div id="lvPushInfo" style="display:none;margin-top:8px;font-size:12px;color:var(--ink-soft);"></div>
+      </div>
     </div>
     <div id="lvRoot"><div class="loading">Looking for runs…</div></div>`);
 
+  document.getElementById('lvPushBtn').addEventListener('click', async () => {
+    const box = document.getElementById('lvPushInfo');
+    try {
+      const i = await fetchJSON('/api/live/push-info');
+      box.innerHTML = `Set these on the runner so it pushes events here (the runner must be able to reach this address):<br><code>TOPS_LIVE_URL=${esc(i.url)}</code><br><code>TOPS_LIVE_TOKEN=${esc(i.token)}</code><br>Treat the token like a password.`;
+    } catch (e) { box.textContent = 'Could not load: ' + e.message; }
+    box.style.display = 'block';
+  });
   document.getElementById('lvCfgBtn').addEventListener('click', () => { const c = document.getElementById('lvCfg'); c.style.display = c.style.display === 'none' ? 'block' : 'none'; });
   document.getElementById('lvSave').addEventListener('click', async () => {
     const msg = document.getElementById('lvCfgMsg');

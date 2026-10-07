@@ -4,11 +4,18 @@ as it happens (output.xml is buffered by Robot and only complete at the end).
 Use (no change to any test):
     robot --listener tools/robot_live_listener.py:<results folder>/live-events.jsonl  Tests/POS
 or set TOPS_LIVE_EVENTS=<file> and pass --listener tools/robot_live_listener.py
+
+Push mode (runner and console share no folder): also set TOPS_LIVE_URL=<console>/api/live/ingest and TOPS_LIVE_TOKEN.
+Events are posted in small batches from a background thread, keyed by TOPS_LIVE_RUN_ID (default: GITHUB_RUN_ID, then a
+timestamp). A failed post is dropped silently: pushing can never fail or slow a test; the file stays the record.
 Point the console's Live results folder at <results folder>.
 """
 import json
 import os
+import queue
+import threading
 import time
+import urllib.request
 
 ROBOT_LISTENER_API_VERSION = 2
 
@@ -21,11 +28,47 @@ class robot_live_listener:
         os.makedirs(os.path.dirname(os.path.abspath(self.path)), exist_ok=True)
         self.f = open(self.path, "a", encoding="utf-8")
         self.suites = []
+        self._push_url = os.environ.get("TOPS_LIVE_URL")
+        if self._push_url:
+            self._run_id = (os.environ.get("TOPS_LIVE_RUN_ID") or os.environ.get("GITHUB_RUN_ID") or str(int(time.time())))
+            label = os.environ.get("JOB_LABEL")
+            if label:
+                self._run_id = f"{label}-{self._run_id}"
+            self._q = queue.Queue()
+            self._thread = threading.Thread(target=self._pusher, daemon=True)
+            self._thread.start()
         self._emit("run_start")
 
+    def _post(self, batch):
+        req = urllib.request.Request(
+            self._push_url, data=json.dumps({"run_id": self._run_id, "events": batch}).encode("utf-8"), method="POST",
+            headers={"Content-Type": "application/json", "X-Live-Token": os.environ.get("TOPS_LIVE_TOKEN", "")})
+        urllib.request.urlopen(req, timeout=5).read()
+
+    def _pusher(self):
+        batch = []
+        while True:
+            try:
+                item = self._q.get(timeout=1.0)
+            except queue.Empty:
+                item = None
+            if item is not None and item != "STOP":
+                batch.append(item)
+            if batch and (item is None or item == "STOP" or len(batch) >= 50):
+                try:
+                    self._post(batch)
+                except Exception:  # noqa: BLE001 - never let the network affect a test
+                    pass
+                batch = []
+            if item == "STOP":
+                return
+
     def _emit(self, ev, **kw):
-        self.f.write(json.dumps({"ev": ev, "t": time.time(), **kw}, ensure_ascii=False) + "\n")
+        event = {"ev": ev, "t": time.time(), **kw}
+        self.f.write(json.dumps(event, ensure_ascii=False) + "\n")
         self.f.flush()
+        if self._push_url:
+            self._q.put(event)
 
     def start_suite(self, name, attrs):
         self.suites.append(name)
@@ -51,3 +94,6 @@ class robot_live_listener:
     def close(self):
         self._emit("run_end")
         self.f.close()
+        if self._push_url:
+            self._q.put("STOP")
+            self._thread.join(timeout=8)
