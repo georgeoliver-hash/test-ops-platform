@@ -1236,7 +1236,7 @@ async function renderHealth() {
     const runHealthTable = rh ? `
       <div class="card">
         <h2>Run health — ${esc(rh.suite)}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs against the new suite (people/automation executing the actual suite), not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs of the new suite, not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
         <div class="stat-row">
           <div class="stat"><span class="n">${rh.runs_considered}</span><span class="l">runs considered</span></div>
           <div class="stat bad"><span class="n">${rh.counts.always_failing}</span><span class="l">always failing</span></div>
@@ -1294,7 +1294,7 @@ async function renderHealth() {
     const deltaCard = `
       <div class="card">
         <h2>Observed changes since last audit</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">This suite now vs the last build-stats run. A raw diff: it shows something moved, not who or why. Removed = in the last snapshot, gone now (deleted or moved by hand in TestRail).</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">This suite vs the last build-stats run. Shows what moved, not who or why.</p>
         <table>
           <tr><th>Change</th><th>Case ids (first 10)</th></tr>
           <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
@@ -1769,7 +1769,7 @@ async function renderRepoMap() {
         <h1>Repos</h1>
         <div class="page-head-pills"><button class="sync-btn" id="repoMapSyncBtn">↻ Re-sync</button></div>
       </div>
-      <p style="color:var(--ink-soft);font-size:13.5px;margin:0 0 16px;">Generated live, right now, from real docstrings/frontmatter — not a cached snapshot. Click a folder to expand it; file names link out to the real GitHub source (system-test-ops and test-ops-platform are two separate repos, not one).</p>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin:0 0 16px;">Generated live from the repos. Click a folder to expand; file names link to GitHub.</p>
       ${html}`);
     wireStageAccordions(content);
     content.querySelectorAll('.repo-tree-folder-head').forEach(head => {
@@ -1960,7 +1960,7 @@ async function renderGaps() {
       </div>
       <div class="card">
         <h2>Answer log — ${esc(target.project || 'no target')} (${latestPerGap.length} gaps)</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">A real, dated, code-only record — plain storage, never AI-written. Answering a gap here does not automatically re-audit or re-edit the suite yet (needs the same pipeline-execution-from-console wiring flagged in the carried-forward list); this is the decision trail in the meantime.</p>
+        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Dated record of gap answers. Answering does not re-edit the suite yet.</p>
         ${answerSection()}
       </div>`;
 
@@ -2114,7 +2114,7 @@ function openArchiveReview(preview, project, device) {
     </label>`;
   body.innerHTML = `
     <h2 style="margin-top:0;">Archive existing docs &amp; knowledge — ${esc(project)} / ${esc(device)}</h2>
-    <p style="color:var(--ink-soft);font-size:12.5px;">Nothing is deleted — ticked items are <b>moved</b> to a timestamped archive folder, recoverable by hand at any time. High-confidence device-specific notes are pre-ticked; medium/low (often shared cross-device mentions) are left for you to judge from the reason shown.</p>
+    <p style="color:var(--ink-soft);font-size:12.5px;">Nothing is deleted: ticked items move to a timestamped archive folder. Clear device matches are pre-ticked; judge the rest from the reason shown.</p>
     <h3 style="margin:14px 0 4px;font-size:13px;">Derived knowledge notes (${matches.length} matched, ${preview.knowledge_kept_count} not matched / left alone)</h3>
     <div style="max-height:220px;overflow:auto;margin:0 0 10px;">
       ${matches.length ? matches.map(knowledgeRow).join('') : '<p style="color:var(--ink-soft);font-size:12.5px;">No knowledge notes matched this device.</p>'}
