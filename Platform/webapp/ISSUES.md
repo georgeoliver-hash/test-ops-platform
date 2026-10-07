@@ -510,3 +510,5 @@ As i go through the process:
   - Results: Passed/Failed verdict line plus one pill per failed step (each opens its own output); raw output kept below.
   - Gaps: "Refresh against new docs" now reports gaps closed / new / unchanged since the last refresh (marker gone from the notes and cases = closed). Not an AI judgement of whether a new doc answers a question; that remains a Resolve/clarify-gaps run.
   - Still open: gap-page "select" affordance, briefer descriptive text everywhere, change-target second pop-up, collapsed-sidebar padding (unverified), live automation dashboard + reports vision (needs sit results ingestion), shared hosting (needs IT).
+
+- **Status (2026-10-07):** change-target edit/add pair is now a second pop-up offset up and right (not yet eyeballed in a browser). Gap-page Select button already existed (b022501), item was stale. Long descriptive blurbs trimmed on Reports, repo map, gap log, knowledge archive. Still open: collapsed-sidebar padding (unverified), live schedule/targeted runs, shared hosting (needs IT).
