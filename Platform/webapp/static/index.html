@@ -5091,7 +5091,6 @@ function refreshSuiteReadout() {
   approveStatus.textContent = approved
     ? `Approved by ${pair.approved_by} on ${new Date(pair.approved_at).toLocaleString()}.`
     : '';
-  document.getElementById('pairModal').classList.remove('open');
   suiteDeleteBtn.style.display = pair ? '' : 'none';
   suiteEditBtn.textContent = pair ? 'Edit this pair' : 'Add this pair';
   updateApplyEnabled();
@@ -5112,8 +5111,10 @@ function updateApplyEnabled() {
   modalApply.disabled = !(SUITE_MAPPINGS[currentPairKey()] && approveCheck.checked);
 }
 
-selProject?.addEventListener('change', () => { fillSelect(selDevice, devicesForProject(selProject.value)); refreshSuiteReadout(); });
-selDevice?.addEventListener('change', refreshSuiteReadout);
+// Only a real change of target closes the pair pop-up -- a background re-render must not wipe a form someone is typing in.
+const closePairModal = () => document.getElementById('pairModal').classList.remove('open');
+selProject?.addEventListener('change', () => { closePairModal(); fillSelect(selDevice, devicesForProject(selProject.value)); refreshSuiteReadout(); });
+selDevice?.addEventListener('change', () => { closePairModal(); refreshSuiteReadout(); });
 approveCheck.addEventListener('change', async () => {
   const pair = SUITE_MAPPINGS[currentPairKey()];
   if (!pair) { updateApplyEnabled(); return; }

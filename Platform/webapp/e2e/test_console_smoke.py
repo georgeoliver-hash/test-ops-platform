@@ -65,7 +65,7 @@ def test_every_pipeline_page_renders(page):
         page.click(f'button.navitem[data-pipeline="{pid}"]')
         _settle(page)
         _no_bad_text(page, f"pipeline {pid}")
-        assert page.is_visible("#pipelineTabDetails"), f"pipeline {pid}: no Details tab"
+        page.wait_for_selector("#pipelineTabDetails", state="visible", timeout=15000)
         page.click("#pipelineTabLog")
         page.click("#pipelineTabDetails")
 

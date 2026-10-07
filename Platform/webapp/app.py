@@ -191,6 +191,9 @@ def get_testrail_projects():
     """Real project list straight from TestRail -- for a dropdown, so a target never again
     gets pointed at the wrong project by a hand-typed id (found live, 2026-09-14: NJT's
     suites live under project 27, not the .env default 42)."""
+    ok, why = runner._testrail_reachable()
+    if not ok:
+        raise HTTPException(status_code=503, detail=why)
     parts = [str(runner._VENV_PYTHON), "-m", "system_test_ops", "list-projects"]
     try:
         result = subprocess.run(parts, cwd=str(runner.SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30)
@@ -207,6 +210,9 @@ def get_testrail_projects():
 @app.get("/api/testrail/suites")
 def get_testrail_suites(project_id: int):
     """Real suite list for one TestRail project -- same rationale as /api/testrail/projects."""
+    ok, why = runner._testrail_reachable()
+    if not ok:
+        raise HTTPException(status_code=503, detail=why)
     parts = [str(runner._VENV_PYTHON), "-m", "system_test_ops", "list-suites", "--project", str(project_id)]
     try:
         result = subprocess.run(parts, cwd=str(runner.SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=30)
