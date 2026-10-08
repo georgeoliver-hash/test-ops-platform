@@ -79,6 +79,7 @@ SIBLING_ENV_PATH = _PLATFORM_ROOT.parent.parent / "system-test-ops" / ".env"
 SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "knowledge"
 
 from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
+from Platform.webapp import coverage_view
 from Platform.webapp import case_review, gap_exchange, live_sit, reports_insights, reviews, runner, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
@@ -1978,6 +1979,13 @@ def get_sit_mirror_status():
     mtime = datetime.fromtimestamp(root.stat().st_mtime, tz=timezone.utc)
     days_stale = (datetime.now(timezone.utc) - mtime).days
     return {"available": True, "last_synced": mtime.isoformat(), "days_stale": days_stale}
+
+
+@app.get("/api/automation/coverage")
+def automation_coverage(project: str, device: str):
+    """Robot-test -> TestRail-case links and per-section coverage for one target, counted from the two draft files
+    system-test-ops writes. Read-only; absent files give a plain 'not generated yet', never a guessed number."""
+    return coverage_view.coverage(runner.SYSTEM_TEST_OPS_ROOT / "proposals", project, device)
 
 
 @app.get("/api/automation/tests")

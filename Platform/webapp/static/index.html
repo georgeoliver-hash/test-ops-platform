@@ -448,6 +448,7 @@
         <div class="label">SIT</div>
         <button class="navitem" data-aview="dashboard"><span class="dot"></span>Live runs</button>
         <button class="navitem" data-aview="overview"><span class="dot"></span>Overview</button>
+        <button class="navitem" data-aview="coverage"><span class="dot"></span>Coverage</button>
         <button class="navitem" data-aview="tests"><span class="dot"></span>Tests written</button>
         <button class="navitem" data-aview="keywords"><span class="dot"></span>Keywords</button>
         <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
@@ -4156,6 +4157,49 @@ function renderAutomationSuiteTree(suites) {
     </div>`).join('') + `</div>`;
 }
 
+// Automation coverage: how the Robot tests tie to TestRail cases, and which TestRail sections have a linked functional
+// test. Counted from the draft files system-test-ops writes (mapping + coverage audit); a suggested link is not coverage.
+async function renderAutomationCoverage() {
+  loading();
+  const target = window.CURRENT_TARGET || {};
+  if (!target.project || !target.device) { errbox('No target selected — use "Change target" first.'); return; }
+  const epoch = window.__navEpoch;
+  let d;
+  try { d = await fetchJSON(`/api/automation/coverage?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
+  catch (e) { if (epoch === window.__navEpoch) errbox('Could not load coverage: ' + e.message); return; }
+  if (epoch !== window.__navEpoch) return;
+  const head = `<div class="page-head-row"><h1>Automation coverage</h1><div class="page-head-pills">${d.available ? `<span class="pill warn">draft</span><span class="pill code">generated ${esc(d.generated)}</span>` : ''}</div></div>`;
+  if (!d.available) { setContent(head + `<div class="card"><p style="margin:0;color:var(--ink-soft);">${esc(d.reason)}</p></div>`); return; }
+  const t = d.tests, s = d.sections;
+  const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+  const tile = (n, label, sub) => `<div class="card" style="flex:1;min-width:150px;margin:0;"><div style="font-size:26px;font-weight:600;">${n}</div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">${esc(label)}</div>${sub ? `<div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">${sub}</div>` : ''}</div>`;
+  const seg = [['ZERO', 'bad', s.ZERO], ['PROVISIONAL', 'warn', s.PROVISIONAL], ['REACH-ONLY', 'warn', s.REACH_ONLY], ['OK', 'ok', s.OK]];
+  const bar = seg.map(([k, cls, n]) => n ? `<i title="${k}: ${n}" style="display:block;height:100%;width:${n / s.total * 100}%;background:var(--${cls === 'bad' ? 'bad' : cls === 'ok' ? 'ok' : 'warn'});${k === 'PROVISIONAL' ? 'opacity:.55;' : ''}"></i>` : '').join('');
+  const legend = seg.map(([k, cls, n]) => `<span class="pill ${cls}" style="margin-right:6px;">${esc(k)} ${n}</span>`).join('');
+  const rows = d.gaps;
+  const shown = window.__covShowAll ? rows : rows.slice(0, 12);
+  const row = (g) => `<tr><td style="font-size:12.5px;">${esc(g.section)}</td><td>${g.cases}</td><td>${g.ready}</td>
+      <td><span class="pill ${g.flag === 'OK' ? 'ok' : g.flag === 'ZERO' ? 'bad' : 'warn'}">${esc(g.flag)}</span></td>
+      <td style="font-size:12.5px;">${esc(g.proposal || '')}</td></tr>`;
+  setContent(head + `
+    <p style="color:var(--ink-soft);margin:4px 0 14px;font-size:13.5px;">${esc(d.note)}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      ${tile(t.total, 'Robot tests', `${t.map_edge} are map-edge checks (no case expected)`)}
+      ${tile(`${t.linked}/${t.should_have_a_case}`, 'Linked to a case', `${pct(t.linked, t.should_have_a_case)}% of the tests that should have one`)}
+      ${tile(t.title + t.similar, 'Suggested only', 'a person approves, then it counts')}
+      ${tile(t.none, 'No case found', 'a person decides')}
+    </div>
+    <div class="card"><h2>TestRail sections with a linked functional test</h2>
+      <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 8px;">${s.total} sections hold cases. Only a test linked to one of a section's cases counts as coverage.</p>
+      <div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);margin:6px 0 10px;">${bar}</div>
+      <div>${legend}</div></div>
+    <div class="card"><h2>Biggest gaps &mdash; one functional smoke proposed per section</h2>
+      <table id="covGaps"><tr><th>Section</th><th>Cases</th><th>READY</th><th>Flag</th><th>Proposed first functional smoke</th></tr>${shown.map(row).join('')}</table>
+      ${rows.length > 12 ? `<button class="btn" id="covToggle" style="margin-top:8px;font-size:12px;">${window.__covShowAll ? 'Show fewer' : `Show all ${rows.length}`}</button>` : ''}</div>`);
+  document.getElementById('covToggle')?.addEventListener('click', () => { window.__covShowAll = !window.__covShowAll; renderAutomationCoverage(); });
+}
+
 async function renderAutomationTestsWritten() {
   loading();
   try {
@@ -4700,7 +4744,7 @@ async function renderLiveDashboard() {
 }
 
 const VIEWS = {handoff: renderHandoff, caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
-const AUTOMATION_VIEWS = {dashboard: renderLiveDashboard, overview: renderAutomationDashboard, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
+const AUTOMATION_VIEWS = {dashboard: renderLiveDashboard, overview: renderAutomationDashboard, coverage: renderAutomationCoverage, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
 // page THIS tracks -- but renderPipelineDetail (any Build/Audit/Maintain pipeline page) is
