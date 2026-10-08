@@ -218,6 +218,31 @@ def list_runs() -> dict:
     return {"configured": bool(root) or bool(runs), "results_dir": root, "runs": runs}
 
 
+def test_detail(path: str, test_id: str | None = None, name: str | None = None) -> dict:
+    """Everything about one test of a run (scenario, tags, steps, card XML, log, printed files, evidence)."""
+    from Platform.webapp import live_detail
+    p = Path(path)
+    if not any(_safe_under(r, p) for r in _roots()) or not p.is_file():
+        raise FileNotFoundError("That run is not inside the configured results folder.")
+    cfg = get_config()
+    tickets = Path(cfg["tickets_dir"]) if cfg.get("tickets_dir") else None
+    d = (live_detail.from_events(p, name=name or "", tickets_dir=tickets) if p.suffix == ".jsonl"
+         else live_detail.from_output_xml(p, test_id=test_id, name=name, tickets_dir=tickets))
+    if d is None:
+        raise FileNotFoundError("That test is not in this run (yet).")
+    return d
+
+
+def evidence_file(path: str) -> Path:
+    """An evidence capture (screenshot/layout) from inside a results folder; nothing else is ever served."""
+    p = Path(path)
+    if p.suffix.lower() not in (".png", ".jpg", ".json") or not p.name.startswith("state_") or not p.is_file():
+        raise FileNotFoundError("Not an evidence file.")
+    if not any(_safe_under(r, p) for r in _roots()):
+        raise FileNotFoundError("That file is not inside the configured results folder.")
+    return p
+
+
 def run_detail(path: str) -> dict:
     p = Path(path)
     if not any(_safe_under(r, p) for r in _roots()) or not p.is_file():

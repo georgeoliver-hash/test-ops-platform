@@ -28,6 +28,7 @@ class robot_live_listener:
         os.makedirs(os.path.dirname(os.path.abspath(self.path)), exist_ok=True)
         self.f = open(self.path, "a", encoding="utf-8")
         self.suites = []
+        self._in_test, self._depth, self._recent, self._seq, self._open = False, 0, [], 0, []
         self._push_url = os.environ.get("TOPS_LIVE_URL")
         if self._push_url:
             self._run_id = (os.environ.get("TOPS_LIVE_RUN_ID") or os.environ.get("GITHUB_RUN_ID") or str(int(time.time())))
@@ -80,14 +81,44 @@ class robot_live_listener:
             self.suites.pop()
 
     def start_test(self, name, attrs):
-        self._emit("test_start", name=name, suite=".".join(self.suites), tags=attrs.get("tags", []))
+        self._in_test, self._depth, self._recent = True, 0, []
+        self._emit("test_start", name=name, suite=".".join(self.suites), tags=attrs.get("tags", []), doc=(attrs.get("doc") or "")[:1500])
+
+    # Steps: the keyword calls a test makes (to depth 3), with their arguments, so the console can show what it is doing as it does
+    # it. A smartcard XML passed to a "present" keyword is sent whole (capped) so the card that was presented can be inspected.
+    def start_keyword(self, name, attrs):
+        if not self._in_test:
+            return
+        self._depth += 1
+        if self._depth > 3:
+            return
+        self._seq += 1
+        self._open.append(self._seq)
+        args = [str(a) for a in (attrs.get("args") or [])]
+        xml = next((a for a in args if a.lstrip().startswith("<") and ">" in a and len(a) > 20), None)
+        card = next((m for m in reversed(self._recent) if "resent" in m), None) if xml else None
+        shown = ["<xml, %d chars>" % len(a) if a is xml else (a[:300] + ("…" if len(a) > 300 else "")) for a in args]
+        self._emit("step_start", seq=self._seq, name=attrs.get("kwname") or name, owner=attrs.get("libname"), kind=(attrs.get("type") or "Keyword").upper(),
+                   depth=self._depth, args=shown, **({"card_xml": xml[:40000], "card": card} if xml else {}))
+
+    def end_keyword(self, name, attrs):
+        if not self._in_test:
+            return
+        if self._depth <= 3 and self._open:
+            self._emit("step_end", seq=self._open.pop(), status=attrs.get("status"), elapsed=(attrs.get("elapsedtime") or 0) / 1000.0)
+        self._depth = max(0, self._depth - 1)
 
     def end_test(self, name, attrs):
+        self._in_test = False
         self._emit("test_end", name=name, suite=".".join(self.suites), status=attrs.get("status"),
                    message=(attrs.get("message") or "")[:400], seconds=(attrs.get("elapsedtime") or 0) / 1000.0,
                    tags=attrs.get("tags", []))
 
     def log_message(self, message):
+        text = (message.get("message") or "")
+        if self._in_test and message.get("level") == "INFO":
+            self._recent.append(text[:200])
+            del self._recent[:-12]
         if message.get("level") in ("INFO", "WARN", "ERROR", "FAIL"):
             self._emit("log", level=message.get("level"), text=(message.get("message") or "")[:400])
 

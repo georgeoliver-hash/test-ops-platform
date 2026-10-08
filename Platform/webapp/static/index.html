@@ -471,6 +471,7 @@
         <div class="label">Runs</div>
         <!-- George, 2026-10-08: after a sit pipeline run finishes, judge each failure P1-P5 and hand severity=P<n> tags back to sit. -->
         <button class="navitem" data-aview-pipeline="judge-failures"><span class="dot"></span>Judge failures</button>
+        <button class="navitem" data-aview="sam"><span class="dot"></span>SAM jobs</button>
       </div>
       <!-- Real Projects accordion (ISSUES.md round 2), sub-options = real projects that
            have automation tests today, pulled live from /api/automation/tests -- not a
@@ -663,7 +664,7 @@ const NAV_ICONS = {
   'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡', 'group-gaps': '🗂️', 'link-defects': '🐞',
   // Automation tab
   dashboard: '📊', overview: '🧮', coverage: '📐', tests: '🧪', keywords: '🔑', flows: '🔀',
-  handoff: '🤝',
+  handoff: '🤝', sam: '🛰️',
   'export-automation': '⬇️', 'write-automation': '✍️', 'draft-automation': '📝',
   'refresh-automation-tier': '♻️', 'judge-failures': '⚖️',
 };
@@ -4235,6 +4236,67 @@ async function renderAutomationCoverage() {
   document.getElementById('covToggle')?.addEventListener('click', () => { window.__covShowAll = !window.__covShowAll; renderAutomationCoverage(); });
 }
 
+// SAM (the lab job manager): which jobs ran, how healthy each job's lab is, and what it is configured to report into. Read-only.
+async function renderSam() {
+  loading();
+  const epoch = window.__navEpoch;
+  let d;
+  try { d = await fetchJSON('/api/sam/jobs'); } catch (e) { if (epoch === window.__navEpoch) errbox('Could not load SAM: ' + e.message); return; }
+  if (epoch !== window.__navEpoch) return;
+  const head = `<div class="page-head-row"><h1>SAM jobs</h1><div class="page-head-pills"><span class="pill code">read-only</span></div></div>`;
+  if (!d.available) { setContent(head + `<div class="card"><p style="margin:0;color:var(--ink-soft);">${esc(d.reason)}</p></div>`); return; }
+  const ago = (iso) => { const s = Math.max(0, (Date.now() - Date.parse(iso)) / 1000); return s < 3600 ? `${Math.round(s / 60)}m ago` : s < 86400 ? `${Math.round(s / 3600)}h ago` : `${Math.round(s / 86400)}d ago`; };
+  const rows = d.jobs.map(j => `<tr data-sam-job="${j.job_id}" style="cursor:pointer;">
+      <td>${j.job_id}</td><td><b>${esc(j.name || '')}</b>${j.registered_as ? ` <span class="pill ok" style="font-size:10.5px;">${esc(j.registered_as)}</span>` : ''}</td><td>${esc(j.version || '')}</td>
+      <td>${j.runs}</td><td>${j.deployment_failures} / ${j.test_exec_failures}</td><td>${j.failures_per_run == null ? '' : j.failures_per_run}</td>
+      <td>${esc(j.last_status || '')}</td><td title="${esc(j.last_event)}">${esc(ago(j.last_event))}</td></tr>`).join('');
+  setContent(head + `
+    <p style="color:var(--ink-soft);margin:4px 0 14px;font-size:13.5px;">${d.jobs.length} jobs. Click one for its lab health, configuration and what it reports into. Failures are lab-level (deployment, test execution), not product defects.</p>
+    <div class="card"><table id="samJobs"><tr><th>Job</th><th>Name</th><th>Version</th><th>Runs</th><th>Deploy / exec failures</th><th>Failures per run</th><th>Last status</th><th>Last event</th></tr>${rows}</table></div>
+    <div id="samDetail"></div>`);
+  content.querySelectorAll('[data-sam-job]').forEach(tr => tr.addEventListener('click', () => samDetail(tr.dataset.samJob, epoch)));
+}
+
+async function samDetail(jobId, epoch) {
+  const box = document.getElementById('samDetail');
+  if (!box) return;
+  box.innerHTML = '<div class="card"><div class="loading">Reading job ' + esc(jobId) + '…</div></div>';
+  let d;
+  try { d = await fetchJSON(`/api/sam/job/${encodeURIComponent(jobId)}`); } catch (e) { d = {available: false, reason: e.message}; }
+  if (epoch !== window.__navEpoch || !document.getElementById('samDetail')) return;
+  if (!d.available) { box.innerHTML = `<div class="card"><p style="margin:0;color:var(--ink-soft);">${esc(d.reason)}</p></div>`; return; }
+  const h = d.health, cfg = d.config || {}, tr = cfg.testrail || {};
+  const tile = (n, label) => `<div class="card" style="flex:1;min-width:120px;margin:0;"><div style="font-size:24px;font-weight:600;">${n}</div><div style="font-size:11.5px;text-transform:uppercase;color:var(--ink-soft);">${esc(label)}</div></div>`;
+  const maxDay = Math.max(1, ...h.days.map(x => x.complete + x.failures));
+  const bars = h.days.map(x => `<div title="${esc(x.date)}: ${x.complete} complete, ${x.failures} failure(s)" style="flex:1;min-width:6px;display:flex;flex-direction:column;justify-content:flex-end;height:60px;">
+      <div style="height:${x.failures / maxDay * 60}px;background:var(--bad);"></div><div style="height:${x.complete / maxDay * 60}px;background:var(--ok);"></div></div>`).join('');
+  let trBox = '';
+  if (tr.project_id || tr.suite_id) {
+    const reg = d.registered_target;
+    const mine = reg && SUITE_MAPPINGS[`${reg.project}|${reg.device}`];
+    const differs = mine && (String(mine.new_suite_id) !== String(tr.suite_id) || (mine.testrail_project_id != null && String(mine.testrail_project_id) !== String(tr.project_id)));
+    trBox = `<div class="card"><h2>Reports into TestRail</h2>
+      <p style="font-size:13px;margin:0 0 6px;">SAM job ${esc(jobId)} is configured with project <b>${esc(tr.project_id || '?')}</b>, suite <b>${esc(tr.suite_id || '?')}</b>.</p>
+      ${mine ? `<p style="font-size:13px;margin:0;">This console's target ${esc(d.registered_target.project)} / ${esc(d.registered_target.device)} uses project <b>${esc(mine.testrail_project_id)}</b>, suite <b>${esc(mine.new_suite_id)}</b>.
+        ${differs ? '<span class="pill bad">different suite</span> SAM would need updating before it reports into the suite this tool works on.' : '<span class="pill ok">same</span>'}</p>`
+        : '<p style="font-size:12.5px;color:var(--ink-soft);margin:0;">This job is not registered to a console target, so there is nothing to compare it with.</p>'}</div>`;
+  }
+  const dev = cfg.device || {}, env = cfg.environment || {};
+  box.innerHTML = `<div class="card"><h2>${esc(h.name)} <span class="pill code" style="font-size:11px;">job ${esc(jobId)}</span></h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 12px;">${tile(h.runs_completed, 'Runs completed')}${tile(h.deployment_failures, 'Deployment failures')}${tile(h.test_exec_failures, 'Test exec failures')}${tile(`${h.recent_failure_count}`, `Failures, last ${h.recent_days} days`)}${tile(esc(h.last_status), 'Last status')}</div>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;">Last 30 days: green = completed runs, red = failures (one bar per day with activity)</div>
+      <div style="display:flex;gap:2px;align-items:flex-end;border-bottom:1px solid var(--line);margin-bottom:12px;">${bars || '<span style="font-size:12.5px;color:var(--ink-soft);">No activity in the last 30 days.</span>'}</div>
+      <h3 style="font-size:14px;margin:0 0 6px;">Recent failures</h3>
+      ${h.recent_failures.length ? `<table><tr><th>When</th><th>Kind</th><th>Node</th><th>Message</th></tr>${h.recent_failures.map(f => `<tr><td style="white-space:nowrap;">${esc((f.when || '').replace('T', ' ').slice(0, 16))}</td><td>${esc(f.kind)}</td><td>${esc(f.node || '')}</td><td style="font-size:12px;">${esc(f.message || '')}</td></tr>`).join('')}</table>`
+        : '<p style="font-size:12.5px;color:var(--ink-soft);">None in this window.</p>'}</div>
+    ${trBox}
+    <div class="card"><h2>Lab configuration</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+      <div><h3 style="font-size:13px;margin:0 0 4px;">Device</h3>${Object.entries(dev).map(([k, v]) => `<div style="font-size:12.5px;"><span style="color:var(--ink-soft);">${esc(k)}</span> ${esc(v)}</div>`).join('') || '<span style="font-size:12.5px;color:var(--ink-soft);">not available</span>'}</div>
+      <div><h3 style="font-size:13px;margin:0 0 4px;">Environment</h3>${Object.entries(env).map(([k, v]) => `<div style="font-size:12.5px;"><span style="color:var(--ink-soft);">${esc(k)}</span> ${esc(v)}</div>`).join('') || '<span style="font-size:12.5px;color:var(--ink-soft);">not available</span>'}</div>
+    </div></div>`;
+  box.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
 async function renderAutomationTestsWritten() {
   loading();
   try {
@@ -4607,6 +4669,16 @@ async function renderLiveDashboard() {
       .lv-row:last-child{border-bottom:0;}
       .lv-row .nm{font-weight:500;word-break:break-word;}
       .lv-row .sub{color:var(--ink-soft);font-size:11.5px;}
+      .lv-row[data-lv-test]{cursor:pointer;} .lv-row[data-lv-test]:hover{background:var(--bg);}
+      .lvm-over{position:fixed;inset:0;background:rgba(32,30,29,.45);z-index:60;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto;}
+      .lvm-over.open{display:flex;}
+      .lvm{background:var(--surface);border-radius:14px;max-width:920px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+      .lvm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);}
+      .lvm-body{padding:14px 20px 20px;} .lvm h3{font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:16px 0 6px;}
+      .lvm-step{display:flex;gap:8px;align-items:baseline;font-size:12.5px;padding:2px 0;} .lvm-step .a{color:var(--ink-soft);word-break:break-word;}
+      .lvm pre{margin:4px 0 0;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font:12px/1.45 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow:auto;}
+      .lvm-log div{font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-word;} .lvm-log .w{color:var(--warn);} .lvm-log .e{color:var(--bad);}
+      .lvm img{max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:4px;}
       .lv-row .msg{grid-column:2 / 4;font-size:12px;color:var(--bad);background:var(--bad-bg);padding:6px 8px;border-radius:6px;white-space:pre-wrap;}
       .lv-ico{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
       .lv-ico.pass{background:var(--ok);} .lv-ico.fail{background:var(--bad);} .lv-ico.skip{background:var(--ink-soft);}
@@ -4640,6 +4712,7 @@ async function renderLiveDashboard() {
         <div id="lvPushInfo" style="display:none;margin-top:8px;font-size:12px;color:var(--ink-soft);"></div>
       </div>
     </div>
+    <div class="lvm-over" id="lvTestOver"><div class="lvm" id="lvTestBox"></div></div>
     <div class="card" id="lvSched"><h2>Schedule &amp; manual run</h2><div class="loading">Reading this target's pipeline schedule…</div></div>
     <div id="lvRoot"><div class="loading">Looking for runs…</div></div>`);
 
@@ -4713,6 +4786,71 @@ async function renderLiveDashboard() {
   }
   loadSched();
 
+  // One test in full: scenario, tags, steps, the smartcard XML presented, the log, files printed while it ran, and evidence.
+  // A modal outside the polled area, so the 2-second refresh never wipes it; it refreshes itself while the test is still running.
+  const prettyXml = (x) => {
+    try {
+      const doc = new DOMParser().parseFromString(x, 'application/xml');
+      if (doc.querySelector('parsererror')) return x;
+      const ser = (n, d) => {
+        const pad = '  '.repeat(d);
+        if (n.nodeType === 3) return n.textContent.trim() ? pad + n.textContent.trim() + '\n' : '';
+        const attrs = [...(n.attributes || [])].map(a => ` ${a.name}="${a.value}"`).join('');
+        const kids = [...n.childNodes].filter(c => c.nodeType === 1 || (c.nodeType === 3 && c.textContent.trim()));
+        if (!kids.length) return `${pad}<${n.nodeName}${attrs}/>\n`;
+        if (kids.length === 1 && kids[0].nodeType === 3) return `${pad}<${n.nodeName}${attrs}>${kids[0].textContent.trim()}</${n.nodeName}>\n`;
+        return `${pad}<${n.nodeName}${attrs}>\n${kids.map(k => ser(k, d + 1)).join('')}${pad}</${n.nodeName}>\n`;
+      };
+      return ser(doc.documentElement, 0).trim();
+    } catch (e) { return x; }
+  };
+  async function openTest(runPath, name, id) {
+    const over = document.getElementById('lvTestOver'), box = document.getElementById('lvTestBox');
+    if (!over || !box) return;
+    window.__lvOpen = {runPath, name, id};
+    over.classList.add('open');
+    const load = async () => {
+      if (!window.__lvOpen || window.__lvOpen.name !== name) return;
+      let d, err = '';
+      try { d = await fetchJSON(`/api/live/test?path=${encodeURIComponent(runPath)}&name=${encodeURIComponent(name)}${id ? '&id=' + encodeURIComponent(id) : ''}`); }
+      catch (e) { err = e.message; }
+      if (!window.__lvOpen || window.__lvOpen.name !== name) return;
+      const stIcon = (s) => s === 'PASS' ? '<span class="lv-ico pass">✓</span>' : s === 'FAIL' ? '<span class="lv-ico fail">✕</span>' : s === 'RUNNING' ? '<span class="spin"></span>' : '<span class="lv-ico skip">–</span>';
+      const close = '<button class="btn" id="lvmClose" style="font-size:12px;">Close</button>';
+      if (err) { box.innerHTML = `<div class="lvm-head"><b>${esc(name)}</b>${close}</div><div class="lvm-body"><p style="color:var(--ink-soft);margin:0;">${esc(err)}</p></div>`; document.getElementById('lvmClose').onclick = closeTest; return; }
+      const nt = d.tags.named, pl = d.tags.plain;
+      const pills = Object.entries(nt).map(([k, v]) => `<span class="pill code">${esc(k)}: ${esc(v)}</span>`).join(' ') + ' ' + pl.map(x => `<span class="pill">${esc(x)}</span>`).join(' ');
+      const steps = d.steps.length ? d.steps.map(s => `<div class="lvm-step" style="padding-left:${(s.depth - 1) * 18}px;">${stIcon(s.status)}<span><b>${esc(s.name)}</b> <span class="a">${esc((s.args || []).join('   '))}</span></span>${s.elapsed != null ? `<span class="a" style="margin-left:auto;">${s.elapsed < 1 ? Math.round(s.elapsed * 1000) + ' ms' : s.elapsed.toFixed(1) + ' s'}</span>` : ''}</div>`).join('')
+        : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No steps recorded for this source (the live listener may not report them yet; the finished run\'s output.xml does).</p>';
+      const cards = d.cards.length ? d.cards.map(c => `<details style="margin-bottom:6px;"><summary style="cursor:pointer;font-size:13px;">${stIcon(c.status)} <b>${esc(c.step)}</b> ${c.card ? `<span class="a">· ${esc(c.card)}</span>` : ''}</summary><pre>${esc(prettyXml(c.xml))}${c.truncated ? '\n… (cut)' : ''}</pre></details>`).join('')
+        : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No smartcard XML was presented in this test.</p>';
+      const printed = d.printed.length ? d.printed.map(p => `<div style="margin-bottom:6px;"><b style="font-size:12.5px;">${esc(p.name)}</b> <span class="a" style="font-size:11.5px;">${esc(new Date(p.modified * 1000).toLocaleTimeString())}</span><pre>${esc(p.text || '(empty file)')}</pre></div>`).join('')
+        : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Nothing was printed while this test ran (or no ticket folder is set under ⚙ Sources).</p>';
+      const evid = d.evidence.length ? d.evidence.map(e => e.kind === 'image' ? `<div><img src="/api/live/evidence?path=${encodeURIComponent(e.path)}" alt="${esc(e.name)}"><div class="a" style="font-size:11.5px;">${esc(e.name)}</div></div>` : `<div style="font-size:12.5px;"><a href="/api/live/evidence?path=${encodeURIComponent(e.path)}" target="_blank">${esc(e.name)}</a></div>`).join('') : '';
+      const logHtml = d.log.length ? d.log.map(m => `<div class="${m.level === 'WARN' ? 'w' : (m.level === 'ERROR' || m.level === 'FAIL') ? 'e' : ''}">[${esc(m.level)}] ${esc(m.text)}</div>`).join('') : '<div style="color:var(--ink-soft);">No log lines.</div>';
+      box.innerHTML = `<div class="lvm-head"><div><div style="font-size:16px;font-weight:600;">${stIcon(d.status)} ${esc(d.name)}</div>
+          <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">${esc(d.suite || '')} · ${esc(d.status)}${d.seconds != null ? ' · ' + d.seconds.toFixed(1) + ' s' : ''} · from ${esc(d.source)}</div></div>${close}</div>
+        <div class="lvm-body">
+          ${d.status === 'FAIL' && d.message ? `<div class="msg" style="font-size:12.5px;color:var(--bad);background:var(--bad-bg);padding:8px 10px;border-radius:8px;white-space:pre-wrap;margin-bottom:8px;">${esc(d.message)}</div>` : ''}
+          <div>${pills}</div>
+          <h3>Scenario</h3>${d.scenario ? `<p style="font-size:13px;margin:0;white-space:pre-wrap;">${esc(d.scenario)}</p>` : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">This test has no documentation.</p>'}
+          <h3>Steps</h3>${steps}
+          <h3>Smartcard XML presented</h3>${cards}
+          <h3>Printed while it ran</h3>${printed}
+          ${evid ? `<h3>Evidence</h3>${evid}` : ''}
+          <h3>Log</h3><div class="lvm-log">${logHtml}</div>
+        </div>`;
+      document.getElementById('lvmClose').onclick = closeTest;
+      if (d.status === 'RUNNING') window.__lvmTimer = setTimeout(load, 3000);
+    };
+    clearTimeout(window.__lvmTimer);
+    box.innerHTML = '<div class="lvm-body"><div class="loading">Loading ' + esc(name) + '…</div></div>';
+    load();
+  }
+  function closeTest() { window.__lvOpen = null; clearTimeout(window.__lvmTimer); document.getElementById('lvTestOver')?.classList.remove('open'); }
+  document.getElementById('lvTestOver')?.addEventListener('click', (e) => { if (e.target.id === 'lvTestOver') closeTest(); });
+  window.__lvOpenTest = openTest;
+
   // sit's own runs (self-hosted lab runners) upload their Robot results to GitHub Actions; this lists them and pulls one in.
   function ghCard() {
     const g = window.__ghRuns, msg = window.__ghMsg || '';
@@ -4773,8 +4911,8 @@ async function renderLiveDashboard() {
       const f = window.__liveFilter;
       const shown = [...d.tests].reverse().filter(t => f === 'all' || (f === 'failed' && t.status === 'FAIL') || (f === 'skipped' && t.status === 'SKIP') || (f === 'passed' && t.status === 'PASS'));
       const icon = (s) => s === 'PASS' ? '<span class="lv-ico pass">✓</span>' : s === 'FAIL' ? '<span class="lv-ico fail">✕</span>' : '<span class="lv-ico skip">–</span>';
-      const feed = (d.running && (f === 'all') ? `<div class="lv-row lv-running"><span class="spin"></span><div><div class="nm">${esc(d.running.name)}</div><div class="sub">running now · ${esc(d.running.suite || '')}</div></div><span class="pill warn">running</span></div>` : '')
-        + shown.map(t => `<div class="lv-row">${icon(t.status)}<div><div class="nm">${esc(t.name)}</div><div class="sub">${esc(t.suite || '')}</div></div><span class="sub">${esc(dur(t.seconds))}</span>${t.status === 'FAIL' && t.message ? `<div class="msg">${esc(t.message)}</div>` : ''}</div>`).join('')
+      const feed = (d.running && (f === 'all') ? `<div class="lv-row lv-running" data-lv-test="${esc(d.running.name)}" data-lv-id="${esc(d.running.id || '')}" title="Click for this test in full"><span class="spin"></span><div><div class="nm">${esc(d.running.name)}</div><div class="sub">running now · ${esc(d.running.suite || '')}</div></div><span class="pill warn">running</span></div>` : '')
+        + shown.map(t => `<div class="lv-row" data-lv-test="${esc(t.name)}" data-lv-id="${esc(t.id || '')}" title="Click for this test in full">${icon(t.status)}<div><div class="nm">${esc(t.name)}</div><div class="sub">${esc(t.suite || '')}</div></div><span class="sub">${esc(dur(t.seconds))}</span>${t.status === 'FAIL' && t.message ? `<div class="msg">${esc(t.message)}</div>` : ''}</div>`).join('')
         || `<div class="lv-row"><span></span><span class="sub">Nothing here yet.</span></div>`;
       const chip = (k, label, n) => `<button class="btn lv-chip ${f === k ? 'primary' : ''}" data-f="${k}" style="font-size:12px;padding:3px 10px;">${label} (${n})</button>`;
       const logHtml = d.log.length ? d.log.map(m => `<div class="${m.level === 'WARN' ? 'w' : (m.level === 'ERROR' || m.level === 'FAIL') ? 'e' : 'i'}">[${esc(m.level)}] ${esc(m.text)}</div>`).join('') : '<div class="i">No log lines yet.</div>';
@@ -4821,6 +4959,7 @@ async function renderLiveDashboard() {
         </div>`;
       const lg = document.getElementById('lvLog'); if (lg) lg.scrollTop = lg.scrollHeight;
       wireGh(root);
+      root.querySelectorAll('[data-lv-test]').forEach(r => r.addEventListener('click', () => window.__lvOpenTest(window.__liveSel, r.dataset.lvTest, r.dataset.lvId)));
       root.querySelectorAll('.lv-chip').forEach(b => b.addEventListener('click', () => { window.__liveFilter = b.dataset.f; tick(); }));
       root.querySelectorAll('.lv-runs tr[data-path]').forEach(tr => tr.addEventListener('click', () => { window.__liveSel = tr.dataset.path; tick(); }));
     } catch (e) {
@@ -4832,7 +4971,7 @@ async function renderLiveDashboard() {
 }
 
 const VIEWS = {handoff: renderHandoff, caseReview: renderCaseReview, health: renderHealth, pipelines: renderPipelines, repomap: renderRepoMap, gaps: renderGaps, docs: renderDocs, settings: renderSettings, scheduled: renderScheduledPage};
-const AUTOMATION_VIEWS = {dashboard: renderLiveDashboard, overview: renderAutomationDashboard, coverage: renderAutomationCoverage, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
+const AUTOMATION_VIEWS = {sam: renderSam, dashboard: renderLiveDashboard, overview: renderAutomationDashboard, coverage: renderAutomationCoverage, tests: renderAutomationTestsWritten, keywords: renderKeywords, flows: renderFlows};
 let ACTIVE_VIEW = 'health';
 // Real bug fix (George, live testing): changing target only ever re-rendered whichever
 // page THIS tracks -- but renderPipelineDetail (any Build/Audit/Maintain pipeline page) is

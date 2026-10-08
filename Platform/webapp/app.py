@@ -1537,6 +1537,25 @@ def live_run(path: str):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.get("/api/live/test")
+def live_test(path: str, id: str | None = None, name: str | None = None):
+    """One test of a run in full: scenario, tags, steps, smartcard XML presented, log, files printed while it ran, evidence."""
+    try:
+        return live_sit.test_detail(path, id, name)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/api/live/evidence")
+def live_evidence(path: str):
+    """A screenshot or layout capture the failure teardown wrote, from inside the results folder only."""
+    from fastapi.responses import FileResponse
+    try:
+        return FileResponse(live_sit.evidence_file(path))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/api/live/gh/runs")
 def live_gh_runs(limit: int = 20):
     """Recent runs of sit's trigger-pipeline workflow (read-only, via the gh CLI)."""
@@ -2033,6 +2052,34 @@ def sit_runs_list(project: str, device: str, limit: int = 20):
         return {"available": True, **json.loads(msg.strip().splitlines()[-1])}
     except (ValueError, IndexError):
         return {"available": False, "reason": "unexpected output from list-sit-runs"}
+
+
+def _sam_call(args: list[str], timeout: int = 150) -> dict:
+    rc, msg = runner._cli(args, timeout=timeout)
+    if rc != 0:
+        return {"available": False, "reason": (msg.strip().splitlines() or ["SAM call failed"])[-1].removeprefix("error: ")}
+    try:
+        return {"available": True, **json.loads(msg.strip().splitlines()[-1])}
+    except (ValueError, IndexError):
+        return {"available": False, "reason": "unexpected output from SAM client"}
+
+
+@app.get("/api/sam/jobs")
+def sam_jobs():
+    """Every job SAM has run (read-only, via system-test-ops' SAM client)."""
+    return _sam_call(["sam-jobs"])
+
+
+@app.get("/api/sam/job/{job_id}")
+def sam_job(job_id: int, outcomes: bool = False):
+    """One SAM job's health, config and (optionally) per-case results."""
+    return _sam_call(["sam-job", "--job", str(job_id)] + (["--outcomes"] if outcomes else []), timeout=300 if outcomes else 150)
+
+
+@app.get("/api/sam/assets")
+def sam_assets():
+    """SAM's lab devices, servers and environments. Credentials are dropped by the client before anything is returned."""
+    return _sam_call(["sam-assets"])
 
 
 @app.get("/api/automation/coverage")
