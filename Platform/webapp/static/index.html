@@ -662,7 +662,8 @@ const NAV_ICONS = {
   'fold-defect': '🐛', 'review-runs': '📈', 'consolidation-check': '🧹',
   'traceability-check': '🔍', maintain: '🩺', 'resolve-gaps': '💬', 'clarify-gaps': '💡', 'group-gaps': '🗂️', 'link-defects': '🐞',
   // Automation tab
-  dashboard: '📊', tests: '🧪', keywords: '🔑', flows: '🔀',
+  dashboard: '📊', overview: '🧮', coverage: '📐', tests: '🧪', keywords: '🔑', flows: '🔀',
+  handoff: '🤝',
   'export-automation': '⬇️', 'write-automation': '✍️', 'draft-automation': '📝',
   'refresh-automation-tier': '♻️', 'judge-failures': '⚖️',
 };
@@ -4639,6 +4640,7 @@ async function renderLiveDashboard() {
         <div id="lvPushInfo" style="display:none;margin-top:8px;font-size:12px;color:var(--ink-soft);"></div>
       </div>
     </div>
+    <div class="card" id="lvSched"><h2>Schedule &amp; manual run</h2><div class="loading">Reading this target's pipeline schedule…</div></div>
     <div id="lvRoot"><div class="loading">Looking for runs…</div></div>`);
 
   document.getElementById('lvPushBtn').addEventListener('click', async () => {
@@ -4658,6 +4660,58 @@ async function renderLiveDashboard() {
       msg.style.color = 'var(--ok)'; msg.textContent = 'Saved.'; renderLiveDashboard();
     } catch (e) { msg.style.color = 'var(--bad)'; msg.textContent = e.message; }
   });
+
+  // When this target's sit pipeline runs by itself (read from the workflow file), and a guarded manual start. A manual run
+  // uses the lab device, so it only starts after the box is ticked; the first click just shows what WOULD run.
+  async function loadSched() {
+    const box = document.getElementById('lvSched');
+    const tg = window.CURRENT_TARGET || {};
+    if (!box) return;
+    if (!tg.project || !tg.device) { box.innerHTML = '<h2>Schedule &amp; manual run</h2><p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Pick a target (Change target) to see its schedule.</p>'; return; }
+    let s;
+    try { s = await fetchJSON(`/api/live/schedule?project=${encodeURIComponent(tg.project)}&device=${encodeURIComponent(tg.device)}`); }
+    catch (e) { s = {available: false, reason: e.message}; }
+    if (token !== window.__liveToken || !document.getElementById('lvSched')) return;
+    const sched = s.available ? (s.entries.length
+      ? s.entries.map(e => `<div style="font-size:13px;margin-bottom:4px;"><b>${esc(e.next_run_utc || e.cron)}</b> <span style="color:var(--ink-soft);">&middot; ${esc(e.comment)}</span></div>`).join('')
+      : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No scheduled run for this target in the workflow file.</p>')
+      : `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">${esc(s.reason)}</p>`;
+    box.innerHTML = `<h2>Schedule &amp; manual run <span class="pill code" style="font-size:11px;">${esc(tg.project)} / ${esc(tg.device)}</span></h2>
+      ${sched}
+      ${s.available ? `<p style="color:var(--ink-soft);font-size:12px;margin:6px 0 10px;">${esc(s.note)}</p>` : ''}
+      <details id="lvStartBox"><summary style="cursor:pointer;font-size:13px;font-weight:600;">Start a run now</summary>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0;">
+          <label style="font-size:12.5px;">Tag to run (one exact tag, blank = the Smoke selection)
+            <input class="input" id="lvTag" placeholder="e.g. screen-spine" style="width:100%;margin-top:3px;"></label>
+          <label style="font-size:12.5px;">Smoke only
+            <select class="input" id="lvSmoke" style="width:100%;margin-top:3px;"><option value="true">Yes (default)</option><option value="false">No - only the tag (needs a tag)</option></select></label>
+          <label style="font-size:12.5px;">Operating mode
+            <select class="input" id="lvMode" style="width:100%;margin-top:3px;"><option value="">Default (Metro)</option><option value="Metro">Metro</option><option value="NIR">NIR</option></select></label>
+        </div>
+        <label style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;"><input type="checkbox" id="lvConfirm" style="margin-top:2px;">
+          <span>This uses the lab device for this target and can take a long time. Start it for real.</span></label>
+        <button class="btn" id="lvPreview" style="font-size:12px;">Show what would run</button>
+        <button class="btn primary" id="lvStart" style="font-size:12px;">Start run</button>
+        <div id="lvStartMsg" style="font-size:12.5px;margin-top:8px;white-space:pre-wrap;word-break:break-word;"></div>
+      </details>`;
+    const call = async (confirm) => {
+      const msg = document.getElementById('lvStartMsg');
+      msg.style.color = 'var(--ink-soft)'; msg.textContent = 'Working…';
+      const res = await fetch('/api/live/start-run', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+        project: tg.project, device: tg.device, tag_filter: document.getElementById('lvTag').value, smoke_only: document.getElementById('lvSmoke').value,
+        operating_mode: document.getElementById('lvMode').value, confirm})});
+      const r = await res.json().catch(() => ({}));
+      if (!res.ok) { msg.style.color = 'var(--bad)'; msg.textContent = r.detail || res.statusText; return; }
+      msg.style.color = r.started ? 'var(--ok)' : 'var(--ink-soft)';
+      msg.textContent = r.started ? `Started. ${r.output || ''}\nIt shows under "sit runs on GitHub" below once it is queued.` : `Would run:\n${r.would_run}`;
+    };
+    document.getElementById('lvPreview').addEventListener('click', () => call(false));
+    document.getElementById('lvStart').addEventListener('click', () => {
+      if (!document.getElementById('lvConfirm').checked) { const m = document.getElementById('lvStartMsg'); m.style.color = 'var(--bad)'; m.textContent = 'Tick the box first: this uses the lab device.'; return; }
+      call(true);
+    });
+  }
+  loadSched();
 
   // sit's own runs (self-hosted lab runners) upload their Robot results to GitHub Actions; this lists them and pulls one in.
   function ghCard() {

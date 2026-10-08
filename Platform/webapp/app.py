@@ -1447,6 +1447,47 @@ def handoff_decide(item_id: str, body: HandoffDecisionIn):
     return {"ok": True, "decided_by": who}
 
 
+class StartRunIn(BaseModel):
+    project: str
+    device: str
+    tag_filter: str = ""
+    smoke_only: str = "true"
+    operating_mode: str = ""
+    confirm: bool = False
+
+
+@app.get("/api/live/schedule")
+def live_schedule(project: str, device: str):
+    """When this target's sit pipeline runs on its own (read from the workflow file via system-test-ops; read-only)."""
+    rc, msg = runner._cli(["sit-schedule", "--project", project, "--device", device], timeout=90)
+    if rc != 0:
+        return {"available": False, "reason": (msg.strip().splitlines() or ["could not read the schedule"])[-1].removeprefix("error: ")}
+    try:
+        return {"available": True, **json.loads(msg.strip().splitlines()[-1])}
+    except (ValueError, IndexError):
+        return {"available": False, "reason": "unexpected output from sit-schedule"}
+
+
+@app.post("/api/live/start-run")
+def live_start_run(body: StartRunIn):
+    """Start a manual run of this target's sit pipeline. It uses the lab device, so nothing starts unless confirm is true;
+    without it the reply says exactly what WOULD run. Who started it is the signed-in person, logged here."""
+    args = ["start-sit-run", "--project", body.project, "--device", body.device, "--smoke-only", body.smoke_only if body.smoke_only in ("true", "false") else "true"]
+    if body.tag_filter.strip():
+        args += ["--tag-filter", body.tag_filter.strip()]
+    if body.operating_mode:
+        args += ["--operating-mode", body.operating_mode]
+    if body.confirm:
+        args += ["--confirm"]
+    rc, msg = runner._cli(args, timeout=120)
+    if rc != 0:
+        raise HTTPException(status_code=400, detail=(msg.strip().splitlines() or ["refused"])[-1].removeprefix("error: "))
+    res = json.loads(msg.strip().splitlines()[-1])
+    if res.get("started"):
+        print(f"[live] {store.get_current_user().get('display_name')} started a sit run: {res.get('ran')}")
+    return res
+
+
 @app.get("/api/live/config")
 def live_config():
     return live_sit.get_config()
