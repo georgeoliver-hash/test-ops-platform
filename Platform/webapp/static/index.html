@@ -467,6 +467,11 @@
              rules themselves change -- belongs alongside the other case-tooling buttons. -->
         <button class="navitem" data-aview-pipeline="refresh-automation-tier"><span class="dot"></span>Refresh tier</button>
       </div>
+      <div class="navgroup">
+        <div class="label">Runs</div>
+        <!-- George, 2026-10-08: after a sit pipeline run finishes, judge each failure P1-P5 and hand severity=P<n> tags back to sit. -->
+        <button class="navitem" data-aview-pipeline="judge-failures"><span class="dot"></span>Judge failures</button>
+      </div>
       <!-- Real Projects accordion (ISSUES.md round 2), sub-options = real projects that
            have automation tests today, pulled live from /api/automation/tests -- not a
            fabricated list. Populated by populateAutomationProjectsNav(). -->
@@ -659,7 +664,7 @@ const NAV_ICONS = {
   // Automation tab
   dashboard: '📊', tests: '🧪', keywords: '🔑', flows: '🔀',
   'export-automation': '⬇️', 'write-automation': '✍️', 'draft-automation': '📝',
-  'refresh-automation-tier': '♻️',
+  'refresh-automation-tier': '♻️', 'judge-failures': '⚖️',
 };
 function applyNavIcons(root) {
   (root || document).querySelectorAll('.navitem').forEach(btn => {
@@ -806,6 +811,7 @@ const PIPELINE_PLAIN = {
   'fold-defect': 'Folds a found-and-fixed bug into the test case that should have caught it, so it stays covered.',
   'ingest-docs': "Turns a project's raw requirement docs into short, cited notes the team can work from.",
   'scheduled-scan': "Periodic, read-only check: has anything changed in the local requirement docs since last checked? If so, cross-examines against the live suite and suggests one next pipeline — never applies anything itself.",
+  'judge-failures': "After a sit pipeline run finishes, pulls it for this project/device, groups the failures and judges each one P1 (blocks nothing) to P5 (nothing can proceed). You confirm; the result is a severity tag for each failing test, written as a patch for sit.",
   'refresh-automation-tier': "Re-judges automation tier (Yes/Partial/No) for cases matching a pattern, when the judging rules themselves change — without re-touching the rest of the suite.",
   maintain: 'Periodic health check — run history, standards compliance, and duplicate cases.',
   'new-suite-from-docs': "Chains Ingest + Build suite in one run. Real, but not offered as a button -- for a project the size of Translink it expands to 136 steps, 65 AI calls and 59 approval gates; run the two separately instead.",
@@ -921,6 +927,14 @@ const PIPELINE_TERSE_STEPS = {
     'Pulls every case marked automatable from the suite.',
     'Writes a machine-readable backlog plus a human-readable version, ordered by priority.',
     'Reports the counts and where both files landed.',
+  ],
+  'judge-failures': [
+    'Pulls the newest finished run of this target\'s sit pipeline (or the run id you give).',
+    'Groups the failures: one group per distinct failure message.',
+    'The AI judges each group P1 to P5, with a reason and cited evidence; unsure means a person decides.',
+    'Checks every group is judged and P4/P5 say what they block.',
+    'You confirm or change the severities.',
+    'Writes severity tags for the failing tests as a patch for sit; you apply it and raise the PR.',
   ],
   'refresh-automation-tier': [
     'Re-judges the automation tier only for cases matching your given pattern.',
@@ -1598,7 +1612,7 @@ async function renderProcessesTab(container) {
     // showing them again here in "Ungrouped" would just be a stray duplicate, not a genuine
     // gap. Regression found + fixed 2026-09-29: this exclusion was dropped when this
     // function was rewritten to reuse GROUPS instead of the old PIPELINE_STAGES.
-    const HIDDEN_FROM_HOW_TOS = new Set(['new-suite-from-docs', 'export-automation', 'write-automation', 'draft-automation', 'refresh-automation-tier']);
+    const HIDDEN_FROM_HOW_TOS = new Set(['new-suite-from-docs', 'export-automation', 'write-automation', 'draft-automation', 'refresh-automation-tier', 'judge-failures']);
     const ungrouped = list.filter(p => !grouped.has(p.id) && !HIDDEN_FROM_HOW_TOS.has(p.id));
     const sections = [
       ...Object.entries(GROUPS).map(([key, ids]) => ({title: GROUP_DISPLAY_NAME[key] || key, ids})),
@@ -3952,6 +3966,7 @@ const PIPELINE_DISPLAY_NAME = {
   'write-automation': 'Write',
   'draft-automation': 'Draft',
   'refresh-automation-tier': 'Refresh tier',
+  'judge-failures': 'Judge failures',
   'scheduled-scan': 'Scheduled scan',
   'targeted-run': 'Targeted run',
   'audit-coverage': 'Cross-Check JIRA',
