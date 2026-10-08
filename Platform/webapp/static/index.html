@@ -2745,6 +2745,11 @@ async function renderPipelineDetail(id) {
     // targeted-run's real section tree (George, 2026-09-22) -- fetched here, same
     // pattern as docsFolder/currentDocs above, so the checkbox list renders with real
     // data on first paint rather than a placeholder needing a second async fill.
+    let sitRuns = null;     // judge-failures: this target's recent pipeline runs, for the run picker
+    if (id === 'judge-failures' && target.project && target.device) {
+      try { sitRuns = await fetchJSON(`/api/sit-runs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
+      catch (e) { sitRuns = {available: false, reason: e.message}; }
+    }
     let suiteSections = null;
     if (id === 'targeted-run' && target.project && target.device) {
       try {
@@ -2913,6 +2918,20 @@ async function renderPipelineDetail(id) {
           // sections, populated async below, not free text. @feature(<area>) IS the
           // section per docs/gherkin-standard.md, so this is exactly what create-run
           // --areas matches against.
+          // judge-failures' run_id: pick one of this target's recent pipeline runs instead of typing an id. Blank = newest
+          // finished run with Robot results. A run with no results artifact is listed but cannot be chosen.
+          if (id === 'judge-failures' && i.name === 'run_id') {
+            const fmt = (r) => `${(r.created_at || '').replace('T', ' ').slice(0, 16)} · ${r.conclusion || r.status} · run ${r.run_id} · ${r.branch || ''}${r.has_results ? '' : ' (no Robot results)'}`;
+            const opts = (sitRuns && sitRuns.available ? sitRuns.runs : []).map(r => `<option value="${r.run_id}" ${r.has_results ? '' : 'disabled'}>${esc(fmt(r))}</option>`).join('');
+            return `
+          <label style="display:block;font-size:13px;margin-bottom:6px;">
+            Run to judge
+            <div style="color:var(--ink-soft);font-size:12px;margin:2px 0 4px;">${sitRuns && sitRuns.available ? `This target's pipeline runs, newest first (${sitRuns.runs.length}).` : esc((sitRuns && sitRuns.reason) || 'Could not list runs.') + ' You can still run with the newest finished one.'}</div>
+          </label>
+          <select class="input" id="sitRunPicker" data-extra-input="run_id" style="width:100%;margin-bottom:8px;">
+            <option value="">Newest finished run with Robot results (default)</option>${opts}
+          </select>`;
+          }
           if (id === 'targeted-run' && i.name === 'areas') {
             const byParent = {};
             (suiteSections || []).forEach(s => { (byParent[s.parent_id] = byParent[s.parent_id] || []).push(s); });

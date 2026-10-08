@@ -1981,6 +1981,19 @@ def get_sit_mirror_status():
     return {"available": True, "last_synced": mtime.isoformat(), "days_stale": days_stale}
 
 
+@app.get("/api/sit-runs")
+def sit_runs_list(project: str, device: str, limit: int = 20):
+    """This target's recent sit pipeline runs (found by its SAM job id), for the Judge failures run picker. Read-only."""
+    rc, msg = runner._cli(["list-sit-runs", "--project", project, "--device", device, "--limit", str(max(1, min(limit, 50)))], timeout=90)
+    if rc != 0:
+        line = (msg.strip().splitlines() or ["could not list runs"])[-1]
+        return {"available": False, "reason": line.removeprefix("error: ")}
+    try:
+        return {"available": True, **json.loads(msg.strip().splitlines()[-1])}
+    except (ValueError, IndexError):
+        return {"available": False, "reason": "unexpected output from list-sit-runs"}
+
+
 @app.get("/api/automation/coverage")
 def automation_coverage(project: str, device: str):
     """Robot-test -> TestRail-case links and per-section coverage for one target, counted from the two draft files
