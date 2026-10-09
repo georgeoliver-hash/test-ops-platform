@@ -56,6 +56,37 @@ up properly myself (with a real Status line) when I pick the file up.
 - Folded into their host page as **tabs** (no menu item, host stays highlighted): Scheduled scan -> Ingest docs; Update from docs -> Build suite; Defect -> Cross-Check JIRA; Merge check + Trace check -> Checkup; Clarify + Group gaps -> Gaps page.
 - Archived (menu item removed, pipeline files kept): Targeted run, Design (audit-flows), Standard (still runs inside Build suite / Checkup), Automation > Tests written.
 
+**Batch 2 - Status is now a dashboard you build yourself (done):**
+- **Customise** button: add / remove widgets, move them (◀ ▶), width (Small / Medium / Full) and height (Fit / Short / Tall). Layout is saved in your browser; "Reset" puts the default back.
+- Default: Cases (total only), Old vs new (live), Gaps (pills: open / GAP / UNCONFIRMED / answered), Recent activity (left), Run health (runs considered, total passing, total failures, always failing + which run ids), Run comments, Observed changes, Answer one gap (answer or skip, one at a time), SAM device + job health, Last audit, Docs (count + last upload), AI spend.
+- Extra widgets you can add: Scheduled checks, Last JIRAs audited, Defects in latest run, Coverage in automation, Coverage against specs.
+- Removed: Suite health breakdown, Open suggestions.
+- **Your question "Run health, is this even right?"** - yes, it is real. It reads every TestRail run on the new POS suite (30607), manual or automated: 6 runs (R21978, 21742, 21495, 19352, 19087, 19074). They are people's manual runs, not agentic ones. The widget now lists the run ids so you can check them.
+
+**Batch 3 - How to's (done):** bold, theme-coloured section titles; square tiles 4 across (★ on Setup), name + one-line description + AI / code / human / process pills; click a tile -> pop-up with the steps and an "Open ... →" button. Folded pipelines say where they live ("a tab on Build suite").
+
+**Batch 4 - Gaps / Case review (done):** "Refresh against new docs" and the recheck text removed from Gaps. **Case review "0 open, 0 done"**: those counts are for the current check only (nothing open right now). Added a third pill "N fixed or accepted so far" (all time, from the review log - 52 today).
+
+**Batch 5 - the bugs list (done):**
+- Links now move the menu highlight to where you land (folded pipelines highlight their host page).
+- Run from elsewhere: links such as Gaps log "Run →" open a small pop-up with just the required inputs + context and a Run button; it starts in the console without leaving the page.
+- Console: **Acknowledge & clear** button (cancels the run if it is still going, then clears the console).
+- **Give context** is now a button that opens a pop-up (no more inline box).
+- Banners are full width with **–** (shrink to a thin bar you click to reopen) and **✕** (clear). They are cleared when you change page.
+- Two-column pipeline pages: both boxes are the same height.
+- Checkup: the composite steps (Merge check, Trace check, Standard) are shown as **PROCESS** steps, not human steps - they are pipelines Checkup runs for you.
+
+**Batch 6 - pipeline pages (done):**
+- **Build suite renamed "Suite builder"**. Your question: it builds a new suite from docs *or* updates an existing one (Update from docs tab). Change target points the console at an existing suite; Suite builder is what fills it.
+- Ingest docs: **Check relevance** is a button next to Run; the result shows as a banner (no card).
+- Update from docs: the last 3 ingest runs with status pills ("Use this run" ticks its files); knowledge files are a multi-select picker (All / None / filter) instead of typing paths.
+- Resolve: **area is no longer something you type** - it is proposed from the areas your answered gaps point at (you can still change it).
+- Trace check: if nothing was raised or covered in the window it reports "nothing to trace" and finishes (not a failure). Checkup already runs Merge check + Trace check + Standard.
+- History: choose 1, 2, 3, 4, 5, then 10, 15 ... 50 runs.
+- **Link defects - what is it for?** It matches the known-defect list (e.g. the 128 POS defects) to the cases they affect and tags those cases KNOWN DEFECT, so a failure on them is expected and not raised again.
+- **Run report "blue test" text:** I could not find it in any saved report (the only one on disk, 2026-09-28, has none). Most likely the agent copied the Word template's blue guidance/example text. The pipeline + template note now say template guidance is never content and the draft must be re-read and stripped of anything not backed by the run data. **Needs checking:** if you see it again, send me the run so I can see the exact text.
+- **Feature / Cross-check JIRA picker (board in Settings + search after 3 characters):** not built yet - the console has no Jira access of its own (Jira goes through the Atlassian MCP in Claude). Needs a decision: add a Jira API token to Settings (then I build the picker), or keep typing keys.
+
 ## Testing notes (George)
 
 Test-Ops

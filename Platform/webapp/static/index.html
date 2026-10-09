@@ -270,6 +270,33 @@
   .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
   .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex:none;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  #bannerArea{display:flex;flex-direction:column;gap:6px;margin:12px 28px 0;}
+  .app-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:10px;font-size:13px;border:1px solid transparent;}
+  .app-banner.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);} .app-banner.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn);} .app-banner.bad{background:var(--bad-bg);color:var(--bad);border-color:var(--bad);}
+  .app-banner-btns{display:flex;gap:4px;flex:none;} .app-banner-btn{background:none;border:none;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:2px 6px;border-radius:6px;} .app-banner-btn:hover{background:rgba(0,0,0,.08);}
+  .app-banner.min{padding:0;height:6px;cursor:pointer;overflow:hidden;} .app-banner.min > *{display:none;}
+  .app-banner.min.ok{background:var(--ok);} .app-banner.min.warn{background:var(--warn);} .app-banner.min.bad{background:var(--bad);}
+  /* How to's tiles (George, 2026-10-09) */
+  .howto-section{font-size:15px;font-weight:700;color:var(--accent);margin:18px 0 10px;letter-spacing:.01em;}
+  .howto-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+  @media (max-width:1100px){.howto-grid{grid-template-columns:repeat(2,minmax(0,1fr));}} @media (max-width:600px){.howto-grid{grid-template-columns:1fr;}}
+  .howto-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:150px;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .howto-tile:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.08);} .howto-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .howto-name{font-weight:700;font-size:14px;color:var(--ink);} .howto-star{color:#e0a400;}
+  .howto-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.4;flex:1;} .howto-where{font-size:11px;color:var(--accent);}
+  .howto-pills{display:flex;gap:4px;flex-wrap:wrap;} .howto-pills .pill{font-size:10.5px;}
+  /* Status dashboard widgets: a 4-column grid; every widget in a row stretches to the row's height (no ragged gaps) */
+  .dw-loading{color:var(--ink-soft);font-size:13px;padding:8px 0;}
+  .dash-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:stretch;}
+  .dw{display:flex;flex-direction:column;min-width:0;} .dw-s{grid-column:span 1;} .dw-m{grid-column:span 2;} .dw-l{grid-column:span 4;}
+  .dw-card{flex:1;margin:0;min-width:0;} .dw-h-short .dw-card{max-height:260px;overflow:auto;} .dw-h-tall .dw-card{min-height:460px;max-height:640px;overflow:auto;}
+  .dash-grid.editing .dw-card{outline:2px dashed var(--line);outline-offset:-2px;}
+  .dw{position:relative;} .dw-edit{position:absolute;top:8px;right:8px;z-index:2;display:flex;gap:3px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .dw-edit .btn{font-size:11px;padding:2px 7px;} .dw-edit select{font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);}
+  .dash-add-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:8px;}
+  .dash-add-item{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:8px 10px;}
+  @media (max-width:1100px){.dw-s{grid-column:span 2;} .dw-m{grid-column:span 4;}}
+  @media (max-width:700px){.dw-s,.dw-m{grid-column:span 4;}}
   /* Setup complete: everything on the Setup page except its banner is faded and inert (Settings > Allow re-running Setup undoes it) */
   #content.setup-complete > *:not(#pipelineAlreadyDone):not(.pipeline-detail-head):not(.pipeline-family-tabs) { opacity:.35; pointer-events:none; }
   #content.setup-complete .pipeline-detail-head button { opacity:.35; pointer-events:none; }
@@ -304,7 +331,8 @@
      of how much either actually needed. Flex-wrap instead: side by side only when there's
      genuinely room for both at a sane width; otherwise the shorter one doesn't get
      artificially stretched/squeezed, it just wraps to its own full-width row. */
-  .pipeline-two-col{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;margin-top:10px;}
+  .pipeline-two-col{display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin-top:10px;}
+  .pipeline-two-col > div{display:flex;flex-direction:column;} .pipeline-two-col > div > .card{flex:1;}
   .pipeline-two-col > *{flex:1 1 380px;min-width:0;}
 
   /* --- Step & variant accordions: a small "what it does" panel under each row --- */
@@ -507,6 +535,7 @@
       <button class="ask-close" id="askCloseBtn" title="Close">&times;</button>
       <div id="askPanelBody"></div>
     </div>
+    <div id="bannerArea"></div>
     <div id="setupGateBanner" class="fixture-note" style="display:none;margin:14px 28px 0;background:var(--warn-bg);color:var(--warn);align-items:center;justify-content:space-between;gap:12px;">
       <span></span>
       <div style="display:flex;gap:6px;flex:none;">
@@ -529,7 +558,7 @@
   <div class="console-panel-resize-handle" id="consolePanelResizeHandle" title="Drag to resize"></div>
   <div class="console-panel-header" id="consolePanelHeader">
     <span>Console — run progress &amp; results <span class="console-run-label-pill" id="consoleRunLabelPill"></span><span class="console-status-pill" id="consoleStatusPill"></span></span>
-    <span class="chevron" id="consolePanelChevron">▾</span>
+    <span style="display:flex;gap:8px;align-items:center;"><button class="btn" id="consoleClearBtn" style="display:none;font-size:11.5px;padding:2px 9px;" title="Acknowledge this result and clear the console (stops the run if it is still going)">Acknowledge &amp; clear</button><span class="chevron" id="consolePanelChevron">▾</span></span>
   </div>
   <div class="console-panel-body" id="consolePanelBody">
     <div style="display:flex;gap:16px;align-items:flex-start;">
@@ -634,7 +663,7 @@ const KIND_META = {
   agent: {label: 'AI',    cls: 'ai'},
   gate:  {label: 'GATE',  cls: 'gate'},
   human: {label: 'HUMAN', cls: 'human'},
-  composite_ref: {label: 'SUB-FLOW', cls: 'human'},
+  composite_ref: {label: 'PROCESS', cls: 'code'},   // a step that runs another whole pipeline (e.g. Checkup's run health) - automated, not a person
 };
 
 async function fetchJSON(url) {
@@ -1006,7 +1035,7 @@ function renderBarChart(items, {valueKey = 'value', labelKey = 'label', statusCo
 function renderFlowPills(steps) {
   if (!steps || !steps.length) return '';
   const parts = steps.map((s, i) => {
-    const meta = KIND_META[s.kind] || KIND_META.human;
+    const meta = (s.ref || s.is_composite_ref || s.ref_pipeline) ? KIND_META.composite_ref : (KIND_META[s.kind] || KIND_META.human);
     const label = STEP_DISPLAY_NAME[s.id] || s.id;
     const gloss = plainGlossFor(s, null) || '';
     return `<span class="flow-pill" style="border-color:var(--${meta.cls});color:var(--${meta.cls});" title="${esc(gloss)}">${esc(label)}${s.loop ? ' ↻' : ''}</span>`
@@ -1041,7 +1070,7 @@ const STEP_DISPLAY_NAME = {
    this step touches (reads/produces), THEN the heavier technical/command wording, then the
    rest (when/rule/gate/etc.) last. */
 function renderStep(s, pipelineId, isFreshBuild) {
-  const meta = KIND_META[s.kind] || KIND_META.human;
+  const meta = (s.ref || s.is_composite_ref || s.ref_pipeline) ? KIND_META.composite_ref : (KIND_META[s.kind] || KIND_META.human);
   const asText = (v) => Array.isArray(v) ? v.join(', ') : v;
   // George asked this same thing across at least 4 separate rounds ("you're targeting an
   // existing suite, no need for this" / similar) and it never actually got built --
@@ -1118,9 +1147,11 @@ function setConsoleStatusPill(status) {
   const el = document.getElementById('consoleStatusPill');
   if (!el) return;
   const meta = status && CONSOLE_STATUS_PILL_META[status];
-  if (!meta) { el.className = 'console-status-pill'; el.textContent = ''; return; }
+  if (!meta) { el.className = 'console-status-pill'; el.textContent = ''; const c = document.getElementById('consoleClearBtn'); if (c) c.style.display = 'none'; return; }
   el.className = `console-status-pill show ${meta.cls}`;
   el.textContent = meta.label;
+  const clr = document.getElementById('consoleClearBtn');
+  if (clr) clr.style.display = (status === 'failed' || status === 'succeeded' || status === 'waiting_human') ? '' : 'none';
 }
 // George, 2026-09-30: "another pill indicator for which run is being run... when your on
 // other pages it still appears which is fine i like that, but need to know what is
@@ -1147,6 +1178,13 @@ content.addEventListener('change', (e) => {
   }
 });
 content.addEventListener('click', (e) => {
+  const av = e.target.closest('[data-goto-aview]');
+  if (av) {
+    e.preventDefault();
+    document.getElementById('tabAutomation')?.click();
+    setTimeout(() => document.querySelector(`.navitem[data-aview="${av.dataset.gotoAview}"]`)?.click(), 0);
+    return;
+  }
   const fam = e.target.closest('[data-family-tab]');
   if (fam) {
     const x = fam.dataset.familyTab;
@@ -1166,14 +1204,25 @@ content.addEventListener('click', (e) => {
   if (gotoLink) {
     e.preventDefault();
     const view = gotoLink.dataset.gotoView;
+    if (view === 'scheduled' || view === 'handoff') {          // these now live as Settings tabs
+      const s = document.querySelector('.navitem[data-view="settings"]');
+      if (s) setActiveNav(s);
+      window.__contentPrefix = settingsTabStrip(view);
+      CURRENT_RERENDER = () => { window.__contentPrefix = settingsTabStrip(view); return VIEWS[view](); };
+      CURRENT_RERENDER();
+      return;
+    }
+    if (document.getElementById('tabTestOps') && !document.getElementById('tabTestOps').classList.contains('active') && document.querySelector(`#navgroups .navitem[data-view="${view}"]`)) document.getElementById('tabTestOps').click();
     const navBtn = document.querySelector(`.navitem[data-view="${view}"]`);
     if (navBtn) { setActiveNav(navBtn); ACTIVE_VIEW = view; CURRENT_RERENDER = () => VIEWS[view](); CURRENT_RERENDER(); }
     return;
   }
+  const quick = e.target.closest('[data-quick-run]');
+  if (quick) { e.preventDefault(); openQuickRun(quick.dataset.quickRun); return; }
   const gotoPipeline = e.target.closest('[data-goto-pipeline]');
   if (gotoPipeline) {
     e.preventDefault();
-    renderPipelineDetail(gotoPipeline.dataset.gotoPipeline);
+    goToPipeline(gotoPipeline.dataset.gotoPipeline);     // the menu follows the link (George, 2026-10-09 bug)
     return;
   }
   const gotoAview = e.target.closest('[data-goto-aview]');
@@ -1230,270 +1279,260 @@ function renderAiUsageWidget() {
   }).catch(() => { el.innerHTML = `<h2>AI usage — average per run</h2><p class="errbox">Not available</p>`; });
 }
 
+// Status dashboard (George, 2026-10-09): a set of widgets you can add, remove, reorder and resize (width S/M/L, height auto/short/tall).
+// The layout is saved in this browser. Every widget reads real data for the current target; one that has no data says so.
+const DASH_KEY = 'testops.dashboard.layout.v1';
+const DASH_DEFAULT = [
+  {id: 'cases', size: 's'}, {id: 'oldnew', size: 'm'}, {id: 'gaps', size: 's'},
+  {id: 'activity', size: 'm'}, {id: 'runhealth', size: 'm'},
+  {id: 'comments', size: 'm', height: 'short'}, {id: 'changes', size: 'm', height: 'short'},
+  {id: 'onegap', size: 'm'}, {id: 'sam', size: 'm'},
+  {id: 'lastaudit', size: 'm', height: 'short'}, {id: 'docs', size: 's', height: 'short'}, {id: 'ai', size: 's', height: 'short'},
+];
+function dashLayout() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(DASH_KEY) || 'null');
+    if (Array.isArray(saved)) return saved.filter(w => DASH_WIDGETS[w.id]);
+  } catch (e) { /* storage blocked or corrupt: default */ }
+  return DASH_DEFAULT.map(w => ({...w}));
+}
+function dashSave(layout) { try { localStorage.setItem(DASH_KEY, JSON.stringify(layout)); } catch (e) { /* storage blocked: layout lasts this page only */ } }
+
+const _q = (t) => `project=${encodeURIComponent(t.project)}&device=${encodeURIComponent(t.device)}`;
+const _none = (msg) => `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">${esc(msg)}</p>`;
+const _stat = (n, label, cls) => `<div class="stat ${cls || ''}"><span class="n">${n}</span><span class="l">${esc(label)}</span></div>`;
+
+const DASH_WIDGETS = {
+  cases: {title: 'Cases in the suite', desc: 'How many cases the new suite holds (cases waiting in the delete folder are left out).', async render(c) {
+    const cmp = await c.cmp;
+    const n = cmp && cmp.available ? cmp.new_case_count : c.bs.cases_total;
+    if (n == null) return `<h2>Cases</h2>${_none('No suite data for this target.')}`;
+    return `<h2>Cases</h2><div class="stat-row" style="margin:0;">${_stat(n, c.bs.suite)}</div>`;
+  }},
+  oldnew: {title: 'Old vs new suite', desc: 'Live case counts of the old and new suite and the difference.', async render(c) {
+    const cmp = await c.cmp;
+    if (!cmp || !cmp.available) return `<h2>Old vs new suite</h2>${_none(cmp ? cmp.reason : 'Could not pull live counts.')}`;
+    const cls = cmp.diff < 0 ? 'bad' : cmp.diff > 0 ? 'ok' : '';
+    return `<h2>Old vs new suite <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">(live)</span></h2><div class="stat-row" style="margin:0;">
+      ${_stat(cmp.old_case_count, `old suite C${cmp.old_suite_id}`)}${_stat(cmp.new_case_count, `new suite C${cmp.new_suite_id}`)}${_stat((cmp.diff > 0 ? '+' : '') + cmp.diff, 'difference', cls)}</div>`;
+  }},
+  gaps: {title: 'Gaps', desc: 'Open GAP / UNCONFIRMED questions for this target and how many have been answered.', async render(c) {
+    const [reg, answers] = await Promise.all([
+      fetchJSON(`/api/gap-register?limit=1000&${_q(c.target)}`).catch(() => null),
+      fetchJSON(`/api/gap-answers?project=${encodeURIComponent(c.target.project)}`).catch(() => []),
+    ]);
+    if (!reg) return `<h2>Gaps</h2>${_none('Could not read the gap register.')}`;
+    const gap = reg.shown.filter(g => g.kind === 'GAP').length, unc = reg.shown.filter(g => g.kind === 'UNCONFIRMED').length;
+    const answered = answers.filter(a => (!a.device || a.device === c.target.device) && (a.entry_type || 'answer') === 'answer').length;
+    return `<h2>Gaps <a href="#" data-goto-view="gaps" class="corner-link">Open →</a></h2><div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span class="pill">${reg.total} open</span><span class="pill bad">${gap} GAP</span><span class="pill warn">${unc} UNCONFIRMED</span><span class="pill ok">${answered} answered</span></div>`;
+  }},
+  onegap: {title: 'Answer one gap', desc: 'One open question at a time: answer it (or skip) and move on.', async render(c, el) {
+    const [reg, answers] = await Promise.all([
+      fetchJSON(`/api/gap-register?limit=1000&${_q(c.target)}`).catch(() => null),
+      fetchJSON(`/api/gap-answers?project=${encodeURIComponent(c.target.project)}`).catch(() => []),
+    ]);
+    if (!reg) return `<h2>Answer one gap</h2>${_none('Could not read the gap register.')}`;
+    const done = answers.map(a => a.gap_ref || '');
+    const skipped = window.__dashSkippedGaps || (window.__dashSkippedGaps = new Set());
+    const open = reg.shown.filter(g => !done.some(r => r.includes(`${g.file}:${g.line}`)) && !skipped.has(`${g.file}:${g.line}`));
+    if (!open.length) return `<h2>Answer one gap</h2>${_none('Nothing left to answer here. Nice.')}`;
+    const g = open[0];
+    setTimeout(() => {
+      const box = el.querySelector('.onegap');
+      if (!box) return;
+      box.querySelector('[data-onegap-skip]').onclick = () => { skipped.add(`${g.file}:${g.line}`); dashRenderOne(el, 'onegap', c); };
+      box.querySelector('[data-onegap-save]').onclick = async () => {
+        const ans = box.querySelector('textarea').value.trim(), msg = box.querySelector('.onegap-msg');
+        if (!ans) { msg.textContent = 'Write an answer first.'; return; }
+        const res = await fetch('/api/gap-answers', {method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({project: c.target.project, device: c.target.device, gap_ref: `${g.file}:${g.line}`, question: g.summary || g.plain_english || g.text, answer: ans, entry_type: 'answer'})});
+        if (!res.ok) { msg.textContent = 'Could not save: ' + ((await res.json().catch(() => ({}))).detail || res.statusText); return; }
+        dashRenderOne(el, 'onegap', c);
+      };
+    }, 0);
+    return `<h2>Answer one gap <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">${open.length} open</span></h2>
+      <div class="onegap"><span class="pill ${g.kind === 'GAP' ? 'bad' : 'warn'}">${esc(g.kind)}</span>
+        <p style="font-size:13px;margin:6px 0;">${esc(g.summary || g.plain_english || g.text)}</p>
+        <div style="font-size:11.5px;color:var(--ink-soft);margin-bottom:6px;"><code>${esc(g.file)}:${g.line}</code></div>
+        <textarea rows="2" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);" placeholder="Your answer"></textarea>
+        <div style="display:flex;gap:6px;margin-top:6px;align-items:center;"><button class="btn primary" data-onegap-save style="font-size:12px;">Log answer</button><button class="btn" data-onegap-skip style="font-size:12px;">Skip</button><span class="onegap-msg" style="font-size:12px;color:var(--bad);"></span></div></div>`;
+  }},
+  activity: {title: 'Recent activity', desc: 'When each main function last ran for this target.', async render(c) {
+    const ids = ['ingest-docs', 'onboard-suite', 'add-feature', 'consolidate', 'audit', 'export-automation'];
+    const rows = await Promise.all(ids.map(pid => fetchJSON(`/api/pipelines/${pid}/last-run?${_q(c.target)}`).then(r => ({pid, ...r})).catch(() => ({pid, status: null}))));
+    const pill = (s) => s === 'succeeded' ? 'ok' : s === 'failed' ? 'bad' : s ? 'warn' : '';
+    return `<h2>Recent activity</h2><table><tr><th>Function</th><th>Last run</th></tr>${rows.map(r => `<tr><td>${esc(PIPELINE_DISPLAY_NAME[r.pid] || r.pid)}</td><td>${
+      r.status ? `<span class="pill ${pill(r.status)}">${esc(r.status)}</span> ${r.updated_at ? esc(new Date(r.updated_at + 'Z').toLocaleString()) : ''}` : '<span style="color:var(--ink-soft);">Never run</span>'}</td></tr>`).join('')}</table>`;
+  }},
+  runhealth: {title: 'Run health', desc: 'The latest TestRail runs of the new suite (any run, manual or automated): runs, passes, failures, always failing.', async render(c) {
+    const rh = c.rh;
+    if (!rh) return `<h2>Run health</h2>${_none('No TestRail runs of this suite were found.')}`;
+    if (!rh.runs_considered) return `<h2>Run health</h2>${_none('No TestRail runs of this suite yet.')}`;
+    return `<h2>Run health <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">TestRail runs of ${esc(rh.suite || '')}</span></h2><div class="stat-row" style="margin:0;">
+      ${_stat(rh.runs_considered, 'runs considered')}${_stat(rh.total_passed ?? '?', 'total passing', 'ok')}${_stat(rh.total_failed ?? '?', 'total failures', 'bad')}${_stat(rh.counts.always_failing, 'always failing', 'bad')}</div>
+      ${rh.run_ids ? `<div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">Runs: ${rh.run_ids.map(r => 'R' + r).join(', ')}</div>` : ''}`;
+  }},
+  comments: {title: 'Run comments', desc: 'Reviewer notes left on TestRail run results (new or old suite).', async render(c, el) {
+    setTimeout(() => {
+      const sel = el.querySelector('select'), body = el.querySelector('.rc-body');
+      if (!sel || !body) return;
+      const load = async () => {
+        body.innerHTML = '<div class="dw-loading">Pulling live comments from TestRail…</div>';
+        try {
+          const rc = await fetchJSON(`/api/run-comments?${_q(c.target)}&which=${sel.value}`);
+          if (!rc.available) { body.innerHTML = _none(rc.reason); return; }
+          if (!rc.comments.length) { body.innerHTML = _none(`Checked ${rc.runs_checked} recent run(s) on suite C${rc.suite_id}: no comments.`); return; }
+          const sp = (id) => id === 1 ? 'ok' : id === 5 ? 'bad' : 'warn', sl = (id) => ({1: 'Passed', 2: 'Blocked', 3: 'Untested', 4: 'Retest', 5: 'Failed'}[id] || `Status ${id}`);
+          body.innerHTML = `<ul class="activity">${rc.comments.slice(0, 15).map(x => `<li><span class="pill ${sp(x.status_id)}">${esc(sl(x.status_id))}</span>&nbsp;${x.case_id ? `<b>C${x.case_id}</b> - ` : ''}${esc(x.comment.slice(0, 140))}${x.defects ? ` <span class="pill warn">Defect ${esc(x.defects)}</span>` : ''}<span style="color:var(--ink-soft);font-size:11px;display:block;">${x.created_on ? new Date(x.created_on * 1000).toLocaleDateString() : ''} · ${esc(x.run_name)}</span></li>`).join('')}</ul>`;
+        } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+      };
+      sel.onchange = load;
+      load();
+    }, 0);
+    return `<h2>Run comments <select style="font-size:12px;font-weight:400;margin-left:8px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);"><option value="new">New suite</option><option value="old">Old suite</option></select></h2><div class="rc-body"></div>`;
+  }},
+  changes: {title: 'Observed changes', desc: 'Cases added, edited or removed since the last build-stats run.', async render(c) {
+    if (!c.bs.delta) return `<h2>Observed changes</h2>${_none('No suite data for this target.')}`;
+    const d = c.bs.delta, ids = (a) => a.slice(0, 10).map(i => 'C' + i).join(', ') + (a.length > 10 ? ` …+${a.length - 10} more` : '');
+    return `<h2>Observed changes since last audit</h2><table><tr><th>Change</th><th>Case ids</th></tr>
+      <tr><td><span class="pill ok">Added ${d.added.length}</span></td><td>${ids(d.added) || 'None'}</td></tr>
+      <tr><td><span class="pill warn">Edited ${d.edited.length}</span></td><td>${ids(d.edited) || 'None'}</td></tr>
+      <tr><td><span class="pill ${d.removed.length ? 'bad' : ''}">Removed ${d.removed.length}</span></td><td>${ids(d.removed) || 'None'}</td></tr></table>`;
+  }},
+  lastaudit: {title: 'Last audit run', desc: 'When the conformance audit last ran and what it said.', async render(c) {
+    const a = await fetchJSON(`/api/pipelines/audit/last-run?${_q(c.target)}`).catch(() => ({status: null}));
+    if (!a.status) return `<h2>Last audit run</h2>${_none('Never run for this target yet.')}`;
+    return `<h2>Last audit run</h2><p style="font-size:13.5px;margin:0;">${a.status === 'succeeded' ? '<span class="pill ok">Succeeded</span>' : a.status === 'running' ? '<span class="pill warn">Running</span>' : '<span class="pill bad">Failed</span>'} ${esc(new Date(a.updated_at + 'Z').toLocaleString())}</p>
+      ${a.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(a.summary)}</p>` : ''}`;
+  }},
+  docs: {title: 'Docs on file', desc: 'How many docs are uploaded for this target and when the last one arrived.', async render(c) {
+    const docs = await fetchJSON(`/api/docs?${_q(c.target)}`).catch(() => []);
+    const last = docs.reduce((m, d) => Math.max(m, d.uploaded_at || 0), 0);
+    return `<h2>Docs on file <a href="#" data-goto-view="docs" class="corner-link">Manage →</a></h2><div class="stat-row" style="margin:0;">${_stat(docs.length, 'docs')}</div>
+      <div style="font-size:12px;color:var(--ink-soft);">${last ? 'Last upload ' + new Date(last * 1000).toLocaleDateString() : 'Nothing uploaded yet'}</div>`;
+  }},
+  ai: {title: 'AI spend', desc: 'Average AI cost and tokens per pipeline run.', async render(c, el) {
+    setTimeout(() => { const inner = el.querySelector('#aiUsageCard'); if (inner) renderAiUsageWidget(); }, 0);
+    return `<div id="aiUsageCard"><h2>AI usage</h2><div class="dw-loading">Loading…</div></div>`;
+  }},
+  sam: {title: 'Device in the lab (SAM)', desc: 'The lab device and job for this target from SAM: last status, runs, recent failures.', async render(c) {
+    const jobs = await fetchJSON('/api/sam/jobs').catch(() => null);
+    if (!jobs || !jobs.available) return `<h2>Device in the lab</h2>${_none(jobs ? jobs.reason : 'SAM not reachable.')}`;
+    const mine = jobs.jobs.find(j => j.registered_as === `${c.target.project} / ${c.target.device}`);
+    if (!mine) return `<h2>Device in the lab</h2>${_none('No SAM job is registered for this target (knowledge/sit_runs.yaml).')}`;
+    const d = await fetchJSON(`/api/sam/job/${mine.job_id}`).catch(() => null);
+    if (!d || !d.available) return `<h2>Device in the lab</h2>${_none(d ? d.reason : 'Could not read the SAM job.')}`;
+    const h = d.health, dev = (d.config || {}).device || {};
+    const mx = Math.max(1, ...h.days.map(x => x.complete + x.failures));
+    return `<h2>Device in the lab <a href="#" data-goto-aview="sam" class="corner-link">SAM →</a></h2>
+      <div style="font-size:12.5px;margin-bottom:6px;"><b>${esc(dev['Device Name'] || h.name)}</b> ${dev.IP ? `· ${esc(dev.IP)}` : ''} · job ${mine.job_id} · last <b>${esc(h.last_status)}</b></div>
+      <div class="stat-row" style="margin:0;">${_stat(h.runs_completed, 'runs completed')}${_stat(h.deployment_failures + h.test_exec_failures, 'lab failures', 'bad')}${_stat(h.recent_failure_count, `failures, ${h.recent_days} days`, h.recent_failure_count ? 'warn' : '')}</div>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:36px;margin-top:6px;">${h.days.map(x => `<div title="${esc(x.date)}: ${x.complete} complete, ${x.failures} failures" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:36px;"><div style="height:${x.failures / mx * 36}px;background:var(--bad);"></div><div style="height:${x.complete / mx * 36}px;background:var(--ok);"></div></div>`).join('')}</div>`;
+  }},
+  scheduled: {title: 'Scheduled checks', desc: 'The scheduled doc check for this target, and suggestions waiting for review.', async render(c) {
+    const [checks, sugg] = await Promise.all([fetchJSON('/api/scheduled-checks').catch(() => []), fetchJSON('/api/scheduled-checks/suggestions').catch(() => [])]);
+    const mine = checks.find(x => x.project === c.target.project && x.device === c.target.device);
+    return `<h2>Scheduled checks</h2>${mine ? `<p style="font-size:13px;margin:0;">${mine.enabled ? '<span class="pill ok">On</span>' : '<span class="pill">Off</span>'} every ${mine.interval_days} day(s) · last run ${mine.last_run_at ? esc(new Date(mine.last_run_at * 1000).toLocaleDateString()) : 'never'}</p>` : _none('No scheduled check for this target.')}
+      <p style="font-size:12.5px;margin:6px 0 0;"><span class="pill ${sugg.length ? 'warn' : ''}">${sugg.length}</span> suggestion(s) waiting for review</p>`;
+  }},
+  lastjira: {title: 'Last JIRAs', desc: 'The JIRA keys / fix versions the last Cross-Check JIRA and Feature runs were given.', async render(c) {
+    const runs = (await Promise.all(['audit-coverage', 'add-feature'].map(pid => fetchJSON(`/api/pipelines/${pid}/runs?${_q(c.target)}`).then(rs => rs.map(r => ({...r, pid}))).catch(() => [])))).flat();
+    const rows = runs.filter(r => r.extra_inputs && (r.extra_inputs.fix_version || r.extra_inputs.feature_or_jira_key)).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at))).slice(0, 6);
+    if (!rows.length) return `<h2>Last JIRAs</h2>${_none('No Cross-Check JIRA or Feature run with a JIRA yet for this target.')}`;
+    return `<h2>Last JIRAs</h2><table><tr><th>Function</th><th>JIRA</th><th>When</th></tr>${rows.map(r => `<tr><td>${esc(PIPELINE_DISPLAY_NAME[r.pid] || r.pid)}</td><td>${esc(r.extra_inputs.fix_version || r.extra_inputs.feature_or_jira_key)}</td><td>${esc(String(r.created_at || '').slice(0, 16).replace('T', ' '))}</td></tr>`).join('')}</table>`;
+  }},
+  defects: {title: 'Defects in the latest run', desc: 'Defects linked to results in the most recent TestRail run of the new suite.', async render(c) {
+    const rc = await fetchJSON(`/api/run-comments?${_q(c.target)}&which=new`).catch(() => null);
+    if (!rc || !rc.available) return `<h2>Defects in the latest run</h2>${_none(rc ? rc.reason : 'Could not read TestRail.')}`;
+    if (!rc.comments.length) return `<h2>Defects in the latest run</h2>${_none('No results with comments or defects in the recent runs.')}`;
+    const latest = rc.comments.reduce((m, x) => (x.created_on || 0) > (m.created_on || 0) ? x : m, rc.comments[0]).run_name;
+    const keys = [...new Set(rc.comments.filter(x => x.run_name === latest && x.defects).flatMap(x => String(x.defects).split(/[,\s]+/).filter(Boolean)))];
+    return `<h2>Defects in the latest run</h2><div class="stat-row" style="margin:0;">${_stat(keys.length, 'defects linked', keys.length ? 'bad' : 'ok')}</div>
+      <div style="font-size:12px;color:var(--ink-soft);">${esc(latest)}</div>${keys.length ? `<div style="margin-top:4px;">${keys.map(k => `<span class="pill warn">${esc(k)}</span>`).join(' ')}</div>` : ''}`;
+  }},
+  automation: {title: 'Coverage in automation', desc: 'Robot tests linked to TestRail cases, and sections with a linked functional test (from the coverage drafts).', async render(c) {
+    const d = await fetchJSON(`/api/automation/coverage?${_q(c.target)}`).catch(() => null);
+    if (!d || !d.available) return `<h2>Coverage in automation</h2>${_none(d ? d.reason : 'Not available.')}`;
+    return `<h2>Coverage in automation <a href="#" data-goto-aview="coverage" class="corner-link">Open →</a></h2><div class="stat-row" style="margin:0;">
+      ${_stat(`${d.tests.linked}/${d.tests.should_have_a_case}`, 'tests linked to a case')}${_stat(d.sections.OK, 'sections covered', 'ok')}${_stat(d.sections.ZERO, 'sections with nothing', 'bad')}</div>`;
+  }},
+  specs: {title: 'Coverage against specs', desc: 'How many cases cite a spec, and how automatable the suite is (from build-stats).', async render(c) {
+    const b = c.bs, tot = b.cases_total || 0;
+    if (b.cases_total == null) return `<h2>Coverage against specs</h2>${_none('No suite data for this target.')}`;
+    return `<h2>Coverage against specs</h2><div class="stat-row" style="margin:0;">${_stat(b.automatable_full ?? '?', 'automatable')}${_stat(b.automatable_partial ?? '?', 'partly automatable')}${_stat(b.manual_only ?? '?', 'manual only')}</div>
+      <div style="font-size:12px;color:var(--ink-soft);">${tot} cases in the suite. Spec citation % is not computed live yet.</div>`;
+  }},
+};
+
+async function dashRenderOne(el, id, ctx) {
+  const w = DASH_WIDGETS[id];
+  const card = el.querySelector('.dw-card');
+  card.innerHTML = `<h2>${esc(w.title)}</h2><div class="dw-loading">Loading…</div>`;   // not .loading: that marks the whole page as loading
+  try { const html = await w.render(ctx, el); if (document.body.contains(card)) card.innerHTML = html; }
+  catch (e) { if (document.body.contains(card)) card.innerHTML = `<h2>${esc(w.title)}</h2><div class="errbox">${esc(e.message)}</div>`; }
+}
+
 async function renderHealth() {
   loading();
   const epoch = window.__navEpoch;
   const gone = () => epoch !== window.__navEpoch;   // the person navigated away while this was loading
   const target = window.CURRENT_TARGET || HEALTH_FIXTURE_TARGET;
   try {
-    // George, 2026-10-06: "it shouldn't show old stuff" -- live numbers for THIS target's current mapped
-    // suite (cached ~5 min server-side; Sync forces a fresh pull). No captured fixtures on this page.
-    const live = await fetchJSON(`/api/dashboard-live?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}${window.__healthForce ? '&refresh=true' : ''}`);
+    const live = await fetchJSON(`/api/dashboard-live?${_q(target)}${window.__healthForce ? '&refresh=true' : ''}`);
     window.__healthForce = false;
     if (gone()) return;
-    if (!live.available) {
-      setContent(`
-        <div class="page-head"><h1>Status — ${esc(target.project)} / ${esc(target.device)}</h1><p>${esc(live.reason || 'No data for this target yet.')}</p></div>
-        <div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>`);
-      renderAiUsageWidget();
-      return;
-    }
-    const bs = {...live.build_stats, is_fixture: false};
-    const rh = live.run_health;
-    const gapScope = `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`;
-    const [gaps, docs, lastAudit, gapsForChart, confidence] = await Promise.all([
-      fetchJSON(`/api/gap-register?limit=5&${gapScope}`).catch(() => null),
-      fetchJSON(`/api/docs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => []),
-      fetchJSON(`/api/pipelines/audit/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`).catch(() => ({status: null})),
-      Promise.resolve(null),  // repo-wide gaps-by-device chart removed: not scoped to this target
-      Promise.resolve(null),  // confidence score was a captured 2026-09-28 POS snapshot; hidden until it is computed live
-    ]);
-    const fixtureNote = bs.is_fixture ? `<div class="fixture-note">⚠ ${esc(bs.fixture_note)}</div>` : '';
-    // George, 2026-09-29 (real bug, confirmed): "Dashboard defo still shows the other
-    // suite targeted not the now newer one" -- these fixtures are static, captured against
-    // ONE specific suite_id, and never invalidated when the target's real suite mapping is
-    // deleted/re-pointed. Rather than silently show stale data as current, say so plainly
-    // whenever the fixture's own suite_id disagrees with what's actually mapped now.
-    const currentSuiteMapping = SUITE_MAPPINGS[`${target.project}|${target.device}`];
-    // display:block override: the base .fixture-note class is display:inline-flex (built
-    // for short one-line pill badges) -- a longer message with embedded <b> tags gets each
-    // tag treated as its own flex item under align-items:center, fragmenting the text into
-    // a broken multi-column layout instead of flowing as normal prose (found live via a
-    // real screenshot, not just a code read -- genuinely looked broken on screen).
-    const suiteMismatchNote = (bs.suite_id != null && currentSuiteMapping && currentSuiteMapping.new_suite_id != null && currentSuiteMapping.new_suite_id !== bs.suite_id)
-      && false ? `<div class="fixture-note" style="display:block;background:var(--bad-bg);color:var(--bad);">⚠ STALE: this data is a captured snapshot of suite <b>${bs.suite_id}</b>, but ${esc(target.project)}/${esc(target.device)} is now mapped to a different suite (<b>${currentSuiteMapping.new_suite_id}</b>). Everything below is out of date for your current target — re-capture a fixture (or wire live TestRail credentials) for the current suite.</div>`
-      : '';
-
-    const rhFailedCases = rh ? rh.shown.filter(c => c.failed > 0) : [];
-    const runHealthTable = rh ? `
-      <div class="card">
-        <h2>Run health — ${esc(rh.suite)}</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real TestRail runs of the new suite, not this tool's own tests. ${esc(rh.fixture_note||'')}</p>
-        <div class="stat-row">
-          <div class="stat"><span class="n">${rh.runs_considered}</span><span class="l">runs considered</span></div>
-          <div class="stat bad"><span class="n">${rh.counts.always_failing}</span><span class="l">always failing</span></div>
-        </div>
-        <table>
-          <tr><th>Case</th><th>Title</th><th>Pass/Fail</th></tr>
-          ${rhFailedCases.length ? rhFailedCases.slice(0,8).map(c =>
-            `<tr><td>C${c.case_id}</td><td>${esc((c.title||'').slice(0,42))}</td><td>${c.passed}/${c.failed}</td></tr>`
-          ).join('') : `<tr><td colspan="3" style="color:var(--ink-soft);">No failed cases in the last ${rh.runs_considered} run(s).</td></tr>`}
-        </table>
-      </div>` : `<div class="card"><h2>Run health</h2><p class="errbox">Not available</p></div>`;
-    // George, 2026-09-28: real dashboard chart (live snapshot, per his own scoping answer)
-    // -- the same real, already-computed run-health breakdown the stat row above shows as
-    // raw numbers, as a chart instead. Status colors reserved for real status meaning.
-    const HEALTH_STATUS_COLORS = {'always failing': 'var(--bad)', flaky: 'var(--warn)', 'recently regressed': 'var(--warn)', 'never executed': 'var(--ink-soft)', orphaned: 'var(--ink-soft)'};
-    const runHealthChart = rh ? `
-      <div class="card">
-        <h2>Suite health breakdown</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Real case counts by category, from the same ${rh.runs_considered}-run window above.</p>
-        ${renderBarChart([
-          {label: 'always failing', value: rh.counts.always_failing},
-          {label: 'flaky', value: rh.counts.flaky},
-          {label: 'recently regressed', value: rh.counts.recently_regressed},
-          {label: 'never executed', value: rh.counts.never_executed},
-          {label: 'orphaned', value: rh.counts.orphaned},
-        ], {statusColors: HEALTH_STATUS_COLORS})}
-      </div>` : '';
-    // George, 2026-09-28: "Gaps by device/status" chart -- real counts computed from the
-    // actual gap-register markers (never a separate invented aggregate), grouped by each
-    // marker's own real device field. "common" (no device inferred) shown honestly as its
-    // own bar, not folded into another device or silently dropped.
-    const gapsByDeviceChart = gapsForChart ? (() => {
-      const counts = {};
-      gapsForChart.shown.forEach(m => { const d = m.device || 'common'; counts[d] = (counts[d] || 0) + 1; });
-      const data = Object.entries(counts).map(([label, value]) => ({label, value}));
-      return `<div class="card"><h2>Gaps by device</h2><p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gapsForChart.total} real GAP/UNCONFIRMED markers, repo-wide.</p>${renderBarChart(data)}</div>`;
-    })() : '';
-    // George, 2026-09-28: coverage confidence score, the 3 real inputs he picked (citation %,
-    // gap-free %, automation-reference %) equally weighted. Never shown as a bare number --
-    // the breakdown travels with it so it's always clear what's driving it, including that
-    // automation-reference is genuinely low today (2.9%), not spun positive.
-    const confidenceCard = confidence ? `
-      <div class="card">
-        <h2>Coverage confidence score</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Equal-weighted average of the 3 inputs below, ${esc(confidence.suite)}. ${esc(confidence.fixture_note||'')}</p>
-        <div class="stat-row"><div class="stat"><span class="n">${confidence.confidence_pct}%</span><span class="l">confidence</span></div></div>
-        <table>
-          <tr><th>Input</th><th>%</th><th>Detail</th></tr>
-          <tr><td>${esc(confidence.inputs.citation.label)}</td><td>${confidence.inputs.citation.pct}%</td><td>${confidence.inputs.citation.cases_with_refs}/${confidence.inputs.citation.cases_total} cases</td></tr>
-          <tr><td>${esc(confidence.inputs.gaps.label)}</td><td>${confidence.inputs.gaps.pct}%</td><td>${confidence.inputs.gaps.gaps_open} open marker(s)</td></tr>
-          <tr><td>${esc(confidence.inputs.automation.label)}</td><td>${confidence.inputs.automation.pct}%</td><td>${confidence.inputs.automation.cases_referenced}/${confidence.inputs.automation.cases_total} cases</td></tr>
-        </table>
-      </div>` : '';
-
-    const deltaCard = `
-      <div class="card">
-        <h2>Observed changes since last audit</h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">This suite vs the last build-stats run. Shows what moved, not who or why.</p>
-        <table>
-          <tr><th>Change</th><th>Case ids (first 10)</th></tr>
-          <tr><td><span class="pill ok">Added</span></td><td>${bs.delta.added.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.added.length>10?` …+${bs.delta.added.length-10} more`:''}</td></tr>
-          <tr><td><span class="pill warn">Edited</span></td><td>${bs.delta.edited.slice(0,10).map(i=>'C'+i).join(', ')}${bs.delta.edited.length>10?` …+${bs.delta.edited.length-10} more`:''}</td></tr>
-          <tr><td><span class="pill ${bs.delta.removed.length ? 'bad' : ''}">Removed</span></td><td>${bs.delta.removed.length ? bs.delta.removed.slice(0,10).map(i=>'C'+i).join(', ') + (bs.delta.removed.length>10?` …+${bs.delta.removed.length-10} more`:'') : 'None'}</td></tr>
-        </table>
+    // No suite data (TestRail unreachable and nothing cached, or no suite mapped): still show the dashboard - the widgets that need
+    // suite data say so, the rest (gaps, activity, docs, AI spend, SAM...) work from their own sources.
+    const noSuite = !live.available;
+    const bs = noSuite ? {project: `${target.project} / ${target.device}`, suite: '', generated_at: '', cases_total: null, delta: null} : {...live.build_stats, is_fixture: false};
+    const ctx = {target, live, bs, rh: live.run_health, cmp: fetchJSON(`/api/suite-comparison?${_q(target)}`).catch(() => null)};
+    const layout = dashLayout();
+    const editing = !!window.__dashEditing;
+    const frame = (w, i) => `<div class="dw dw-${w.size || 'm'} dw-h-${w.height || 'auto'}" data-wid="${w.id}">
+        <div class="card dw-card"></div>
+        ${editing ? `<div class="dw-edit">
+          <button class="btn" data-dw="left" data-i="${i}" title="Move earlier" ${i === 0 ? 'disabled' : ''}>◀</button><button class="btn" data-dw="right" data-i="${i}" title="Move later" ${i === layout.length - 1 ? 'disabled' : ''}>▶</button>
+          <select data-dw="size" data-i="${i}" title="Width">${[['s', 'Small'], ['m', 'Medium'], ['l', 'Full width']].map(([v, l]) => `<option value="${v}" ${(w.size || 'm') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          <select data-dw="height" data-i="${i}" title="Height">${[['auto', 'Fit'], ['short', 'Short'], ['tall', 'Tall']].map(([v, l]) => `<option value="${v}" ${(w.height || 'auto') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          <button class="btn" data-dw="hide" data-i="${i}" title="Remove from the dashboard">✕</button></div>` : ''}
       </div>`;
-
-    const gapsCard = gaps ? `
-      <div class="card">
-        <h2>Open gap-register questions <a href="#" data-goto-view="gaps" class="corner-link">See all →</a></h2>
-        <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${gaps.total} for this target, showing ${gaps.shown.length}</p>
-        <ul class="activity">${gaps.shown.map(g => `<li><span class="pill ${g.kind==='GAP'?'bad':'warn'}">${esc(g.kind)}</span>&nbsp;${esc(g.text.slice(0,90))}</li>`).join('')}</ul>
-      </div>` : '';
-
-    const docsCard = `
-      <div class="card">
-        <h2>Docs on file for ${esc(target.project)}/${esc(target.device)} <a href="#" data-goto-view="docs" class="corner-link">Manage →</a></h2>
-        ${docs.length
-          ? `<ul class="activity">${docs.slice(0,5).map(d => `<li>${esc(d.filename)} <span style="color:var(--ink-soft);font-size:11.5px;">— ${new Date(d.uploaded_at*1000).toLocaleDateString()}</span></li>`).join('')}</ul>`
-          : `<p style="color:var(--ink-soft);font-size:13px;">No docs uploaded for this target yet.</p>`}
-      </div>`;
-
-    const lastAuditCard = `
-      <div class="card">
-        <h2>Last audit run <a href="#" data-goto-pipeline="audit" class="corner-link">Run again →</a></h2>
-        ${lastAudit.status
-          ? `<p style="font-size:13.5px;margin:0;">${lastAudit.status === 'succeeded' ? '<span class="pill ok">Succeeded</span>' : lastAudit.status === 'running' ? '<span class="pill warn">Running</span>' : '<span class="pill bad">Failed</span>'} — ${esc(new Date(lastAudit.updated_at + 'Z').toLocaleString())}</p>
-             ${lastAudit.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(lastAudit.summary)}</p>` : ''}`
-          : `<p style="color:var(--ink-soft);font-size:13px;">Never run for ${esc(target.project)}/${esc(target.device)} yet — a real timestamp will show here once it is.</p>`}
-      </div>`;
-
-    if (gone()) return;
+    const hidden = Object.keys(DASH_WIDGETS).filter(id => !layout.some(w => w.id === id));
     setContent(`
       <div class="page-head-row">
         <h1>Status — ${esc(bs.project)}</h1>
         <div class="page-head-pills">
-          <span class="pill code">${esc(bs.suite)}</span>
-          <span class="pill human">generated ${esc(bs.generated_at)}</span>
-          ${bs.is_fixture ? `<span class="pill warn">⚠ fixture data</span>` : ''}
+          ${bs.suite ? `<span class="pill code">${esc(bs.suite)}</span><span class="pill human">generated ${esc(bs.generated_at)}</span>` : ''}
           ${live.stale_note ? `<span class="pill warn" title="${esc(live.stale_note)}">Offline — last pull</span>` : ''}
+          <button class="btn" id="dashEditBtn" style="font-size:12px;padding:4px 10px;">${editing ? 'Done' : 'Customise'}</button>
           <button class="sync-btn" id="healthSyncBtn">↻ Sync</button>
         </div>
       </div>
-      ${suiteMismatchNote}
-      ${fixtureNote}
-      <div class="stat-row">
-        <div class="stat"><span class="n">${bs.cases_total}</span><span class="l">cases total</span></div>
-        <div class="stat ok"><span class="n">${bs.delta.added.length}</span><span class="l">added</span></div>
-        <div class="stat warn"><span class="n">${bs.delta.edited.length}</span><span class="l">edited</span></div>
-        ${bs.gap_open_count !== null ? `<div class="stat bad"><span class="n">${bs.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
-      </div>
-      <div class="grid2">
-        <div><div class="card" id="suiteComparisonCard"><h2>Old vs. new suite — case counts</h2><div class="loading">Pulling live counts from TestRail…</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
-            ${runHealthTable}
-            ${runHealthChart}
-            ${gapsByDeviceChart}
-            ${confidenceCard}
-            <div class="card" id="runCommentsCard">
-              <h2>Run comments — reviewer notes
-                <select id="runCommentsWhich" style="font-size:12px;font-weight:400;margin-left:8px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-                  <option value="new">New suite</option>
-                  <option value="old">Old suite</option>
-                </select>
-              </h2>
-              <div id="runCommentsBody"><div class="loading">Pulling live comments from TestRail…</div></div>
-            </div>
-          </div>
-          ${deltaCard}
-        </div>
-        <div>${lastAuditCard}<div class="card" id="recentActivityCard"><h2>Recent activity — last run per function</h2><div class="loading">Loading…</div></div><div class="card" id="scheduledSuggestionsCard"><h2>Open suggestions <a href="#" data-goto-view="scheduled" class="corner-link">See all →</a></h2><div class="loading">Loading…</div></div><div class="card" id="aiUsageCard"><h2>AI usage — average per run</h2><div class="loading">Loading…</div></div>${gapsCard}${docsCard}</div>
-      </div>`);
-    renderAiUsageWidget();
-    fetchJSON('/api/scheduled-checks/suggestions').then(rows => {
-      const el = document.getElementById('scheduledSuggestionsCard');
-      if (!el) return;
-      const n = rows.length;
-      el.innerHTML = `<h2>Open suggestions <a href="#" data-goto-view="scheduled" class="corner-link">See all →</a></h2>
-        ${n ? `<p style="font-size:13.5px;margin:0;"><span class="pill warn">${n}</span> waiting for review</p>` : `<p style="color:var(--ink-soft);font-size:13px;">None right now.</p>`}`;
-    }).catch(() => {});
+      ${noSuite ? `<div class="fixture-note" style="display:block;margin-bottom:12px;">No suite data: ${esc(live.reason || 'not available')}</div>` : ''}
+      ${editing ? `<div class="card dash-add"><b style="font-size:13px;">Add to the dashboard</b>
+          ${hidden.length ? `<div class="dash-add-list">${hidden.map(id => `<div class="dash-add-item"><div><b>${esc(DASH_WIDGETS[id].title)}</b><div style="font-size:12px;color:var(--ink-soft);">${esc(DASH_WIDGETS[id].desc)}</div></div><button class="btn primary" data-dw-add="${id}" style="font-size:12px;">Add</button></div>`).join('')}</div>` : _none('Everything is already on the dashboard.')}
+          <button class="btn" id="dashReset" style="font-size:12px;margin-top:8px;">Reset to the default layout</button></div>` : ''}
+      <div class="dash-grid${editing ? ' editing' : ''}">${layout.map(frame).join('')}</div>`);
+    content.querySelectorAll('.dw').forEach(el => dashRenderOne(el, el.dataset.wid, ctx));
 
-    // Real per-function last-run timestamps (George's ask: "blocks that show the date, time
-    // of the last function that was done, so add feature, then another one"), reusing the
-    // same /api/pipelines/{id}/last-run each pipeline detail page already shows — not a new
-    // data source, just surfaced in one place instead of clicking into each pipeline.
-    const ACTIVITY_PIPELINES = ['ingest-docs', 'onboard-suite', 'add-feature', 'consolidate', 'audit', 'export-automation'];
-    Promise.all(ACTIVITY_PIPELINES.map(pid =>
-      fetchJSON(`/api/pipelines/${pid}/last-run?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
-        .then(r => ({pid, ...r})).catch(() => ({pid, status: null}))
-    )).then(rows => {
-      const el = document.getElementById('recentActivityCard');
-      if (!el) return;
-      const pillFor = (s) => s === 'succeeded' ? 'ok' : s === 'failed' ? 'bad' : s ? 'warn' : '';
-      el.innerHTML = `<h2>Recent activity — last run per function</h2>
-        <table><tr><th>Function</th><th>Last run</th></tr>
-          ${rows.map(r => `<tr><td>${esc(PIPELINE_DISPLAY_NAME[r.pid] || r.pid)}</td><td>${
-            r.status ? `<span class="pill ${pillFor(r.status)}">${esc(r.status)}</span> ${r.updated_at ? esc(new Date(r.updated_at + 'Z').toLocaleString()) : ''}`
-                      : '<span style="color:var(--ink-soft);">Never run</span>'
-          }</td></tr>`).join('')}
-        </table>`;
+    const redo = (l) => { dashSave(l); renderHealth(); };
+    document.getElementById('dashEditBtn').onclick = () => { window.__dashEditing = !editing; renderHealth(); };
+    document.getElementById('dashReset')?.addEventListener('click', () => { try { localStorage.removeItem(DASH_KEY); } catch (e) { /* ignore */ } renderHealth(); });
+    content.querySelectorAll('[data-dw-add]').forEach(b => b.onclick = () => redo([...layout, {id: b.dataset.dwAdd, size: 'm'}]));
+    content.querySelectorAll('button[data-dw]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.i, l = layout.map(w => ({...w}));
+      if (b.dataset.dw === 'hide') l.splice(i, 1);
+      if (b.dataset.dw === 'left' && i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]];
+      if (b.dataset.dw === 'right' && i < l.length - 1) [l[i + 1], l[i]] = [l[i], l[i + 1]];
+      redo(l);
     });
-
-    async function loadRunComments() {
-      const which = document.getElementById('runCommentsWhich').value;
-      const body = document.getElementById('runCommentsBody');
-      body.innerHTML = '<div class="loading">Pulling live comments from TestRail…</div>';
-      try {
-        const rc = await fetchJSON(`/api/run-comments?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}&which=${which}`);
-        if (!rc.available) { body.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">${esc(rc.reason)}</p>`; return; }
-        if (!rc.comments.length) { body.innerHTML = `<p style="color:var(--ink-soft);font-size:13px;">Checked ${rc.runs_checked} recent run(s) on suite C${rc.suite_id} — no comments found.</p>`; return; }
-        const statusPill = (id) => id === 1 ? 'ok' : id === 5 ? 'bad' : 'warn';
-        const statusLabel = (id) => ({1:'Passed',2:'Blocked',3:'Untested',4:'Retest',5:'Failed'}[id] || `Status ${id}`);
-        body.innerHTML = `<p style="color:var(--ink-soft);font-size:12px;margin:0 0 8px;">${rc.comments.length} comment(s) across ${rc.runs_checked} recent run(s) on suite C${rc.suite_id}.</p>
-          <ul class="activity">${rc.comments.slice(0,15).map(c => `
-            <li><span class="pill ${statusPill(c.status_id)}">${esc(statusLabel(c.status_id))}</span>&nbsp;
-              ${c.case_id ? `<b>C${c.case_id}</b> — ` : ''}${esc(c.comment.slice(0,140))}
-              ${c.defects ? `<span class="pill warn" style="margin-left:4px;">Defect ${esc(c.defects)}</span>` : ''}
-              <span style="color:var(--ink-soft);font-size:11px;display:block;">${c.created_on ? new Date(c.created_on*1000).toLocaleDateString() : ''} · ${esc(c.run_name)}</span>
-            </li>`).join('')}</ul>`;
-      } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
-    }
-    // Real re-sync, not a fake spinner: re-runs the exact same live fetches this page
-    // just did on load (build-stats, run-health, gaps, docs, last-audit, suite comparison,
-    // run comments, recent activity) -- George's ask for a "sync old vs new, run comments,
-    // recent activity" button, in Arrive colours.
+    content.querySelectorAll('select[data-dw]').forEach(s => s.onchange = () => { const l = layout.map(w => ({...w})); l[+s.dataset.i][s.dataset.dw] = s.value; redo(l); });
     document.getElementById('healthSyncBtn')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spin"></span> Syncing…';
+      btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Syncing…';
       window.__healthForce = true;
       await renderHealth();
     });
-    document.getElementById('runCommentsWhich').addEventListener('change', loadRunComments);
-    loadRunComments();
-
-    fetchJSON(`/api/suite-comparison?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`)
-      .then(cmp => {
-        const el = document.getElementById('suiteComparisonCard');
-        if (!el) return;
-        if (!cmp.available) {
-          el.innerHTML = `<h2>Old vs. new suite — case counts</h2><p style="color:var(--ink-soft);font-size:13px;">${esc(cmp.reason)}</p>`;
-          return;
-        }
-        const diffCls = cmp.diff < 0 ? 'bad' : cmp.diff > 0 ? 'ok' : '';
-        el.innerHTML = `
-          <h2>Old vs. new suite — case counts <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">(live)</span></h2>
-          <div class="stat-row">
-            <div class="stat"><span class="n">${cmp.old_case_count}</span><span class="l">old suite (C${cmp.old_suite_id})${cmp.old_marked_for_delete ? ` · ${cmp.old_marked_for_delete} in delete folder` : ''}</span></div>
-            <div class="stat"><span class="n">${cmp.new_case_count}</span><span class="l">new suite (C${cmp.new_suite_id})${cmp.new_marked_for_delete ? ` · ${cmp.new_marked_for_delete} in delete folder` : ''}</span></div>
-            <div class="stat ${diffCls}"><span class="n">${cmp.diff > 0 ? '+' : ''}${cmp.diff}</span><span class="l">difference</span></div>
-          </div>`;
-      })
-      .catch(() => {
-        const el = document.getElementById('suiteComparisonCard');
-        if (el) el.innerHTML = `<h2>Old vs. new suite — case counts</h2><div class="errbox">Could not pull live counts.</div>`;
-      });
   } catch (e) { if (!gone()) errbox('Could not load suite health: ' + e.message); }
 }
 
@@ -1623,44 +1662,113 @@ function wireChipFields(root) {
 // "featured" highlighting, reusing the EXACT same Build/Checks grouping the sidebar itself
 // uses (GROUPS/GROUP_DISPLAY_NAME), not a second, separately-maintained grouping that could
 // drift from what the sidebar actually shows.
+// How to's (George, 2026-10-09): one square tile per pipeline, four across, grouped under bold section titles. A tile shows the
+// name, a one-line description and its AI / code / human make-up; clicking it opens the how-to in a pop-up (no accordions).
+// Folded pipelines (tabs on another page) sit next to their host; archived ones are not shown.
+const HOWTO_ARCHIVED = new Set(['targeted-run', 'audit-flows', 'audit']);
 async function renderProcessesTab(container) {
   container.innerHTML = '<div class="loading">Loading…</div>';
   try {
     const list = await fetchJSON('/api/pipelines');
     const byId = Object.fromEntries(list.map(p => [p.id, p]));
-    const grouped = new Set(Object.values(GROUPS).flat());
-    // new-suite-from-docs: deliberately hidden everywhere (2026-09-23, real reason: 136
-    // steps/65 agent calls for Translink -- see GROUPS' own comment). The other 4 already
-    // have their own real nav entry points under the Automation tab (data-aview-pipeline) --
-    // showing them again here in "Ungrouped" would just be a stray duplicate, not a genuine
-    // gap. Regression found + fixed 2026-09-29: this exclusion was dropped when this
-    // function was rewritten to reuse GROUPS instead of the old PIPELINE_STAGES.
-    const HIDDEN_FROM_HOW_TOS = new Set(['new-suite-from-docs', 'export-automation', 'write-automation', 'draft-automation', 'refresh-automation-tier', 'judge-failures']);
-    const ungrouped = list.filter(p => !grouped.has(p.id) && !HIDDEN_FROM_HOW_TOS.has(p.id));
-    const sections = [
-      ...Object.entries(GROUPS).map(([key, ids]) => ({title: GROUP_DISPLAY_NAME[key] || key, ids})),
-      ...(ungrouped.length ? [{title: 'Ungrouped', ids: ungrouped.map(p => p.id)}] : []),
-    ];
-    const sectionHTML = sections.map((section) => {
-      const ids = section.ids.filter(id => byId[id]);
-      const rows = ids.map(id => pipelineRowHTML(byId[id])).join('');
-      if (!rows) return '';
-      return `
-        <div class="navgroup-header" style="margin:16px 0 4px;"><div class="label">${esc(section.title)}</div></div>
-        ${rows}`;
+    const HIDDEN_FROM_HOW_TOS = new Set(['new-suite-from-docs', 'export-automation', 'write-automation', 'draft-automation', 'refresh-automation-tier', 'judge-failures', ...HOWTO_ARCHIVED]);
+    const withFamily = (ids) => ids.flatMap(id => [id, ...((PIPELINE_TABS[id] || []).filter(x => x !== id))]);
+    const sections = Object.entries(GROUPS).map(([key, ids]) => ({title: GROUP_DISPLAY_NAME[key] || key,
+      ids: withFamily(ids).concat(key === 'Checks' ? PIPELINE_TABS['@gaps'] : [])}));
+    const placed = new Set(sections.flatMap(s => s.ids));
+    const rest = list.filter(p => !placed.has(p.id) && !HIDDEN_FROM_HOW_TOS.has(p.id)).map(p => p.id);
+    if (rest.length) sections.push({title: 'Other', ids: rest});
+    const tile = (p) => {
+      const host = PIPELINE_TAB_HOST[p.id];
+      const where = host ? (host === '@gaps' ? 'on the Gaps page' : `a tab on ${PIPELINE_DISPLAY_NAME[host] || host}`) : '';
+      return `<button class="howto-tile" data-howto="${esc(p.id)}">
+        <div class="howto-name">${p.id === 'start' ? '<span class="howto-star" title="Start here">★</span> ' : ''}${esc(pipelineDisplayName(p))}</div>
+        <div class="howto-desc">${esc((PIPELINE_PLAIN[p.id] || p.description || '').split(/(?<=\.)\s/)[0])}</div>
+        ${where ? `<div class="howto-where">${esc(where)}</div>` : ''}
+        <div class="howto-pills">${p.density.agent ? `<span class="pill ai">${p.density.agent} AI</span>` : ''}${p.density.cli ? `<span class="pill code">${p.density.cli} code</span>` : ''}${p.density.human ? `<span class="pill human">${p.density.human} human</span>` : ''}${p.density.gate ? `<span class="pill gate">${p.density.gate} gate</span>` : ''}${p.density.composite_ref ? `<span class="pill code">${p.density.composite_ref} process</span>` : ''}</div>
+      </button>`;
+    };
+    container.innerHTML = sections.map(s => {
+      const ids = s.ids.filter(id => byId[id] && !HIDDEN_FROM_HOW_TOS.has(id));
+      return ids.length ? `<h2 class="howto-section">${esc(s.title)}</h2><div class="howto-grid">${ids.map(id => tile(byId[id])).join('')}</div>` : '';
     }).join('');
-    container.innerHTML = sectionHTML;
-    container.querySelectorAll('[data-row-toggle]').forEach(head => {
-      head.addEventListener('click', () => {
-        const row = head.closest('.pipeline-row');
-        const acc = row.querySelector('.pipeline-row-accordion');
-        const chevron = head.querySelector('.chevron');
-        const opening = acc.style.display === 'none';
-        acc.style.display = opening ? 'block' : 'none';
-        if (chevron) chevron.style.transform = opening ? 'rotate(90deg)' : '';
-      });
-    });
+    container.querySelectorAll('[data-howto]').forEach(btn => btn.addEventListener('click', () => {
+      const p = byId[btn.dataset.howto];
+      const steps = PIPELINE_TERSE_STEPS[p.id];
+      const overlay = document.getElementById('textPopupOverlay'), body = document.getElementById('textPopupBody');
+      body.innerHTML = `<div class="modal-head" style="padding:0 0 12px;"><h3 style="margin:0;font-size:15px;">${esc(pipelineDisplayName(p))}</h3><button class="modal-close" id="textPopupClose">&times;</button></div>
+        ${PIPELINE_PLAIN[p.id] ? `<p style="font-size:13.5px;margin:0 0 10px;">${esc(PIPELINE_PLAIN[p.id])}</p>` : ''}
+        ${steps ? `<ol style="font-size:13px;margin:0 0 12px;padding-left:20px;line-height:1.6;">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '<p style="color:var(--ink-soft);font-size:12.5px;">No step-by-step guide written for this pipeline yet.</p>'}
+        ${NEXT_PIPELINE[p.id] ? `<p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;"><b>Next:</b> ${esc(NEXT_PIPELINE[p.id])}</p>` : ''}
+        <button class="btn primary" id="howtoOpen" style="font-size:12.5px;">Open ${esc(pipelineDisplayName(p))} →</button>`;
+      overlay.classList.add('open');
+      const close = () => overlay.classList.remove('open');
+      document.getElementById('textPopupClose').onclick = close;
+      overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); }, {once: true});
+      document.getElementById('howtoOpen').onclick = () => { close(); goToPipeline(p.id); };
+    }));
   } catch (e) { container.innerHTML = `<div class="errbox">Could not load pipelines: ${esc(e.message)}</div>`; }
+}
+
+// Go to a pipeline from anywhere, with the menu following (a folded pipeline highlights its host).
+async function openQuickRun(id) {
+  const target = window.CURRENT_TARGET || {};
+  const overlay = document.getElementById('textPopupOverlay'), body = document.getElementById('textPopupBody');
+  if (!target.project || !target.device) { goToPipeline(id); return; }
+  body.innerHTML = '<div class="loading">Loading…</div>';
+  overlay.classList.add('open');
+  let d;
+  try { d = await fetchJSON(`/api/pipelines/${encodeURIComponent(id)}`); } catch (e) { body.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; return; }
+  const SYSTEM = ['project', 'device', 'old_suite_id', 'new_suite_id', 'suite_id', 'docs_path'];
+  const inputs = (d.inputs || []).filter(i => !SYSTEM.includes(i.name));
+  const name = PIPELINE_DISPLAY_NAME[id] || id;
+  body.innerHTML = `<div class="modal-head" style="padding:0 0 10px;"><h3 style="margin:0;font-size:15px;">Run ${esc(name)}</h3><button class="modal-close" id="textPopupClose">&times;</button></div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 10px;">Against ${esc(target.project)} / ${esc(target.device)}. Progress shows in the console below; you can keep working here.</p>
+    <div id="quickRunFields">${inputs.map(i => `<label style="display:block;font-size:13px;margin-bottom:8px;">${esc(i.name)}${i.required ? ' <b style="color:var(--bad);">*</b>' : ''}${i.note ? `<div style="font-size:11.5px;color:var(--ink-soft);">${esc(i.note)}</div>` : ''}
+      <input class="input" data-quick-input="${esc(i.name)}" value="${esc(i.default || '')}" style="width:100%;box-sizing:border-box;margin-top:3px;"></label>`).join('') || '<p style="font-size:12.5px;margin:0 0 8px;">Nothing else is needed to start it.</p>'}
+      <label style="display:block;font-size:13px;margin-bottom:8px;">Context (optional)<textarea class="input" data-quick-input="intent" rows="2" style="width:100%;box-sizing:border-box;margin-top:3px;"></textarea></label></div>
+    <div id="quickRunMsg" style="font-size:12.5px;color:var(--bad);"></div>
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:8px;"><button class="btn" id="quickRunOpen">Open the pipeline page</button><button class="btn primary" id="quickRunGo">Run</button></div>`;
+  const close = () => overlay.classList.remove('open');
+  document.getElementById('textPopupClose').onclick = close;
+  document.getElementById('quickRunOpen').onclick = () => { close(); goToPipeline(id); };
+  document.getElementById('quickRunGo').onclick = async () => {
+    const extra_inputs = {};
+    body.querySelectorAll('[data-quick-input]').forEach(el => { extra_inputs[el.dataset.quickInput] = el.value.trim(); });
+    const missing = inputs.filter(i => i.required && !extra_inputs[i.name]).map(i => i.name);
+    if (missing.length) { document.getElementById('quickRunMsg').textContent = 'Needed: ' + missing.join(', '); return; }
+    const res = await fetch(`/api/pipelines/${encodeURIComponent(id)}/run`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({project: target.project, device: target.device, extra_inputs})});
+    if (!res.ok) { document.getElementById('quickRunMsg').textContent = 'Could not start: ' + ((await res.json().catch(() => ({}))).detail || res.statusText); return; }
+    const {run_id} = await res.json();
+    close();
+    document.getElementById('consolePanel')?.classList.add('open');
+    setConsoleStatusPill('running'); setConsoleRunLabelPill(id, target.project, target.device);
+    pollPipelineRun(run_id, document.getElementById('pipelineRunResult'), null, document.getElementById('pipelineStepList'));
+  };
+}
+
+// Full-width banners under the top bar (George, 2026-10-09). kind: ok | warn | bad. "–" collapses a banner to a thin bar that reopens it
+// when clicked; "✕" clears it for this page view. showBanner(id, ...) replaces any banner with the same id.
+function showBanner(id, kind, html) {
+  const area = document.getElementById('bannerArea');
+  if (!area) return;
+  area.querySelector(`[data-banner="${id}"]`)?.remove();
+  const el = document.createElement('div');
+  el.className = `app-banner ${kind}`; el.dataset.banner = id;
+  el.innerHTML = `<div class="app-banner-body">${html}</div><div class="app-banner-btns"><button class="app-banner-btn" data-banner-min title="Minimise">–</button><button class="app-banner-btn" data-banner-close title="Clear">✕</button></div>`;
+  el.querySelector('[data-banner-min]').onclick = (ev) => { ev.stopPropagation(); el.classList.add('min'); };
+  el.querySelector('[data-banner-close]').onclick = (ev) => { ev.stopPropagation(); el.remove(); };
+  el.onclick = () => { if (el.classList.contains('min')) el.classList.remove('min'); };
+  area.appendChild(el);
+}
+function clearBanners() { const a = document.getElementById('bannerArea'); if (a) a.innerHTML = ''; }
+
+function goToPipeline(id) {
+  const host = PIPELINE_TAB_HOST[id];
+  if (document.getElementById('tabTestOps') && !document.getElementById('tabTestOps').classList.contains('active')) document.getElementById('tabTestOps').click();
+  const btn = document.querySelector(`.navitem[data-pipeline="${host && host !== '@gaps' ? host : id}"]`) || (host === '@gaps' ? document.querySelector('.navitem[data-view="gaps"]') : null);
+  if (btn) setActiveNav(btn);
+  renderPipelineDetail(id);
 }
 
 async function renderFlowsBody(container) {
@@ -1954,7 +2062,6 @@ async function renderGaps() {
         <span style="display:flex;gap:6px;flex-wrap:wrap;">
           <button class="btn" id="gapExportBtn" title="Every distinct gap with its question and its current answer filled in. Edit it, then import it back.">⬇ Download gaps + answers</button>
           <label class="btn" style="cursor:pointer;" title="Upload the edited sheet. Only the rows you changed are recorded.">⬆ Import changes<input type="file" id="gapImportFile" accept=".csv" hidden></label>
-          <button class="btn" id="gapRefreshBtn">↻ Refresh against new docs</button>
         </span>
       </div>
       <div id="gapRefreshResult"></div>
@@ -2002,7 +2109,7 @@ async function renderGaps() {
       : `<span style="color:var(--ink-soft);">Never run for ${esc(target.project || '(no target)')}/${esc(target.device || '')} yet.</span>`;
     const logTabHTML = `
       <div class="card">
-        <h2>Last sync (resolve-gaps) <a href="#" data-goto-pipeline="resolve-gaps" style="font-size:11.5px;font-weight:400;">Run →</a></h2>
+        <h2>Last sync (resolve-gaps) <a href="#" data-quick-run="resolve-gaps" style="font-size:11.5px;font-weight:400;">Run →</a> <a href="#" data-goto-pipeline="resolve-gaps" style="font-size:11.5px;font-weight:400;">Open →</a></h2>
         <p style="font-size:13.5px;margin:0;">${lastSyncLine}</p>
       </div>
       <div class="card">
@@ -2783,6 +2890,22 @@ async function renderPipelineDetail(id) {
     // targeted-run's real section tree (George, 2026-09-22) -- fetched here, same
     // pattern as docsFolder/currentDocs above, so the checkbox list renders with real
     // data on first paint rather than a placeholder needing a second async fill.
+    let knowledgeNotes = null;   // update-suite-from-docs: the project's distilled spec notes, for the knowledge-file picker
+    if (id === 'update-suite-from-docs' && target.project) {
+      try { knowledgeNotes = (await fetchJSON(`/api/knowledge/specs?project=${encodeURIComponent(target.project)}`)).notes; } catch (e) { knowledgeNotes = []; }
+    }
+    let gapAreas = null;          // resolve-gaps: the spec areas that answered gaps point at, most-answered first
+    if (id === 'resolve-gaps' && target.project) {
+      try {
+        const answers = await fetchJSON(`/api/gap-answers?project=${encodeURIComponent(target.project)}`);
+        const counts = {};
+        answers.filter(a => !a.device || a.device === target.device).forEach(a => {
+          const m = (a.gap_ref || '').match(/specs[\\/]([^\\/\s:]+)\.md/);
+          if (m) counts[m[1]] = (counts[m[1]] || 0) + 1;
+        });
+        gapAreas = Object.entries(counts).sort((x, y) => y[1] - x[1]);
+      } catch (e) { gapAreas = []; }
+    }
     let sitRuns = null;     // judge-failures: this target's recent pipeline runs, for the run picker
     if (id === 'judge-failures' && target.project && target.device) {
       try { sitRuns = await fetchJSON(`/api/sit-runs?project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}`); }
@@ -2813,16 +2936,16 @@ async function renderPipelineDetail(id) {
     }
     const ingestRunsPickerHtml = id === 'update-suite-from-docs' ? `
       <div class="card" style="margin-top:10px;">
-        <b style="font-size:13px;">Past Ingest Docs runs for this target</b>
+        <b style="font-size:13px;">Last Ingest Docs runs for this target</b>
         <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 8px;">Pick the run whose document(s) you're scoping this update to — "Use this run" resolves the real knowledge file(s) it produced and fills "knowledge_files" below.</p>
         ${ingestRunsForPicker === null ? `<p style="color:var(--ink-soft);font-size:12.5px;">Set a project/device target to see this.</p>`
           : ingestRunsForPicker.length === 0 ? `<p style="color:var(--ink-soft);font-size:12.5px;">No Ingest Docs runs recorded yet for this target — run <a href="#" data-goto-pipeline="ingest-docs">Ingest Docs</a> first.</p>`
           : `<table style="width:100%;border-collapse:collapse;font-size:12.5px;">
               <thead><tr style="text-align:left;color:var(--ink-soft);"><th style="padding:4px 8px 4px 0;">When</th><th style="padding:4px 8px;">Status</th><th style="padding:4px 8px;">Document(s)</th><th style="padding:4px 8px;"></th></tr></thead>
-              <tbody>${ingestRunsForPicker.map(r => `
+              <tbody>${ingestRunsForPicker.slice(0, 3).map(r => `
                 <tr style="border-top:1px solid var(--line);">
                   <td style="padding:4px 8px 4px 0;white-space:nowrap;">${esc(new Date(r.created_at).toLocaleString())}</td>
-                  <td style="padding:4px 8px;">${esc(r.status)}</td>
+                  <td style="padding:4px 8px;"><span class="pill ${r.status === 'succeeded' ? 'ok' : r.status === 'failed' ? 'bad' : 'warn'}">${esc(r.status)}</span></td>
                   <td style="padding:4px 8px;">${esc((r.extra_inputs && r.extra_inputs.only_file) || 'full folder sweep')}</td>
                   <td style="padding:4px 8px;"><button type="button" class="btn" data-use-ingest-run="${esc(r.id)}" style="font-size:11.5px;padding:2px 8px;">Use this run</button></td>
                 </tr>`).join('')}</tbody>
@@ -2873,7 +2996,7 @@ async function renderPipelineDetail(id) {
     // review of the docs before ingesting, so it can pass the gate"). Runs the exact same
     // convert + relevance_check steps the real run would hit first -- no AI, so cheap to
     // run as many times as needed while cleaning up a folder of docs.
-    const relevancePreviewHtml = isIngestDocs ? `
+    const relevancePreviewHtmlOld = isIngestDocs ? `
       <div class="card" style="margin-top:10px;">
         <b style="font-size:13px;">Check relevance before running</b>
         <p style="color:var(--ink-soft);font-size:12.5px;margin:6px 0 8px;">Converts and scores every doc against this project's real, existing vocabulary — the same gate the real run hits first, without starting a tracked run.</p>
@@ -2958,6 +3081,29 @@ async function renderPipelineDetail(id) {
           // --areas matches against.
           // judge-failures' run_id: pick one of this target's recent pipeline runs instead of typing an id. Blank = newest
           // finished run with Robot results. A run with no results artifact is listed but cannot be chosen.
+          // George, 2026-10-09: "knowledge files needs to be a picker" - tick one or many distilled notes (newest first); "Use this run"
+          // above ticks the notes a given ingest produced. The hidden field submits the ticked paths, comma-joined, as before.
+          if (id === 'update-suite-from-docs' && i.name === 'knowledge_files') {
+            const notes = knowledgeNotes || [];
+            return `
+          <label style="display:block;font-size:13px;margin-bottom:4px;">Which knowledge to check the suite against${i.required ? ' *' : ''}</label>
+          <div style="font-size:12px;color:var(--ink-soft);margin-bottom:6px;">Distilled notes from your ingested docs, newest first. Tick the new doc's notes, several, or all of them.</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px;"><button type="button" class="btn" data-kn-all style="font-size:11.5px;padding:2px 8px;">All</button><button type="button" class="btn" data-kn-none style="font-size:11.5px;padding:2px 8px;">None</button><input class="input" data-kn-filter placeholder="Filter…" style="flex:1;font-size:12px;"></div>
+          <div id="knowledgePicker" style="max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:8px;">
+            ${notes.length ? notes.map(n => `<label style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;" data-kn-row="${esc((n.name + ' ' + n.title).toLowerCase())}"><input type="checkbox" data-kn-path="${esc(n.path)}"><span><b>${esc(n.name)}</b> <span style="color:var(--ink-soft);">${esc(n.title !== n.name ? n.title : '')} · ${esc(new Date(n.modified * 1000).toLocaleDateString())}</span></span></label>`).join('')
+              : '<span style="font-size:12.5px;color:var(--ink-soft);">No distilled notes for this project yet. Run Ingest docs first.</span>'}
+          </div>
+          <input type="hidden" data-extra-input="knowledge_files" value="">`;
+          }
+          if (id === 'resolve-gaps' && i.name === 'area') {
+            const areas = gapAreas || [];
+            return `
+          <label style="display:block;font-size:13px;margin-bottom:6px;">Area to update${i.required ? ' *' : ''}
+            <div style="font-size:12px;color:var(--ink-soft);margin:2px 0 4px;">Worked out from the answers you have given: the spec area each answered gap belongs to, most answers first. Pick another only if you need to.</div>
+            ${areas.length ? `<select class="input" data-extra-input="area" style="display:block;width:100%;">${areas.map(([a, n], k) => `<option value="${esc(a)}" ${k === 0 ? 'selected' : ''}>${esc(a)} (${n} answer${n === 1 ? '' : 's'})</option>`).join('')}</select>`
+              : `<input class="input" data-extra-input="area" placeholder="No answered gaps point at a spec area yet" style="display:block;width:100%;">`}
+          </label>`;
+          }
           if (id === 'judge-failures' && i.name === 'run_id') {
             const fmt = (r) => `${(r.created_at || '').replace('T', ' ').slice(0, 16)} · ${r.conclusion || r.status} · run ${r.run_id} · ${r.branch || ''}${r.has_results ? '' : ' (no Robot results)'}`;
             const opts = (sitRuns && sitRuns.available ? sitRuns.runs : []).map(r => `<option value="${r.run_id}" ${r.has_results ? '' : 'disabled'}>${esc(fmt(r))}</option>`).join('');
@@ -3039,13 +3185,13 @@ async function renderPipelineDetail(id) {
           <input type="hidden" data-extra-input="only_file" value="" />`;
           }
           if (i.name === 'last_n') {
-            const opts = [5, 10, 15, 25, 50];
+            const opts = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50];   // George, 2026-10-09: 1-5, then steps of 5
             const current = Number(i.default) || 10;
             return `
           <label style="display:block;font-size:13px;margin-bottom:6px;">
             How many recent runs to review${i.note ? ` <span style="color:var(--ink-soft);">— ${esc(i.note)}</span>` : ''}
             <select class="input" data-extra-input="last_n" style="display:block;width:auto;margin-top:2px;">
-              ${opts.map(n => `<option value="${n}" ${n === current ? 'selected' : ''}>${n} runs</option>`).join('')}
+              ${opts.map(n => `<option value="${n}" ${n === current ? 'selected' : ''}>${n} run${n === 1 ? '' : 's'}</option>`).join('')}
             </select>
           </label>`;
           }
@@ -3077,13 +3223,16 @@ async function renderPipelineDetail(id) {
     // outside extraInputs, so it's the same one field on every pipeline, just not always
     // taking up viewport room).
     // George, 2026-10-06: "move the give context" -- no pop-up; the box sits inline under the step pills.
-    const intentModalHtml = '';
-    const intentInlineHtml = `
-      <div class="card" style="margin:10px 0;">
-        <b style="font-size:13px;">What are you trying to achieve with this run? <span style="color:var(--ink-soft);font-weight:400;">(optional)</span></b>
-        <textarea class="input" data-extra-input="intent" rows="3" placeholder="e.g. grounded for back-office comms testing, not just device navigation" style="display:block;width:100%;resize:vertical;margin-top:6px;"></textarea>
-      </div>`;
-    const giveContextBtn = '';
+    // George, 2026-10-09: back to a "Give context" button beside Run that opens a pop-up; the full-width box was clutter.
+    const intentModalHtml = `
+      <div class="gap-modal-overlay" id="intentModalOverlay"><div class="gap-modal">
+        <div class="modal-head" style="padding:0 0 10px;"><h3 style="margin:0;font-size:15px;">Give context for this run</h3><button class="modal-close" id="intentModalClose">&times;</button></div>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 6px;">What are you trying to achieve? Optional; the AI steps weigh it, the step instructions still govern.</p>
+        <textarea class="input" data-extra-input="intent" rows="5" placeholder="e.g. grounded for back-office comms testing, not just device navigation" style="display:block;width:100%;box-sizing:border-box;resize:vertical;"></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"><button class="btn primary" id="intentModalDone">Done</button></div>
+      </div></div>`;
+    const intentInlineHtml = '';
+    const giveContextBtn = detail.runnable ? `<button class="btn" id="giveContextBtn" title="Tell the AI steps what you are trying to achieve">Give context</button>` : '';
     const runButton = detail.runnable
       ? `<button class="btn primary" id="pipelineRunBtn">Run</button>`
       : `<div class="tooltip-wrap"><button class="btn primary" disabled>Run</button><span class="tip">Not wired yet — only read-only pipelines are, so far</span></div>`;
@@ -3103,6 +3252,7 @@ async function renderPipelineDetail(id) {
           <input type="hidden" data-extra-input="docs_path" value="${esc(docsFolder || '')}" />` : ''}
         </div>
         <div style="display:flex;gap:8px;align-items:flex-start;">
+          ${isIngestDocs ? '<button class="btn" id="relevancePreviewBtn" title="Score every doc against this project\'s vocabulary, without starting a run">Check relevance</button>' : ''}
           ${giveContextBtn}
           ${runButton}
         </div>
@@ -3118,7 +3268,7 @@ async function renderPipelineDetail(id) {
         ${flowGuideHtml}
         ${ingestRunsPickerHtml}
         ${docsSourceCardHtml}
-        ${relevancePreviewHtml}
+
         ${extraInputsHtml ? `
         <div class="pipeline-two-col">
           <div>${pipelineGuideHtml}</div>
@@ -3215,27 +3365,21 @@ async function renderPipelineDetail(id) {
     document.getElementById('flowDiagramAccordion')?.querySelector('.stage-header')?.addEventListener('click', (e) => {
       e.currentTarget.closest('.stage-group').classList.toggle('open');
     });
-    document.getElementById('relevancePreviewBtn')?.addEventListener('click', async () => {
-      const resultEl = document.getElementById('relevancePreviewResult');
+    document.getElementById('relevancePreviewBtn')?.addEventListener('click', async (ev) => {
+      const btn = ev.currentTarget;
       const docsPathEl = content.querySelector('[data-extra-input="docs_path"]');
-      const projectVal = target.project;
       const docsPathVal = docsPathEl ? docsPathEl.value : '';
-      if (!projectVal || !docsPathVal) {
-        resultEl.innerHTML = `<p style="color:var(--warn);font-size:12.5px;">Need a project target and a resolved docs path first.</p>`;
-        return;
-      }
-      resultEl.innerHTML = `<div class="loading">Converting and checking relevance…</div>`;
+      if (!target.project || !docsPathVal) { showBanner('relevance', 'warn', 'Relevance check: pick a project/device target with a docs folder first.'); return; }
+      btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Checking…';
       try {
-        const res = await fetch('/api/docs/relevance-preview', {
-          method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({project: projectVal, docs_path: docsPathVal}),
-        });
+        const res = await fetch('/api/docs/relevance-preview', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({project: target.project, docs_path: docsPathVal})});
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
         const body = await res.json();
-        resultEl.innerHTML = body.ok
-          ? `<p style="font-size:13px;"><span class="pill ok">Clean</span> Every doc looks relevant — safe to Run.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:200px;overflow:auto;">${esc(body.output)}</pre>`
-          : `<p style="font-size:13px;"><span class="pill bad">${esc(body.stage)}</span> Fix this before running — the real run would stop here too.</p><pre style="white-space:pre-wrap;font-size:12px;color:var(--ink-soft);max-height:240px;overflow:auto;">${esc(body.output)}</pre>`;
-      } catch (e) { resultEl.innerHTML = `<div class="errbox">${esc(e.message)}</div>`; }
+        const detail = `<details style="margin-top:4px;"><summary style="cursor:pointer;">Details</summary><pre style="white-space:pre-wrap;font-size:11.5px;max-height:220px;overflow:auto;margin:4px 0 0;">${esc(body.output || '')}</pre></details>`;
+        showBanner('relevance', body.ok ? 'ok' : 'bad', body.ok ? `✓ Relevance check: every doc looks relevant to ${esc(target.project)}. Safe to run.${detail}`
+                                                            : `✕ Relevance check stopped at <b>${esc(body.stage)}</b>: fix this before running (the real run would stop here too).${detail}`);
+      } catch (e) { showBanner('relevance', 'bad', 'Relevance check failed: ' + esc(e.message)); }
+      finally { btn.disabled = false; btn.textContent = 'Check relevance'; }
     });
     // "Use this run" (George, 2026-09-28: "people will more likely know this is the recent
     // ingest time I did, and choose that to confirm what knowledge docs to be examined") --
@@ -3256,11 +3400,18 @@ async function renderPipelineDetail(id) {
             resultEl.textContent = "This run's distil step didn't touch any knowledge file — nothing to fill in.";
           } else {
             if (field) field.value = res.files.map(f => f.path).join(', ');
+            const want = new Set(res.files.map(f => f.path.replace(/\\/g, '/')));
+            content.querySelectorAll('[data-kn-path]').forEach(cb => { cb.checked = want.has(cb.dataset.knPath); });
             resultEl.innerHTML = `Filled in from this run: ${res.files.map(f => `<code>${esc(f.path)}</code>`).join(', ')}`;
           }
         } catch (e) { resultEl.innerHTML = `<span style="color:var(--warn);">Could not resolve: ${esc(e.message)}</span>`; }
       });
     });
+    const knSync = () => { const f = content.querySelector('[data-extra-input="knowledge_files"]'); if (f) f.value = [...content.querySelectorAll('[data-kn-path]:checked')].map(c => c.dataset.knPath).join(', '); };
+    content.querySelectorAll('[data-kn-path]').forEach(cb => cb.addEventListener('change', knSync));
+    content.querySelector('[data-kn-all]')?.addEventListener('click', () => { content.querySelectorAll('#knowledgePicker label:not([style*="display: none"]) [data-kn-path]').forEach(c => { c.checked = true; }); knSync(); });
+    content.querySelector('[data-kn-none]')?.addEventListener('click', () => { content.querySelectorAll('[data-kn-path]').forEach(c => { c.checked = false; }); knSync(); });
+    content.querySelector('[data-kn-filter]')?.addEventListener('input', (e) => { const q = e.target.value.toLowerCase(); content.querySelectorAll('[data-kn-row]').forEach(r => { r.style.display = r.dataset.knRow.includes(q) ? '' : 'none'; }); });
     document.getElementById('pipelineTabDetails')?.addEventListener('click', (e) => {
       e.currentTarget.classList.add('active');
       document.getElementById('pipelineTabLog')?.classList.remove('active');
@@ -3302,7 +3453,11 @@ async function renderPipelineDetail(id) {
             let reenabled = false;
             try { reenabled = localStorage.getItem('testops.setupReenabled') === '1'; } catch (e) { /* default: fade */ }
             if (connected && !reenabled && document.getElementById('pipelineAlreadyDone') === alreadyDoneEl) content.classList.add('setup-complete');
-            alreadyDoneEl.innerHTML = connected
+            const bannerHtml = connected
+              ? `✓ ${esc(target.project)}/${esc(target.device)} is set up: credentials verified with TestRail and a suite target is in place.`
+              : `⚠ ${esc(target.project)}/${esc(target.device)}: credentials and suite target are saved, but TestRail could not be reached to verify them.`;
+            showBanner('setup', connected ? 'ok' : 'warn', bannerHtml);
+            const _setupCardHtml = connected
               ? `<div class="card" style="border-color:var(--ok);background:var(--ok-bg);color:var(--ok);margin-bottom:0;">✓ ${esc(target.project)}/${esc(target.device)} is set up — credentials verified live, suite target configured. Nothing left to do here.</div>`
               : `<div class="card" style="border-color:var(--warn);background:var(--warn-bg);color:var(--warn);margin-bottom:0;">⚠ ${esc(target.project)}/${esc(target.device)}: credentials + suite target are saved locally, but a live TestRail connection couldn't be verified just now — check Settings.</div>`;
           }).catch(() => {});
@@ -3827,6 +3982,8 @@ function resultVerdictHtml(run, steps) {
 
 async function pollPipelineRun(runId, resultEl, btn, stepListEl, retryCount) {
   retryCount = retryCount || 0;
+  if (window.__consoleCleared === runId) return;     // acknowledged and cleared by the person
+  window.__consoleRunId = runId;
   try {
     const [run, steps] = await Promise.all([
       fetchJSON(`/api/pipelines/runs/${runId}`),
@@ -4044,7 +4201,7 @@ const NEXT_PIPELINE = {
 };
 const PIPELINE_DISPLAY_NAME = {
   start: 'Setup',
-  'onboard-suite': 'Build suite',
+  'onboard-suite': 'Suite builder',   // George, 2026-10-09: one name for building, editing and updating a suite
   'add-feature': 'Feature',
   'update-suite-from-docs': 'Update from docs',
   consolidate: 'Merge',
@@ -4085,6 +4242,7 @@ function pipelineDisplayName(p) {
 window.__navEpoch = 0;
 function setActiveNav(btn) {
   window.__navEpoch++;
+  clearBanners();
   window.__contentPrefix = '';
   content.classList.remove('setup-complete');
   document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active'));
@@ -4092,6 +4250,18 @@ function setActiveNav(btn) {
 }
 
 /* ---------------- Hamburger sidebar toggle (ISSUES.md round 2 ask) ---------------- */
+document.getElementById('consoleClearBtn')?.addEventListener('click', async (e) => {
+  e.stopPropagation();
+  const id = window.__consoleRunId;
+  if (id) {
+    try { const r = await fetchJSON(`/api/pipelines/runs/${id}`); if (r.status === 'running' || r.status === 'waiting_human') await fetch(`/api/pipelines/runs/${id}/cancel`, {method: 'POST'}); } catch (err) { /* clear anyway */ }
+    window.__consoleCleared = id;
+  }
+  resetConsolePanel();
+  const res = document.getElementById('pipelineRunResult');
+  if (res) res.innerHTML = '<p style="color:var(--ink-soft);font-size:12.5px;padding:6px 0;">Cleared.</p>';
+  const rb = document.getElementById('pipelineRunBtn'); if (rb) rb.disabled = false;
+});
 document.getElementById('sidebarToggleBtn')?.addEventListener('click', () => {
   document.getElementById('appShell').classList.toggle('sidebar-collapsed');
 });
@@ -4644,13 +4814,17 @@ async function renderCaseReview() {
               : '<div class="card"><p style="margin:0;color:var(--ink-soft);">No decisions logged yet.</p></div>');
   }
   setContent(head(`
-      <span class="pill ${d.open ? 'warn' : 'ok'}">${d.open} open</span>
-      <span class="pill code">${d.resolved} done</span>
+      <span class="pill ${d.open ? 'warn' : 'ok'}" title="Cases the latest check flags right now">${d.open} open now</span>
+      <span class="pill code" title="Flagged in the latest check and already decided">${d.resolved} decided in this check</span>
+      <span class="pill ok" id="crAllTime" title="Every fix/accept ever logged for this suite (the Log tab)">… fixed so far</span>
       <button class="btn" id="crRecheck" style="font-size:12px;padding:4px 10px;">Re-check against TestRail</button>`)
     + tabs
     + (crTab === 'log' ? logHTML : ((openItems.length ? body : '<div class="card"><p style="margin:0;">Nothing needs review.</p></div>')
       + (doneItems.length ? `<details style="margin-top:18px;"><summary style="cursor:pointer;color:var(--ink-soft);font-size:13px;">Done (${doneItems.length}) — reopen a decision</summary><div style="margin-top:10px;">${doneItems.map(([it, k]) => crItemHTML(it, k)).join('')}</div></details>` : ''))));
   content.querySelectorAll('.cr-tab').forEach(b => b.addEventListener('click', () => { crTab = b.dataset.crt; renderCaseReview(); }));
+  // George, 2026-10-09: "0 open 0 done" read as broken when 52 had been fixed. Open/decided are the CURRENT check; the all-time count is the log.
+  fetchJSON(`/api/case-review/log?${q}`).then(lg => { const el = document.getElementById('crAllTime'); const c = lg.all_time || {};
+    if (el) el.textContent = `${(c.fixed || 0) + (c.accepted || 0)} fixed or accepted so far`; }).catch(() => { document.getElementById('crAllTime')?.remove(); });
 
   document.getElementById('crRecheck')?.addEventListener('click', async (e) => {
     e.target.disabled = true; e.target.textContent = 'Checking…';

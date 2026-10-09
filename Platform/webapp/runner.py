@@ -1767,7 +1767,9 @@ def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool 
                          key=lambda c: (c.get("failed", 0), c.get("executed_count", 0)), reverse=True)
         run_health = {"suite": data.get("suite"), "project": data.get("project"), "runs_considered": len(data.get("run_ids", [])),
                       "cases_total": len(cases), "flagged_total": len(flagged),
-                      "counts": {f: sum(1 for c in cases if c.get(f)) for f in flag_names}, "shown": flagged[:15]}
+                      "counts": {f: sum(1 for c in cases if c.get(f)) for f in flag_names}, "shown": flagged[:15],
+                      "total_passed": sum(int(c.get("passed") or 0) for c in cases), "total_failed": sum(int(c.get("failed") or 0) for c in cases),
+                      "run_ids": data.get("run_ids") or []}
     result = {"available": True, "build_stats": stats, "run_health": run_health, "suite_id": suite_id,
               "generated_at": _now(), "_generated_epoch": time.time()}
     cache.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")

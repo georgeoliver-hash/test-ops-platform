@@ -80,7 +80,7 @@ SYSTEM_TEST_OPS_KNOWLEDGE = _PLATFORM_ROOT.parent.parent / "system-test-ops" / "
 
 from model import automation_tests, devices, flows, functions, pipelines  # noqa: E402
 from Platform.webapp import coverage_view
-from Platform.webapp import case_review, gap_exchange, live_sit, reports_insights, reviews, runner, store  # noqa: E402
+from Platform.webapp import case_review, gap_exchange, live_sit, reports_insights, reviews, runner, sit_tree, store  # noqa: E402
 
 WEBAPP_ROOT = Path(__file__).resolve().parent
 FIXTURES = WEBAPP_ROOT / "fixtures"
@@ -443,6 +443,23 @@ def get_docs_folder_files(project: str, device: str, path: str | None = None):
 
 
 _FBD_RE = re.compile(r"FBD-\d+", re.IGNORECASE)
+
+
+@app.get("/api/knowledge/specs")
+def knowledge_specs(project: str):
+    """The distilled spec notes for a project (knowledge/<project>/specs/*.md), newest first, for the knowledge-file picker."""
+    folder = SYSTEM_TEST_OPS_KNOWLEDGE / project.lower() / "specs"
+    out = []
+    if folder.is_dir():
+        for f in folder.glob("*.md"):
+            try:
+                head = f.read_text(encoding="utf-8", errors="replace")[:1500]
+            except OSError:
+                continue
+            title = next((ln.lstrip("# ").strip() for ln in head.splitlines() if ln.startswith("#")), f.stem)
+            out.append({"path": f"knowledge/{project.lower()}/specs/{f.name}", "name": f.stem, "title": title, "modified": f.stat().st_mtime})
+    out.sort(key=lambda x: x["modified"], reverse=True)
+    return {"project": project, "notes": out}
 
 
 @app.get("/api/docs/ingest-map")
@@ -1317,6 +1334,19 @@ def run_scheduled_check_now(body: ScheduledCheckTargetIn):
     run_id = runner.start_scheduled_scan(body.project, body.device)
     store.mark_scheduled_check_run(body.project, body.device, run_id, datetime.now(timezone.utc).isoformat())
     return {"ok": True, "run_id": run_id}
+
+
+@app.get("/api/sit/tree")
+def get_sit_tree(project: str, device: str):
+    """The real sit test tree for one target, counted from the local sit checkout's .robot files now (with that
+    checkout's branch/commit so the page says how current it is). Read-only."""
+    return sit_tree.tree(project, device)
+
+
+@app.get("/api/projects/{project}/activity")
+def get_project_activity(project: str):
+    """Pipeline runs and recorded AI spend per device for one project (Project dashboard)."""
+    return store.get_project_activity(project)
 
 
 @app.get("/api/ai-usage")

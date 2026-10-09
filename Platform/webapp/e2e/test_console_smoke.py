@@ -15,7 +15,7 @@ def _settle(page):
 
 def test_every_view_renders_without_errors(page):
     views = _views(page)
-    assert len(views) >= 6
+    assert len(views) >= 4
     for v in views:
         page.click(f'button.navitem[data-view="{v}"]')
         _settle(page)
