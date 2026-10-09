@@ -48,6 +48,153 @@ up properly myself (with a real Status line) when I pick the file up.
 
 ---
 
+## Claude progress on the testing notes (started 2026-10-09; updated after every batch)
+
+**Batch 1 - menu / layout clean-up (done):**
+- Repos removed from the menu. Scheduled checks and Hand-offs moved into **Settings** as tabs (the pending-suggestions badge now sits on Settings).
+- Settings tab has **"Allow re-running Setup"**; when Setup is complete (credentials verified + suite + docs) the Setup menu item gets a **✓** and the Setup page is faded except its banner.
+- Folded into their host page as **tabs** (no menu item, host stays highlighted): Scheduled scan -> Ingest docs; Update from docs -> Build suite; Defect -> Cross-Check JIRA; Merge check + Trace check -> Checkup; Clarify + Group gaps -> Gaps page.
+- Archived (menu item removed, pipeline files kept): Targeted run, Design (audit-flows), Standard (still runs inside Build suite / Checkup), Automation > Tests written.
+
 ## Testing notes (George)
 
--
+Test-Ops
+- Admin
+-- Status
+--- do we need edited, or added in the cases total? whats the purpose - just need to see how many cases are in the suite (not marked as delete) no need to put the not marked as delete though
+--- move old vs new up in place of the removed edit, added and same height - still cool to see the old vs new suite data.
+--- Run Health, is this even right? i dont think any POS agentic method runs have been done on testrail? 
+--- Move recent activity to the left in place of suite health breakdown. 
+--- Would it actually be possible to make the dashboard self edited, so I can select what data and info I want to display, and move the dashboard components to different widths, heights, and move into different positions or is this too much work?
+--- No need for the case, title, pass/fail on the run health, just have quick runs considered, Total failures, Always failing, Totsal Passing
+--- Suite health breakdown, not sure this is useful as orphaned is confusing anyway, just get rid of this, recent acvitiy good to keep. 
+--- Remove open suggestions, what was this for?
+--- Comments i like, keep
+--- Observed changed good
+--- Open gap register can this just be a pill total gaps, unconfirmed, how many asnwered type thing
+--- we should have another one avialable for the dashboard thats like, one gap question so you can click it and answer quickly, good for like re occcuring use for people to come on see dashboard answer one questions then move on to somethign else
+--- SAM stuff should be on the dashboard too or option to add, about the device, some cool info - maybe multiple optiosn to have to add for all we have, like different ways to show it. edit the dashboard how you want configure it how you want
+--- Dcs on file is good to have, maybe just a wait to see the totla number, the last time uploaded, etc
+--- Dashboard options to add, shceduled checks (for device targeted), last JIRAs audited agaisnt, added, how many runs are ongoing, open, closed, how many defects are raised in the latest run only, coverage against specs, coverage in automation
+-- Hows to's
+--- make the pipeliens and checks sub titles, bolder and theme coloured
+--- Can we have square pills with a 4 square wide - so one, two ,three, four and each pill is the name so Setup /start (star) the brief description and the coloured pills for ai human code. Instead oaccordions just make a pop up with the how to text inside when you click on the square option understand? this way we fit more in the screen.
+-- Repos (delete this from the test tool - not needed. remove
+-- Scheduled Checks can put this in the settings instead? remove from menu Sidebar
+-- Gaps
+--- Refresh against new docs does this actually do anything? is this essentially the scheduled check, or like a way of refreshing the knowledge against a updated spec? 
+--- Maybe get rid of the refresh against docs button here, too much going on, maybe we just need somewhere in the docs to do this? as tbh we normally make versions of a doc anyway so they would upload v2 of the doc we have, so it would be a pipeline we have already i think? that re ingests the new doc.
+--- Get rid of the bit with the rechecked agains 0 gaps etc, no need now
+-- Case review
+--- the 0 open 0 done is that not working as there is 52 done right on this targeted suite? or is it based on a real time update of the current reviews?
+- Pipelines
+-- Hand-offs
+--- Can we put this in the settings area too? like most human to approve stuff like this and scheduled checks, should be in settings I think
+-- Setup
+--- If setup is complete and the green bar is showing and credentials all verified etc, then can we add a small tick icon to the setup menu option
+--- Can we fade out all the options, the run options and stuff on this page except the banner so that people know it is done.
+--- Add somewhere in the settings to undo the fade, so if you really wanna run it again you can turn it back on so people can re-run the setup part again
+-- Ingest docs
+--- Check relevance against devcies do we need this here? isnt this something already being done when there uploaded, or a pre ingest step? or can it be moved to just one button alongside thr 'run' and give context buttons, and then just use our green, red, amber banners now mentioned above to give the result?
+--- we need a way to clear the banners too dont forget that not just open and close
+-- Scheduled Scan
+--- I feel like we could have both this piepline and ingest docs pipeline under the same page, so on ingest docs, with page, logs, and then another tab before logs? with doing a check of current documents (really only worth it when we have centralised location) 
+-- Build Suite
+--- Question - when does someone want to edit, review, work on an existing suite and make this the suite for there upcoming work but use claude and our tool to continue work on it?
+-- Feature
+--- Do we want to have in settings instead a way to pass it the board or space, or whatever for the targeted areas, like a config or JIRA locations that re the epic, the project space that hodls all the jiras and URLS so that we can actually have a search and select picker that pulls in the JIRAAs or is this a stupid idea for a picker if there might be 2000 jiras?
+--- Maybe you have to put in 3 numbers of a JIRA ID to get jira ids to show?
+-- Update from Docs
+--- Is this where the user has an existing suite and wants to review the uploaded docs against it? Can we put this in the build suite page with a tab? 
+--- Maybe build suit eneeds to be ab etter wording to account for building, editing, updating a suite but a better consolidated word for it all.
+--- Past ingest docs doesnt need to be that many whens statsus, maybe literally the last two or three audits done, and make it look prettier with like green success or red failed.
+--- Knowledge files here needs to be a picker? a dropdown picker? i have no idea where these docs live or what needs to be here to work, update from docs?
+--- We need multiple options here, we might upload 5 docs, and then want to review these docs and all distilled knowledghe against an existing suite (never made with claude and our tool)
+--- We also want a scenario where i have a new doc, add it to the existing 4 docs already ingested and used to write tests, we need a way to pick multiple or one newly added doc (which should then automatically know all distilled knowledge related to that doc) - against the current existing suite targeted
+-- Merge
+-- Targeted Run
+--- Think we should remove this tbh, mark as archive, dont know if it is useful, we can keep the files and work for a little bit as we may as kfor the featurr back but for now not needed
+-- Cross Check JIRA
+--- Maybe the JIRA picker needs to to for a specific config set up as above, set translink board beforehand
+--- Then write three numbers to match a Jira id type thing
+-- Design
+--- Do we need this anymore if we dont need seperate UX flows? seems silly to ask them to provide a transcribed format of the flows
+--- Archive it and remove
+-- Standard
+--- Remove from menu - as this is something that runs inside other pipelines right runs in checkup - so remove menu option for seperate pipeline just keep the logic so it runs in checkup
+-- Run Report
+--- the report still produces with like blue test? this is example text from the template we need to deep dive into how its reading and using the current template
+-- Defect
+--- Is this a jira issue or bug right? feel like cross check JIRA does the same thing? can we no use maybe this pipeline as a tab option on the same page as cross check JIRA? 
+-- History
+--- Can we choose 1 run or 2, 3 4 or 5 - then go in incrememnts of 5 after that?
+-- Trace Check
+--- How does this work if no jiras have been done? i think this should probably just be a if stuff done, then do this, if not skip it inside the checkup pipeline tbh, same as merge check maybe checkup covers all of this
+-- Chckup
+--- This probably should include all of the stuf above inside the pipeline dont know why they are human steps when were basically doing the functional stuff in other piepliens here, so lets fix this
+-- Resolve
+--- Why do we need area* here? whats the point? surely we just see the answers given on the gaps and now we use this to create more knwoeldge and distilled knowlegdhe rigjt?
+--- Think the tool should see the answers and area's already on the question of like potential area maybe? or just makle the judgement dont know why i should give an area
+-- Clarify
+--- Think this should be a button inside GAPS page, or a different tab, this should be inside there not its own seperate entity on the menu
+-- Group Gaps
+--- Same as above, move inside GAPS page on the tool instead either a tab or button, no need for menu option really
+-- Link defects - please explain what this area is for?
+
+project
+- Can we have menu options for each currently onboard Project, so NJT and Translink then the project dashboard for each of them seperate. 
+- Maybe add the devcies, and whats onboarded - etc the current display for IT
+- Also be good to have like other things the tool has been doing, like cases total, money spent, new vs old, last audits, tests passing, failing, skipping automation, manual tests, run comments, issues being raised etc.
+
+Reports
+- Again we need menu options here, so we can view different projects potential already onboarded right so NJT and Translink, maybe then underneath each project the onboarded device as a menu option to then see that specific report.
+- How are we syncing this, as things change all the time with where the automation readiness is?
+- The generated reports bit no need, just bulking out the dashboard for no reason
+- Maybe have this report as a dahsboard
+- Then another menu option with the TREE of structured tests, and then how many tests are currently done in each area
+- How many smoke, operator, area tests, blah blah
+
+Automation
+- SIT
+-- Overview
+---  Looks good but how is this true to the SIT framework, how is this staying up to date? it could be really far behind in terms of what tests we actually have passing, failing, skipped written, not written, smoke, bvt, area tags, other tags
+--- export autoamtion remove from this overview
+--- Only show the stuff thats been onboarded and suites written for, and automation done for
+--- maybe use some metrics here similar to SAM
+-- Live Runs
+--- Results folder and printer files folder? can these not be just mapped hardcoded? do we even want the ability to change this?
+--- Do we need a better way to help someone set this page up? where do i get this info to set it up what do i do
+--- Scheduled runs and live runs is good i like you can pick stuff, maybe we need to refresh things, or need the settings or sources set up properly, but would be good to choose the tag and the operator mode and what not for the targeted device and this actually kickstart a live SAM pipeline job
+--- We have more data now so why is it not here?
+--- printed tickets, is this just the file thats printed, maybe we need a way to live view the test executed, and the expected printed ticket and then the actual printed ticket]
+--- tests are good but im skeptical im not actually seeing a live view of the tests being executed in the flow and run, want to see like the actual tests case and steps with it visible and then pass, fail, skip once it executes.
+--- the log is cool is tis the github logs yes> not the device logs? maybe it should be our own cool log of the passed and failed stuff
+-- Coverage
+--- Is this fake data as i feel we have actual tests coverage or is this because we havent actually got much functiona lstuff just screens?
+-- Test written
+--- Probably archive this and remove it, no need. all this data is in other areas and dashboards
+-- Keywords
+--- Is this not being refreshed against the current SIT, as the POS now has loads of better keywords
+--- Dont know how beneficial this actually is unless it was to actually tell you like keyword, how many cases use this keyword, what the keyword does?
+-- Screen flows
+--- Is thsi the source of truth for the flows on the devices, it should be
+-- Draft
+--- Feel like this is a bit shit and doesnt work as you can see the jira area, the last ingested area, this just needs to be provide me a file, or files, or data knowledge and tlel me to write a test without scanning other files
+
+
+
+STILL TO COME
+- Judge failures
+- SAM jobs
+Projects 
+- Changing target
+- Asking questions
+
+
+Bugs and issues:
+- Clicking a link in like gaps, run resolve, goes to that screen but stays toggled to gaps on the side menu? same happens with alot of links on the site, but should always direct you to where you wanna be when clicked
+- what might solve that is, when you wanna run a pipeline from a different area, then open a small pop up with the run button and key areas * you need to have to start it, then you can start it from where you are, and it starts in the console then as well. 
+- when something fails on a run, the console shows a red results reason for it, but we need to be able acknowledge the fialure so it can be cancelled, and clearing the console process. 
+- the Give Context button to the right side of the Run button on all the pipeline pages which holds a pop up with the field to give a contect (prompt the run) is not working? its not even visible, I can see the give content prompt full width near the top of the pages but no, put in a button instead otherwise clunking up the pages
+- Green, red banners (like notifications_ example on set up we have the tick and green banner for everything done, these type of notifications and banners can they go full widthunderneath the top part underneath the hamburger, and targeted text and field and change target, full width go herer whereever there displaying, with a cross so people can close it (but keep a small half now height green / red bar there still so people can open again more of a close button to remove from view.
+- Why is it sometimes, like dashboard and other place so exmaple is feature you have the info steps 1 - 6 and then the feature or key container next to it, one container is bigger than the other, can we not have like better heighted containers, so there isnt weird small gaps?

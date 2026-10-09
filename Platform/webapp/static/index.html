@@ -270,6 +270,10 @@
   .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
   .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex:none;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  /* Setup complete: everything on the Setup page except its banner is faded and inert (Settings > Allow re-running Setup undoes it) */
+  #content.setup-complete > *:not(#pipelineAlreadyDone):not(.pipeline-detail-head):not(.pipeline-family-tabs) { opacity:.35; pointer-events:none; }
+  #content.setup-complete .pipeline-detail-head button { opacity:.35; pointer-events:none; }
+  .setup-tick{color:#7ee2a8;font-weight:700;}
   /* George, 2026-10-07: edit-pair form is a second pop-up above Change target, nudged up and
      right so both stay visible, instead of growing the first one off-screen. */
   .pair-overlay{z-index:60;background:rgba(32,30,29,.15);align-items:flex-start;padding-top:3vh;}
@@ -425,14 +429,11 @@
         <div class="navgroup-items">
           <button class="navitem active" data-view="health"><span class="dot"></span>Status</button>
           <button class="navitem" data-view="pipelines"><span class="dot"></span>How to's</button>
-          <button class="navitem" data-view="repomap"><span class="dot"></span>Repos</button>
-          <button class="navitem" data-view="scheduled"><span class="dot"></span>Scheduled checks<span id="scheduledBadge" style="display:none;"></span></button>
           <!-- Gaps moved back into Dashboards (George, 2026-09-22: the dedicated 4-way
                accordion was "a bad idea on menu" -- one nav item, scope switching happens
                via the Gaps page's own tab bar, same as every other dashboard page). -->
           <button class="navitem" data-view="gaps"><span class="dot"></span>Gaps</button>
           <button class="navitem" data-view="caseReview"><span class="dot"></span>Case review</button>
-          <button class="navitem" data-view="handoff"><span class="dot"></span>Hand-offs</button>
         </div>
       </div>
       <div class="navgroup collapsible" id="navBuild">
@@ -449,7 +450,6 @@
         <button class="navitem" data-aview="dashboard"><span class="dot"></span>Live runs</button>
         <button class="navitem" data-aview="overview"><span class="dot"></span>Overview</button>
         <button class="navitem" data-aview="coverage"><span class="dot"></span>Coverage</button>
-        <button class="navitem" data-aview="tests"><span class="dot"></span>Tests written</button>
         <button class="navitem" data-aview="keywords"><span class="dot"></span>Keywords</button>
         <button class="navitem" data-aview="flows"><span class="dot"></span>Screen flows</button>
       </div>
@@ -486,7 +486,7 @@
       <div>George Oliver</div>
       <div id="userMenuPopup" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;z-index:20;">
         <button class="navitem" data-view="docs" style="color:var(--ink);width:100%;">Docs</button>
-        <button class="navitem" data-view="settings" style="color:var(--ink);width:100%;">Settings</button>
+        <button class="navitem" data-view="settings" style="color:var(--ink);width:100%;">Settings<span id="scheduledBadge" style="display:none;"></span></button>
       </div>
     </div>
   </aside>
@@ -1087,7 +1087,7 @@ function renderStep(s, pipelineId, isFreshBuild) {
 }
 
 const content = document.getElementById('content');
-function setContent(html) { content.innerHTML = html; }
+function setContent(html) { content.innerHTML = (window.__contentPrefix || '') + html; }
 function loading() { setContent('<div class="loading">Loading real data…</div>'); }
 function errbox(msg) { setContent(`<div class="errbox">${esc(msg)}</div>`); }
 
@@ -1140,7 +1140,28 @@ function setConsoleRunLabelPill(pipelineId, project, device) {
 /* Delegated clicks: step accordions + feature-variant accordions, works across all views
    since content.innerHTML is replaced wholesale on every render (a listener bound directly
    to a row would be destroyed with it; delegation from the stable `content` element survives). */
+content.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'setupReenable') {
+    try { localStorage.setItem('testops.setupReenabled', e.target.checked ? '1' : '0'); } catch (err) { /* storage blocked */ }
+    refreshSetupGate();
+  }
+});
 content.addEventListener('click', (e) => {
+  const fam = e.target.closest('[data-family-tab]');
+  if (fam) {
+    const x = fam.dataset.familyTab;
+    if (x === '@gaps') { const g = document.querySelector('.navitem[data-view="gaps"]'); if (g) g.click(); }
+    else renderPipelineDetail(x);
+    return;
+  }
+  const st = e.target.closest('[data-settings-tab]');
+  if (st) {
+    const v = st.dataset.settingsTab;
+    window.__contentPrefix = settingsTabStrip(v);
+    CURRENT_RERENDER = () => { window.__contentPrefix = settingsTabStrip(v); return VIEWS[v](); };
+    VIEWS[v]();
+    return;
+  }
   const gotoLink = e.target.closest('[data-goto-view]');
   if (gotoLink) {
     e.preventDefault();
@@ -1904,6 +1925,9 @@ function openGapModal(marker) {
 let gapPageTab = 'gaps';
 
 async function renderGaps() {
+  // Clarify and Group gaps live here as tabs, not as their own menu items (George, 2026-10-09)
+  window.__contentPrefix = `<div class="tab-bar pipeline-family-tabs" style="margin-bottom:12px;"><button class="tab-btn active" data-family-tab="@gaps">Gaps</button>`
+    + ['clarify-gaps', 'group-gaps'].map(x => `<button class="tab-btn" data-family-tab="${x}">${esc(PIPELINE_DISPLAY_NAME[x] || x)}</button>`).join('') + '</div>';
   loading();
   const target = window.CURRENT_TARGET || {};
   const project = (target.project || '').toLowerCase();
@@ -2535,7 +2559,17 @@ async function renderScheduledPage() {
 }
 
 /* ---------------- Settings — TestRail credentials + all suite mappings, real API ---------------- */
+function settingsTabStrip(active) {
+  const tabs = [['settings', 'Settings'], ['scheduled', 'Scheduled checks'], ['handoff', 'Hand-offs']];
+  let reenabled = false;
+  try { reenabled = localStorage.getItem('testops.setupReenabled') === '1'; } catch (e) { /* storage blocked: default */ }
+  return `<div class="tab-bar settings-tabs" style="margin-bottom:12px;">${tabs.map(([v, l]) => `<button class="tab-btn ${v === active ? 'active' : ''}" data-settings-tab="${v}">${l}</button>`).join('')}</div>`
+    + (active === 'settings' ? `<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <div><b style="font-size:13.5px;">Setup page</b><div style="color:var(--ink-soft);font-size:12.5px;">When setup is complete its page is faded so people know it is done. Turn this on to run Setup again.</div></div>
+        <label style="font-size:13px;display:flex;gap:6px;align-items:center;white-space:nowrap;"><input type="checkbox" id="setupReenable" ${reenabled ? 'checked' : ''}> Allow re-running Setup</label></div>` : '');
+}
 async function renderSettings() {
+  window.__contentPrefix = settingsTabStrip('settings');
   loading();
   try {
     const [status, mappings, envDetect] = await Promise.all([
@@ -2679,6 +2713,8 @@ async function renderSettings() {
 /* ---------------- Single pipeline detail (used by grouped Build/Audit/Maintain nav) ---------------- */
 async function renderPipelineDetail(id) {
   CURRENT_RERENDER = () => renderPipelineDetail(id);
+  window.__contentPrefix = pipelineTabStrip(id);
+  if (PIPELINE_TAB_HOST[id]) highlightNavFor(id);
   loading();
   try {
     const [list, detail, walkthrough, suiteMappings] = await Promise.all([
@@ -3263,6 +3299,9 @@ async function renderPipelineDetail(id) {
             if (!(status.credentials_configured && status.suite_configured)) return;
             let connected = false;
             try { connected = (await (await fetch('/api/credentials/check-connection', {method: 'POST'})).json()).connected; } catch (e) { /* leave false */ }
+            let reenabled = false;
+            try { reenabled = localStorage.getItem('testops.setupReenabled') === '1'; } catch (e) { /* default: fade */ }
+            if (connected && !reenabled && document.getElementById('pipelineAlreadyDone') === alreadyDoneEl) content.classList.add('setup-complete');
             alreadyDoneEl.innerHTML = connected
               ? `<div class="card" style="border-color:var(--ok);background:var(--ok-bg);color:var(--ok);margin-bottom:0;">✓ ${esc(target.project)}/${esc(target.device)} is set up — credentials verified live, suite target configured. Nothing left to do here.</div>`
               : `<div class="card" style="border-color:var(--warn);background:var(--warn-bg);color:var(--warn);margin-bottom:0;">⚠ ${esc(target.project)}/${esc(target.device)}: credentials + suite target are saved locally, but a live TestRail connection couldn't be verified just now — check Settings.</div>`;
@@ -3948,13 +3987,39 @@ const GROUPS = {
   // the relevance gate and what distilled, THEN onboarding is both cheaper and safer, and
   // you click approve the same number of times either way. The pipeline file stays as
   // plumbing; it just isn't offered as a button.
-  Build: ['start', 'ingest-docs', 'scheduled-scan', 'onboard-suite', 'add-feature', 'update-suite-from-docs', 'consolidate', 'targeted-run'],
-  Checks: ['audit-coverage', 'audit-flows', 'audit', 'generate-test-run-report', 'fold-defect', 'review-runs', 'consolidation-check', 'traceability-check', 'maintain', 'resolve-gaps', 'clarify-gaps', 'group-gaps', 'link-defects'],
+  // George, 2026-10-09: Scheduled scan is a tab on Ingest docs, Update from docs a tab on Build suite; Targeted run archived (files kept).
+  Build: ['start', 'ingest-docs', 'onboard-suite', 'add-feature', 'consolidate'],
+  // George, 2026-10-09: Design (audit-flows) archived; Standard (audit) only runs inside Checkup; Defect is a tab on Cross-Check JIRA;
+  // Merge check + Trace check are tabs on Checkup; Clarify + Group gaps live on the Gaps page.
+  Checks: ['audit-coverage', 'generate-test-run-report', 'review-runs', 'maintain', 'resolve-gaps', 'link-defects'],
 };
 // Display-only renames (round 2, ISSUES.md) -- never the real pipeline `id` or group DOM
 // id, both of which stay exactly what system-test-ops' pipelines/slash-commands use.
 // Resolved duplicate (was flagged, now settled by George): the Build group stays "Pipelines"
 // here; the separate Overview nav item (renderProcessesTab) is "Pipeline Info" instead.
+// Pipelines that live as TABS on another page (George, 2026-10-09): host -> [host, ...siblings]. A sibling has no menu entry; opening
+// it keeps its host highlighted in the menu and shows the tab strip. '@gaps' means the Gaps page is the host.
+const PIPELINE_TABS = {
+  'ingest-docs': ['ingest-docs', 'scheduled-scan'],
+  'onboard-suite': ['onboard-suite', 'update-suite-from-docs'],
+  'audit-coverage': ['audit-coverage', 'fold-defect'],
+  maintain: ['maintain', 'consolidation-check', 'traceability-check'],
+  '@gaps': ['clarify-gaps', 'group-gaps'],
+};
+const PIPELINE_TAB_HOST = Object.fromEntries(Object.entries(PIPELINE_TABS).flatMap(([host, ids]) => ids.map(id => [id, host])));
+function pipelineTabStrip(id) {
+  const host = PIPELINE_TAB_HOST[id];
+  if (!host) return '';
+  const tabs = (host === '@gaps' ? [['@gaps', 'Gaps']] : []).concat(PIPELINE_TABS[host].map(x => [x, PIPELINE_DISPLAY_NAME[x] || x]));
+  return `<div class="tab-bar pipeline-family-tabs" style="margin-bottom:12px;">${tabs.map(([x, label]) =>
+    `<button class="tab-btn ${x === id ? 'active' : ''}" data-family-tab="${esc(x)}">${esc(label)}</button>`).join('')}</div>`;
+}
+function highlightNavFor(id) {
+  const host = PIPELINE_TAB_HOST[id];
+  const sel = host === '@gaps' ? '.navitem[data-view="gaps"]' : `.navitem[data-pipeline="${host || id}"]`;
+  const btn = document.querySelector(sel);
+  if (btn) { document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+}
 const GROUP_DISPLAY_NAME = {
   Build: 'Pipelines', Checks: 'Checks',
 };
@@ -4020,6 +4085,8 @@ function pipelineDisplayName(p) {
 window.__navEpoch = 0;
 function setActiveNav(btn) {
   window.__navEpoch++;
+  window.__contentPrefix = '';
+  content.classList.remove('setup-complete');
   document.querySelectorAll('.navitem').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
@@ -5302,6 +5369,16 @@ async function refreshSetupGate() {
       btn.classList.toggle('disabled', !status.ready && !exempt);
     });
   });
+  // Setup done (credentials + suite + docs) -> a small tick on the Setup menu item (George, 2026-10-09)
+  const setupBtn = document.querySelector('.navitem[data-pipeline="start"]');
+  if (setupBtn) {
+    setupBtn.querySelector('.setup-tick')?.remove();
+    if (status.ready && status.credentials_configured && status.suite_configured) {
+      const tick = document.createElement('span');
+      tick.className = 'setup-tick'; tick.textContent = ' ✓'; tick.title = 'Setup complete';
+      (setupBtn.querySelector('.navitem-label') || setupBtn).appendChild(tick);
+    }
+  }
   const banner = document.getElementById('setupGateBanner');
   if (banner) {
     banner.style.display = status.ready ? 'none' : 'flex';
