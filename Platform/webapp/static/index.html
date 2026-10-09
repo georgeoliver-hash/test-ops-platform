@@ -270,6 +270,13 @@
   .suite-readout .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px;}
   .modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex:none;}
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  /* sit test tree (Reports > Test tree) */
+  .tt>summary{list-style:none;} .tt>summary::-webkit-details-marker{display:none;}
+  .tt>summary,.tt-leaf{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:5px 8px;border-radius:6px;font-size:13px;}
+  .tt>summary{cursor:pointer;} .tt>summary:hover{background:var(--bg);}
+  .tt>summary::before{content:'▸';color:var(--ink-soft);width:12px;} .tt[open]>summary::before{content:'▾';}
+  .tt-leaf{padding-left:26px;} .tt-kids{margin-left:14px;border-left:1px solid var(--line);padding-left:6px;}
+  .tt-name{font-weight:600;margin-right:auto;} .tt-n{font-weight:700;min-width:32px;text-align:right;} .tt .pill,.tt-leaf .pill{font-size:10.5px;}
   #bannerArea{display:flex;flex-direction:column;gap:6px;margin:12px 28px 0;}
   .app-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:10px;font-size:13px;border:1px solid transparent;}
   .app-banner.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);} .app-banner.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn);} .app-banner.bad{background:var(--bad-bg);color:var(--bad);border-color:var(--bad);}
@@ -508,6 +515,13 @@
         <div class="navgroup-header"><div class="label">Projects</div><span class="chevron">▸</span></div>
         <div class="navgroup-items"><span class="navitem skel">Loading…</span></div>
       </div>
+    </nav>
+    <nav class="navgroups" id="projectNavgroups" style="display:none;">
+      <div class="navgroup"><div class="label">Projects</div><div id="projectNavItems"><span class="navitem skel">Loading…</span></div></div>
+    </nav>
+    <nav class="navgroups" id="reportsNavgroups" style="display:none;">
+      <div id="reportsNavItems"><span class="navitem skel">Loading…</span></div>
+      <div class="navgroup"><div class="label">Tool</div><button class="navitem" data-rep="@tool"><span class="dot"></span>Activity &amp; AI spend</button></div>
     </nav>
     <div class="sidebar-foot" id="userMenuBtn" style="cursor:pointer;position:relative;">
       <div class="avatar">GO</div>
@@ -1303,6 +1317,16 @@ const _none = (msg) => `<p style="color:var(--ink-soft);font-size:12.5px;margin:
 const _stat = (n, label, cls) => `<div class="stat ${cls || ''}"><span class="n">${n}</span><span class="l">${esc(label)}</span></div>`;
 
 const DASH_WIDGETS = {
+  sittree: {title: 'Tests in sit', desc: 'Robot tests for this device in the sit checkout, counted from the files now: total, smoke, BVT, operator modes, and how current the checkout is.', async render(c) {
+    const r = await fetchJSON(`/api/sit/tree?${_q(c.target)}`).catch(e => ({available: false, reason: e.message}));
+    if (!r.available) return `<h2>Tests in sit</h2>${_none(r.reason)}`;
+    const s = r.summary, f = s.flags || {}, modes = (s.families || {}).mode || {};
+    const age = r.git.date ? Math.floor((Date.now() - new Date(r.git.date)) / 86400000) : null;
+    return `<h2>Tests in sit <a href="#" data-goto-tree="${esc(c.target.project)}|${esc(c.target.device)}" class="corner-link">Tree →</a></h2>
+      <div class="stat-row" style="margin:0;">${_stat(s.total, 'tests')}${_stat(f.smoke || 0, 'smoke', 'ok')}${_stat(f.bvt || 0, 'BVT')}</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;">${Object.entries(modes).map(([m, n]) => `<span class="pill">${esc(m)} ${n}</span>`).join('')}${f.destructive ? `<span class="pill warn">${f.destructive} destructive</span>` : ''}${r.backlog ? `<span class="pill muted">${r.backlog} in backlog</span>` : ''}</div>
+      <p style="font-size:11.5px;color:var(--ink-soft);margin:8px 0 0;">sit ${esc(r.git.branch || '?')} @ ${esc(r.git.sha || '?')}${age !== null ? `, last commit ${age <= 0 ? 'today' : age + ' day(s) ago'}` : ''}</p>`;
+  }},
   cases: {title: 'Cases in the suite', desc: 'How many cases the new suite holds (cases waiting in the delete folder are left out).', async render(c) {
     const cmp = await c.cmp;
     const n = cmp && cmp.available ? cmp.new_case_count : c.bs.cases_total;
@@ -5284,7 +5308,7 @@ document.addEventListener('click', () => { userMenuPopup.style.display = 'none';
    existing endpoints (taxonomy, suite-mappings, setup-status, gap-register, last-run).
    No new backend needed; this is a landing page over data that already exists but was
    only ever visible one project/device at a time via Change target. ---------------- */
-async function renderProjectPage() {
+async function renderProjectOverview() {
   loading();
   try {
     const [taxonomy, mappings] = await Promise.all([fetchJSON('/api/taxonomy'), fetchJSON('/api/suite-mappings')]);
@@ -5339,50 +5363,169 @@ async function renderProjectPage() {
    page already computes for whichever target is current -- a live dashboard view, not
    just a stale file list (George: "integrate those reports into a real live view of the
    data... as well as a link to the reports"). ---------------- */
-async function renderReportsPage() {
+/* ---------------- Project + Reports tabs: one menu entry per onboarded project / device (George, 2026-10-09: "menu options
+   for each currently onboarded project ... then the project dashboard for each of them"; Reports: "underneath each project
+   the onboarded device as a menu option", "have this report as a dashboard", "the TREE of structured tests"). Onboarded =
+   a new suite is mapped in suite_targets. ---------------- */
+async function onboardedByProject() {
+  const maps = await fetchJSON('/api/suite-mappings').catch(() => []);
+  const out = {};
+  maps.filter(m => m.new_suite_id).forEach(m => (out[m.project] = out[m.project] || []).push(m));
+  Object.values(out).forEach(l => l.sort((a, b) => a.device.localeCompare(b.device)));
+  return out;
+}
+
+async function populateProjectNav() {
+  const by = await onboardedByProject();
+  document.getElementById('projectNavItems').innerHTML = `<button class="navitem" data-projview="@all"><span class="dot"></span>All projects</button>`
+    + Object.keys(by).sort().map(p => `<button class="navitem" data-projview="${esc(p)}"><span class="dot"></span>${esc(p)}</button>`).join('');
+  return by;
+}
+
+async function populateReportsNav() {
+  const by = await onboardedByProject();
+  document.getElementById('reportsNavItems').innerHTML = Object.keys(by).sort().map(p => `<div class="navgroup"><div class="label">${esc(p)}</div>
+      ${by[p].map(m => `<button class="navitem" data-rep="${esc(p)}|${esc(m.device)}"><span class="dot"></span>${esc(m.device)}</button>`).join('')}</div>`).join('')
+    || '<div class="navgroup"><div class="label">No onboarded projects yet</div></div>';
+  return by;
+}
+
+document.addEventListener('click', (e) => {
+  const pv = e.target.closest('[data-projview]');
+  if (pv) { setActiveNav(pv); window.__projView = pv.dataset.projview; CURRENT_RERENDER = renderProjectPage; renderProjectPage(); return; }
+  const rp = e.target.closest('[data-rep]');
+  if (rp) { setActiveNav(rp); if (window.__repView !== rp.dataset.rep) window.__repTab = 'report'; window.__repView = rp.dataset.rep; CURRENT_RERENDER = renderReportsPage; renderReportsPage(); return; }
+  const rt = e.target.closest('[data-rep-tab]');
+  if (rt) { window.__repTab = rt.dataset.repTab; renderReportsPage(); return; }
+  const gt = e.target.closest('[data-goto-tree]');
+  if (gt) { e.preventDefault(); window.__repView = gt.dataset.gotoTree; window.__repTab = 'tree'; document.getElementById('tabReports').click(); }
+});
+
+async function renderProjectPage() {
+  const view = window.__projView || '@all';
+  return view === '@all' ? renderProjectOverview() : renderProjectDashboard(view);
+}
+
+// One project's dashboard: its devices (onboarded or not), what the tool has run and spent for each, and a widget dashboard
+// for the chosen onboarded device (the same widgets as Status, pointed at that device).
+async function renderProjectDashboard(project) {
   loading();
-  const target = window.CURRENT_TARGET || {};
+  const epoch = window.__navEpoch;
+  const gone = () => epoch !== window.__navEpoch;
   try {
-    const tq = target.project && target.device ? `project=${encodeURIComponent(target.project)}&device=${encodeURIComponent(target.device)}` : '';
-    const [reports, liveSummary, recentRuns, ins] = await Promise.all([
-      fetchJSON('/api/reports'),
-      tq ? fetchJSON(`/api/dashboard-live?${tq}`).then(d => d.available ? d.build_stats : null).catch(() => null) : Promise.resolve(null),
-      fetchJSON('/api/runs/recent?limit=30').catch(() => []),
-      tq ? fetchJSON(`/api/reports/insights?${tq}`).catch(() => null) : Promise.resolve(null),
+    const [by, taxonomy, act] = await Promise.all([onboardedByProject(), fetchJSON('/api/taxonomy').catch(() => ({})),
+      fetchJSON(`/api/projects/${encodeURIComponent(project)}/activity`).catch(() => null)]);
+    if (gone()) return;
+    const maps = by[project] || [];
+    const allDevices = [...new Set([...Object.keys(taxonomy[project] || {}), ...maps.map(m => m.device)])].sort();
+    const ad = (act && act.devices) || {};
+    const money = (n) => '$' + (n || 0).toFixed(2);
+    const curDev = (window.CURRENT_TARGET || {}).project === project ? window.CURRENT_TARGET.device : null;
+    const sel = [window.__projDevice, curDev].find(d => d && maps.some(m => m.device === d)) || (maps[0] || {}).device;
+    setContent(`<div class="page-head"><h1>${esc(project)}</h1><p>Onboarded devices, their suites, gaps, audits, sit tests and what the tool has run and spent for ${esc(project)}.</p></div>
+      <div class="card"><div class="stat-row" style="margin:0;">
+        ${_stat(`${maps.length}<span style="font-size:14px;color:var(--ink-soft);"> / ${allDevices.length}</span>`, 'devices onboarded')}
+        ${_stat(act ? money(act.cost_usd) : '—', 'AI spend (recorded)')}
+        ${_stat(act ? act.runs : '—', 'pipeline runs')}
+        <div class="stat"><span class="n" id="projSitTotal">…</span><span class="l">tests in sit</span></div>
+      </div></div>
+      <div class="card"><h2>Devices</h2><table><tr><th>Device</th><th>Status</th><th>New suite</th><th>Last audit</th><th>Open gaps</th><th>Tests in sit</th><th>Pipeline runs</th><th>AI spend</th></tr>
+        ${allDevices.map(d => {
+          const m = maps.find(x => x.device === d), a = ad[d] || {};
+          return `<tr>
+            <td><b>${esc(d)}</b></td>
+            <td>${m ? '<span class="pill ok">Onboarded</span>' : '<span class="pill muted">Not set up</span>'}</td>
+            <td style="font-size:12px;">${m ? `${esc(m.new_suite || '')} <span style="color:var(--ink-soft);">S${esc(String(m.new_suite_id))}</span>` : ''}</td>
+            <td style="font-size:12px;color:var(--ink-soft);" data-pd-audit="${esc(d)}">${m ? '…' : ''}</td>
+            <td style="font-size:12px;" data-pd-gaps="${esc(d)}">${m ? '…' : ''}</td>
+            <td style="font-size:12px;" data-pd-sit="${esc(d)}">${m ? '…' : ''}</td>
+            <td style="font-size:12px;">${a.runs || 0}${a.by_status && a.by_status.failed ? ` <span class="pill err" style="font-size:10px;">${a.by_status.failed} failed</span>` : ''}</td>
+            <td style="font-size:12px;">${a.cost_usd ? money(a.cost_usd) : '—'}</td></tr>`;
+        }).join('')}</table></div>
+      ${sel ? `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 12px;"><b style="font-size:13px;margin-right:4px;">Dashboard for</b>
+          ${maps.map(m => `<button class="btn${m.device === sel ? ' primary' : ''}" data-pd-dev="${esc(m.device)}" style="font-size:12px;padding:4px 12px;">${esc(m.device)}</button>`).join('')}
+          <button class="btn" id="pdTarget" style="font-size:12px;padding:4px 12px;margin-left:auto;">Make ${esc(sel)} the console target →</button></div>
+        <div class="dash-grid" id="pdGrid"></div>`
+        : `<div class="card"><p style="color:var(--ink-soft);font-size:13px;margin:0;">No device of ${esc(project)} is onboarded yet (no new suite mapped). Use Setup or Change target.</p></div>`}`);
+    content.querySelectorAll('[data-pd-dev]').forEach(b => b.onclick = () => { window.__projDevice = b.dataset.pdDev; renderProjectDashboard(project); });
+    document.getElementById('pdTarget')?.addEventListener('click', () => {
+      window.CURRENT_TARGET = {project, device: sel};
+      saveLastTarget(window.CURRENT_TARGET);
+      const healthBtn = document.querySelector('.navitem[data-view="health"]');
+      if (healthBtn) setActiveNav(healthBtn);
+      document.getElementById('tabTestOps').click();
+    });
+    let sitTotal = 0, sitPending = maps.length;
+    const sitDone = () => { if (--sitPending <= 0) { const el = document.getElementById('projSitTotal'); if (el) el.textContent = String(sitTotal); } };
+    if (!maps.length) { const el = document.getElementById('projSitTotal'); if (el) el.textContent = '0'; }
+    for (const m of maps) {
+      const t = {project, device: m.device};
+      fetchJSON(`/api/pipelines/audit/last-run?${_q(t)}`)
+        .then(r => { const el = content.querySelector(`[data-pd-audit="${CSS.escape(m.device)}"]`); if (el) el.textContent = r.status ? `${r.status}, ${new Date(r.updated_at + 'Z').toLocaleDateString()}` : 'Never run'; })
+        .catch(() => {});
+      fetchJSON(`/api/gap-register?${_q(t)}&limit=1`)
+        .then(r => { const el = content.querySelector(`[data-pd-gaps="${CSS.escape(m.device)}"]`); if (el) el.textContent = String(r.total ?? 0); })
+        .catch(() => {});
+      fetchJSON(`/api/sit/tree?${_q(t)}`)
+        .then(r => { const el = content.querySelector(`[data-pd-sit="${CSS.escape(m.device)}"]`); if (el) el.innerHTML = r.available ? `<a href="#" data-goto-tree="${esc(project)}|${esc(m.device)}">${r.summary.total}</a>` : '<span style="color:var(--ink-soft);">none yet</span>'; if (r.available) sitTotal += r.summary.total; })
+        .catch(() => {}).finally(sitDone);
+    }
+    if (!sel) return;
+    const t = {project, device: sel};
+    const live = await fetchJSON(`/api/dashboard-live?${_q(t)}`).catch(() => ({available: false}));
+    if (gone()) return;
+    const bs = live.available ? live.build_stats : {project: `${project} / ${sel}`, suite: '', generated_at: '', cases_total: null, delta: null};
+    const ctx = {target: t, live, bs, rh: live.run_health, cmp: fetchJSON(`/api/suite-comparison?${_q(t)}`).catch(() => null)};
+    const PD = [['cases', 's'], ['sittree', 'm'], ['oldnew', 's'], ['runhealth', 'm'], ['gaps', 'm'], ['lastaudit', 'm'], ['defects', 'm'], ['automation', 'm'], ['comments', 'm', 'short'], ['sam', 'm']];
+    const grid = document.getElementById('pdGrid');
+    grid.innerHTML = PD.filter(([id]) => DASH_WIDGETS[id]).map(([id, s, h]) => `<div class="dw dw-${s} dw-h-${h || 'auto'}" data-wid="${id}"><div class="card dw-card"></div></div>`).join('');
+    grid.querySelectorAll('.dw').forEach(el => dashRenderOne(el, el.dataset.wid, ctx));
+  } catch (e) { if (!gone()) errbox('Could not load the project: ' + e.message); }
+}
+
+// The sit tree as nested, collapsible folders, each with its test count and smoke / BVT / destructive / mode split.
+function sitTreeHtml(r) {
+  const kids = {};
+  r.nodes.forEach(n => { const i = n.path.lastIndexOf('/'); (kids[i < 0 ? '' : n.path.slice(0, i)] = kids[i < 0 ? '' : n.path.slice(0, i)] || []).push(n); });
+  const row = (n) => {
+    const ch = kids[n.path] || [], f = n.flags || {}, m = n.modes || {}, done = (n.impl || {}).complete;
+    const meta = `<span class="tt-n">${n.total}</span>${f.smoke ? `<span class="pill ok">${f.smoke} smoke</span>` : ''}${f.bvt ? `<span class="pill info">${f.bvt} BVT</span>` : ''}${done ? `<span class="pill ok">${done} complete</span>` : ''}${f.destructive ? `<span class="pill warn">${f.destructive} destructive</span>` : ''}${Object.entries(m).map(([k, v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}`;
+    return ch.length
+      ? `<details class="tt" ${n.depth < 1 ? 'open' : ''}><summary><span class="tt-name">${esc(n.name)}</span>${meta}</summary><div class="tt-kids">${ch.map(row).join('')}</div></details>`
+      : `<div class="tt-leaf"><span class="tt-name">${esc(n.name)}</span>${meta}</div>`;
+  };
+  return (kids[''] || []).map(row).join('');
+}
+
+async function renderReportsPage() {
+  const view = window.__repView || '@tool';
+  if (view === '@tool') return renderReportsTool();
+  const [project, device] = view.split('|');
+  const target = {project, device};
+  const tab = window.__repTab || 'report';
+  loading();
+  const epoch = window.__navEpoch;
+  const gone = () => epoch !== window.__navEpoch;
+  window.__contentPrefix = `<div class="tab-bar" style="margin-bottom:12px;">${[['report', 'Report'], ['tree', 'Test tree']].map(([v, l]) => `<button class="tab-btn ${v === tab ? 'active' : ''}" data-rep-tab="${v}">${l}</button>`).join('')}</div>`;
+  try {
+    if (tab === 'tree') {
+      const r = await fetchJSON(`/api/sit/tree?${_q(target)}`);
+      if (gone()) return;
+      if (!r.available) { setContent(`<div class="page-head"><h1>Test tree — ${esc(project)} / ${esc(device)}</h1></div><div class="card">${_none(r.reason)}</div>`); return; }
+      const s = r.summary, f = s.flags || {}, fam = s.families || {};
+      const famPills = (name, obj, cls) => obj && Object.keys(obj).length ? `<div style="margin-top:10px;"><b style="font-size:12.5px;">${esc(name)}</b><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;">${Object.entries(obj).map(([k, n]) => `<span class="pill ${cls || ''}">${esc(k)} ${n}</span>`).join('')}</div></div>` : '';
+      setContent(`<div class="page-head"><h1>Test tree — ${esc(project)} / ${esc(device)}</h1>
+          <p>Counted now from the sit checkout's .robot files (${esc(r.folder)}), sit branch <b>${esc(r.git.branch || '?')}</b> @ ${esc(r.git.sha || '?')}${r.git.date ? `, last commit ${esc(new Date(r.git.date).toLocaleString())}` : ''}. Pull sit to bring it up to date.</p></div>
+        <div class="card"><div class="stat-row" style="margin:0;">${_stat(s.total, 'tests')}${_stat(f.smoke || 0, 'smoke', 'ok')}${_stat(f.bvt || 0, 'BVT')}${_stat(f.destructive || 0, 'destructive', 'warn')}${_stat(s.testrail_linked, 'linked to TestRail')}${_stat(r.backlog, 'in backlog (not run)')}</div>
+          ${famPills('Operator mode', fam.mode)}${famPills('Kind', fam.kind)}${famPills('Implementation', fam.impl)}${famPills('Area', fam.area)}</div>
+        <div class="card"><h2>Folders</h2>${sitTreeHtml(r) || _none('No tests found.')}</div>`);
+      return;
+    }
+    const [live, ins] = await Promise.all([
+      fetchJSON(`/api/dashboard-live?${_q(target)}`).catch(() => ({available: false})),
+      fetchJSON(`/api/reports/insights?${_q(target)}`).catch(() => null),
     ]);
-    // George, 2026-09-28: "reports can be more of a link to the generated test run
-    // reports, and other tabs menu options for like the tools bug issues, reports,
-    // latest logs for the tool, uhh money spent with tool functions" -- "can we not do
-    // all of it" -- Tool activity (every real run, any pipeline/target) + AI cost
-    // (reuses the existing dashboard widget) added alongside the generated-reports list
-    // and live summary that already existed here.
-    const RUN_PILL_CLASS = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'};
-    const activityRows = recentRuns.map(r => `<tr>
-      <td style="white-space:nowrap;font-size:12px;">${r.created_at ? new Date(r.created_at + 'Z').toLocaleString() : ''}</td>
-      <td style="font-size:12.5px;">${esc(PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id)}</td>
-      <td style="font-size:12.5px;">${esc(r.project)}/${esc(r.device)}</td>
-      <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
-      <td style="font-size:12px;color:var(--ink-soft);max-width:280px;">${truncatedCellHtml(r.summary, 120)}</td>
-    </tr>`).join('');
-    const activityHtml = `
-      <div class="card">
-        <h2>Tool activity${recentRuns.length ? ` (last ${recentRuns.length})` : ''}</h2>
-        ${recentRuns.length
-          ? `<table><tr><th>When</th><th>Pipeline</th><th>Target</th><th>Status</th><th>Summary</th></tr>${activityRows}</table>`
-          : `<p style="color:var(--ink-soft);font-size:13px;">No runs recorded yet.</p>`}
-      </div>`;
-    const liveHtml = liveSummary ? `
-      <div class="card">
-        <h2>Live — ${esc(target.project)}/${esc(target.device)}</h2>
-        <div class="stat-row">
-          <div class="stat"><span class="n">${liveSummary.cases_total}</span><span class="l">cases total</span></div>
-          <div class="stat ok"><span class="n">${liveSummary.delta.added.length}</span><span class="l">added</span></div>
-          <div class="stat warn"><span class="n">${liveSummary.delta.edited.length}</span><span class="l">edited</span></div>
-          ${liveSummary.gap_open_count !== null ? `<div class="stat bad"><span class="n">${liveSummary.gap_open_count}</span><span class="l">open gap Qs</span></div>` : ''}
-        </div>
-      </div>` : `<div class="card"><h2>Live data</h2><p style="color:var(--ink-soft);font-size:12.5px;">Set a project/device target (Change target) to see live numbers here too.</p></div>`;
-    // George, 2026-10-06: "bulk out reports with quick narrowed-down dashboards". Each card is one question, from one
-    // real source file; a card with no source says so instead of showing a number.
+    if (gone()) return;
     const VCOL = {COVERED: 'var(--ok)', READY: '#34d399', EASY: '#a7f3d0', FIXTURE: 'var(--warn)', HARD: 'var(--bad)', MANUAL: 'var(--ink-soft)'};
     const VNOTE = {COVERED: 'a real sit test exists', READY: 'write the test now', EASY: 'one small gap', FIXTURE: 'needs a card / printer / cash fixture', HARD: 'sit lacks screens or keywords', MANUAL: 'not worth automating'};
     const insCard = (title, sub, body) => `<div class="card"><h2>${title}</h2>${sub ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">${sub}</p>` : ''}${body}</div>`;
@@ -5414,38 +5557,38 @@ async function renderReportsPage() {
       insightsHtml = `<h2 style="margin:6px 0 10px;font-size:15px;">${esc(target.project)} / ${esc(target.device)} — at a glance${ins.suite ? ` <span style="font-weight:400;color:var(--ink-soft);">· ${esc(ins.suite)}</span>` : ''}</h2>
         ${readinessHtml}<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start;">${defectsHtml}${gapsHtml}${auditHtml}</div>`;
     }
-    const rows = reports.map((r, i) => `<tr data-report-idx="${i}" style="cursor:pointer;">
-      <td>${esc(r.project)}</td>
-      <td style="font-size:12.5px;">${esc(r.path)}</td>
-      <td style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">${new Date(r.modified_at * 1000).toLocaleString()}</td>
-      <td style="font-size:12px;color:var(--ink-soft);">${(r.size / 1024).toFixed(1)} KB</td>
+    setContent(`<div class="page-head"><h1>Report — ${esc(project)} / ${esc(device)}</h1>
+        <p>How it stays current: TestRail numbers come from the last pull${live.available && live.generated_at ? ` (${esc(new Date(live.generated_at).toLocaleString())})` : ''} — press ↻ Sync on Status to pull again; sit numbers are counted from the sit checkout each time this page opens; automation readiness is as of its last judgement (date on the card).</p></div>
+      <div class="dash-grid" id="repGrid"></div>
+      <div style="margin-top:16px;">${insightsHtml}</div>`);
+    const bs = live.available ? live.build_stats : {project: `${project} / ${device}`, suite: '', generated_at: '', cases_total: null, delta: null};
+    const ctx = {target, live, bs, rh: live.run_health, cmp: fetchJSON(`/api/suite-comparison?${_q(target)}`).catch(() => null)};
+    const RW = [['cases', 's'], ['sittree', 'm'], ['oldnew', 's'], ['runhealth', 'm'], ['defects', 'm'], ['automation', 'm']];
+    const grid = document.getElementById('repGrid');
+    grid.innerHTML = RW.filter(([id]) => DASH_WIDGETS[id]).map(([id, s]) => `<div class="dw dw-${s}" data-wid="${id}"><div class="card dw-card"></div></div>`).join('');
+    grid.querySelectorAll('.dw').forEach(el => dashRenderOne(el, el.dataset.wid, ctx));
+  } catch (e) { if (!gone()) errbox('Could not load the report: ' + e.message); }
+}
+
+// Tool-wide: every pipeline run (any target) and the AI spend per pipeline.
+async function renderReportsTool() {
+  loading();
+  try {
+    const recentRuns = await fetchJSON('/api/runs/recent?limit=30').catch(() => []);
+    const RUN_PILL_CLASS = {pending: 'muted', running: 'info', waiting_human: 'warn', succeeded: 'ok', failed: 'err', skipped: 'muted'};
+    const activityRows = recentRuns.map(r => `<tr>
+      <td style="white-space:nowrap;font-size:12px;">${r.created_at ? new Date(r.created_at + 'Z').toLocaleString() : ''}</td>
+      <td style="font-size:12.5px;">${esc(PIPELINE_DISPLAY_NAME[r.pipeline_id] || r.pipeline_id)}</td>
+      <td style="font-size:12.5px;">${esc(r.project)}/${esc(r.device)}</td>
+      <td><span class="pill ${RUN_PILL_CLASS[r.status] || 'muted'}">${esc(r.status)}</span></td>
+      <td style="font-size:12px;color:var(--ink-soft);max-width:280px;">${truncatedCellHtml(r.summary, 120)}</td>
     </tr>`).join('');
-    setContent(`
-      <div class="page-head"><h1>Reports</h1><p>Every real report this console/system-test-ops has generated, plus a live view of the current target, tool-wide run activity, and AI cost.</p></div>
-      ${insightsHtml}
-      ${liveHtml}
-      <div class="card">
-        <h2>Generated reports${reports.length ? ` (${reports.length})` : ''}</h2>
-        ${reports.length
-          ? `<table><tr><th>Project</th><th>Path</th><th>Generated</th><th>Size</th></tr>${rows}</table>`
-          : `<p style="color:var(--ink-soft);font-size:13px;">No report files found under system-test-ops/reports/ yet.</p>`}
-      </div>
-      <div id="reportPreview"></div>
-      ${activityHtml}
-      <div id="aiUsageCard" class="card"></div>`);
+    setContent(`<div class="page-head"><h1>Tool activity &amp; AI spend</h1><p>Every pipeline run this console has recorded (any project/device) and the average AI cost per pipeline.</p></div>
+      <div id="aiUsageCard" class="card"></div>
+      <div class="card"><h2>Tool activity${recentRuns.length ? ` (last ${recentRuns.length})` : ''}</h2>
+        ${recentRuns.length ? `<table><tr><th>When</th><th>Pipeline</th><th>Target</th><th>Status</th><th>Summary</th></tr>${activityRows}</table>` : _none('No runs recorded yet.')}</div>`);
     renderAiUsageWidget();
-    content.querySelectorAll('[data-report-idx]').forEach(row => {
-      row.addEventListener('click', async () => {
-        const r = reports[Number(row.dataset.reportIdx)];
-        const el = document.getElementById('reportPreview');
-        el.innerHTML = `<div class="card"><div class="loading">Loading ${esc(r.filename)}…</div></div>`;
-        try {
-          const body = await fetchJSON(`/api/reports/content?path=${encodeURIComponent(r.path)}`);
-          el.innerHTML = `<div class="card"><h2>${esc(r.path)}</h2><pre style="white-space:pre-wrap;font-size:12.5px;max-height:480px;overflow:auto;">${esc(body.text)}</pre></div>`;
-        } catch (e) { el.innerHTML = `<div class="errbox">Could not load: ${esc(e.message)}</div>`; }
-      });
-    });
-  } catch (e) { errbox('Could not load Reports: ' + e.message); }
+  } catch (e) { errbox('Could not load tool activity: ' + e.message); }
 }
 
 /* ---------------- Console-mode tab switcher ---------------- */
@@ -5455,9 +5598,12 @@ const tabProject = document.getElementById('tabProject');
 const tabReports = document.getElementById('tabReports');
 const testOpsNav = document.getElementById('navgroups');
 const automationNav = document.getElementById('automationNavgroups');
+const projectNav = document.getElementById('projectNavgroups');
+const reportsNav = document.getElementById('reportsNavgroups');
 function setConsoleTabActive(tab) {
   [tabTestOps, tabAutomation, tabProject, tabReports].forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
+  projectNav.style.display = 'none'; reportsNav.style.display = 'none';
 }
 tabTestOps.addEventListener('click', () => {
   setConsoleTabActive(tabTestOps);
@@ -5471,17 +5617,28 @@ tabAutomation.addEventListener('click', () => {
   const firstBtn = document.querySelector('#automationNavgroups .navitem[data-aview]');
   if (firstBtn) { setActiveNav(firstBtn); AUTOMATION_VIEWS[firstBtn.dataset.aview](); }
 });
-tabProject.addEventListener('click', () => {
+tabProject.addEventListener('click', async () => {
   setConsoleTabActive(tabProject);
-  testOpsNav.style.display = 'none'; automationNav.style.display = 'none';
-  CURRENT_RERENDER = renderProjectPage;
-  renderProjectPage();
+  testOpsNav.style.display = 'none'; automationNav.style.display = 'none'; projectNav.style.display = '';
+  loading();
+  const by = await populateProjectNav();
+  const cur = window.CURRENT_TARGET || {};
+  const want = window.__projView || (by[cur.project] ? cur.project : '@all');
+  (document.querySelector(`#projectNavItems [data-projview="${CSS.escape(want)}"]`) || document.querySelector('#projectNavItems [data-projview="@all"]')).click();
 });
-tabReports.addEventListener('click', () => {
+tabReports.addEventListener('click', async () => {
   setConsoleTabActive(tabReports);
-  testOpsNav.style.display = 'none'; automationNav.style.display = 'none';
-  CURRENT_RERENDER = renderReportsPage;
-  renderReportsPage();
+  testOpsNav.style.display = 'none'; automationNav.style.display = 'none'; reportsNav.style.display = '';
+  loading();
+  const by = await populateReportsNav();
+  const cur = window.CURRENT_TARGET || {};
+  const first = Object.keys(by).sort().map(p => `${p}|${by[p][0].device}`)[0];
+  const curKey = (by[cur.project] || []).some(m => m.device === cur.device) ? `${cur.project}|${cur.device}` : null;
+  const want = window.__repView || curKey || first || '@tool';
+  const keepTab = window.__repTab;
+  const btn = document.querySelector(`#reportsNavgroups [data-rep="${CSS.escape(want)}"]`) || document.querySelector('#reportsNavgroups [data-rep="@tool"]');
+  window.__repView = btn.dataset.rep; window.__repTab = keepTab;   // keep a requested tab (e.g. the Tree link) across the click
+  btn.click();
 });
 
 /* ---------------- Target switcher — real taxonomy + real, API-backed suite mappings ---------------- */

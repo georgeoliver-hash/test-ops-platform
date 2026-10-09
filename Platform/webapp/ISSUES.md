@@ -87,6 +87,16 @@ up properly myself (with a real Status line) when I pick the file up.
 - **Run report "blue test" text:** I could not find it in any saved report (the only one on disk, 2026-09-28, has none). Most likely the agent copied the Word template's blue guidance/example text. The pipeline + template note now say template guidance is never content and the draft must be re-read and stripped of anything not backed by the run data. **Needs checking:** if you see it again, send me the run so I can see the exact text.
 - **Feature / Cross-check JIRA picker (board in Settings + search after 3 characters):** not built yet - the console has no Jira access of its own (Jira goes through the Atlassian MCP in Claude). Needs a decision: add a Jira API token to Settings (then I build the picker), or keep typing keys.
 
+**Batch 7 - Project + Reports per project (done):**
+- **Project** tab has its own menu: All projects, then one entry per onboarded project (NJT, Translink). A project page shows devices onboarded (x / y), recorded AI spend, pipeline runs, tests in sit; a device table (suite, last audit, open gaps, sit tests, runs, failed runs, spend); and a widget dashboard for the chosen device (cases, sit tests, old vs new, run health, gaps, last audit, defects, coverage in automation, run comments, SAM). "Make X the console target" jumps to Status for it.
+- **Reports** tab menu: each project with its onboarded devices under it, plus Tool > Activity & AI spend. Each device has a **Report** tab (dashboard: cases, sit tests, old vs new, run health, defects, coverage + readiness / known defects / gap answers / case quality) and a **Test tree** tab.
+- **Generated reports list removed.**
+- **Test tree** = the real sit tree, counted from the .robot files in your sit checkout each time it opens: folders (collapsible) with tests / smoke / BVT / complete / destructive / nir-metro-ub per folder, plus totals by operator mode, kind, implementation and area, and what is in the backlog. It names the sit branch + commit so you can see how current it is.
+- **"How are we syncing this?"** - written on the page: TestRail numbers = last pull (↻ Sync on Status pulls again); sit numbers = counted live from the checkout; readiness = as of its last judgement (date on the card). Pull sit to bring the tree up to date.
+- New dashboard widget **Tests in sit** (can also be added on Status).
+- Fix: Run health showed "?" for passes/failures when the last TestRail pull was older than the new totals; now worked out from the saved run file (Translink POS: 6 runs, 74 passes, 34 failures).
+- Found: sit's `Tests/ETM` is NJT's legacy farebox tests, not Translink ETM. The tree only uses `Tests/<project>/<device>` (NJT/ETM -> 59 tests) or a checked mapping (Translink POS -> Tests/POS, 249 tests + 756 in backlog); anything else says "no Tests folder yet" rather than guessing.
+
 ## Testing notes (George)
 
 Test-Ops

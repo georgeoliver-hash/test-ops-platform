@@ -27,12 +27,20 @@ def sit_root() -> Path:
     return Path(os.environ.get("TESTOPS_SIT_ROOT") or _DEFAULT_ROOT)
 
 
+# sit folders that do not follow Tests/<project>/<device>. Checked 2026-10-09: Translink POS lives at Tests/POS. A bare
+# device folder is NOT a safe guess -- Tests/ETM holds NJT's legacy farebox tests, not Translink ETM's.
+SIT_FOLDERS = {("translink", "pos"): "POS"}
+
+
 def _folder_for(root: Path, project: str, device: str) -> Path | None:
     tests = root / "Tests"
-    for cand in (tests / device, tests / project / device, tests / project, tests / project.upper(), tests / device.upper()):
-        if cand.is_dir():
-            return cand
-    return None
+    for name in (p.name for p in tests.iterdir() if p.is_dir()) if tests.is_dir() else ():
+        if name.lower() == project.lower():
+            for sub in (tests / name).iterdir():
+                if sub.is_dir() and sub.name.lower() == device.lower():
+                    return sub
+    mapped = SIT_FOLDERS.get((project.lower(), device.lower()))
+    return tests / mapped if mapped and (tests / mapped).is_dir() else None
 
 
 def _cells(line: str) -> list[str]:

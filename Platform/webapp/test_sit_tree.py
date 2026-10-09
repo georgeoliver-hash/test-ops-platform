@@ -38,3 +38,12 @@ def test_missing_checkout_or_folder_says_so(tmp_path):
     (tmp_path / "Tests").mkdir()
     r = sit_tree.tree("X", "POS", root=tmp_path)
     assert not r["available"] and "no Tests folder" in r["reason"]
+
+
+def test_project_device_folder_wins_and_a_bare_device_folder_is_not_guessed(tmp_path):
+    for rel in ("Tests/NJT/ETM", "Tests/ETM"):
+        d = tmp_path / rel
+        d.mkdir(parents=True)
+        (d / "t.robot").write_text(ROBOT, encoding="utf-8")
+    assert sit_tree.tree("NJT", "ETM", root=tmp_path)["folder"] == "Tests/NJT/ETM"
+    assert not sit_tree.tree("Translink", "ETM", root=tmp_path)["available"]

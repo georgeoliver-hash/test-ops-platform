@@ -1713,6 +1713,22 @@ def _testrail_reachable(timeout: float = 4.0) -> tuple[bool, str]:
         return False, f"TestRail ({u.hostname}) is not reachable from this machine (VPN / network?)."
 
 
+def _run_health_summary(rh_path: Path) -> dict | None:
+    """The Run health widget's numbers from one run-health.json (None when there is no file)."""
+    if not rh_path.is_file():
+        return None
+    data = json.loads(rh_path.read_text(encoding="utf-8"))
+    cases = data.get("cases", [])
+    flag_names = ("always_failing", "never_executed", "flaky", "recently_regressed", "orphaned")
+    flagged = sorted([c for c in cases if any(c.get(f) for f in flag_names)],
+                     key=lambda c: (c.get("failed", 0), c.get("executed_count", 0)), reverse=True)
+    return {"suite": data.get("suite"), "project": data.get("project"), "runs_considered": len(data.get("run_ids", [])),
+            "cases_total": len(cases), "flagged_total": len(flagged),
+            "counts": {f: sum(1 for c in cases if c.get(f)) for f in flag_names}, "shown": flagged[:15],
+            "total_passed": sum(int(c.get("passed") or 0) for c in cases), "total_failed": sum(int(c.get("failed") or 0) for c in cases),
+            "run_ids": data.get("run_ids") or []}
+
+
 def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool = False) -> dict:
     suite_id = store.get_new_suite_id(project, device)
     if suite_id is None:
@@ -1737,6 +1753,11 @@ def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool 
             try:
                 stale = json.loads(cache.read_text(encoding="utf-8"))
                 stale["stale_note"] = f"{why} Showing the last pull from {stale.get('generated_at', 'earlier')}."
+                if stale.get("run_health") and "total_passed" not in stale["run_health"]:   # a pull from before the totals existed
+                    try:
+                        stale["run_health"] = _run_health_summary(out / "run-health.json") or stale["run_health"]
+                    except (OSError, ValueError):
+                        pass
                 return stale
             except (OSError, ValueError):
                 pass
@@ -1757,19 +1778,8 @@ def live_dashboard(project: str, device: str, max_age_s: int = 300, force: bool 
     if rc_s != 0 or not stats_path.is_file():
         return {"available": False, "reason": "Could not build the stats: " + (msg_s.strip().splitlines()[-1] if msg_s.strip() else "no output")}
     stats = json.loads(stats_path.read_text(encoding="utf-8"))
-    run_health = None
     rh_path = out / "run-health.json"
-    if rc_r == 0 and rh_path.is_file():
-        data = json.loads(rh_path.read_text(encoding="utf-8"))
-        cases = data.get("cases", [])
-        flag_names = ("always_failing", "never_executed", "flaky", "recently_regressed", "orphaned")
-        flagged = sorted([c for c in cases if any(c.get(f) for f in flag_names)],
-                         key=lambda c: (c.get("failed", 0), c.get("executed_count", 0)), reverse=True)
-        run_health = {"suite": data.get("suite"), "project": data.get("project"), "runs_considered": len(data.get("run_ids", [])),
-                      "cases_total": len(cases), "flagged_total": len(flagged),
-                      "counts": {f: sum(1 for c in cases if c.get(f)) for f in flag_names}, "shown": flagged[:15],
-                      "total_passed": sum(int(c.get("passed") or 0) for c in cases), "total_failed": sum(int(c.get("failed") or 0) for c in cases),
-                      "run_ids": data.get("run_ids") or []}
+    run_health = _run_health_summary(rh_path) if rc_r == 0 else None
     result = {"available": True, "build_stats": stats, "run_health": run_health, "suite_id": suite_id,
               "generated_at": _now(), "_generated_epoch": time.time()}
     cache.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
