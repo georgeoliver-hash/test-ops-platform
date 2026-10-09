@@ -158,3 +158,121 @@ def tree(project: str, device: str, root: Path | None = None) -> dict:
                 "date": _git(root, "log", "-1", "--format=%cI"), "subject": _git(root, "log", "-1", "--format=%s")},
         "summary": _summarise(live), "backlog": len(backlog), "nodes": out_nodes,
     }
+
+
+# ---- keywords: what each sit keyword does (its [Documentation]) and how many of this device's tests call it ----------
+_BDD = re.compile(r"^(given|when|then|and|but)\s+", re.I)
+_EMBED = re.compile(r"\$\{[^}]+\}")
+
+
+def _norm(name: str) -> str:
+    return re.sub(r"[\s_]+", "", name).lower()
+
+
+def _keyword_defs(path: Path) -> list[dict]:
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    section, out, last = "", [], None
+    for raw in lines:
+        m = _SECTION.match(raw)
+        if m:
+            section, last = m.group(1).strip().lower(), None
+            continue
+        if section != "keywords" or not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        if not raw[0].isspace():
+            out.append({"name": raw.strip(), "doc": "", "args": []})
+            last = None
+            continue
+        if not out:
+            continue
+        cells = _cells(raw)
+        head = cells[0].lower()
+        if head == "[documentation]":
+            out[-1]["doc"] = " ".join(cells[1:])
+            last = "doc"
+        elif head == "[arguments]":
+            out[-1]["args"] = cells[1:]
+            last = "args"
+        elif head == "...":
+            if last == "doc":
+                out[-1]["doc"] = (out[-1]["doc"] + " " + " ".join(cells[1:])).strip()
+            elif last == "args":
+                out[-1]["args"] += cells[1:]
+        else:
+            last = None
+    return out
+
+
+def _test_steps(path: Path) -> list[tuple[str, list[str]]]:
+    """(test name, first cell of each step) for every test in a file."""
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    section, tests = "", []
+    for raw in lines:
+        m = _SECTION.match(raw)
+        if m:
+            section = m.group(1).strip().lower()
+            continue
+        if section not in ("test cases", "tasks") or not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        if not raw[0].isspace():
+            tests.append((raw.strip(), []))
+            continue
+        if tests:
+            cells = _cells(raw)
+            if cells and not cells[0].startswith(("[", "...")) and not cells[0].startswith("${"):
+                tests[-1][1].append(_BDD.sub("", cells[0]))
+    return tests
+
+
+def keywords(project: str, device: str, root: Path | None = None) -> dict:
+    root = root or sit_root()
+    if not (root / "Resources").is_dir():
+        return {"available": False, "reason": f"No sit checkout found at {root} (set TESTOPS_SIT_ROOT)."}
+    folder = _folder_for(root, project, device)
+    defs: dict[str, dict] = {}
+    embedded: list[tuple[re.Pattern, str]] = []
+    files = [*(root / "Resources").rglob("*.robot"), *(root / "Resources").rglob("*.resource")]
+    if folder:
+        files += [f for f in folder.rglob("*.robot") if not any(p.startswith("__") for p in f.relative_to(folder).parts[:-1])]
+    for f in files:
+        rel = str(f.relative_to(root)).replace("\\", "/")
+        for k in _keyword_defs(f):
+            key = _norm(k["name"])
+            if key in defs:
+                continue
+            defs[key] = {**k, "file": rel, "used_by_tests": 0, "steps": 0}
+            if _EMBED.search(k["name"]):
+                # embedded arguments ("the ${screen} screen should show"): literal parts must match, each ${..} matches anything
+                parts = _EMBED.split(re.sub(r"[\s_]+", "", k["name"]))
+                embedded.append((re.compile("^" + ".+?".join(re.escape(p) for p in parts) + "$", re.I), key))
+    n_tests = 0
+    if folder:
+        for f in folder.rglob("*.robot"):
+            rel = f.relative_to(folder)
+            if any(p.startswith(("_", "__")) for p in rel.parts[:-1]):
+                continue
+            for _name, steps in _test_steps(f):
+                n_tests += 1
+                used = set()
+                for s in steps:
+                    key = _norm(s)
+                    if key not in defs:
+                        key = next((k for pat, k in embedded if pat.match(re.sub(r"[\s_]+", "", s))), None)
+                    if key:
+                        defs[key]["steps"] += 1
+                        used.add(key)
+                for key in used:
+                    defs[key]["used_by_tests"] += 1
+    dev = device.lower()
+    rows = [d for d in defs.values() if d["used_by_tests"] or f"/devices/{dev}/" in d["file"].lower()]
+    rows.sort(key=lambda d: (-d["used_by_tests"], d["name"].lower()))
+    return {"available": True, "project": project, "device": device, "tests_scanned": n_tests,
+            "folder": str(folder.relative_to(root)).replace("\\", "/") if folder else None,
+            "git": {"branch": _git(root, "branch", "--show-current"), "sha": _git(root, "rev-parse", "--short", "HEAD")},
+            "defined_total": len(defs), "keywords": rows}

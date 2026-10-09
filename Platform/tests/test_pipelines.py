@@ -80,7 +80,8 @@ def test_index_lists_all_seventeen_pipelines(pipelines):
     # 2026-10-02: links each known defect to the cases that would fail because of it (and lists the
     # defects no test would catch), from local files only -- no TestRail needed.
     assert "link-defects" in ids
-    assert len(ids) == 26
+    assert "judge-failures" in ids  # 2026-10-08: P1-P5 severity judging of sit failures
+    assert len(ids) == 27
 
 
 def test_clarify_gaps_only_rewords_never_answers(pipelines):

@@ -8,7 +8,16 @@ from pathlib import Path
 
 import pytest
 
+from model import flows
 from model.flows import _strip_jsonc_comments, available_screen_graphs, load_flow_map, load_screen_graph
+
+
+@pytest.fixture(autouse=True)
+def _mirror_only(monkeypatch, request):
+    """These tests pin the sit-mirror/ copy; a local sit checkout (which flows.py now prefers) would make them depend on
+    whatever branch is checked out. The live-preference test below opts out."""
+    if "live_sit" not in request.node.name:
+        monkeypatch.setattr(flows, "LIVE_CONFIGSETS", None)
 
 TESTOPS_KNOWLEDGE_FLOWS = (
     Path(__file__).resolve().parent.parent / "testops" / "knowledge" / "flows"
@@ -105,3 +114,13 @@ def test_translink_bv_screen_graph_parses():
     graph = load_screen_graph("Translink", "BV")
     assert len(graph.screens) > 0
     assert len(graph.transitions) > 0
+
+
+def test_a_live_sit_checkout_wins_over_the_mirror(tmp_path, monkeypatch):
+    """test name contains live_sit: keeps LIVE_CONFIGSETS. A real sit ConfigSets layout is preferred over sit-mirror/."""
+    d = tmp_path / "sit" / "Resources" / "Common" / "ConfigSets" / "Translink" / "1" / "ScreenFlow" / "POS"
+    d.mkdir(parents=True)
+    (d / "screenflow_map.jsonc").write_text('{"Screens": {"Idle": {}}, "Transitions": []}', encoding="utf-8")
+    monkeypatch.setattr(flows, "LIVE_CONFIGSETS", tmp_path / "sit" / "Resources" / "Common" / "ConfigSets")
+    g = load_screen_graph("Translink", "POS")
+    assert g.source_path.startswith("sit/Resources/Common/ConfigSets/Translink")

@@ -13,6 +13,7 @@ def _isolated_github_cache(tmp_path, monkeypatch):
 def _cfg(tmp_path, monkeypatch, results=True, tickets=True):
     monkeypatch.setattr(live_sit, "DATA", tmp_path)
     monkeypatch.setattr(live_sit, "CONFIG", tmp_path / "live_sources.json")
+    monkeypatch.setattr(live_sit, "default_results_dir", lambda: "")   # never pick up a real sit checkout's results
     r, t = tmp_path / "res", tmp_path / "tix"
     r.mkdir(); t.mkdir()
     live_sit.set_config(str(r) if results else "", str(t) if tickets else "")
@@ -110,3 +111,14 @@ def test_a_github_cache_run_is_labelled_and_a_bad_run_id_is_refused(tmp_path, mo
         assert False
     except ValueError:
         pass
+
+
+def test_results_folder_defaults_to_sits_own_results_dir(tmp_path, monkeypatch):
+    tests = tmp_path / "sit" / "Tests"
+    (tests / "Results").mkdir(parents=True)
+    (tests / "Run.config").write_text("--- Results ---\n\\Results\n\n--- Options ---\n", encoding="utf-8")
+    monkeypatch.setenv("TESTOPS_SIT_ROOT", str(tmp_path / "sit"))
+    monkeypatch.setattr(live_sit, "CONFIG", tmp_path / "live_sources.json")
+    cfg = live_sit.get_config()
+    assert cfg["results_dir"] == "" and cfg["results_dir_default"] == str(tests / "Results")
+    assert str(tests / "Results") in live_sit._roots()

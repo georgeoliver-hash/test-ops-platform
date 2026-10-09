@@ -46,6 +46,26 @@ def _default_screenflow_root() -> Path:
 
 SCREENFLOW_ROOT = _default_screenflow_root()
 
+
+def _live_sit_configsets() -> Path | None:
+    """The real sit checkout's ConfigSets (sit keeps screen flows at ConfigSets/<Project>/<ver>/ScreenFlow/<Device>/).
+    George, 2026-10-09: screen flows must come from the source of truth, not a point-in-time mirror -- so a local sit
+    checkout (TESTOPS_SIT_ROOT, else the sibling ../sit) wins; sit-mirror/ is only the fallback."""
+    root = Path(os.environ.get("TESTOPS_SIT_ROOT") or Path(__file__).resolve().parents[3] / "sit")
+    cs = root / "Resources" / "Common" / "ConfigSets"
+    return cs if cs.is_dir() else None
+
+
+LIVE_CONFIGSETS = _live_sit_configsets()
+
+
+def _graph_dir(project: str, config_version: str, device_type: str) -> Path:
+    if LIVE_CONFIGSETS is not None:
+        d = LIVE_CONFIGSETS / project / config_version / "ScreenFlow" / device_type
+        if (d / "screenflow_map.jsonc").is_file():
+            return d
+    return SCREENFLOW_ROOT / project / config_version / device_type
+
 _STRING_OR_COMMENT = re.compile(r'"(?:\\.|[^"\\])*"|(//.*)$', re.MULTILINE)
 
 
@@ -118,10 +138,11 @@ def available_screen_graphs(project: str, config_version: str = "1") -> list[str
     """Device types that actually have a screenflow_map.jsonc for this project/version — not
     every device does, so callers should check this (or catch the FileNotFoundError below)
     rather than assume."""
-    root = SCREENFLOW_ROOT / project / config_version
-    if not root.is_dir():
-        return []
-    return sorted(p.name for p in root.iterdir() if (p / "screenflow_map.jsonc").is_file())
+    found = set()
+    for root in ([LIVE_CONFIGSETS / project / config_version / "ScreenFlow"] if LIVE_CONFIGSETS is not None else []) + [SCREENFLOW_ROOT / project / config_version]:
+        if root.is_dir():
+            found |= {p.name for p in root.iterdir() if (p / "screenflow_map.jsonc").is_file()}
+    return sorted(found)
 
 
 def load_screen_graph(project: str, device_type: str, config_version: str = "1") -> ScreenGraph:
@@ -132,7 +153,7 @@ def load_screen_graph(project: str, device_type: str, config_version: str = "1")
     silently return empty for. Check `available_screen_graphs()` first if the caller needs to
     branch on availability rather than fail.
     """
-    base = SCREENFLOW_ROOT / project / config_version / device_type
+    base = _graph_dir(project, config_version, device_type)
     map_path = base / "screenflow_map.jsonc"
     if not map_path.is_file():
         available = available_screen_graphs(project, config_version)
@@ -181,7 +202,9 @@ def load_screen_graph(project: str, device_type: str, config_version: str = "1")
 
     return ScreenGraph(
         project=project, config_version=config_version, device_type=device_type,
-        source_path=str(map_path.relative_to(SCREENFLOW_ROOT.parent)),
+        source_path=(("sit/" + str(map_path.relative_to(LIVE_CONFIGSETS.parents[2])).replace("\\", "/"))
+                     if LIVE_CONFIGSETS is not None and LIVE_CONFIGSETS in map_path.parents
+                     else str(map_path.relative_to(SCREENFLOW_ROOT.parent))),
         presets=data.get("Presets", {}), screens=screens, transitions=transitions,
         templates=templates, element_map=element_map,
     )

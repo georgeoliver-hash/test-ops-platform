@@ -47,3 +47,39 @@ def test_project_device_folder_wins_and_a_bare_device_folder_is_not_guessed(tmp_
         (d / "t.robot").write_text(ROBOT, encoding="utf-8")
     assert sit_tree.tree("NJT", "ETM", root=tmp_path)["folder"] == "Tests/NJT/ETM"
     assert not sit_tree.tree("Translink", "ETM", root=tmp_path)["available"]
+
+
+def test_keywords_report_docs_and_how_many_tests_call_them(tmp_path):
+    res = tmp_path / "Resources" / "Devices" / "POS"
+    res.mkdir(parents=True)
+    (res / "b.robot").write_text("""*** Keywords ***
+POS: Assert On Screen
+    [Documentation]    Assert the device is on
+    ...                the named screen.
+    [Arguments]    ${name}
+    Log    ${name}
+
+the device is showing the ${screen} screen
+    Log    ${screen}
+
+POS: Never Called
+    Log    x
+""", encoding="utf-8")
+    tests = tmp_path / "Tests" / "POS" / "Flow"
+    tests.mkdir(parents=True)
+    (tests / "t.robot").write_text("""*** Test Cases ***
+One
+    Given the device is showing the Idle screen
+    Then POS: Assert On Screen    Idle
+    And pos:assert_on screen    Idle
+
+Two
+    POS: Assert On Screen    Menu
+""", encoding="utf-8")
+    r = sit_tree.keywords("Translink", "POS", root=tmp_path)
+    by = {k["name"]: k for k in r["keywords"]}
+    assert r["tests_scanned"] == 2
+    assert by["POS: Assert On Screen"]["used_by_tests"] == 2 and by["POS: Assert On Screen"]["steps"] == 3
+    assert by["POS: Assert On Screen"]["doc"] == "Assert the device is on the named screen."
+    assert by["the device is showing the ${screen} screen"]["used_by_tests"] == 1
+    assert by["POS: Never Called"]["used_by_tests"] == 0

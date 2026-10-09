@@ -97,6 +97,23 @@ up properly myself (with a real Status line) when I pick the file up.
 - Fix: Run health showed "?" for passes/failures when the last TestRail pull was older than the new totals; now worked out from the saved run file (Translink POS: 6 runs, 74 passes, 34 failures).
 - Found: sit's `Tests/ETM` is NJT's legacy farebox tests, not Translink ETM. The tree only uses `Tests/<project>/<device>` (NJT/ETM -> 59 tests) or a checked mapping (Translink POS -> Tests/POS, 249 tests + 756 in backlog); anything else says "no Tests folder yet" rather than guessing.
 
+**Batch 8 - Automation (done):**
+- **Overview - "how is this true to SIT?"** It wasn't: it counted the old test-automation-sit repo. Now it reads the real sit checkout for every *onboarded* target with tests there (NJT/ETM 59, Translink/POS 249), each next to its SAM lab job (runs completed, lab failures, daily bars), plus the latest loaded results (pass/fail/skip). Totals: tests, smoke, BVT, linked to TestRail. It names the sit branch + commit, so you can see how current it is (pull sit to update). Onboarded targets with no sit tests are listed in one line.
+- **Export automation card removed** from Overview. The old Automation > Projects menu (bos / common / nta from the old repo) removed too.
+- **Keywords** now read the real sit checkout for the current target: every keyword its tests call plus the device's binding keywords, **what it does** (its sit documentation), **how many tests call it**, and the file. Search + filter (called by tests / not called directly). POS: 249 tests scanned, 221 keywords (e.g. "POS: Assert On Screen" used by 185 tests).
+- **Screen flows - source of truth?** Now yes: read live from sit's own `Resources/Common/ConfigSets/<Project>/1/ScreenFlow/<Device>` (POS: 64 screens, 124 transitions). The old sit-mirror copy is only a fallback, and it was stale (the POS SignOn -> MessageOfTheDay transition type differs).
+- **Draft** rebuilt to what you asked: tick knowledge notes and/or give file paths, write one line on what to test, Run. No ingesting, no JIRA pull, no scanning other files. It writes a DRAFT .robot under proposals/<project>/<device>/draft-tests/ using the device's real sit keywords (missing ones marked GAP); you review it and PR it into sit.
+- **Live runs:**
+  - Results folder now defaults to sit's own `Tests/Results` (from sit's Run.config, which RunTests.py writes to with the live listener already on). The box is only an override. Setup help is now 3 plain steps (lab runs: nothing to set, use Load from GitHub; local runs: RunTests.py; printed tickets: only if copied to this PC).
+  - Start a run: the tag box suggests the real sit tags with how many tests each picks up (Smoke, BVT, area=..., kind=..., mode=...); operating mode was already there. It still only starts after the tick box (uses the lab device).
+  - **Log is now our own**: one line per test in run order (time, PASS/FAIL/SKIP, name, duration, failure reason), then the run's Robot warnings/errors. It was never the GitHub log; it is from the run's Robot output.
+  - Removed a stale "Schedule and targeted runs - not connected yet" card.
+- **Coverage - "is this fake?"** No, it is real but thin: it only counts a sit test as covering a TestRail case when the test carries a `testrail=`/`tid=` link, and only 3 of the 249 live POS tests have one (the 756 backlog stubs carry most of the links). Linking the screen tests to cases is what will move it.
+- **Not built (needs you):**
+  - *Expected vs actual printed ticket*: needs the expected layout per product from the ticket-layout specs and a real printed file to compare against; no lab print file has come through a loaded run yet. Next step once a run produces print files.
+  - *Live step-by-step view (each step going pass/fail as it runs)*: needs the richer listener on the held `tops-live-push-mode` sit branch (not pushed - waiting on hosting). Today you get each test as it finishes.
+  - *"We have more data now so why is it not here?"* - I took this as SAM data: it is now on Overview, Status, Project and Reports. Tell me if you meant something else.
+
 ## Testing notes (George)
 
 Test-Ops

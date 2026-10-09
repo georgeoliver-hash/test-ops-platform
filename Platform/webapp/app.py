@@ -1343,6 +1343,13 @@ def get_sit_tree(project: str, device: str):
     return sit_tree.tree(project, device)
 
 
+@app.get("/api/sit/keywords")
+def get_sit_keywords(project: str, device: str):
+    """sit keywords for one target from the local sit checkout: what each does (its [Documentation]), where it lives, and
+    how many of this device's tests call it directly. Read-only, counted now."""
+    return sit_tree.keywords(project, device)
+
+
 @app.get("/api/projects/{project}/activity")
 def get_project_activity(project: str):
     """Pipeline runs and recorded AI spend per device for one project (Project dashboard)."""

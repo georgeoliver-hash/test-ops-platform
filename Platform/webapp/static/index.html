@@ -508,13 +508,6 @@
         <button class="navitem" data-aview-pipeline="judge-failures"><span class="dot"></span>Judge failures</button>
         <button class="navitem" data-aview="sam"><span class="dot"></span>SAM jobs</button>
       </div>
-      <!-- Real Projects accordion (ISSUES.md round 2), sub-options = real projects that
-           have automation tests today, pulled live from /api/automation/tests -- not a
-           fabricated list. Populated by populateAutomationProjectsNav(). -->
-      <div class="navgroup collapsible" id="navAutomationProjects">
-        <div class="navgroup-header"><div class="label">Projects</div><span class="chevron">▸</span></div>
-        <div class="navgroup-items"><span class="navitem skel">Loading…</span></div>
-      </div>
     </nav>
     <nav class="navgroups" id="projectNavgroups" style="display:none;">
       <div class="navgroup"><div class="label">Projects</div><div id="projectNavItems"><span class="navitem skel">Loading…</span></div></div>
@@ -2915,7 +2908,7 @@ async function renderPipelineDetail(id) {
     // pattern as docsFolder/currentDocs above, so the checkbox list renders with real
     // data on first paint rather than a placeholder needing a second async fill.
     let knowledgeNotes = null;   // update-suite-from-docs: the project's distilled spec notes, for the knowledge-file picker
-    if (id === 'update-suite-from-docs' && target.project) {
+    if ((id === 'update-suite-from-docs' || id === 'draft-automation') && target.project) {
       try { knowledgeNotes = (await fetchJSON(`/api/knowledge/specs?project=${encodeURIComponent(target.project)}`)).notes; } catch (e) { knowledgeNotes = []; }
     }
     let gapAreas = null;          // resolve-gaps: the spec areas that answered gaps point at, most-answered first
@@ -3107,10 +3100,10 @@ async function renderPipelineDetail(id) {
           // finished run with Robot results. A run with no results artifact is listed but cannot be chosen.
           // George, 2026-10-09: "knowledge files needs to be a picker" - tick one or many distilled notes (newest first); "Use this run"
           // above ticks the notes a given ingest produced. The hidden field submits the ticked paths, comma-joined, as before.
-          if (id === 'update-suite-from-docs' && i.name === 'knowledge_files') {
+          if ((id === 'update-suite-from-docs' || id === 'draft-automation') && i.name === 'knowledge_files') {
             const notes = knowledgeNotes || [];
             return `
-          <label style="display:block;font-size:13px;margin-bottom:4px;">Which knowledge to check the suite against${i.required ? ' *' : ''}</label>
+          <label style="display:block;font-size:13px;margin-bottom:4px;">${id === 'draft-automation' ? 'Knowledge to write the test from' : 'Which knowledge to check the suite against'}${i.required ? ' *' : ''}</label>
           <div style="font-size:12px;color:var(--ink-soft);margin-bottom:6px;">Distilled notes from your ingested docs, newest first. Tick the new doc's notes, several, or all of them.</div>
           <div style="display:flex;gap:6px;margin-bottom:6px;"><button type="button" class="btn" data-kn-all style="font-size:11.5px;padding:2px 8px;">All</button><button type="button" class="btn" data-kn-none style="font-size:11.5px;padding:2px 8px;">None</button><input class="input" data-kn-filter placeholder="Filter…" style="flex:1;font-size:12px;"></div>
           <div id="knowledgePicker" style="max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:8px;">
@@ -4332,83 +4325,43 @@ applyNavIcons(); // static Dashboards/Automation groups already in the HTML at l
 
 /* ---------------- Test Automation console (SIT keywords + screen flows — view only) ---------------- */
 /* ---------------- Automation dashboard: real test-count summary ---------------- */
-async function renderAutomationDashboard(project, device_type) {
+// Automation overview (George, 2026-10-09: "how is this true to the SIT framework ... only show the stuff that's been
+// onboarded ... maybe use some metrics similar to SAM"). It used to count the old test-automation-sit repo; now it counts the
+// real sit checkout for every onboarded target that has tests there, next to that target's SAM lab job, plus the latest
+// loaded Robot results (pass / fail / skip).
+async function renderAutomationDashboard() {
   loading();
+  const epoch = window.__navEpoch;
+  const gone = () => epoch !== window.__navEpoch;
   try {
-    const params = new URLSearchParams();
-    if (project) params.set('project', project);
-    if (device_type) params.set('device_type', device_type);
-    const d = await fetchJSON(`/api/automation/tests${params.toString() ? '?' + params : ''}`);
-    const s = d.summary;
-    // Horizontal bar, one hue, sorted high->low -- the right form for "compare magnitude"
-    // with long category names (feature names like sso_etm_to_ivn_interface). Rebuilt
-    // 2026-09-23: was a flex row with a hard 100px label that long names overflowed,
-    // wrapping to two lines while the bar and value stayed on the first -- George: "with
-    // a like bar, but overlaps the text... will always look weird for all projects".
-    // A grid keeps label / track / value in their own columns at any name length, and
-    // scales to any project's feature set. (Not a pie: pie is for a single ratio against
-    // a limit, not 10+ ranked magnitudes.)
-    // GAP stubs are excluded from this data entirely (George, 2026-09-23: "a complete gap
-    // stub just doesn't need to be included in the data until written properly") -- the
-    // parser still identifies them, purely so they can be left out. A written test that
-    // merely needs a small assertion tweak still counts; a pure skip-stub doesn't exist yet.
-    const barRow = (label, obj, cls) => {
-      const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
-      const max = Math.max(1, ...entries.map(([, v]) => v));
-      if (!entries.length) return '<p style="color:var(--ink-soft);font-size:13px;">No tests match this filter.</p>';
-      return entries.map(([k, v]) => `
-      <div style="display:grid;grid-template-columns:minmax(0,34%) 1fr auto;align-items:center;gap:10px;margin-bottom:7px;" title="${esc(k)}: ${v}">
-        <span style="font-size:12.5px;overflow-wrap:anywhere;line-height:1.3;">${esc(k)}</span>
-        <div style="background:var(--bg);border-radius:4px;height:8px;overflow:hidden;">
-          <div style="height:100%;width:${Math.max(2, v / max * 100)}%;background:var(--${cls});border-radius:4px;"></div>
-        </div>
-        <span style="font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap;">${v}</span>
-      </div>`).join('');
-    };
-    setContent(`
-      <div class="page-head"><h1>Automation dashboard</h1><p>Real counts, parsed live from test-automation-sit's own .robot files — not SIT keywords, actual written tests.</p></div>
-      <div class="card">
-        <div style="display:flex;gap:10px;">
-          <select id="adProjectFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <option value="">All projects</option>
-            ${d.projects.map(p => `<option value="${esc(p)}" ${p===project?'selected':''}>${esc(p)}</option>`).join('')}
-          </select>
-          <select id="adDeviceFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <option value="">All devices</option>
-            ${d.device_types.map(dv => `<option value="${esc(dv)}" ${dv===device_type?'selected':''}>${esc(dv)}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-      <div class="stat-row">
-        <div class="stat"><span class="n">${s.total_tests}</span><span class="l">tests written</span></div>
-        <div class="stat"><span class="n">${s.total_suites}</span><span class="l">suites</span></div>
-        <div class="stat"><span class="n">${Object.keys(s.by_project).length}</span><span class="l">projects</span></div>
-        <div class="stat"><span class="n">${Object.keys(s.by_feature).length}</span><span class="l">functions/features</span></div>
-      </div>
-      <div class="grid2">
-        <div class="card"><h2>By project</h2>${barRow('', s.by_project, 'ai')}</div>
-        <div class="card"><h2>By device type</h2>${barRow('', s.by_device_type, 'code')}</div>
-      </div>
-      <div class="card"><h2>By function/feature <a href="#" data-goto-aview="tests" style="font-size:11.5px;font-weight:400;">See all tests →</a></h2>${barRow('', s.by_feature, 'gate')}</div>
-      <div class="card" id="exportAutomationCard"></div>`);
-    document.getElementById('adProjectFilter').addEventListener('change', (e) => renderAutomationDashboard(e.target.value, document.getElementById('adDeviceFilter').value));
-    document.getElementById('adDeviceFilter').addEventListener('change', (e) => renderAutomationDashboard(document.getElementById('adProjectFilter').value, e.target.value));
-
-    // Surfaces export-automation's last run here too (George's ask: "this should export
-    // into the automation tab somewhere... last date and time of the export") -- tied to
-    // the console's current suite target, not this dashboard's own project/device filters
-    // above (export-automation runs per suite target, not per automation-test filter).
-    const cur = window.CURRENT_TARGET || {};
-    const exportEl = document.getElementById('exportAutomationCard');
-    if (exportEl && cur.project && cur.device) {
-      fetchJSON(`/api/pipelines/export-automation/last-run?project=${encodeURIComponent(cur.project)}&device=${encodeURIComponent(cur.device)}`)
-        .then(last => {
-          exportEl.innerHTML = `<h2>export-automation — ${esc(cur.project)}/${esc(cur.device)} <a href="#" data-goto-pipeline="export-automation" class="corner-link">Run →</a></h2>
-            ${last.status ? `<p style="font-size:13.5px;margin:0;"><span class="pill ${last.status==='succeeded'?'ok':last.status==='failed'?'bad':'warn'}">${esc(last.status)}</span> — ${esc(last.updated_at ? new Date(last.updated_at+'Z').toLocaleString() : '')}</p>${last.summary ? `<p style="color:var(--ink-soft);font-size:12.5px;margin-top:6px;">${esc(last.summary)}</p>` : ''}<p style="margin-top:8px;"><a href="#" data-goto-pipeline="write-automation" style="font-size:12.5px;">Write automation from this backlog →</a></p>`
-                        : `<p style="color:var(--ink-soft);font-size:13px;">Never run for ${esc(cur.project)}/${esc(cur.device)} yet.</p>`}`;
-        }).catch(() => { exportEl.innerHTML = ''; });
-    } else if (exportEl) { exportEl.innerHTML = ''; }
-  } catch (e) { errbox('Could not load automation dashboard: ' + e.message); }
+    const by = await onboardedByProject();
+    const targets = Object.keys(by).sort().flatMap(p => by[p].map(m => ({project: p, device: m.device})));
+    const [trees, live] = await Promise.all([
+      Promise.all(targets.map(t => fetchJSON(`/api/sit/tree?${_q(t)}`).catch(() => ({available: false})))),
+      fetchJSON('/api/live/runs').catch(() => null),
+    ]);
+    if (gone()) return;
+    const withTests = targets.map((t, i) => ({...t, tree: trees[i]})).filter(x => x.tree.available);
+    const without = targets.filter((t, i) => !trees[i].available);
+    const sum = (f) => withTests.reduce((n, x) => n + f(x.tree.summary), 0);
+    const g = withTests[0] ? withTests[0].tree.git : null;
+    const runs = (live && live.runs) || [];
+    const runRows = runs.slice(0, 8).map(r => `<tr><td style="font-size:12.5px;">${esc(r.name)}</td><td style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">${r.modified ? esc(new Date(r.modified * 1000).toLocaleString()) : ''}</td>
+      <td>${r.total ?? ''}</td><td><span class="pill ok">${r.passed ?? 0}</span></td><td><span class="pill ${r.failed ? 'bad' : ''}">${r.failed ?? 0}</span></td><td><span class="pill">${r.skipped ?? 0}</span></td></tr>`).join('');
+    setContent(`<div class="page-head"><h1>Automation overview</h1>
+        <p>Onboarded targets with tests in sit, counted from the sit checkout each time this page opens${g ? ` (branch <b>${esc(g.branch || '?')}</b> @ ${esc(g.sha || '?')}${g.date ? `, last commit ${esc(new Date(g.date).toLocaleString())}` : ''})` : ''}. Pull sit to bring it up to date.</p></div>
+      <div class="card"><div class="stat-row" style="margin:0;">${_stat(sum(s => s.total), 'tests in sit')}${_stat(sum(s => s.flags.smoke || 0), 'smoke', 'ok')}${_stat(sum(s => s.flags.bvt || 0), 'BVT')}${_stat(sum(s => s.testrail_linked), 'linked to TestRail')}${_stat(withTests.length, 'targets with tests')}</div>
+        ${without.length ? `<p style="font-size:12px;color:var(--ink-soft);margin:10px 0 0;">Onboarded, no sit tests yet: ${without.map(t => esc(`${t.project} ${t.device}`)).join(', ')}.</p>` : ''}</div>
+      ${withTests.map((x, i) => `<h2 style="font-size:15px;margin:18px 0 10px;">${esc(x.project)} / ${esc(x.device)} <span style="font-weight:400;font-size:12px;color:var(--ink-soft);">· ${esc(x.tree.folder)}</span></h2>
+        <div class="dash-grid" data-ov-i="${i}"><div class="dw dw-m" data-wid="sittree"><div class="card dw-card"></div></div><div class="dw dw-m" data-wid="sam"><div class="card dw-card"></div></div></div>`).join('')}
+      <div class="card" style="margin-top:16px;"><h2>Latest loaded results <a href="#" data-goto-aview="dashboard" class="corner-link">Live runs →</a></h2>
+        ${runRows ? `<table><tr><th>Run</th><th>When</th><th>Tests</th><th>Pass</th><th>Fail</th><th>Skip</th></tr>${runRows}</table>` : _none('No Robot results loaded yet. Load a GitHub run on Live runs.')}</div>`);
+    content.querySelectorAll('[data-ov-i]').forEach(grid => {
+      const x = withTests[Number(grid.dataset.ovI)];
+      const ctx = {target: {project: x.project, device: x.device}, live: {}, bs: {}, rh: null, cmp: Promise.resolve(null)};
+      grid.querySelectorAll('.dw').forEach(el => dashRenderOne(el, el.dataset.wid, ctx));
+    });
+  } catch (e) { if (!gone()) errbox('Could not load the automation overview: ' + e.message); }
 }
 
 /* ---------------- Automation tests written: searchable list ---------------- */
@@ -4623,46 +4576,49 @@ async function sitMirrorStalenessHtml() {
   } catch (e) { return ''; }
 }
 
+// Keywords (George, 2026-10-09: "is this not being refreshed against the current SIT ... tell you keyword, how many cases use
+// this keyword, what the keyword does"). Read from the real sit checkout for the current target each time: every keyword
+// this device's tests call plus the device's own binding keywords, with its documentation and how many tests call it.
 async function renderKeywords() {
   loading();
+  const t = window.CURRENT_TARGET || {};
+  if (!t.project) { setContent(`<div class="page-head"><h1>Keywords</h1></div><div class="card">${_none('Pick a target (Change target) to see its sit keywords.')}</div>`); return; }
   try {
-    const [d, stalenessHtml] = await Promise.all([fetchJSON('/api/automation/keywords'), sitMirrorStalenessHtml()]);
-    const rows = d.keywords.map(k => `<tr><td><span class="pill code">${esc(k.device_family)}</span></td><td>${esc(k.phrase)}</td><td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.source_file)}</code></td></tr>`).join('');
-    setContent(`
-      <div class="page-head"><h1>SIT function keywords</h1><p>${d.total} real Given/When/Then keywords, parsed live from SIT's Bindings/*.robot files — view only, nothing here is editable.</p></div>
-      ${stalenessHtml}
-      <div class="card">
-        <div style="display:flex;gap:10px;margin-bottom:12px;">
-          <select id="kwFamilyFilter" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-            <option value="">All families</option>
-            ${d.device_families.map(f => `<option value="${esc(f)}">${esc(f)}</option>`).join('')}
-          </select>
-          <input id="kwSearch" placeholder="Search phrase…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
-        </div>
-        <table><tr><th>Family</th><th>Phrase</th><th>Source</th></tr><tbody id="kwRows">${rows}</tbody></table>
-      </div>`);
-
-    async function reload() {
-      const family = document.getElementById('kwFamilyFilter').value;
-      const q = document.getElementById('kwSearch').value;
-      const params = new URLSearchParams();
-      if (family) params.set('device_family', family);
-      if (q) params.set('q', q);
-      const res = await fetchJSON(`/api/automation/keywords?${params}`);
-      document.getElementById('kwRows').innerHTML = res.keywords.map(k => `<tr><td><span class="pill code">${esc(k.device_family)}</span></td><td>${esc(k.phrase)}</td><td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.source_file)}</code></td></tr>`).join('');
-    }
-    document.getElementById('kwFamilyFilter').addEventListener('change', reload);
-    let kwDebounce;
-    document.getElementById('kwSearch').addEventListener('input', () => { clearTimeout(kwDebounce); kwDebounce = setTimeout(reload, 200); });
+    const d = await fetchJSON(`/api/sit/keywords?${_q(t)}`);
+    if (!d.available) { setContent(`<div class="page-head"><h1>Keywords — ${esc(t.project)} / ${esc(t.device)}</h1></div><div class="card">${_none(d.reason)}</div>`); return; }
+    const kws = d.keywords;
+    const used = kws.filter(k => k.used_by_tests).length;
+    const draw = () => {
+      const q = (document.getElementById('kwSearch').value || '').toLowerCase();
+      const show = document.getElementById('kwShow').value;
+      const list = kws.filter(k => (show === 'all' || (show === 'used' ? k.used_by_tests : !k.used_by_tests))
+        && (!q || k.name.toLowerCase().includes(q) || (k.doc || '').toLowerCase().includes(q)));
+      document.getElementById('kwCount').textContent = `${list.length} shown`;
+      document.getElementById('kwRows').innerHTML = list.map(k => `<tr>
+        <td style="font-size:12.5px;"><b>${esc(k.name)}</b>${k.args && k.args.length ? `<div style="font-size:11px;color:var(--ink-soft);">${esc(k.args.join('  '))}</div>` : ''}</td>
+        <td style="font-size:12px;">${k.doc ? esc(k.doc.length > 220 ? k.doc.slice(0, 217) + '…' : k.doc) : '<span style="color:var(--ink-soft);">No documentation in sit.</span>'}</td>
+        <td style="text-align:right;">${k.used_by_tests ? `<span class="pill ok">${k.used_by_tests}</span>` : '<span class="pill muted">0</span>'}</td>
+        <td><code style="font-size:11px;color:var(--ink-soft);">${esc(k.file)}</code></td></tr>`).join('') || `<tr><td colspan="4">${_none('No keyword matches.')}</td></tr>`;
+    };
+    setContent(`<div class="page-head"><h1>Keywords — ${esc(t.project)} / ${esc(t.device)}</h1>
+        <p>Read now from the sit checkout (branch <b>${esc(d.git.branch || '?')}</b> @ ${esc(d.git.sha || '?')}): every keyword this device's ${d.tests_scanned} tests call, plus the device's own binding keywords. "Tests" = how many tests call it directly (a keyword used only inside other keywords shows 0). View only.</p></div>
+      <div class="card"><div class="stat-row" style="margin:0 0 12px;">${_stat(kws.length, 'keywords listed')}${_stat(used, 'called by tests', 'ok')}${_stat(kws.length - used, 'not called directly')}${_stat(d.tests_scanned, 'tests scanned')}</div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+          <input id="kwSearch" placeholder="Search keyword or what it does…" style="flex:1;font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+          <select id="kwShow" style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+            <option value="all">All</option><option value="used">Called by tests</option><option value="unused">Not called directly</option></select>
+          <span id="kwCount" style="font-size:12px;color:var(--ink-soft);white-space:nowrap;"></span></div>
+        <table><tr><th>Keyword</th><th>What it does</th><th style="text-align:right;">Tests</th><th>Where</th></tr><tbody id="kwRows"></tbody></table></div>`);
+    document.getElementById('kwSearch').addEventListener('input', draw);
+    document.getElementById('kwShow').addEventListener('change', draw);
+    draw();
   } catch (e) { errbox('Could not load keywords: ' + e.message); }
 }
 
 async function renderFlows() {
   loading();
-  const stalenessHtml = await sitMirrorStalenessHtml();
   setContent(`
-    <div class="page-head"><h1>SIT screen flows</h1><p>Real screen-transition graphs, straight from SIT's own screenflow_map.jsonc discovery output — view only.</p></div>
-    ${stalenessHtml}
+    <div class="page-head"><h1>SIT screen flows</h1><p>The source of truth: each device's screenflow_map.jsonc read live from your sit checkout (Resources/Common/ConfigSets/&lt;Project&gt;/1/ScreenFlow/&lt;Device&gt;) — pull sit to update. Only a device sit has no map for falls back to the old sit-mirror copy; the "Source" line under each graph says which. View only.</p></div>
     <div id="flowsBodyStandalone"></div>`);
   await renderFlowsBody(document.getElementById('flowsBodyStandalone'));
 }
@@ -4949,7 +4905,7 @@ async function renderLiveDashboard() {
       .lv-ico.pass{background:var(--ok);} .lv-ico.fail{background:var(--bad);} .lv-ico.skip{background:var(--ink-soft);}
       .lv-running{background:var(--warn-bg);}
       .lv-log{background:#0f172a;color:#cbd5e1;font:12px/1.5 ui-monospace,Consolas,monospace;padding:10px 12px;border-radius:10px;height:230px;overflow:auto;white-space:pre-wrap;}
-      .lv-log .w{color:#fbbf24;} .lv-log .e{color:#f87171;} .lv-log .i{color:#94a3b8;}
+      .lv-log .w{color:#fbbf24;} .lv-log .e{color:#f87171;} .lv-log .i{color:#94a3b8;} .lv-log .p{color:#86efac;}
       .lv-tickets{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow:auto;padding:2px;}
       .lv-ticket{background:#fffef6;color:#1f2937;border:1px dashed #cbbf9c;border-radius:4px;padding:10px 14px;box-shadow:0 1px 3px rgba(0,0,0,.12);transition:box-shadow .6s, transform .6s;}
       .lv-ticket pre{margin:6px 0 0;font:12.5px/1.45 ui-monospace,Consolas,monospace;white-space:pre-wrap;}
@@ -4963,14 +4919,17 @@ async function renderLiveDashboard() {
       <h1>Live runs</h1>
       <div class="page-head-pills"><span id="lvState" class="lv-idle">connecting…</span><button class="btn" id="lvCfgBtn" style="font-size:12px;padding:4px 10px;">⚙ Sources</button></div>
     </div>
-    <div id="lvCfg" class="card" style="display:${cfg.results_dir ? 'none' : 'block'};">
+    <div id="lvCfg" class="card" style="display:${cfg.results_dir || cfg.results_dir_default ? 'none' : 'block'};">
       <h2>Where the data comes from</h2>
-      <p style="color:var(--ink-soft);font-size:12.5px;margin:0 0 10px;">Two folders on this machine. Nothing is shown until you set the first.</p>
-      <label style="font-size:12.5px;font-weight:600;">Results folder</label>
-      <input class="input" id="lvResults" value="${esc(cfg.results_dir)}" placeholder="e.g. C:\\sit-results\\pos-run" style="width:100%;margin:4px 0 4px;">
-      <p style="color:var(--ink-soft);font-size:12px;margin:0 0 10px;">For real-time updates add the listener to the run: <code>robot --listener tools/robot_live_listener.py:&lt;folder&gt;/live-events.jsonl …</code>. Finished runs (<code>output.xml</code>) in the folder show too.</p>
-      <label style="font-size:12.5px;font-weight:600;">Ticket print folder</label>
-      <input class="input" id="lvTickets" value="${esc(cfg.tickets_dir)}" placeholder="the device's PrintJobRecordPath, copied or mounted here" style="width:100%;margin:4px 0 10px;">
+      <ol style="font-size:12.5px;margin:0 0 12px;padding-left:18px;line-height:1.6;">
+        <li><b>Lab runs (SAM / GitHub):</b> nothing to set up. Use <b>Load from GitHub</b> below; the run's results, log and printed files come from its artifact.</li>
+        <li><b>Runs on this PC:</b> start them with sit's <code>Tests/RunTests.py</code>. It writes to sit's own Results folder and already adds the live listener, so tests appear as they run. That folder is used automatically${cfg.results_dir_default ? `: <code>${esc(cfg.results_dir_default)}</code>` : ' (not there yet: it appears after the first local run)'}. Only fill the box below to use a different folder.</li>
+        <li><b>Printed tickets:</b> the device writes its print records on the device itself; sit has no folder for them on this PC. Leave this blank unless you copy or mount them here.</li>
+      </ol>
+      <label style="font-size:12.5px;font-weight:600;">Results folder (optional override)</label>
+      <input class="input" id="lvResults" value="${esc(cfg.results_dir)}" placeholder="blank = sit's own Tests/Results folder" style="width:100%;margin:4px 0 10px;">
+      <label style="font-size:12.5px;font-weight:600;">Ticket print folder (optional)</label>
+      <input class="input" id="lvTickets" value="${esc(cfg.tickets_dir)}" placeholder="only if the device's print records are copied or mounted on this PC" style="width:100%;margin:4px 0 10px;">
       <button class="btn primary" id="lvSave">Save</button> <span id="lvCfgMsg" style="font-size:12.5px;margin-left:8px;"></span>
       <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px;">
         <button class="btn" id="lvPushBtn" style="font-size:12px;">Runner push settings</button>
@@ -5014,13 +4973,21 @@ async function renderLiveDashboard() {
       ? s.entries.map(e => `<div style="font-size:13px;margin-bottom:4px;"><b>${esc(e.next_run_utc || e.cron)}</b> <span style="color:var(--ink-soft);">&middot; ${esc(e.comment)}</span></div>`).join('')
       : '<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No scheduled run for this target in the workflow file.</p>')
       : `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">${esc(s.reason)}</p>`;
+    // Tag suggestions = the real tags on this target's sit tests, with how many tests each would pick up.
+    fetchJSON(`/api/sit/tree?${_q(tg)}`).then(r => {
+      const dl = document.getElementById('lvTagList');
+      if (!dl || !r.available) return;
+      const s = r.summary, opts = [['Smoke', s.flags.smoke], ['BVT', s.flags.bvt]].filter(([, n]) => n);
+      for (const fam of ['area', 'kind', 'mode', 'feature']) Object.entries((s.families || {})[fam] || {}).forEach(([v, n]) => opts.push([`${fam}=${v}`, n]));
+      dl.innerHTML = opts.map(([v, n]) => `<option value="${esc(v)}">${n} test(s)</option>`).join('');
+    }).catch(() => {});
     box.innerHTML = `<h2>Schedule &amp; manual run <span class="pill code" style="font-size:11px;">${esc(tg.project)} / ${esc(tg.device)}</span></h2>
       ${sched}
       ${s.available ? `<p style="color:var(--ink-soft);font-size:12px;margin:6px 0 10px;">${esc(s.note)}</p>` : ''}
       <details id="lvStartBox"><summary style="cursor:pointer;font-size:13px;font-weight:600;">Start a run now</summary>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0;">
           <label style="font-size:12.5px;">Tag to run (one exact tag, blank = the Smoke selection)
-            <input class="input" id="lvTag" placeholder="e.g. screen-spine" style="width:100%;margin-top:3px;"></label>
+            <input class="input" id="lvTag" list="lvTagList" placeholder="type or pick, e.g. area=SignOn" style="width:100%;margin-top:3px;"><datalist id="lvTagList"></datalist></label>
           <label style="font-size:12.5px;">Smoke only
             <select class="input" id="lvSmoke" style="width:100%;margin-top:3px;"><option value="true">Yes (default)</option><option value="false">No - only the tag (needs a tag)</option></select></label>
           <label style="font-size:12.5px;">Operating mode
@@ -5180,7 +5147,13 @@ async function renderLiveDashboard() {
         + shown.map(t => `<div class="lv-row" data-lv-test="${esc(t.name)}" data-lv-id="${esc(t.id || '')}" title="Click for this test in full">${icon(t.status)}<div><div class="nm">${esc(t.name)}</div><div class="sub">${esc(t.suite || '')}</div></div><span class="sub">${esc(dur(t.seconds))}</span>${t.status === 'FAIL' && t.message ? `<div class="msg">${esc(t.message)}</div>` : ''}</div>`).join('')
         || `<div class="lv-row"><span></span><span class="sub">Nothing here yet.</span></div>`;
       const chip = (k, label, n) => `<button class="btn lv-chip ${f === k ? 'primary' : ''}" data-f="${k}" style="font-size:12px;padding:3px 10px;">${label} (${n})</button>`;
-      const logHtml = d.log.length ? d.log.map(m => `<div class="${m.level === 'WARN' ? 'w' : (m.level === 'ERROR' || m.level === 'FAIL') ? 'e' : 'i'}">[${esc(m.level)}] ${esc(m.text)}</div>`).join('') : '<div class="i">No log lines yet.</div>';
+      // Our own run log (George, 2026-10-09): one line per finished test, in run order -- time, PASS/FAIL/SKIP, name, duration and
+      // the failure reason -- then the run's own Robot warnings/errors. Not GitHub's job log and not the device log.
+      const resLines = (d.tests || []).map(t => `<div class="${t.status === 'FAIL' ? 'e' : t.status === 'SKIP' ? 'w' : 'p'}">${esc(t.start ? new Date(t.start).toLocaleTimeString() : '--:--:--')}  ${esc((t.status || '?').padEnd(4))}  ${esc(t.name)}${t.seconds != null ? `  (${esc(dur(t.seconds))})` : ''}${t.status !== 'PASS' && t.message ? `\n            ${esc(t.message.split('\n')[0].slice(0, 220))}` : ''}</div>`);
+      if (d.running) resLines.push(`<div class="i">running   ${esc(d.running.name)}…</div>`);
+      const robotLines = d.log.filter(m => m.level === 'WARN' || m.level === 'ERROR' || m.level === 'FAIL').map(m => `<div class="${m.level === 'WARN' ? 'w' : 'e'}">[${esc(m.level)}] ${esc(m.text)}</div>`);
+      const logHtml = (resLines.length ? resLines.join('') : '<div class="i">No finished tests yet.</div>')
+        + (robotLines.length ? `<div class="i" style="margin-top:6px;">-- Robot warnings / errors --</div>${robotLines.join('')}` : '');
 
       const ticketsHtml = !tix.configured
         ? `<p style="color:var(--ink-soft);font-size:12.5px;margin:0;">No ticket folder set. Add the print record folder under ⚙ Sources to watch tickets arrive.</p>`
@@ -5219,7 +5192,6 @@ async function renderLiveDashboard() {
             <div class="card"><h2>Printed tickets</h2>${ticketsHtml}</div>
             <div class="card"><h2>Recent runs</h2><table class="lv-runs"><tr><th>Run</th><th>When</th><th>P / F / S</th><th></th></tr>${runRows}</table></div>
             ${ghCard()}
-            <div class="card"><h2>Schedule and targeted runs</h2><p style="color:var(--ink-soft);font-size:12.5px;margin:0;">Not connected yet: the schedule lives in the CI system, and choosing tags to run needs a way to start a run from here. Both come after results ingestion.</p></div>
           </div>
         </div>`;
       const lg = document.getElementById('lvLog'); if (lg) lg.scrollTop = lg.scrollHeight;
@@ -5265,31 +5237,6 @@ document.querySelectorAll('.navitem[data-aview-pipeline]').forEach(btn => {
     renderPipelineDetail(btn.dataset.aviewPipeline);
   });
 });
-// Real "Projects" accordion under Automation (ISSUES.md round 2 ask) -- sub-items are the
-// actual projects that have automation tests today, from /api/automation/tests, not a
-// fabricated list; each opens the dashboard pre-filtered to that project.
-async function populateAutomationProjectsNav() {
-  const el = document.getElementById('navAutomationProjects');
-  if (!el) return;
-  try {
-    const d = await fetchJSON('/api/automation/tests');
-    const items = d.projects.map(p => `<button class="navitem" data-automation-project="${esc(p)}"><span class="dot"></span>${esc(p)}</button>`).join('');
-    el.innerHTML = `<div class="navgroup-header"><div class="label">Projects</div><span class="chevron">▸</span></div><div class="navgroup-items">${items || '<span class="navitem" style="opacity:.6;">No projects yet</span>'}</div>`;
-    el.querySelector('.navgroup-header')?.addEventListener('click', () => {
-      const willOpen = !el.classList.contains('open');
-      if (willOpen) document.querySelectorAll('#automationNavgroups .navgroup.collapsible.open').forEach(g => { if (g !== el) g.classList.remove('open'); });
-      el.classList.toggle('open');
-    });
-    el.querySelectorAll('[data-automation-project]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setActiveNav(btn);
-        renderAutomationDashboard(btn.dataset.automationProject);
-      });
-    });
-    applyNavIcons(el);
-  } catch (e) { el.innerHTML = `<div class="navgroup-header"><div class="label">Projects</div></div>`; }
-}
-populateAutomationProjectsNav();
 refreshScheduledBadge();
 renderHealth();
 

@@ -30,11 +30,27 @@ GH_CACHE = DATA / "live" / "gh"          # downloaded "robot-results-*" artifact
 MAX_TICKET_BYTES = 6000
 
 
+def default_results_dir() -> str:
+    """sit's own results folder: the "--- Results ---" entry of Tests/Run.config (e.g. "\\Results" -> <sit>/Tests/Results), which
+    Tests/RunTests.py writes output.xml + live-events.jsonl into. George, 2026-10-09: "can these not be just mapped hardcoded?"
+    -- so a local sit run shows here with nothing set. "" when there is no sit checkout or the folder does not exist yet."""
+    sit = Path(os.environ.get("TESTOPS_SIT_ROOT") or Path(__file__).resolve().parents[3] / "sit")
+    try:
+        lines = (sit / "Tests" / "Run.config").read_text(encoding="utf-8", errors="replace").splitlines()
+        frag = lines[[ln.strip().lower() for ln in lines].index("--- results ---") + 1].strip()
+    except (OSError, ValueError, IndexError):
+        return ""
+    d = sit / "Tests" / frag.replace("\\", "/").lstrip("/")
+    return str(d) if frag and d.is_dir() else ""
+
+
 def get_config() -> dict:
     try:
-        return {"results_dir": "", "tickets_dir": "", **json.loads(CONFIG.read_text(encoding="utf-8"))}
+        cfg = {"results_dir": "", "tickets_dir": "", **json.loads(CONFIG.read_text(encoding="utf-8"))}
     except (OSError, ValueError):
-        return {"results_dir": "", "tickets_dir": ""}
+        cfg = {"results_dir": "", "tickets_dir": ""}
+    cfg["results_dir_default"] = default_results_dir()
+    return cfg
 
 
 def set_config(results_dir: str | None, tickets_dir: str | None) -> dict:
@@ -46,7 +62,9 @@ def set_config(results_dir: str | None, tickets_dir: str | None) -> dict:
                 raise ValueError(f"{key}: '{val}' is not a folder on this machine.")
             cfg[key] = val
     DATA.mkdir(parents=True, exist_ok=True)
+    cfg.pop("results_dir_default", None)
     CONFIG.write_text(json.dumps(cfg, indent=1), encoding="utf-8")
+    cfg["results_dir_default"] = default_results_dir()
     return cfg
 
 
@@ -178,7 +196,7 @@ def _robot_xmls(root: str) -> list[Path]:
 
 def _roots() -> list[str]:
     cfg = get_config()
-    return [r for r in (cfg["results_dir"], str(GH_CACHE), str(PUSH_DIR)) if r and Path(r).is_dir()]
+    return [r for r in (cfg["results_dir"] or cfg["results_dir_default"], str(GH_CACHE), str(PUSH_DIR)) if r and Path(r).is_dir()]
 
 
 def _safe_under(root: str, p: Path) -> bool:
