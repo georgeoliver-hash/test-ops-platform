@@ -727,6 +727,29 @@ def get_run_cost(run_id: str) -> dict:
     }
 
 
+def get_project_activity(project: str) -> dict:
+    """Per-device pipeline activity and real AI spend for one project (Project dashboard, George 2026-10-09: "money
+    spent ... last audits ... issues being raised"). Spend is the sum of recorded step costs; runs with no cost data
+    count as runs but add nothing to spend (never a guessed figure)."""
+    with _connect() as conn:
+        rows = conn.execute(
+            """SELECT r.device AS device, COUNT(DISTINCT r.id) AS runs, MAX(r.created_at) AS last_run_at
+               FROM pipeline_runs r WHERE lower(r.project) = lower(?) GROUP BY r.device""", (project,)).fetchall()
+        status_rows = conn.execute(
+            """SELECT device, status, COUNT(*) AS n FROM pipeline_runs WHERE lower(project) = lower(?) GROUP BY device, status""",
+            (project,)).fetchall()
+        cost_rows = conn.execute(
+            """SELECT r.device AS device, SUM(s.cost_usd) AS cost FROM pipeline_run_steps s JOIN pipeline_runs r ON r.id = s.run_id
+               WHERE lower(r.project) = lower(?) AND s.cost_usd IS NOT NULL GROUP BY r.device""", (project,)).fetchall()
+    by_status: dict[str, dict] = {}
+    for r in status_rows:
+        by_status.setdefault(r["device"], {})[r["status"]] = r["n"]
+    cost = {r["device"]: r["cost"] or 0.0 for r in cost_rows}
+    devices = {r["device"]: {"runs": r["runs"], "last_run_at": r["last_run_at"], "by_status": by_status.get(r["device"], {}),
+                             "cost_usd": cost.get(r["device"], 0.0)} for r in rows}
+    return {"project": project, "devices": devices, "cost_usd": sum(cost.values()), "runs": sum(d["runs"] for d in devices.values())}
+
+
 def get_all_pipelines_cost_summary() -> list[dict]:
     """Average real cost/tokens per run, per pipeline, across every run that has recorded
     cost data -- not scoped to one project/device target, this is a tool-wide AI-usage
