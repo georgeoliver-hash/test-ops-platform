@@ -3288,3 +3288,13 @@ def test_suite_name_drift_detects_a_real_mismatch(monkeypatch):
         assert by_which["new"]["stored_name"] == "Stored New Name"
     finally:
         client.delete("/api/suite-mappings/DriftTest/POS")
+
+
+def test_run_states_rejects_bad_which():
+    res = client.get("/api/run-states", params={"project": "Translink", "device": "POS", "which": "sideways"})
+    assert res.status_code == 400
+
+
+def test_run_states_unavailable_for_unconfigured_target():
+    res = client.get("/api/run-states", params={"project": "NoSuchProject", "device": "NoSuchDevice"})
+    assert res.status_code == 200 and res.json()["available"] is False

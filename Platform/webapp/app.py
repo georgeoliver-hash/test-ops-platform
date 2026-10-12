@@ -1374,6 +1374,14 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
     return runner.get_run_comments(project, device, which, last_n)
 
 
+@app.get("/api/run-states")
+def get_run_states(project: str, device: str, which: str = "new"):
+    """TestRail runs of the target suite by state (ongoing / open / closed), read-only."""
+    if which not in ("old", "new"):
+        raise HTTPException(status_code=400, detail="which must be 'old' or 'new'")
+    return runner.get_run_states(project, device, which)
+
+
 class RelevancePreviewIn(BaseModel):
     project: str
     docs_path: str

@@ -1424,6 +1424,49 @@ def get_run_comments(project: str, device: str, which: str = "new", last_n: int 
     return {"available": True, "suite_id": suite_id, **payload}
 
 
+def get_run_states(project: str, device: str, which: str = "new") -> dict:
+    """TestRail runs of the target suite split by state: ongoing (open, some results in),
+    open (not started yet) and closed (completed). Read-only, same boundary as
+    get_run_comments. Added for George's dashboard note: "how many runs are ongoing,
+    open, closed"."""
+    ids = store.get_suite_ids(project, device)
+    if not ids or ids.get(f"{which}_suite_id") is None:
+        return {"available": False, "reason": f"No {which}_suite_id configured for this target."}
+    suite_id = ids[f"{which}_suite_id"]
+    script = (
+        "import json, os\n"
+        "from system_test_ops.testrail.client import TestRailClient\n"
+        "client = TestRailClient()\n"
+        "project_id = int(os.environ['TESTRAIL_PROJECT_ID'])\n"
+        f"suite_id = {suite_id}\n"
+        "runs = [r for r in client.get_runs(project_id) if r.get('suite_id') == suite_id]\n"
+        "runs.sort(key=lambda r: r.get('created_on', 0), reverse=True)\n"
+        "out = []\n"
+        "for r in runs:\n"
+        "    done = sum(r.get(k) or 0 for k in ('passed_count', 'failed_count', 'blocked_count', 'retest_count')) + sum(r.get('custom_status%d_count' % i) or 0 for i in range(1, 8))\n"
+        "    out.append({'id': r['id'], 'name': r.get('name'), 'is_completed': bool(r.get('is_completed')), 'results': done, 'untested': r.get('untested_count') or 0, 'created_on': r.get('created_on')})\n"
+        "print(json.dumps({'runs': out}))\n"
+    )
+    try:
+        result = subprocess.run(
+            [str(_VENV_PYTHON), "-c", script],
+            cwd=str(SYSTEM_TEST_OPS_ROOT), capture_output=True, text=True, timeout=60,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return {"available": False, "reason": f"Could not run TestRail query: {exc}"}
+    if result.returncode != 0:
+        return {"available": False, "reason": f"TestRail call failed: {result.stderr.strip()[-500:]}"}
+    try:
+        runs = json.loads(result.stdout.strip().splitlines()[-1])["runs"]
+    except (json.JSONDecodeError, IndexError, KeyError):
+        return {"available": False, "reason": "Could not parse TestRail response."}
+    state = lambda r: "closed" if r["is_completed"] else ("ongoing" if r["results"] else "open")
+    for r in runs:
+        r["state"] = state(r)
+    counts = {k: sum(1 for r in runs if r["state"] == k) for k in ("ongoing", "open", "closed")}
+    return {"available": True, "suite_id": suite_id, "total": len(runs), "counts": counts, "runs": runs[:20]}
+
+
 # George, 2026-09-30: "POS TL suite name new one, is GG - POS - Claude Suite but on
 # testrail it is something else? do we need to ensure the naming is correct for the ID or
 # refresh if been changed" -- real, live check: does the display name stored in

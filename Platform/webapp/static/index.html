@@ -1390,6 +1390,15 @@ const DASH_WIDGETS = {
       ${_stat(rh.runs_considered, 'runs considered')}${_stat(rh.total_passed ?? '?', 'total passing', 'ok')}${_stat(rh.total_failed ?? '?', 'total failures', 'bad')}${_stat(rh.counts.always_failing, 'always failing', 'bad')}</div>
       ${rh.run_ids ? `<div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">Runs: ${rh.run_ids.map(r => 'R' + r).join(', ')}</div>` : ''}`;
   }},
+  runstates: {title: 'Runs: ongoing / open / closed', desc: 'TestRail runs of this suite by state: ongoing (results coming in), open (not started), closed (completed).', async render(c) {
+    const rs = await fetchJSON(`/api/run-states?${_q(c.target)}&which=new`).catch(() => null);
+    if (!rs || !rs.available) return `<h2>Runs</h2>${_none(rs ? rs.reason : 'Could not read TestRail.')}`;
+    if (!rs.total) return `<h2>Runs</h2>${_none('No TestRail runs of this suite yet.')}`;
+    const ids = (k) => rs.runs.filter(r => r.state === k).slice(0, 6).map(r => 'R' + r.id).join(', ');
+    return `<h2>Runs <span style="font-size:11px;font-weight:400;color:var(--ink-soft);">TestRail, ${rs.total} total</span></h2><div class="stat-row" style="margin:0;">
+      ${_stat(rs.counts.ongoing, 'ongoing', rs.counts.ongoing ? 'warn' : '')}${_stat(rs.counts.open, 'open (not started)')}${_stat(rs.counts.closed, 'closed', 'ok')}</div>
+      ${rs.counts.ongoing ? `<div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">Ongoing: ${ids('ongoing')}</div>` : ''}`;
+  }},
   comments: {title: 'Run comments', desc: 'Reviewer notes left on TestRail run results (new or old suite).', async render(c, el) {
     setTimeout(() => {
       const sel = el.querySelector('select'), body = el.querySelector('.rc-body');
